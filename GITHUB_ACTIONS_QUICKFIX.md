@@ -16,14 +16,7 @@ Error: missing server host
 
 点击 "New repository secret",添加以下 6 个配置:
 
-```
-REMOTE_HOST          = 你的服务器IP (例: 192.168.1.100)
-REMOTE_USER          = SSH用户名 (例: root)
-SSH_PRIVATE_KEY      = SSH私钥内容 (见下方说明)
-REMOTE_PORT          = 22 (可选,默认就是22)
-REMOTE_FRONTEND_DIR  = /var/www/frontend
-REMOTE_BACKEND_DIR   = /opt/backend
-```
+
 
 ### 3️⃣ 获取 SSH 私钥
 
