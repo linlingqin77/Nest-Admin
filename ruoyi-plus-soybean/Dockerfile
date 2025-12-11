@@ -14,10 +14,14 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages ./packages
 
 # Install dependencies with shamefully-hoist to ensure nested dependencies are accessible
-RUN pnpm install --frozen-lockfile --shamefully-hoist || pnpm install --no-frozen-lockfile --shamefully-hoist
+# Use --no-frozen-lockfile to allow lockfile updates if needed
+RUN pnpm install --no-frozen-lockfile --shamefully-hoist
 
 # Copy source code
 COPY . .
+
+# Copy environment file for build
+COPY .env .env
 
 # Build application
 RUN pnpm run build

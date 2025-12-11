@@ -69,7 +69,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Generate Prisma Client
         run: pnpm prisma generate
@@ -152,7 +152,7 @@ jobs:
             git pull origin ${{ github.ref_name }}
             
             # 安装依赖
-            pnpm install --prod --frozen-lockfile
+            pnpm install --prod --no-frozen-lockfile
             
             # 生成 Prisma Client
             pnpm prisma generate
