@@ -1,99 +1,86 @@
-# Nest Admin - 企业级管理系统
+# Nest Admin
 
-基于 NestJS + Vue3 + Naive UI 的现代化企业级管理系统。
+一个基于 NestJS + Naive UI 的现代化后台管理系统。
 
-## 🚀 GitHub Actions 自动化部署
+## 📚 文档
 
-本项目已配置 GitHub Actions 自动化部署工作流，使用 PM2 进行进程管理。
+- [快速开始](./docs/QUICK_START.md)
+- [本地部署指南](./docs/LOCAL_DEPLOYMENT.md)
+- [在线部署指南](./docs/DEPLOYMENT.md)
+- [快速部署指南](./docs/QUICK_START_DEPLOY.md)
+- [GitHub Actions 自动化部署](./docs/GITHUB_ACTIONS.md)
+- **[GitHub Secrets 配置指南](./docs/GITHUB_SECRETS_SETUP.md)** ⭐ 解决部署配置问题
 
-### 快速开始
+## 🚀 快速开始
 
-查看 [部署配置总结](.github/DEPLOYMENT_SETUP.md) 开始配置自动化部署。
-
-### 相关文档
-
-- 📖 [完整部署指南](docs/GITHUB_ACTIONS.md) - 详细的配置步骤和故障排查
-- ⚡ [快速开始](docs/QUICK_START_DEPLOY.md) - 3 步完成配置
-- 📋 [部署概览](DEPLOYMENT_README.md) - 部署配置总览
-
-### 配置检查工具
+### 本地开发
 
 ```bash
-# Linux/Mac
-bash scripts/check-deploy-config.sh
+# 安装依赖
+cd server && pnpm install
+cd ../admin-naive-ui && pnpm install
 
-# Windows
-scripts\check-deploy-config.bat
+# 启动后端
+cd server && pnpm run start:dev
+
+# 启动前端
+cd admin-naive-ui && pnpm run dev
 ```
 
-## 项目结构
+### 自动化部署
+
+本项目支持通过 GitHub Actions 自动部署到服务器。
+
+#### 遇到 "missing server host" 错误?
+
+这是因为 GitHub Secrets 未配置。请按照以下步骤操作:
+
+1. 📖 **阅读配置指南**: [GitHub Secrets 完整配置指南](./docs/GITHUB_SECRETS_SETUP.md)
+2. ⚙️ **配置必需的 Secrets**:
+   - `REMOTE_HOST` - 服务器 IP 或域名
+   - `REMOTE_USER` - SSH 用户名
+   - `SSH_PRIVATE_KEY` - SSH 私钥
+   - `REMOTE_PORT` - SSH 端口 (可选,默认 22)
+   - `REMOTE_FRONTEND_DIR` - 前端部署目录
+   - `REMOTE_BACKEND_DIR` - 后端部署目录
+
+3. 🚀 **触发部署**: 推送代码到 `main` 或 `main-soybean` 分支
+
+详细步骤请参考 [GitHub Actions 部署指南](./docs/GITHUB_ACTIONS.md)
+
+## 📦 项目结构
 
 ```
 nest-admin/
-├── admin-naive-ui/          # 前端项目 (Vue3 + Naive UI)
-├── server/                  # 后端项目 (NestJS)
-├── docs/                    # 项目文档
-├── .github/
-│   ├── workflows/          # GitHub Actions 工作流
-│   │   ├── deploy.yml                 # 简单部署
-│   │   └── deploy-advanced.yml        # 高级部署 ⭐
-│   └── DEPLOYMENT_SETUP.md # 部署配置总结
-└── scripts/                # 辅助脚本
-    ├── check-deploy-config.sh         # 配置检查脚本
-    └── check-deploy-config.bat        # Windows 配置检查
+├── admin-naive-ui/       # 前端项目 (Naive UI + Vue 3)
+├── server/               # 后端项目 (NestJS)
+├── docs/                 # 文档
+├── scripts/              # 部署脚本
+└── .github/              # GitHub Actions 工作流
 ```
 
-## 开发
+## 🔧 技术栈
 
-### 前端开发
-
-```bash
-cd admin-naive-ui
-pnpm install
-pnpm dev
-```
-
-### 后端开发
-
-```bash
-cd server
-pnpm install
-pnpm run start:dev
-```
-
-## 部署
-
-推送代码到 `main` 或 `main-soybean` 分支，GitHub Actions 将自动部署到服务器。
-
-手动部署：访问 GitHub Actions 页面，选择工作流并点击 "Run workflow"。
-
-## 技术栈
+### 后端
+- NestJS
+- Prisma ORM
+- PostgreSQL / MySQL
+- JWT 认证
 
 ### 前端
 - Vue 3
 - Naive UI
 - TypeScript
 - Vite
-- UnoCSS
-- Pinia
 
-### 后端
-- NestJS
-- Prisma
-- PostgreSQL
-- Redis
-- JWT
-- Swagger
+## 📝 开发路线
 
-### DevOps
-- GitHub Actions
-- PM2
-- Nginx
+查看 [ROADMAP.md](./docs/ROADMAP.md) 了解项目开发计划。
 
-## License
+## 🤝 贡献
 
-MIT
+欢迎提交 Issue 和 Pull Request!
 
----
+## 📄 许可证
 
-更多信息请查看 [部署文档](docs/GITHUB_ACTIONS.md)
+[MIT License](./LICENSE)

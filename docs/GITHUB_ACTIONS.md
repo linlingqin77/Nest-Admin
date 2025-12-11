@@ -1,5 +1,7 @@
 # GitHub Actions 自动化部署配置指南（使用 PM2）
 
+> ⚠️ **遇到 "missing server host" 错误?** 请查看 [GitHub Secrets 配置详细指南](./GITHUB_SECRETS_SETUP.md)
+
 ## 📋 概述
 
 本项目配置了两个 GitHub Actions 工作流用于自动化部署：
@@ -11,20 +13,22 @@
 
 ### 第一步：配置 GitHub Secrets
 
+> 📖 **详细配置指南**: 如果这是你第一次配置,强烈建议阅读 [GitHub Secrets 完整配置指南](./GITHUB_SECRETS_SETUP.md)
+
 进入 GitHub 仓库 `Settings` -> `Secrets and variables` -> `Actions` -> `New repository secret`
 
 添加以下必需的 Secrets：
 
-| Secret Name | 说明 | 示例值 |
-|------------|------|--------|
-| `SSH_PRIVATE_KEY` | SSH 私钥完整内容 | `-----BEGIN RSA PRIVATE KEY-----...` |
-| `REMOTE_HOST` | 服务器 IP 地址 | `123.456.78.90` |
-| `REMOTE_USER` | SSH 用户名 | `root` 或 `www` |
-| `REMOTE_PORT` | SSH 端口 | `22` |
-| `REMOTE_BACKEND_DIR` | 后端部署目录 | `/www/wwwroot/nest-admin-server` |
-| `REMOTE_FRONTEND_DIR` | 前端部署目录 | `/www/wwwroot/nest-admin-frontend` |
+| Secret Name | 说明 | 示例值 | 是否必需 |
+|------------|------|--------|---------|
+| `SSH_PRIVATE_KEY` | SSH 私钥完整内容 | `-----BEGIN RSA PRIVATE KEY-----...` | ✅ 必需 |
+| `REMOTE_HOST` | 服务器 IP 地址 | `123.456.78.90` | ✅ 必需 |
+| `REMOTE_USER` | SSH 用户名 | `root` 或 `www` | ✅ 必需 |
+| `REMOTE_PORT` | SSH 端口 | `22` | 可选 (默认22) |
+| `REMOTE_BACKEND_DIR` | 后端部署目录 | `/www/wwwroot/nest-admin-server` | ✅ 必需 |
+| `REMOTE_FRONTEND_DIR` | 前端部署目录 | `/www/wwwroot/nest-admin-frontend` | ✅ 必需 |
 
-### 第二步：生成 SSH 密钥对
+### 第二步:生成 SSH 密钥对
 
 在本地生成用于部署的 SSH 密钥：
 
@@ -35,9 +39,11 @@ ssh-keygen -t rsa -b 4096 -C "github-actions" -f ~/.ssh/github-actions -N ""
 # 将公钥添加到服务器
 ssh-copy-id -i ~/.ssh/github-actions.pub user@your-server-ip
 
-# 查看私钥（复制此内容到 GitHub Secrets）
+# 查看私钥（复制此内容到 GitHub Secrets 的 SSH_PRIVATE_KEY）
 cat ~/.ssh/github-actions
 ```
+
+> 💡 **提示**: 完整的 SSH 密钥配置步骤请参考 [SSH 配置详解](./GITHUB_SECRETS_SETUP.md#ssh-私钥配置详解)
 
 ### 第三步：服务器环境准备
 

@@ -77,6 +77,22 @@ jobs:
           tar -czf ../deploy-package/backend.tar.gz dist/ prisma/ package.json pnpm-lock.yaml ecosystem.config.cjs
           cd ..
 
+      # 检查必需的 secrets
+      - name: Check required secrets
+        run: |
+          if [ -z "${{ secrets.REMOTE_HOST }}" ]; then
+            echo "❌ Error: REMOTE_HOST secret is not set"
+            echo "Please configure the following secrets in GitHub repository settings:"
+            echo "  - REMOTE_HOST: Your server IP or domain"
+            echo "  - REMOTE_USER: SSH username (e.g., root)"
+            echo "  - SSH_PRIVATE_KEY: Your SSH private key"
+            echo "  - REMOTE_PORT: SSH port (default: 22)"
+            echo "  - REMOTE_FRONTEND_DIR: Frontend deployment directory"
+            echo "  - REMOTE_BACKEND_DIR: Backend deployment directory"
+            exit 1
+          fi
+          echo "✅ Required secrets are configured"
+
       # 上传到服务器并部署
       - name: Deploy to production server
         uses: appleboy/ssh-action@v1.0.3
@@ -84,7 +100,7 @@ jobs:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.REMOTE_PORT }}
+          port: ${{ secrets.REMOTE_PORT || 22 }}
           script: |
             # 创建临时目录
             mkdir -p /tmp/nest-admin-deploy
@@ -95,7 +111,7 @@ jobs:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.REMOTE_PORT }}
+          port: ${{ secrets.REMOTE_PORT || 22 }}
           source: "deploy-package/*"
           target: "/tmp/nest-admin-deploy/"
 
@@ -105,7 +121,7 @@ jobs:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.REMOTE_PORT }}
+          port: ${{ secrets.REMOTE_PORT || 22 }}
           script: |
             set -e
             
@@ -181,7 +197,7 @@ jobs:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.REMOTE_PORT }}
+          port: ${{ secrets.REMOTE_PORT || 22 }}
           script: |
             # 等待服务启动
             sleep 5
