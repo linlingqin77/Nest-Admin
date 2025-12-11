@@ -301,6 +301,11 @@ sudo certbot renew --dry-run
 错误: Permission denied (publickey)
 解决: 检查公钥是否正确添加到服务器 ~/.ssh/authorized_keys
 
+# pnpm 锁文件配置不匹配
+错误: ERR_PNPM_LOCKFILE_CONFIG_MISMATCH
+解决: 工作流已配置使用 --no-frozen-lockfile，会自动更新锁文件
+      或在本地运行: pnpm install --no-frozen-lockfile 并提交
+
 # 构建失败
 错误: ENOENT: no such file or directory
 解决: 检查路径配置是否正确
