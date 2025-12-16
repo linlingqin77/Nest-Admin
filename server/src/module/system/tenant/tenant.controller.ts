@@ -39,6 +39,36 @@ export class TenantController {
     }
 
     @Api({
+        summary: '租户管理-同步租户字典',
+        description: '将超级管理员的字典数据同步到所有租户',
+    })
+    @RequirePermission('system:tenant:edit')
+    @Get('/syncTenantDict')
+    syncTenantDict() {
+        return this.tenantService.syncTenantDict();
+    }
+
+    @Api({
+        summary: '租户管理-同步租户套餐',
+        description: '同步租户套餐菜单权限',
+    })
+    @RequirePermission('system:tenant:edit')
+    @Get('/syncTenantPackage')
+    syncTenantPackage(@Query() params: SyncTenantPackageDto) {
+        return this.tenantService.syncTenantPackage(params);
+    }
+
+    @Api({
+        summary: '租户管理-同步租户配置',
+        description: '将超级管理员的配置同步到所有租户',
+    })
+    @RequirePermission('system:tenant:edit')
+    @Get('/syncTenantConfig')
+    syncTenantConfig() {
+        return this.tenantService.syncTenantConfig();
+    }
+
+    @Api({
         summary: '租户管理-详情',
         description: '根据ID获取租户详情',
         type: TenantVo,
@@ -73,36 +103,6 @@ export class TenantController {
     remove(@Param('ids') ids: string) {
         const idArray = ids.split(',').map((id) => +id);
         return this.tenantService.remove(idArray);
-    }
-
-    @Api({
-        summary: '租户管理-同步租户字典',
-        description: '将超级管理员的字典数据同步到所有租户',
-    })
-    @RequirePermission('system:tenant:edit')
-    @Get('/syncTenantDict')
-    syncTenantDict() {
-        return this.tenantService.syncTenantDict();
-    }
-
-    @Api({
-        summary: '租户管理-同步租户套餐',
-        description: '同步租户套餐菜单权限',
-    })
-    @RequirePermission('system:tenant:edit')
-    @Get('/syncTenantPackage')
-    syncTenantPackage(@Query() params: SyncTenantPackageDto) {
-        return this.tenantService.syncTenantPackage(params);
-    }
-
-    @Api({
-        summary: '租户管理-同步租户参数配置',
-        description: '将超级管理员的参数配置同步到所有租户',
-    })
-    @RequirePermission('system:tenant:edit')
-    @Get('/syncTenantConfig')
-    syncTenantConfig() {
-        return this.tenantService.syncTenantConfig();
     }
 
     @Api({

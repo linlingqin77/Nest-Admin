@@ -180,6 +180,11 @@ export class OperlogService {
       status: errorMsg ? '1' : '0',
     };
 
+    // 确保errorMsg是字符串类型
+    if (typeof params.errorMsg === 'object') {
+      params.errorMsg = JSON.stringify(params.errorMsg);
+    }
+
     await this.prisma.sysOperLog.create({
       data: params,
     });

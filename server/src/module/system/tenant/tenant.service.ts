@@ -25,9 +25,20 @@ export class TenantService {
      */
     @IgnoreTenant()
     async create(createTenantDto: CreateTenantDto) {
+        // 自动生成租户ID（6位数字，从100001开始）
+        let tenantId = createTenantDto.tenantId;
+        if (!tenantId) {
+            const lastTenant = await this.prisma.sysTenant.findFirst({
+                where: { tenantId: { not: '000000' } }, // 排除超级管理员租户
+                orderBy: { id: 'desc' },
+            });
+            const lastId = lastTenant?.tenantId ? parseInt(lastTenant.tenantId) : 100000;
+            tenantId = String(lastId + 1).padStart(6, '0');
+        }
+
         // 检查租户ID是否已存在
         const existTenant = await this.prisma.sysTenant.findUnique({
-            where: { tenantId: createTenantDto.tenantId },
+            where: { tenantId },
         });
 
         if (existTenant) {
@@ -51,7 +62,7 @@ export class TenantService {
                 // 创建租户
                 await tx.sysTenant.create({
                     data: {
-                        tenantId: createTenantDto.tenantId,
+                        tenantId,
                         contactUserName: createTenantDto.contactUserName,
                         contactPhone: createTenantDto.contactPhone,
                         companyName: createTenantDto.companyName,
@@ -73,7 +84,7 @@ export class TenantService {
                 // 创建租户管理员账号
                 await tx.sysUser.create({
                     data: {
-                        tenantId: createTenantDto.tenantId,
+                        tenantId,
                         userName: createTenantDto.username,
                         nickName: '租户管理员',
                         userType: '00',
@@ -250,29 +261,38 @@ export class TenantService {
      */
     @IgnoreTenant()
     async syncTenantDict() {
+        this.logger.log('开始同步租户字典');
+
         try {
-            // 获取所有租户
+            // 获取所有非超管租户
             const tenants = await this.prisma.sysTenant.findMany({
-                where: { status: '0', delFlag: '0' },
-                select: { tenantId: true },
+                where: {
+                    status: '0',
+                    delFlag: '0',
+                    tenantId: { not: '000000' }
+                },
+                select: { tenantId: true, companyName: true },
             });
 
-            // 获取超级管理员租户的字典数据
+            this.logger.log(`找到 ${tenants.length} 个租户需要同步字典`);
+
+            // 获取超级管理员租户的字典类型
             const superTenantId = '000000';
             const dictTypes = await this.prisma.sysDictType.findMany({
                 where: { tenantId: superTenantId, delFlag: '0' },
             });
 
-            const dictData = await this.prisma.sysDictData.findMany({
-                where: { tenantId: superTenantId, delFlag: '0' },
-            });
+            this.logger.log(`找到 ${dictTypes.length} 个字典类型需要同步`);
 
-            // 为每个租户同步字典
+            let syncedCount = 0;
+            let skippedCount = 0;
+
+            // 为每个租户同步字典类型
             for (const tenant of tenants) {
-                if (tenant.tenantId === superTenantId) continue;
+                this.logger.log(`正在为租户 ${tenant.companyName}(${tenant.tenantId}) 同步字典`);
 
-                // 同步字典类型
                 for (const dictType of dictTypes) {
+                    // 检查该租户是否已有此字典类型
                     const exist = await this.prisma.sysDictType.findFirst({
                         where: {
                             tenantId: tenant.tenantId,
@@ -281,45 +301,78 @@ export class TenantService {
                     });
 
                     if (!exist) {
+                        // 创建字典类型
                         await this.prisma.sysDictType.create({
                             data: {
-                                ...dictType,
-                                dictId: undefined,
                                 tenantId: tenant.tenantId,
+                                dictName: dictType.dictName,
+                                dictType: dictType.dictType,
+                                status: dictType.status,
+                                remark: dictType.remark,
+                                delFlag: '0',
+                                createBy: 'system',
+                                updateBy: 'system',
                             },
                         });
-                    }
-                }
 
-                // 同步字典数据
-                for (const data of dictData) {
-                    const exist = await this.prisma.sysDictData.findFirst({
-                        where: {
-                            tenantId: tenant.tenantId,
-                            dictType: data.dictType,
-                            dictValue: data.dictValue,
-                        },
-                    });
-
-                    if (!exist) {
-                        await this.prisma.sysDictData.create({
-                            data: {
-                                ...data,
-                                dictCode: undefined,
-                                tenantId: tenant.tenantId,
+                        // 获取该字典类型下的所有字典数据
+                        const dictDatas = await this.prisma.sysDictData.findMany({
+                            where: {
+                                tenantId: superTenantId,
+                                dictType: dictType.dictType,
+                                delFlag: '0',
                             },
                         });
+
+                        // 为该租户创建字典数据（使用 createMany 跳过已存在的记录）
+                        if (dictDatas.length > 0) {
+                            try {
+                                await this.prisma.sysDictData.createMany({
+                                    data: dictDatas.map(dictData => ({
+                                        tenantId: tenant.tenantId,
+                                        dictSort: dictData.dictSort,
+                                        dictLabel: dictData.dictLabel,
+                                        dictValue: dictData.dictValue,
+                                        dictType: dictData.dictType,
+                                        cssClass: dictData.cssClass,
+                                        listClass: dictData.listClass,
+                                        isDefault: dictData.isDefault,
+                                        status: dictData.status,
+                                        remark: dictData.remark,
+                                        delFlag: '0',
+                                        createBy: 'system',
+                                        updateBy: 'system',
+                                    })),
+                                    skipDuplicates: true, // 跳过重复记录
+                                });
+                            } catch (dataError) {
+                                this.logger.warn(`为租户 ${tenant.tenantId} 同步字典数据时出错: ${dataError.message}`);
+                            }
+                        }
+
+                        syncedCount++;
+                    } else {
+                        skippedCount++;
                     }
                 }
-
-                // 清除租户字典缓存
-                await this.redisService.del(`${CacheEnum.SYS_DICT_KEY}${tenant.tenantId}`);
             }
 
-            return ResultData.ok();
+            this.logger.log(`字典同步完成: 新增 ${syncedCount} 个，跳过 ${skippedCount} 个`);
+
+            return ResultData.ok({
+                message: `同步完成`,
+                detail: {
+                    tenants: tenants.length,
+                    synced: syncedCount,
+                    skipped: skippedCount
+                }
+            });
         } catch (error) {
-            this.logger.error('同步租户字典失败', error);
-            throw new HttpException('同步租户字典失败', HttpStatus.INTERNAL_SERVER_ERROR);
+            this.logger.error('同步租户字典失败:', error);
+            throw new HttpException(
+                `同步租户字典失败: ${error.message}`,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
@@ -373,12 +426,20 @@ export class TenantService {
      */
     @IgnoreTenant()
     async syncTenantConfig() {
+        this.logger.log('开始同步租户参数配置');
+
         try {
-            // 获取所有租户
+            // 获取所有非超管租户
             const tenants = await this.prisma.sysTenant.findMany({
-                where: { status: '0', delFlag: '0' },
-                select: { tenantId: true },
+                where: {
+                    status: '0',
+                    delFlag: '0',
+                    tenantId: { not: '000000' }
+                },
+                select: { tenantId: true, companyName: true },
             });
+
+            this.logger.log(`找到 ${tenants.length} 个租户需要同步配置`);
 
             // 获取超级管理员租户的配置
             const superTenantId = '000000';
@@ -386,37 +447,57 @@ export class TenantService {
                 where: { tenantId: superTenantId, delFlag: '0' },
             });
 
-            // 为每个租户同步配置
-            for (const tenant of tenants) {
-                if (tenant.tenantId === superTenantId) continue;
+            this.logger.log(`找到 ${configs.length} 个配置项需要同步`);
 
-                for (const config of configs) {
-                    const exist = await this.prisma.sysConfig.findFirst({
-                        where: {
+            let syncedCount = 0;
+            let skippedCount = 0;
+
+            // 为每个租户同步配置（使用批量操作）
+            for (const tenant of tenants) {
+                this.logger.log(`正在为租户 ${tenant.companyName}(${tenant.tenantId}) 同步配置`);
+
+                // 批量创建配置（跳过已存在的）
+                try {
+                    const result = await this.prisma.sysConfig.createMany({
+                        data: configs.map(config => ({
                             tenantId: tenant.tenantId,
+                            configName: config.configName,
                             configKey: config.configKey,
-                        },
+                            configValue: config.configValue,
+                            configType: config.configType,
+                            remark: config.remark,
+                            delFlag: '0',
+                            createBy: 'system',
+                            updateBy: 'system',
+                        })),
+                        skipDuplicates: true,
                     });
 
-                    if (!exist) {
-                        await this.prisma.sysConfig.create({
-                            data: {
-                                ...config,
-                                configId: undefined,
-                                tenantId: tenant.tenantId,
-                            },
-                        });
-                    }
+                    syncedCount += result.count;
+                } catch (configError) {
+                    this.logger.warn(`为租户 ${tenant.tenantId} 同步配置时出错: ${configError.message}`);
                 }
 
                 // 清除租户配置缓存
                 await this.redisService.del(`${CacheEnum.SYS_CONFIG_KEY}${tenant.tenantId}`);
             }
 
-            return ResultData.ok();
+            this.logger.log(`配置同步完成: 新增 ${syncedCount} 个，跳过 ${skippedCount} 个`);
+
+            return ResultData.ok({
+                message: '同步完成',
+                detail: {
+                    tenants: tenants.length,
+                    synced: syncedCount,
+                    skipped: skippedCount
+                }
+            });
         } catch (error) {
-            this.logger.error('同步租户配置失败', error);
-            throw new HttpException('同步租户配置失败', HttpStatus.INTERNAL_SERVER_ERROR);
+            this.logger.error('同步租户配置失败:', error);
+            throw new HttpException(
+                `同步租户配置失败: ${error.message}`,
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 

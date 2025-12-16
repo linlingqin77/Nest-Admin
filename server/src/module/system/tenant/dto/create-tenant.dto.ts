@@ -3,10 +3,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { StatusEnum, StatusEnumSchema } from 'src/common/enum';
 
 export class CreateTenantDto {
-    @ApiProperty({ required: true, description: '租户ID' })
+    @ApiProperty({ required: false, description: '租户ID（不传则自动生成）' })
+    @IsOptional()
     @IsString()
     @Length(1, 20)
-    tenantId: string;
+    tenantId?: string;
 
     @ApiProperty({ required: false, description: '联系人' })
     @IsOptional()

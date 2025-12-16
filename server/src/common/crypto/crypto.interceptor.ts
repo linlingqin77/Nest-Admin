@@ -22,7 +22,7 @@ export class DecryptInterceptor implements NestInterceptor {
   constructor(
     private cryptoService: CryptoService,
     private reflector: Reflector,
-  ) {}
+  ) { }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     if (!this.cryptoService.isEnabled()) {
@@ -53,10 +53,11 @@ export class DecryptInterceptor implements NestInterceptor {
         const decryptedBody = this.cryptoService.decryptRequest(encryptedKey, encryptedData);
         request.body = decryptedBody;
 
-        this.logger.debug('Request body decrypted successfully');
+        this.logger.log(`Request body decrypted successfully: ${JSON.stringify(decryptedBody)}`);
       }
     } catch (error) {
       this.logger.error('Failed to decrypt request body:', error.message);
+      this.logger.error('Error stack:', error.stack);
       // 解密失败时，保持原始请求体，让后续处理决定如何响应
     }
 
