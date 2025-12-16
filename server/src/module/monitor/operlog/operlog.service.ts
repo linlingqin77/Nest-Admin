@@ -3,6 +3,7 @@ import { REQUEST } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
 import { Request, Response } from 'express';
 import { ResultData } from 'src/common/utils/result';
+import { FormatDateFields } from 'src/common/utils/index';
 import { AxiosService } from 'src/module/common/axios/axios.service';
 import { QueryOperLogDto } from './dto/operLog.dto';
 import { ExportTable } from 'src/common/utils/export';
@@ -19,7 +20,7 @@ export class OperlogService {
     private readonly axiosService: AxiosService,
     @Inject(DictService)
     private readonly dictService: DictService,
-  ) {}
+  ) { }
 
   async findAll(query: QueryOperLogDto) {
     const where: Prisma.SysOperLogWhereInput = {};
@@ -79,8 +80,8 @@ export class OperlogService {
     const orderBy =
       query.orderByColumn && query.isAsc
         ? ({
-            [query.orderByColumn]: query.isAsc === 'ascending' ? 'asc' : 'desc',
-          } as Prisma.SysOperLogOrderByWithRelationInput)
+          [query.orderByColumn]: query.isAsc === 'ascending' ? 'asc' : 'desc',
+        } as Prisma.SysOperLogOrderByWithRelationInput)
         : undefined;
 
     const findManyArgs: Prisma.SysOperLogFindManyArgs = {
@@ -101,7 +102,7 @@ export class OperlogService {
     const [list, total] = await this.prisma.$transaction([this.prisma.sysOperLog.findMany(findManyArgs), this.prisma.sysOperLog.count({ where })]);
 
     return ResultData.ok({
-      rows: list,
+      rows: FormatDateFields(list),
       total,
     });
   }
@@ -172,7 +173,7 @@ export class OperlogService {
       operLocation: operLocation,
       operParam: safeStringify({ ...body, ...query }),
       jsonResult: safeStringify(resultData),
-      errorMsg,
+      errorMsg: errorMsg || '',
       businessType: businessType ?? 0,
       operatorType: 1,
       operTime: new Date(),

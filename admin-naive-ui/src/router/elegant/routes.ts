@@ -40,35 +40,6 @@ export const generatedRoutes: GeneratedRoute[] = [
     }
   },
   {
-    name: 'demo',
-    path: '/demo',
-    component: 'layout.base',
-    meta: {
-      title: 'demo',
-      i18nKey: 'route.demo'
-    },
-    children: [
-      {
-        name: 'demo_demo',
-        path: '/demo/demo',
-        component: 'view.demo_demo',
-        meta: {
-          title: 'demo_demo',
-          i18nKey: 'route.demo_demo'
-        }
-      },
-      {
-        name: 'demo_tree',
-        path: '/demo/tree',
-        component: 'view.demo_tree',
-        meta: {
-          title: 'demo_tree',
-          i18nKey: 'route.demo_tree'
-        }
-      }
-    ]
-  },
-  {
     name: 'home',
     path: '/home',
     component: 'layout.base$view.home',
@@ -120,7 +91,18 @@ export const generatedRoutes: GeneratedRoute[] = [
         meta: {
           title: 'monitor_cache',
           i18nKey: 'route.monitor_cache'
-        }
+        },
+        children: [
+          {
+            name: 'monitor_cache_list',
+            path: '/monitor/cache/list',
+            component: 'view.monitor_cache_list',
+            meta: {
+              title: 'monitor_cache_list',
+              i18nKey: 'route.monitor_cache_list'
+            }
+          }
+        ]
       },
       {
         name: 'monitor_job',

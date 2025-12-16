@@ -155,7 +155,7 @@ async function handleSubmit() {
     if (error) return;
   }
 
-  window.$message?.success($t('common.updateSuccess'));
+  window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));
   closeDrawer();
   emit('submitted');
 }
@@ -178,12 +178,8 @@ watch(visible, () => {
         </NFormItem>
         <NFormItem label="访问站点" path="endpoint">
           <NInputGroup>
-            <NSelect
-              v-model:value="model.isHttps"
-              class="w-110px"
-              :options="ossConfigIsHttpsOptions"
-              placeholder="请选择访问协议"
-            />
+            <NSelect v-model:value="model.isHttps" class="w-110px" :options="ossConfigIsHttpsOptions"
+              placeholder="请选择访问协议" />
             <NInput v-model:value="model.endpoint" placeholder="请输入访问站点" />
           </NInputGroup>
         </NFormItem>
@@ -209,12 +205,8 @@ watch(visible, () => {
             <NFormItem label="桶权限类型" path="accessPolicy">
               <NRadioGroup v-model:value="model.accessPolicy">
                 <NSpace>
-                  <NRadio
-                    v-for="option in ossAccessPolicyOptions"
-                    :key="option.value"
-                    :value="option.value"
-                    :label="option.label"
-                  />
+                  <NRadio v-for="option in ossAccessPolicyOptions" :key="option.value" :value="option.value"
+                    :label="option.label" />
                 </NSpace>
               </NRadioGroup>
             </NFormItem>

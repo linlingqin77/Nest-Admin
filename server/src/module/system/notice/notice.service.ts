@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { ResultData } from 'src/common/utils/result';
+import { FormatDateFields } from 'src/common/utils/index';
 import { CreateNoticeDto, UpdateNoticeDto, ListNoticeDto } from './dto/index';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class NoticeService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
   async create(createNoticeDto: CreateNoticeDto) {
     await this.prisma.sysNotice.create({ data: createNoticeDto });
     return ResultData.ok();
@@ -54,7 +55,7 @@ export class NoticeService {
     ]);
 
     return ResultData.ok({
-      rows: list,
+      rows: FormatDateFields(list),
       total,
     });
   }

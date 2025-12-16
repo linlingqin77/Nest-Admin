@@ -89,7 +89,7 @@ async function handleSubmit() {
     if (error) return;
   }
 
-  window.$message?.success($t('common.updateSuccess'));
+  window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));
   closeDrawer();
   emit('submitted');
 }
@@ -113,12 +113,8 @@ watch(visible, () => {
           <NInput v-model:value="model.dictType" :placeholder="$t('page.system.dict.form.dictValue.required')" />
         </NFormItem>
         <NFormItem :label="$t('page.system.dict.remark')" path="remark">
-          <NInput
-            v-model:value="model.remark"
-            :rows="3"
-            type="textarea"
-            :placeholder="$t('page.system.dict.form.remark.required')"
-          />
+          <NInput v-model:value="model.remark" :rows="3" type="textarea"
+            :placeholder="$t('page.system.dict.form.remark.required')" />
         </NFormItem>
       </NForm>
       <template #footer>

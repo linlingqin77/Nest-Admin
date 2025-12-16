@@ -2,6 +2,7 @@ import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { ResultData } from 'src/common/utils/result';
 import { ExportTable } from 'src/common/utils/export';
+import { FormatDateFields } from 'src/common/utils/index';
 import { Response } from 'express';
 import { CreatePostDto, UpdatePostDto, ListPostDto } from './dto/index';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -13,7 +14,7 @@ export class PostService {
     private readonly prisma: PrismaService,
     @Inject(forwardRef(() => DeptService))
     private readonly deptService: DeptService,
-  ) {}
+  ) { }
   async create(createPostDto: CreatePostDto) {
     await this.prisma.sysPost.create({
       data: {
@@ -73,7 +74,7 @@ export class PostService {
     ]);
 
     return ResultData.ok({
-      rows: list,
+      rows: FormatDateFields(list),
       total,
     });
   }

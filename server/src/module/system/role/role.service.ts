@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Response } from 'express';
 import { ResultData } from 'src/common/utils/result';
-import { ListToTree } from 'src/common/utils/index';
+import { ListToTree, FormatDateFields } from 'src/common/utils/index';
 import { ExportTable } from 'src/common/utils/export';
 
 import { DataScopeEnum } from 'src/common/enum/index';
@@ -15,7 +15,7 @@ export class RoleService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly menuService: MenuService,
-  ) {}
+  ) { }
   async create(createRoleDto: CreateRoleDto) {
     const { menuIds = [], ...rolePayload } = createRoleDto as CreateRoleDto & { menuIds?: number[] };
 
@@ -87,8 +87,10 @@ export class RoleService {
       this.prisma.sysRole.count({ where }),
     ]);
 
+    const formattedList = FormatDateFields(list);
+
     return ResultData.ok({
-      rows: list,
+      rows: formattedList,
       total,
     });
   }

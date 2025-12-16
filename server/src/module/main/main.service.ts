@@ -14,7 +14,7 @@ export class MainService {
     private readonly loginlogService: LoginlogService,
     private readonly axiosService: AxiosService,
     private readonly menuService: MenuService,
-  ) {}
+  ) { }
 
   /**
    * 登陆
@@ -27,10 +27,16 @@ export class MainService {
       status: '0',
       msg: '',
     };
-    try {
-      const loginLocation = await this.axiosService.getIpAddress(clientInfo.ipaddr);
-      loginLog.loginLocation = loginLocation;
-    } catch (error) {}
+
+    // 异步获取登录位置，不阻塞登录流程
+    this.axiosService.getIpAddress(clientInfo.ipaddr)
+      .then(loginLocation => {
+        loginLog.loginLocation = loginLocation;
+      })
+      .catch(() => {
+        loginLog.loginLocation = '未知';
+      });
+
     const loginRes = await this.userService.login(user, loginLog);
     loginLog.status = loginRes.code === SUCCESS_CODE ? '0' : '1';
     loginLog.msg = loginRes.msg;
@@ -47,10 +53,16 @@ export class MainService {
       status: '0',
       msg: '退出成功',
     };
-    try {
-      const loginLocation = await this.axiosService.getIpAddress(clientInfo.ipaddr);
-      loginLog.loginLocation = loginLocation;
-    } catch (error) {}
+
+    // 异步获取登录位置，不阻塞退出流程
+    this.axiosService.getIpAddress(clientInfo.ipaddr)
+      .then(loginLocation => {
+        loginLog.loginLocation = loginLocation;
+      })
+      .catch(() => {
+        loginLog.loginLocation = '未知';
+      });
+
     this.loginlogService.create(loginLog);
     return ResultData.ok();
   }
@@ -66,7 +78,7 @@ export class MainService {
   /**
    * 登陆记录
    */
-  loginRecord() {}
+  loginRecord() { }
 
   /**
    * 获取路由菜单

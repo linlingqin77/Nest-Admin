@@ -1,4 +1,4 @@
-import { Controller, Sse, Query, Req, Post, Body, MessageEvent, SetMetadata } from '@nestjs/common';
+import { Controller, Sse, Query, Req, Get, Post, Body, MessageEvent, SetMetadata } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Observable } from 'rxjs';
 import { Request } from 'express';
@@ -13,7 +13,7 @@ const NotRequireAuth = () => SetMetadata('notRequireAuth', true);
 @Controller('resource')
 @ApiBearerAuth('Authorization')
 export class SseController {
-  constructor(private readonly sseService: SseService) {}
+  constructor(private readonly sseService: SseService) { }
 
   @ApiOperation({ summary: 'SSE连接' })
   @NotRequireAuth()
@@ -54,9 +54,9 @@ export class SseController {
   }
 
   @ApiOperation({ summary: '关闭SSE连接' })
-  @Post('sse/close')
+  @Get('sse/close')
   closeSse(): ResultData {
-    // 这个接口主要是前端调用，用于优雅地通知后端关闭连接
+    // 这个接口主要是前端调用,用于优雅地通知后端关闭连接
     // 实际的连接关闭是在客户端断开时自动处理的
     return ResultData.ok(null, 'SSE连接已关闭');
   }

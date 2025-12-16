@@ -132,7 +132,7 @@ async function handleSubmit() {
     if (error) return;
   }
 
-  window.$message?.success($t('common.updateSuccess'));
+  window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));
   closeDrawer();
   emit('submitted');
 }
@@ -170,15 +170,9 @@ watch(visible, () => {
           </NRadioGroup>
         </NFormItem>
         <NFormItem label="菜单权限" path="menuIds" class="pr-24px">
-          <MenuTree
-            v-if="visible"
-            ref="menuTreeRef"
-            v-model:checked-keys="model.menuIds"
-            v-model:options="menuOptions"
-            v-model:cascade="model.menuCheckStrictly"
-            v-model:loading="menuLoading"
-            :immediate="operateType === 'add'"
-          />
+          <MenuTree v-if="visible" ref="menuTreeRef" v-model:checked-keys="model.menuIds" v-model:options="menuOptions"
+            v-model:cascade="model.menuCheckStrictly" v-model:loading="menuLoading"
+            :immediate="operateType === 'add'" />
         </NFormItem>
         <NFormItem label="备注" path="remark">
           <NInput v-model:value="model.remark" :rows="3" type="textarea" placeholder="请输入备注" />

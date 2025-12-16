@@ -4,6 +4,7 @@ import { CronJob } from 'cron';
 import { Prisma } from '@prisma/client';
 import { CreateJobDto, ListJobDto } from './dto/create-job.dto';
 import { ResultData } from 'src/common/utils/result';
+import { FormatDateFields } from 'src/common/utils/index';
 import { TaskService } from './task.service';
 import { ExportTable } from 'src/common/utils/export';
 import { Response } from 'express';
@@ -59,7 +60,7 @@ export class JobService {
       this.prisma.sysJob.count({ where }),
     ]);
 
-    return ResultData.ok({ rows: list, total });
+    return ResultData.ok({ rows: FormatDateFields(list), total });
   }
 
   // 获取单个任务

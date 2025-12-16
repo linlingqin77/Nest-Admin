@@ -199,7 +199,7 @@ async function handleSubmit() {
     if (error) return;
   }
 
-  window.$message?.success($t('common.updateSuccess'));
+  window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));
   closeDrawer();
   emit('submitted');
 }
@@ -233,33 +233,17 @@ watch(visible, () => {
             <NInput v-model:value="model.username" placeholder="请输入管理员账号" />
           </NFormItem>
           <NFormItem label="管理员密码" path="password">
-            <NInput
-              v-model:value="model.password"
-              type="password"
-              show-password-on="click"
-              placeholder="请输入管理员密码"
-            />
+            <NInput v-model:value="model.password" type="password" show-password-on="click" placeholder="请输入管理员密码" />
           </NFormItem>
         </div>
         <NDivider>租户设置</NDivider>
         <NFormItem label="租户套餐" path="packageId">
-          <NSelect
-            v-model:value="model.packageId"
-            clearable
-            :disabled="props.operateType === 'edit'"
-            placeholder="请选择租户套餐"
-            :options="packageOptions"
-            :loading="packageLoading"
-          />
+          <NSelect v-model:value="model.packageId" clearable :disabled="props.operateType === 'edit'"
+            placeholder="请选择租户套餐" :options="packageOptions" :loading="packageLoading" />
         </NFormItem>
         <NFormItem label="过期时间" path="expireTime">
-          <NDatePicker
-            v-model:formatted-value="model.expireTime"
-            type="datetime"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            clearable
-            class="w-full"
-          />
+          <NDatePicker v-model:formatted-value="model.expireTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
+            clearable class="w-full" />
         </NFormItem>
         <NFormItem path="accountCount">
           <template #label>
@@ -273,9 +257,7 @@ watch(visible, () => {
         <NFormItem path="domain">
           <template #label>
             <div class="flex-center">
-              <FormTip
-                content="可填写域名/端口 填写域名如: www.test.com 或者 www.test.com:8080 填写ip:端口如: 127.0.0.1:8080"
-              />
+              <FormTip content="可填写域名/端口 填写域名如: www.test.com 或者 www.test.com:8080 填写ip:端口如: 127.0.0.1:8080" />
               <span>绑定域名</span>
             </div>
           </template>

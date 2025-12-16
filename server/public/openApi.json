@@ -19796,11 +19796,11 @@
       }
     },
     "/api/resource/sse/close": {
-      "post": {
+      "get": {
         "operationId": "SseController_closeSse",
         "parameters": [],
         "responses": {
-          "201": {
+          "200": {
             "description": "",
             "content": {
               "application/json": {
@@ -22635,8 +22635,8 @@
             "description": "最后登录IP"
           },
           "loginDate": {
-            "format": "date-time",
             "type": "string",
+            "nullable": true,
             "description": "最后登录时间"
           },
           "remark": {
@@ -22644,14 +22644,16 @@
             "description": "备注"
           },
           "createTime": {
-            "format": "date-time",
             "type": "string",
             "description": "创建时间"
           },
           "updateTime": {
-            "format": "date-time",
             "type": "string",
             "description": "更新时间"
+          },
+          "deptName": {
+            "type": "string",
+            "description": "部门名称"
           },
           "dept": {
             "type": "object",

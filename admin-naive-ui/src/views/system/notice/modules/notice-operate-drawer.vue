@@ -95,7 +95,7 @@ async function handleSubmit() {
     if (error) return;
   }
 
-  window.$message?.success($t('common.updateSuccess'));
+  window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));
   closeDrawer();
   emit('submitted');
 }
@@ -109,14 +109,8 @@ watch(visible, () => {
 </script>
 
 <template>
-  <NDrawer
-    v-model:show="visible"
-    :trap-focus="false"
-    :title="title"
-    display-directive="show"
-    :width="1000"
-    class="max-w-90%"
-  >
+  <NDrawer v-model:show="visible" :trap-focus="false" :title="title" display-directive="show" :width="1000"
+    class="max-w-90%">
     <NDrawerContent :title="title" :native-scrollbar="false" closable>
       <NForm ref="formRef" :model="model" :rules="rules">
         <div class="grid grid-cols-1 gap-16px md:grid-cols-4">

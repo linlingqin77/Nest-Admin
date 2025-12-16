@@ -2,7 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { isNotEmpty } from 'class-validator';
 import { TableName, GenDbTableList, GenTableList, GenTableUpdate } from './dto/create-genTable-dto';
 import { ResultData } from 'src/common/utils/result';
-import { FormatDate, GetNowDate } from 'src/common/utils/index';
+import { FormatDate, FormatDateFields, GetNowDate } from 'src/common/utils/index';
 import toolConfig from './config';
 import { GenConstants } from 'src/common/constant/gen.constant';
 import { camelCase, toLower } from 'lodash';
@@ -109,7 +109,7 @@ export class ToolService {
       this.prisma.genTable.count({ where }),
     ]);
     return ResultData.ok({
-      rows: list,
+      rows: FormatDateFields(list),
       total: total,
     });
   }

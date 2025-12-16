@@ -17,4 +17,5 @@ export type UserType = {
   userId: number;
   userName: string;
   deptId: number;
+  deviceType: string;
 };

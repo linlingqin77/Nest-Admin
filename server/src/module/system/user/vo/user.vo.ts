@@ -79,16 +79,19 @@ export class UserVo {
   loginIp: string;
 
   @ApiProperty({ description: '最后登录时间' })
-  loginDate: Date;
+  loginDate: string | null;
 
   @ApiProperty({ description: '备注' })
   remark: string;
 
   @ApiProperty({ description: '创建时间' })
-  createTime: Date;
+  createTime: string;
 
   @ApiProperty({ description: '更新时间' })
-  updateTime: Date;
+  updateTime: string;
+
+  @ApiProperty({ description: '部门名称', required: false })
+  deptName?: string;
 
   @ApiProperty({ description: '部门信息', required: false })
   dept?: {

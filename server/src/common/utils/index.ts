@@ -79,6 +79,42 @@ export function FormatDate(date: Date, format = 'YYYY-MM-DD HH:mm:ss') {
 }
 
 /**
+ * 格式化对象中的时间字段
+ * @param obj 要格式化的对象或数组
+ * @param dateFields 需要格式化的字段名数组，默认为常用时间字段
+ * @returns 格式化后的对象
+ */
+export function FormatDateFields<T>(obj: T, dateFields: string[] = ['createTime', 'updateTime', 'loginDate', 'loginTime', 'operTime', 'expireTime']): T {
+  if (!obj) return obj;
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => FormatDateFields(item, dateFields)) as any;
+  }
+
+  if (typeof obj === 'object') {
+    const formatted = { ...obj };
+    for (const field of dateFields) {
+      if (field in formatted && formatted[field]) {
+        // 处理 Date 对象
+        if (formatted[field] instanceof Date) {
+          formatted[field] = FormatDate(formatted[field]);
+        }
+        // 处理字符串格式的日期（从 Redis 或其他来源）
+        else if (typeof formatted[field] === 'string') {
+          const dateValue = new Date(formatted[field]);
+          if (!isNaN(dateValue.getTime())) {
+            formatted[field] = FormatDate(dateValue);
+          }
+        }
+      }
+    }
+    return formatted;
+  }
+
+  return obj;
+}
+
+/**
  * 深拷贝
  * @param obj
  * @returns

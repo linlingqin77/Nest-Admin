@@ -3,12 +3,13 @@ import { Prisma } from '@prisma/client';
 import { ListJobLogDto } from './dto/create-job.dto';
 import { ResultData } from 'src/common/utils/result';
 import { ExportTable } from 'src/common/utils/export';
+import { FormatDateFields } from 'src/common/utils/index';
 import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class JobLogService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   /**
    * 查询任务日志列表
@@ -49,7 +50,7 @@ export class JobLogService {
     ]);
 
     return ResultData.ok({
-      rows: list,
+      rows: FormatDateFields(list),
       total,
     });
   }

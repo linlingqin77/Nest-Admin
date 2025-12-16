@@ -127,7 +127,7 @@ async function handleSubmit() {
     if (error) return;
   }
 
-  window.$message?.success($t('common.updateSuccess'));
+  window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));
   closeDrawer();
   emit('submitted');
 }
@@ -188,39 +188,24 @@ watch(visible, () => {
     <NDrawerContent :title="title" :native-scrollbar="false" closable>
       <NForm ref="formRef" :model="model" :rules="rules">
         <NFormItem v-if="model.parentId !== 0" :label="$t('page.system.dept.parentId')" path="parentId">
-          <NTreeSelect
-            v-model:value="model.parentId"
-            v-model:expanded-keys="expandedKeys"
-            :loading="deptLoading"
-            clearable
-            :options="deptData"
-            label-field="deptName"
-            key-field="deptId"
-            :placeholder="$t('page.system.dept.form.parentId.required')"
-          />
+          <NTreeSelect v-model:value="model.parentId" v-model:expanded-keys="expandedKeys" :loading="deptLoading"
+            clearable :options="deptData" label-field="deptName" key-field="deptId"
+            :placeholder="$t('page.system.dept.form.parentId.required')" />
         </NFormItem>
         <NFormItem :label="$t('page.system.dept.deptName')" path="deptName">
           <NInput v-model:value="model.deptName" :placeholder="$t('page.system.dept.form.deptName.required')" />
         </NFormItem>
         <NFormItem :label="$t('page.system.dept.orderNum')" path="orderNum">
-          <NInputNumber
-            v-model:value="model.orderNum"
-            class="w-full"
-            :placeholder="$t('page.system.dept.form.orderNum.required')"
-          />
+          <NInputNumber v-model:value="model.orderNum" class="w-full"
+            :placeholder="$t('page.system.dept.form.orderNum.required')" />
         </NFormItem>
         <NFormItem :label="$t('page.system.dept.deptCategory')" path="deptCategory">
           <NInput v-model:value="model.deptCategory" :placeholder="$t('page.system.dept.form.deptCategory.required')" />
         </NFormItem>
 
         <NFormItem :label="$t('page.system.dept.leader')" path="leader">
-          <NSelect
-            v-model:value="model.leader"
-            :loading="userLoading"
-            :disabled="disabled"
-            :placeholder="placeholder"
-            :options="userOptions"
-          />
+          <NSelect v-model:value="model.leader" :loading="userLoading" :disabled="disabled" :placeholder="placeholder"
+            :options="userOptions" />
         </NFormItem>
 
         <NFormItem :label="$t('page.system.dept.phone')" path="phone">

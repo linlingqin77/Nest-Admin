@@ -93,7 +93,7 @@ async function handleSubmit() {
     if (error) return;
   }
 
-  window.$message?.success($t('common.updateSuccess'));
+  window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));
   closeDrawer();
   emit('submitted');
 }
@@ -117,22 +117,15 @@ watch(visible, () => {
           <NInput v-model:value="model.configKey" :placeholder="$t('page.system.config.form.configKey.required')" />
         </NFormItem>
         <NFormItem :label="$t('page.system.config.configValue')" path="configValue">
-          <NInput
-            v-model:value="model.configValue"
-            :rows="3"
-            :placeholder="$t('page.system.config.form.configValue.required')"
-          />
+          <NInput v-model:value="model.configValue" :rows="3"
+            :placeholder="$t('page.system.config.form.configValue.required')" />
         </NFormItem>
         <NFormItem :label="$t('page.system.config.configType')" path="configType">
           <DictRadio v-model:value="model.configType" dict-code="sys_yes_no" />
         </NFormItem>
         <NFormItem :label="$t('page.system.config.remark')" path="remark">
-          <NInput
-            v-model:value="model.remark"
-            :rows="3"
-            type="textarea"
-            :placeholder="$t('page.system.config.form.remark.required')"
-          />
+          <NInput v-model:value="model.remark" :rows="3" type="textarea"
+            :placeholder="$t('page.system.config.form.remark.required')" />
         </NFormItem>
       </NForm>
       <template #footer>

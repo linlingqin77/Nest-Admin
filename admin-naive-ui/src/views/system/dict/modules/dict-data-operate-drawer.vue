@@ -127,7 +127,7 @@ async function handleSubmit() {
     if (error) return;
   }
 
-  window.$message?.success($t('common.updateSuccess'));
+  window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));
   closeDrawer();
   emit('submitted');
 }
@@ -156,20 +156,12 @@ function renderTagLabel(option: { label: string; value: string }) {
     <NDrawerContent :title="title" :native-scrollbar="false" closable>
       <NForm ref="formRef" :model="model" :rules="rules">
         <NFormItem :label="$t('page.system.dict.dictType')" path="dictType">
-          <NInput
-            v-model:value="model.dictType"
-            disabled
-            :placeholder="$t('page.system.dict.form.dictType.required')"
-          />
+          <NInput v-model:value="model.dictType" disabled
+            :placeholder="$t('page.system.dict.form.dictType.required')" />
         </NFormItem>
         <NFormItem :label="$t('page.system.dict.data.listClass')" path="listClass">
-          <NSelect
-            v-model:value="model.listClass"
-            clearable
-            :options="listClassOptions"
-            :placeholder="$t('page.system.dict.form.listClass.required')"
-            :render-label="renderTagLabel"
-          />
+          <NSelect v-model:value="model.listClass" clearable :options="listClassOptions"
+            :placeholder="$t('page.system.dict.form.listClass.required')" :render-label="renderTagLabel" />
         </NFormItem>
         <NFormItem :label="$t('page.system.dict.data.label')" path="dictLabel">
           <NInput v-model:value="model.dictLabel" :placeholder="$t('page.system.dict.form.dictLabel.required')" />
@@ -187,12 +179,8 @@ function renderTagLabel(option: { label: string; value: string }) {
           <DictRadio v-model:value="model.isDefault" dict-code="sys_yes_no" />
         </NFormItem>
         <NFormItem :label="$t('page.system.dict.data.remark')" path="remark">
-          <NInput
-            v-model:value="model.remark"
-            :rows="3"
-            type="textarea"
-            :placeholder="$t('page.system.dict.form.remark.required')"
-          />
+          <NInput v-model:value="model.remark" :rows="3" type="textarea"
+            :placeholder="$t('page.system.dict.form.remark.required')" />
         </NFormItem>
       </NForm>
       <template #footer>

@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { ResultData } from 'src/common/utils/result';
 import { CreateDeptDto, UpdateDeptDto, ListDeptDto } from './dto/index';
-import { ListToTree } from 'src/common/utils/index';
+import { FormatDateFields, ListToTree } from 'src/common/utils/index';
 import { CacheEnum, DataScopeEnum } from 'src/common/enum/index';
 import { Cacheable, CacheEvict } from 'src/common/decorators/redis.decorator';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class DeptService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   @CacheEvict(CacheEnum.SYS_DEPT_KEY, '*')
   async create(createDeptDto: CreateDeptDto) {
@@ -65,7 +65,8 @@ export class DeptService {
       where,
       orderBy: { orderNum: 'asc' },
     });
-    return ResultData.ok(res);
+    const formattedRes = FormatDateFields(res);
+    return ResultData.ok(formattedRes);
   }
 
   @Cacheable(CacheEnum.SYS_DEPT_KEY, 'findOne:{deptId}')
@@ -75,7 +76,8 @@ export class DeptService {
         deptId,
       },
     });
-    return ResultData.ok(data);
+    const formattedData = FormatDateFields(data);
+    return ResultData.ok(formattedData);
   }
 
   /**

@@ -4,6 +4,7 @@ import { Prisma } from '@prisma/client';
 import { ResultData } from 'src/common/utils/result';
 import { CacheEnum } from 'src/common/enum/index';
 import { ExportTable } from 'src/common/utils/export';
+import { FormatDateFields } from 'src/common/utils/index';
 import { CreateDictTypeDto, UpdateDictTypeDto, ListDictType, CreateDictDataDto, UpdateDictDataDto, ListDictData } from './dto/index';
 import { RedisService } from 'src/module/common/redis/redis.service';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -12,7 +13,7 @@ export class DictService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly redisService: RedisService,
-  ) {}
+  ) { }
   async createType(CreateDictTypeDto: CreateDictTypeDto) {
     await this.prisma.sysDictType.create({ data: CreateDictTypeDto });
     return ResultData.ok();
@@ -80,7 +81,7 @@ export class DictService {
     ]);
 
     return ResultData.ok({
-      rows: list,
+      rows: FormatDateFields(list),
       total,
     });
   }
@@ -181,7 +182,7 @@ export class DictService {
     ]);
 
     return ResultData.ok({
-      rows: list,
+      rows: FormatDateFields(list),
       total,
     });
   }

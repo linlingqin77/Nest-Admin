@@ -4,7 +4,7 @@ import { RedisService } from 'src/module/common/redis/redis.service';
 import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
 import { Prisma, SysDept, SysPost, SysRole, SysUser } from '@prisma/client';
-import { GetNowDate, GenerateUUID, Uniq } from 'src/common/utils/index';
+import { GetNowDate, GenerateUUID, Uniq, FormatDate, FormatDateFields } from 'src/common/utils/index';
 import { ExportTable } from 'src/common/utils/export';
 
 import { CacheEnum, DelFlagEnum, StatusEnum, DataScopeEnum } from 'src/common/enum/index';
@@ -36,7 +36,7 @@ export class UserService {
     private readonly jwtService: JwtService,
     private readonly redisService: RedisService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   private getPagination(payload: { pageSize?: number | string; pageNum?: number | string }) {
     const pageSize = Number(payload.pageSize ?? 10);
@@ -238,8 +238,17 @@ export class UserService {
 
     const listWithDept = await this.attachDeptInfo(list);
 
+    // 格式化返回数据,添加 deptName 和格式化时间
+    const rows = listWithDept.map((user) => ({
+      ...user,
+      deptName: user.dept?.deptName || '',
+      createTime: FormatDate(user.createTime),
+      updateTime: FormatDate(user.updateTime),
+      loginDate: user.loginDate ? FormatDate(user.loginDate) : null,
+    }));
+
     return ResultData.ok({
-      rows: listWithDept,
+      rows,
       total,
     });
   }
@@ -401,6 +410,7 @@ export class UserService {
       loginLocation: clientInfo.loginLocation,
       loginTime: loginDate,
       os: clientInfo.os,
+      deviceType: clientInfo.deviceType,
       permissions: permissions,
       roles: roles,
       token: uuid,
@@ -489,13 +499,13 @@ export class UserService {
 
     const posts = postRelations.length
       ? await this.prisma.sysPost.findMany({
-          where: {
-            delFlag: DelFlagEnum.NORMAL,
-            postId: {
-              in: postRelations.map((item) => item.postId),
-            },
+        where: {
+          delFlag: DelFlagEnum.NORMAL,
+          postId: {
+            in: postRelations.map((item) => item.postId),
           },
-        })
+        },
+      })
       : [];
 
     const roles = roleIds.length ? await this.roleService.findRoles({ where: { delFlag: DelFlagEnum.NORMAL, roleId: { in: roleIds } } }) : [];
@@ -669,8 +679,9 @@ export class UserService {
     const [list, total] = await this.prisma.$transaction([this.prisma.sysUser.findMany({ where, skip, take, orderBy: { createTime: 'desc' } }), this.prisma.sysUser.count({ where })]);
 
     const listWithDept = await this.attachDeptInfo(list);
+    const formattedList = FormatDateFields(listWithDept);
 
-    return ResultData.ok({ rows: listWithDept, total });
+    return ResultData.ok({ rows: formattedList, total });
   }
 
   async unallocatedList(query: AllocatedListDto) {
@@ -703,8 +714,9 @@ export class UserService {
     const [list, total] = await this.prisma.$transaction([this.prisma.sysUser.findMany({ where, skip, take, orderBy: { createTime: 'desc' } }), this.prisma.sysUser.count({ where })]);
 
     const listWithDept = await this.attachDeptInfo(list);
+    const formattedList = FormatDateFields(listWithDept);
 
-    return ResultData.ok({ rows: listWithDept, total });
+    return ResultData.ok({ rows: formattedList, total });
   }
 
   async authUserCancel(data: AuthUserCancelDto) {
@@ -811,8 +823,9 @@ export class UserService {
         { title: '账号状态', dataIndex: 'status' },
         { title: '最后登录IP', dataIndex: 'loginIp' },
         { title: '最后登录时间', dataIndex: 'loginDate', width: 20 },
-        { title: '部门', dataIndex: 'dept.deptName' },
+        { title: '部门', dataIndex: 'deptName' },
         { title: '部门负责人', dataIndex: 'dept.leader' },
+        { title: '创建时间', dataIndex: 'createTime', width: 20 },
       ],
     };
     ExportTable(options, res);

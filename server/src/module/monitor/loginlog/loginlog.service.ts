@@ -3,12 +3,13 @@ import { Response } from 'express';
 import { Prisma } from '@prisma/client';
 import { ResultData } from 'src/common/utils/result';
 import { ExportTable } from 'src/common/utils/export';
+import { FormatDateFields } from 'src/common/utils/index';
 import { CreateLoginlogDto, ListLoginlogDto } from './dto/index';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class LoginlogService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   /**
    * 创建用户登录日志
@@ -67,8 +68,8 @@ export class LoginlogService {
     const sortOrder: Prisma.SortOrder = query.isAsc === 'ascending' ? 'asc' : 'desc';
     const orderBy: Prisma.SysLogininforOrderByWithRelationInput = query.orderByColumn
       ? ({
-          [query.orderByColumn]: sortOrder,
-        } as Prisma.SysLogininforOrderByWithRelationInput)
+        [query.orderByColumn]: sortOrder,
+      } as Prisma.SysLogininforOrderByWithRelationInput)
       : { loginTime: 'desc' };
 
     const pageSize = Number(query.pageSize ?? 10);
@@ -85,7 +86,7 @@ export class LoginlogService {
     ]);
 
     return ResultData.ok({
-      rows: list,
+      rows: FormatDateFields(list),
       total,
     });
   }

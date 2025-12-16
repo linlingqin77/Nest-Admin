@@ -104,7 +104,7 @@ async function handleSubmit() {
       if (error) return;
     }
 
-    window.$message?.success($t('common.updateSuccess'));
+    window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));
     closeDrawer();
     emit('submitted');
   } finally {

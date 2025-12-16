@@ -134,6 +134,7 @@ async function handleSubmit() {
       postIds,
       remark
     });
+    window.$message?.success($t('common.addSuccess'));
     if (error) return;
   }
 
@@ -154,7 +155,7 @@ async function handleSubmit() {
     if (error) return;
   }
 
-  window.$message?.success($t('common.updateSuccess'));
+  window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));
   closeDrawer();
   emit('submitted');
 }
@@ -176,16 +177,9 @@ watch(visible, () => {
             <NInput v-model:value="model.nickName" :placeholder="$t('page.system.user.form.nickName.required')" />
           </NFormItem>
           <NFormItem :label="$t('page.system.user.deptName')" path="deptId">
-            <NTreeSelect
-              v-model:value="model.deptId"
-              :loading="deptLoading"
-              clearable
-              :options="deptData as []"
-              label-field="label"
-              key-field="id"
-              :default-expanded-keys="deptData?.length ? [deptData[0].id] : []"
-              :placeholder="$t('page.system.user.form.deptId.required')"
-            />
+            <NTreeSelect v-model:value="model.deptId" :loading="deptLoading" clearable :options="deptData as []"
+              label-field="label" key-field="id" :default-expanded-keys="deptData?.length ? [deptData[0].id] : []"
+              :placeholder="$t('page.system.user.form.deptId.required')" />
           </NFormItem>
           <NFormItem :label="$t('page.system.user.phonenumber')" path="phonenumber">
             <NInput v-model:value="model.phonenumber" :placeholder="$t('page.system.user.form.phonenumber.required')" />
@@ -197,33 +191,19 @@ watch(visible, () => {
             <NInput v-model:value="model.userName" :placeholder="$t('page.system.user.form.userName.required')" />
           </NFormItem>
           <NFormItem v-if="operateType === 'add'" :label="$t('page.system.user.password')" path="password">
-            <NInput
-              v-model:value="model.password"
-              type="password"
-              show-password-on="click"
-              :input-props="{ autocomplete: 'off' }"
-              :placeholder="$t('page.system.user.form.password.required')"
-            />
+            <NInput v-model:value="model.password" type="password" show-password-on="click"
+              :input-props="{ autocomplete: 'off' }" :placeholder="$t('page.system.user.form.password.required')" />
           </NFormItem>
           <NFormItem :label="$t('page.system.user.sex')" path="sex">
-            <DictRadio
-              v-model:value="model.sex"
-              dict-code="sys_user_sex"
-              :placeholder="$t('page.system.user.form.sex.required')"
-            />
+            <DictRadio v-model:value="model.sex" dict-code="sys_user_sex"
+              :placeholder="$t('page.system.user.form.sex.required')" />
           </NFormItem>
           <NFormItem :label="$t('page.system.user.postIds')" path="postIds">
             <PostSelect v-model:value="model.postIds" :dept-id="model.deptId" multiple clearable />
           </NFormItem>
           <NFormItem :label="$t('page.system.user.roleIds')" path="roleIds">
-            <NSelect
-              v-model:value="model.roleIds"
-              :loading="loading"
-              :options="roleOptions"
-              multiple
-              clearable
-              placeholder="请选择角色"
-            />
+            <NSelect v-model:value="model.roleIds" :loading="loading" :options="roleOptions" multiple clearable
+              placeholder="请选择角色" />
           </NFormItem>
           <NFormItem :label="$t('page.system.user.status')" path="status">
             <DictRadio v-model:value="model.status" dict-code="sys_normal_disable" />

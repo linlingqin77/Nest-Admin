@@ -4,7 +4,7 @@ import iconv from 'iconv-lite';
 
 @Injectable()
 export class AxiosService {
-  constructor(private readonly httpService: HttpService) {}
+  constructor(private readonly httpService: HttpService) { }
   /**
    * 获取ip地址信息
    * @param ip
@@ -15,6 +15,7 @@ export class AxiosService {
       const IP_URL = 'https://whois.pconline.com.cn/ipJson.jsp';
       const response = await this.httpService.axiosRef(`${IP_URL}?ip=${ip}&json=true`, {
         responseType: 'arraybuffer',
+        timeout: 3000, // 添加3秒超时
         transformResponse: [
           function (data) {
             const str = iconv.decode(data, 'gbk');

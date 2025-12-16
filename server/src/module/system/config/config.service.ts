@@ -3,6 +3,7 @@ import { Response } from 'express';
 import { Prisma, SysConfig } from '@prisma/client';
 import { ResultData } from 'src/common/utils/result';
 import { ExportTable } from 'src/common/utils/export';
+import { FormatDateFields } from 'src/common/utils/index';
 import { CreateConfigDto, UpdateConfigDto, ListConfigDto } from './dto/index';
 import { RedisService } from 'src/module/common/redis/redis.service';
 import { CacheEnum } from 'src/common/enum/index';
@@ -14,7 +15,7 @@ export class ConfigService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly redisService: RedisService,
-  ) {}
+  ) { }
   async create(createConfigDto: CreateConfigDto) {
     await this.prisma.sysConfig.create({ data: createConfigDto });
     return ResultData.ok();
@@ -64,7 +65,7 @@ export class ConfigService {
     ]);
 
     return ResultData.ok({
-      rows: list,
+      rows: FormatDateFields(list),
       total,
     });
   }
@@ -208,7 +209,7 @@ export class ConfigService {
    * @returns
    */
   @CacheEvict(CacheEnum.SYS_CONFIG_KEY, '*')
-  async clearConfigCache() {}
+  async clearConfigCache() { }
 
   /**
    * 加载系统配置缓存
