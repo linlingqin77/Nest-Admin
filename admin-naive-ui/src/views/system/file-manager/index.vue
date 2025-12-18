@@ -19,14 +19,13 @@
         </div>
       </div>
     </template>
-    
+
     <div class="h-full flex-col-stretch gap-12px overflow-hidden lt-sm:overflow-auto">
       <!-- 面包屑导航 -->
       <n-card v-if="breadcrumbs.length > 1" :bordered="false" size="small" class="card-wrapper">
         <n-breadcrumb>
-          <n-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="item.id"
-            @click="navigateToBreadcrumb(index)" :clickable="index < breadcrumbs.length - 1"
-            class="cursor-pointer">
+          <n-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="item.id" @click="navigateToBreadcrumb(index)"
+            :clickable="index < breadcrumbs.length - 1" class="cursor-pointer">
             {{ item.name }}
           </n-breadcrumb-item>
         </n-breadcrumb>
