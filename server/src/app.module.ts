@@ -1,6 +1,7 @@
 import { Module, Global, MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { BullModule } from '@nestjs/bull';
 import configuration from './config/index';
 import { validate } from './config/env.validation';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
@@ -52,6 +53,18 @@ import { PrismaModule } from './prisma/prisma.module';
       ttl: 60000,
       limit: 100,
     }]),
+    // Bull 队列模块 (用于异步任务处理)
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('redis.host'),
+          port: configService.get('redis.port'),
+          password: configService.get('redis.password'),
+          db: configService.get('redis.db'),
+        },
+      }),
+    }),
 
     MainModule,
     UploadModule,

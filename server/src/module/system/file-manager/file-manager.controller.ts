@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Put, Delete, Body, Query, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Query, Param, Res } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { Response } from 'express';
 import { FileManagerService } from './file-manager.service';
 import { CreateFolderDto, UpdateFolderDto, ListFolderDto, ListFileDto, MoveFileDto, RenameFileDto, CreateShareDto, GetShareDto } from './dto';
 import { User, NotRequireAuth } from 'src/module/system/user/user.decorator';
@@ -130,5 +131,86 @@ export class FileManagerController {
   @Get('share/my/list')
   myShares(@User('userName') username: string) {
     return this.fileManagerService.myShares(username);
+  }
+
+  // ==================== 回收站管理 ====================
+
+  @Api({ summary: '获取回收站文件列表' })
+  @RequirePermission('system:file:recycle:list')
+  @Get('recycle/list')
+  getRecycleList(@Query() query: ListFileDto) {
+    return this.fileManagerService.getRecycleList(query);
+  }
+
+  @Api({ summary: '恢复回收站文件' })
+  @RequirePermission('system:file:recycle:restore')
+  @Operlog({ businessType: BusinessType.UPDATE })
+  @Put('recycle/restore')
+  restoreFiles(@Body('uploadIds') uploadIds: string[], @User('userName') username: string) {
+    return this.fileManagerService.restoreFiles(uploadIds, username);
+  }
+
+  @Api({ summary: '彻底删除回收站文件' })
+  @RequirePermission('system:file:recycle:remove')
+  @Operlog({ businessType: BusinessType.DELETE })
+  @Delete('recycle/clear')
+  clearRecycle(@Body('uploadIds') uploadIds: string[], @User('userName') username: string) {
+    return this.fileManagerService.clearRecycle(uploadIds, username);
+  }
+
+  // ==================== 文件版本管理 ====================
+
+  @Api({ summary: '获取文件版本历史' })
+  @RequirePermission('system:file:query')
+  @Get('file/:uploadId/versions')
+  getFileVersions(@Param('uploadId') uploadId: string) {
+    return this.fileManagerService.getFileVersions(uploadId);
+  }
+
+  @Api({ summary: '恢复到指定版本' })
+  @RequirePermission('system:file:edit')
+  @Operlog({ businessType: BusinessType.UPDATE })
+  @Post('file/restore-version')
+  restoreVersion(
+    @Body('fileId') fileId: string,
+    @Body('targetVersionId') targetVersionId: string,
+    @User('userName') username: string
+  ) {
+    return this.fileManagerService.restoreVersion(fileId, targetVersionId, username);
+  }
+
+  // ==================== 文件下载 ====================
+
+  @Api({ summary: '获取文件访问令牌' })
+  @RequirePermission('system:file:query')
+  @Get('file/:uploadId/access-token')
+  getAccessToken(@Param('uploadId') uploadId: string) {
+    return this.fileManagerService.getAccessToken(uploadId);
+  }
+
+  @Api({ summary: '下载文件（需要令牌）' })
+  @NotRequireAuth()
+  @Get('file/:uploadId/download')
+  async downloadFile(
+    @Param('uploadId') uploadId: string,
+    @Query('token') token: string,
+    @Res() res: Response
+  ) {
+    return this.fileManagerService.downloadFile(uploadId, token, res);
+  }
+
+  @Api({ summary: '批量下载文件（打包为zip）' })
+  @RequirePermission('system:file:query')
+  @Post('file/batch-download')
+  async batchDownload(@Body('uploadIds') uploadIds: string[], @Res() res: Response) {
+    return this.fileManagerService.batchDownload(uploadIds, res);
+  }
+
+  // ==================== 租户存储统计 ====================
+
+  @Api({ summary: '获取存储使用统计' })
+  @Get('storage/stats')
+  getStorageStats() {
+    return this.fileManagerService.getStorageStats();
   }
 }

@@ -30,23 +30,32 @@
             <div class="toolbar-container">
               <n-space align="center" style="width: 100%" :size="isMobile ? 4 : 12">
                 <!-- 移动端菜单按钮 -->
-                <n-button v-if="isMobile" @click="sidebarCollapsed = !sidebarCollapsed" size="small" secondary>
+                <n-button v-if="isMobile" @click="sidebarCollapsed = !sidebarCollapsed" :size="themeStore.componentSize"
+                  secondary>
                   <template #icon>
-                    <icon-carbon:menu />
+                    <icon-carbon-menu />
                   </template>
                 </n-button>
 
                 <!-- 返回按钮 -->
-                <n-button @click="goBack" :disabled="breadcrumbs.length === 1" size="small" secondary>
+                <n-button @click="goBack" :disabled="breadcrumbs.length === 1" :size="themeStore.componentSize"
+                  secondary>
                   <template #icon>
-                    <icon-carbon:arrow-left />
+                    <icon-carbon-arrow-left />
+                  </template>
+                </n-button>
+
+                <!-- 刷新按钮 -->
+                <n-button @click="refreshList" :size="themeStore.componentSize" secondary>
+                  <template #icon>
+                    <icon-carbon-renew />
                   </template>
                 </n-button>
 
                 <!-- 新建文件夹 -->
-                <n-button type="primary" :round="true" @click="handleCreateFolder" size="small">
+                <n-button type="primary" :round="true" @click="handleCreateFolder" :size="themeStore.componentSize">
                   <template #icon>
-                    <icon-carbon:folder-add />
+                    <icon-carbon-folder-add />
                   </template>
                   <span v-if="!isMobile">新建文件夹</span>
                 </n-button>
@@ -54,9 +63,9 @@
                 <!-- 上传文件 -->
                 <n-upload :show-file-list="false" multiple :max="20" @change="handleUploadChange"
                   :custom-request="() => { }">
-                  <n-button type="primary" :round="true" size="small">
+                  <n-button type="primary" :round="true" :size="themeStore.componentSize">
                     <template #icon>
-                      <icon-carbon:upload />
+                      <icon-carbon-upload />
                     </template>
                     <span v-if="!isMobile">上传文件</span>
                   </n-button>
@@ -67,32 +76,32 @@
                 <!-- 批量操作按钮 -->
                 <template v-if="selectedItems.length > 0">
                   <span v-if="!isMobile" class="text-sm font-bold mr-2"> 已选择 {{ selectedItems.length }} 项 </span>
-                  <n-button size="small" @click="selectedItems = []">
+                  <n-button :size="themeStore.componentSize" @click="selectedItems = []">
                     <template v-if="isMobile" #icon>
-                      <icon-carbon:close />
+                      <icon-carbon-close />
                     </template>
                     <span v-if="!isMobile">取消</span>
                   </n-button>
-                  <n-button v-if="!isMobile" size="small" @click="handleBatchMove">移动</n-button>
-                  <n-button v-if="!isMobile" size="small" @click="handleBatchShare">分享</n-button>
-                  <n-button size="small" type="error" @click="handleBatchDelete">
+                  <n-button v-if="!isMobile" :size="themeStore.componentSize" @click="handleBatchMove">移动</n-button>
+                  <n-button v-if="!isMobile" :size="themeStore.componentSize" @click="handleBatchShare">分享</n-button>
+                  <n-button :size="themeStore.componentSize" type="error" @click="handleBatchDelete">
                     <template v-if="isMobile" #icon>
-                      <icon-carbon:trash-can />
+                      <icon-carbon-trash-can />
                     </template>
                     <span v-if="!isMobile">删除</span>
                   </n-button>
                 </template>
 
                 <!-- 视图切换 -->
-                <n-button-group v-if="!isMobile" size="small">
+                <n-button-group v-if="!isMobile" :size="themeStore.componentSize">
                   <n-button :type="viewMode === 'list' ? 'primary' : 'default'" @click="viewMode = 'list'">
                     <template #icon>
-                      <icon-carbon:list />
+                      <icon-carbon-list />
                     </template>
                   </n-button>
                   <n-button :type="viewMode === 'grid' ? 'primary' : 'default'" @click="viewMode = 'grid'">
                     <template #icon>
-                      <icon-carbon:grid />
+                      <icon-carbon-grid />
                     </template>
                   </n-button>
                 </n-button-group>
@@ -102,16 +111,21 @@
                   :style="{ width: isMobile ? '100%' : `${SEARCH_WIDTH}px` }" :round="true" clearable
                   @blur="isMobile && !searchKeyword ? showSearch = false : null">
                   <template #prefix>
-                    <icon-carbon:search />
+                    <icon-carbon-search />
                   </template>
                 </n-input>
 
                 <!-- 移动端搜索按钮 -->
-                <n-button v-if="isMobile && !showSearch" size="small" @click="showSearch = true">
+                <n-button v-if="isMobile && !showSearch" :size="themeStore.componentSize" @click="showSearch = true">
                   <template #icon>
-                    <icon-carbon:search />
+                    <icon-carbon-search />
                   </template>
                 </n-button>
+
+                <!-- 存储空间 -->
+                <!-- <div v-if="!isMobile" class="storage-stats-toolbar">
+                  <storage-stats />
+                </div> -->
               </n-space>
             </div>
           </div>
@@ -119,29 +133,35 @@
 
         <!-- 内容区 -->
         <n-layout-content :content-style="isMobile ? 'padding: 12px;' : 'padding: 24px;'">
-          <!-- 空状态 -->
-          <div v-if="!loading && fileList.length === 0" class="empty-state">
-            <icon-carbon:folder :class="isMobile ? 'text-60px' : 'text-100px'" class="text-gray-300" />
-            <div :class="isMobile ? 'text-14px' : 'text-16px'" class="text-gray mt-4">当前文件夹为空</div>
-            <div class="text-12px text-gray-400 mt-2">拖拽文件到此处或点击上传按钮</div>
-          </div>
+          <!-- 回收站 -->
+          <recycle-bin v-if="currentView === 'recycle'" />
 
-          <!-- 列表视图 -->
-          <file-list v-else-if="viewMode === 'list'" :file-list="fileList" :loading="loading"
-            v-model:checked-keys="selectedItems" @itemClick="handleItemClick" @itemDblClick="handleDoubleClick"
-            @contextMenu="handleContextMenu" />
+          <!-- 文件列表 -->
+          <template v-else>
+            <!-- 空状态 -->
+            <div v-if="!loading && fileList.length === 0" class="empty-state">
+              <icon-carbon-folder :class="isMobile ? 'text-60px' : 'text-100px'" class="text-gray-300" />
+              <div :class="isMobile ? 'text-14px' : 'text-16px'" class="text-gray mt-4">当前文件夹为空</div>
+              <div class="text-12px text-gray-400 mt-2">拖拽文件到此处或点击上传按钮</div>
+            </div>
 
-          <!-- 网格视图 -->
-          <file-grid v-else :file-list="fileList" :loading="loading" v-model:checked-keys="selectedItems"
-            @itemClick="handleItemClick" @itemDblClick="handleDoubleClick" @contextMenu="handleContextMenu"
-            @fileDrop="handleFileDrop" />
+            <!-- 列表视图 -->
+            <file-list v-else-if="viewMode === 'list'" :file-list="fileList" :loading="loading"
+              v-model:checked-keys="selectedItems" @itemClick="handleItemClick" @itemDblClick="handleDoubleClick"
+              @contextMenu="handleContextMenu" />
 
-          <!-- 分页 -->
-          <div v-if="fileList.length > 0" :class="isMobile ? 'flex justify-center mt-4' : 'flex justify-end mt-4'">
-            <n-pagination v-model:page="pagination.page" v-model:page-size="pagination.pageSize"
-              :item-count="pagination.itemCount" :page-sizes="[20, 50, 100]" :show-size-picker="!isMobile"
-              :size="paginationSize" @update:page="loadFileList" @update:page-size="loadFileList" />
-          </div>
+            <!-- 网格视图 -->
+            <file-grid v-else :file-list="fileList" :loading="loading" v-model:checked-keys="selectedItems"
+              @itemClick="handleItemClick" @itemDblClick="handleDoubleClick" @contextMenu="handleContextMenu"
+              @fileDrop="handleFileDrop" />
+
+            <!-- 分页 -->
+            <div v-if="fileList.length > 0" :class="isMobile ? 'flex justify-center mt-4' : 'flex justify-end mt-4'">
+              <n-pagination v-model:page="pagination.page" v-model:page-size="pagination.pageSize"
+                :item-count="pagination.itemCount" :page-sizes="[20, 50, 100]" :show-size-picker="!isMobile"
+                :size="paginationSize" @update:page="loadFileList" @update:page-size="loadFileList" />
+            </div>
+          </template>
         </n-layout-content>
       </n-layout>
     </n-layout>
@@ -163,6 +183,7 @@
     <file-share-modal ref="shareModalRef" />
     <move-file-modal ref="moveFileModalRef" @success="refreshList" />
     <batch-share-modal ref="batchShareModalRef" />
+    <file-version-modal ref="versionModalRef" @success="refreshList" />
   </div>
 </template>
 
@@ -215,7 +236,10 @@ import FilePreviewModal from './modules/file-preview-modal.vue';
 import FileShareModal from './modules/file-share-modal.vue';
 import MoveFileModal from './modules/move-file-modal.vue';
 import BatchShareModal from './modules/batch-share-modal.vue';
+import FileVersionModal from './modules/file-version-modal.vue';
+import RecycleBin from './modules/recycle-bin.vue';
 import SidebarMenu from './components/sidebar-menu.vue';
+import StorageStats from './components/storage-stats.vue';
 import FileList from './components/file-list.vue';
 import FileGrid from './components/file-grid.vue';
 import DragUploadOverlay from '@/components/drag-upload-overlay/index.vue';
@@ -266,6 +290,9 @@ const activeFileType = ref<FileTypeCategory>('all');
 // 视图模式
 const viewMode = ref<'grid' | 'list'>('grid');
 
+// 当前视图（files/recycle/share）
+const currentView = ref<'files' | 'recycle' | 'share'>('files');
+
 // 当前文件夹路径
 const currentFolderId = ref(0);
 const breadcrumbs = ref<Array<{ id: number; name: string }>>([{ id: 0, name: '全部文件' }]);
@@ -312,6 +339,7 @@ const previewModalRef = ref();
 const shareModalRef = ref();
 const moveFileModalRef = ref();
 const batchShareModalRef = ref();
+const versionModalRef = ref();
 const sidebarMenuRef = ref();
 
 // 文件夹树数据
@@ -541,6 +569,7 @@ const contextMenuOptions = computed<DropdownOption[]>(() => {
     options.push(
       { label: '预览', key: 'preview' },
       { label: '下载', key: 'download' },
+      { label: '版本历史', key: 'version' },
       { label: '重命名', key: 'rename' },
       { label: '移动', key: 'move' },
       { label: '分享', key: 'share' },
@@ -571,6 +600,9 @@ function handleContextMenuSelect(key: string) {
       break;
     case 'download':
       window.open(item.url, '_blank');
+      break;
+    case 'version':
+      versionModalRef.value?.open(item.id as string, item.name);
       break;
     case 'rename':
       handleRename(item);
@@ -842,14 +874,18 @@ function handlePrimaryMenuChange(key: string) {
   console.log('Primary menu changed:', key);
   // 处理一级菜单变化（分享、回收站等）
   if (key === 'share') {
+    currentView.value = 'share';
     message.info('我的分享功能开发中...');
   } else if (key === 'recycle') {
-    message.info('回收站功能开发中...');
+    currentView.value = 'recycle';
+  } else {
+    currentView.value = 'files';
   }
 }
 
 function handleSecondaryMenuChange(key: string) {
   console.log('Secondary menu changed:', key);
+  currentView.value = 'files';
   // 处理二级菜单变化（文件类型筛选）
   if (key === 'all-files') {
     handleFileTypeChange('all');
@@ -1126,6 +1162,11 @@ onUnmounted(() => {
 
 .flex-1 {
   flex: 1;
+}
+
+.storage-stats-toolbar {
+  min-width: 200px;
+  max-width: 280px;
 }
 
 /* 移动端适配 */

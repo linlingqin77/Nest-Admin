@@ -138,3 +138,79 @@ export function fetchGetMyShares(params?: Api.System.FileManager.ShareSearchPara
         params
     });
 }
+
+/** 获取回收站列表 */
+export function fetchGetRecycleList(params?: Api.System.FileManager.RecycleSearchParams) {
+    return request<Api.System.FileManager.RecycleList>({
+        url: '/system/file-manager/recycle/list',
+        method: 'get',
+        params
+    });
+}
+
+/** 恢复文件 */
+export function fetchRestoreFiles(uploadIds: string[]) {
+    return request<boolean>({
+        url: '/system/file-manager/recycle/restore',
+        method: 'put',
+        data: { uploadIds }
+    });
+}
+
+/** 彻底删除文件 */
+export function fetchClearRecycle(uploadIds: string[]) {
+    return request<boolean>({
+        url: '/system/file-manager/recycle/clear',
+        method: 'delete',
+        data: { uploadIds }
+    });
+}
+
+/** 获取文件版本历史 */
+export function fetchGetFileVersions(uploadId: string) {
+    return request<Api.System.FileManager.FileVersions>({
+        url: `/system/file-manager/file/${uploadId}/versions`,
+        method: 'get'
+    });
+}
+
+/** 恢复到指定版本 */
+export function fetchRestoreVersion(data: Api.System.FileManager.RestoreVersionParams) {
+    return request<Api.System.FileManager.RestoreVersionResult>({
+        url: '/system/file-manager/file/restore-version',
+        method: 'post',
+        data
+    });
+}
+
+/** 获取文件访问令牌 */
+export function fetchGetFileAccessToken(uploadId: string) {
+    return request<Api.System.FileManager.FileAccessToken>({
+        url: `/system/file-manager/file/${uploadId}/access-token`,
+        method: 'get'
+    });
+}
+
+/** 下载文件 */
+export function downloadFile(uploadId: string, token: string) {
+    const url = `/system/file-manager/file/${uploadId}/download?token=${token}`;
+    window.open(import.meta.env.VITE_SERVICE_BASE_URL + url, '_blank');
+}
+
+/** 批量下载文件 */
+export function downloadBatchFiles(uploadIds: string[]) {
+    return request<Blob>({
+        url: '/system/file-manager/file/batch-download',
+        method: 'post',
+        data: { uploadIds },
+        responseType: 'blob'
+    });
+}
+
+/** 获取存储统计 */
+export function fetchGetStorageStats() {
+    return request<Api.System.FileManager.StorageStats>({
+        url: '/system/file-manager/storage/stats',
+        method: 'get'
+    });
+}

@@ -6,11 +6,15 @@ import { TaskService } from './task.service';
 import { JobLogService } from './job-log.service';
 import { JobLogController } from './job-log.controller';
 import { BackupService } from 'src/module/backup/backup.service';
+import { NoticeModule } from 'src/module/system/notice/notice.module';
 
 @Module({
-  imports: [NestScheduleModule.forRoot()],
+  imports: [
+    NestScheduleModule.forRoot(),
+    NoticeModule,
+  ],
   controllers: [JobController, JobLogController],
   providers: [JobService, TaskService, JobLogService, BackupService],
-  exports: [JobService],
+  exports: [JobService, TaskService],
 })
-export class JobModule {}
+export class JobModule { }

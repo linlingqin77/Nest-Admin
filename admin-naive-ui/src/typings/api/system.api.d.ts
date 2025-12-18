@@ -971,6 +971,116 @@ declare namespace Api {
 
     /** share list */
     type ShareList = Common.PaginatingQueryRecord<FileShare & { fileInfo: FileInfo }>;
+
+    /** 文件管理命名空间 */
+    namespace FileManager {
+      /** 回收站文件信息 */
+      type RecycleFile = FileInfo;
+
+      /** 回收站搜索参数 */
+      type RecycleSearchParams = CommonType.RecordNullable<{
+        fileName?: string;
+      }> &
+        Api.Common.CommonSearchParams;
+
+      /** 回收站列表 */
+      type RecycleList = Common.PaginatingQueryRecord<RecycleFile>;
+
+      /** 文件版本信息 */
+      type FileVersion = {
+        uploadId: string;
+        fileName: string;
+        size: number;
+        version: number;
+        isLatest: boolean;
+        createTime: string;
+        createBy: string;
+        updateTime: string;
+        url: string;
+        ext: string;
+      };
+
+      /** 文件版本历史 */
+      type FileVersions = {
+        currentVersion: number;
+        versions: FileVersion[];
+      };
+
+      /** 恢复版本参数 */
+      type RestoreVersionParams = {
+        fileId: string;
+        targetVersionId: string;
+      };
+
+      /** 恢复版本结果 */
+      type RestoreVersionResult = {
+        newVersion: number;
+        uploadId: string;
+      };
+
+      /** 文件访问令牌 */
+      type FileAccessToken = {
+        token: string;
+        expiresIn: number;
+      };
+
+      /** 存储统计信息 */
+      type StorageStats = {
+        used: number;
+        quota: number;
+        percentage: number;
+        remaining: number;
+        companyName: string;
+      };
+
+      /** 文件夹搜索参数 */
+      type FolderSearchParams = CommonType.RecordNullable<
+        Pick<Api.System.FileFolder, 'folderName' | 'parentId'> & Api.Common.CommonSearchParams
+      >;
+
+      /** 文件夹操作参数 */
+      type FolderOperateParams = CommonType.RecordNullable<
+        Pick<Api.System.FileFolder, 'folderId' | 'parentId' | 'folderName' | 'orderNum' | 'remark'>
+      >;
+
+      /** 文件夹列表 */
+      type FolderList = Common.PaginatingQueryRecord<Api.System.FileFolder>;
+
+      /** 文件夹树节点 */
+      type FolderTreeNode = Api.System.FileFolderTreeNode;
+
+      /** 文件搜索参数 */
+      type FileSearchParams = Api.System.FileSearchParams;
+
+      /** 移动文件参数 */
+      type MoveFilesParams = Api.System.MoveFilesParams;
+
+      /** 重命名文件参数 */
+      type RenameFileParams = Api.System.RenameFileParams;
+
+      /** 文件详情 */
+      type FileDetail = Api.System.FileDetail;
+
+      /** 文件列表 */
+      type FileList = Api.System.FileList;
+
+      /** 创建分享参数 */
+      type CreateShareParams = Api.System.CreateShareParams;
+
+      /** 获取分享参数 */
+      type GetShareParams = Api.System.GetShareParams;
+
+      /** 分享信息 */
+      type ShareInfo = Api.System.ShareInfo;
+
+      /** 分享详情 */
+      type ShareDetail = Api.System.ShareDetail;
+
+      /** 分享搜索参数 */
+      type ShareSearchParams = Api.System.ShareSearchParams;
+
+      /** 分享列表 */
+      type ShareList = Api.System.ShareList;
+    }
   }
 }
-

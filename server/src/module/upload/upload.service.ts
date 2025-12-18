@@ -1,19 +1,25 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, BadRequestException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 import { Result, ResponseCode } from 'src/common/response';
 import { StatusEnum } from 'src/common/enum/index';
 import { ChunkFileDto, ChunkMergeFileDto } from './dto/index';
 import { GenerateUUID } from 'src/common/utils/index';
 import fs from 'fs';
 import path from 'path';
+import * as crypto from 'crypto';
 import iconv from 'iconv-lite';
 import COS from 'cos-nodejs-sdk-v5';
 import Mime from 'mime-types';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { TenantContext } from 'src/common/tenant/tenant.context';
+import { VersionService } from 'src/module/system/upload/services/version.service';
+import type { ThumbnailJobData } from 'src/module/system/upload/processors/thumbnail.processor';
 
 @Injectable()
 export class UploadService {
+  private readonly logger = new Logger(UploadService.name);
   private thunkDir: string;
   private cos = new COS({
     // 必选参数
@@ -29,23 +35,84 @@ export class UploadService {
     private readonly prisma: PrismaService,
     @Inject(ConfigService)
     private config: ConfigService,
+    private readonly versionService: VersionService,
+    @InjectQueue('thumbnail') private readonly thumbnailQueue: Queue<ThumbnailJobData>,
   ) {
     this.thunkDir = 'thunk';
     this.isLocal = this.config.get('app.file.isLocal');
   }
 
   /**
-   * 单文件上传
+   * 单文件上传（支持MD5秒传、版本控制、配额检查和异步缩略图生成）
    * @param file 上传的文件
    * @param folderId 文件夹ID（可选）
    * @returns
    */
   async singleFileUpload(file: Express.Multer.File, folderId?: number) {
-    const fileSizeMB = file.size / 1024 / 1024;
+    const tenantId = TenantContext.getTenantId();
+    const originalFilename = iconv.decode(Buffer.from(file.originalname, 'binary'), 'utf8');
+
+    // 1. 文件大小检查
+    const fileSizeMB = Math.ceil(file.size / 1024 / 1024);
     const maxSize = this.config.get('app.file.maxSize');
     if (fileSizeMB > maxSize) {
-      throw new Error(`文件大小不能超过${maxSize}MB`);
+      throw new BadRequestException(`文件大小不能超过${maxSize}MB`);
     }
+
+    // 2. 租户存储配额检查
+    await this.checkStorageQuota(tenantId, fileSizeMB);
+
+    // 3. 计算文件MD5
+    const fileMd5 = crypto.createHash('md5').update(file.buffer).digest('hex');
+    this.logger.log(`文件MD5: ${fileMd5}, 大小: ${fileSizeMB}MB`);
+
+    // 4. 检查MD5秒传
+    const existingFile = await this.prisma.sysUpload.findFirst({
+      where: {
+        fileMd5,
+        tenantId,
+        delFlag: '0',
+      },
+    });
+
+    if (existingFile) {
+      // 秒传：复制已有文件记录
+      this.logger.log(`文件秒传: ${fileMd5}`);
+      const uploadId = GenerateUUID();
+      const newFile = await this.prisma.sysUpload.create({
+        data: {
+          uploadId,
+          tenantId,
+          fileName: originalFilename,
+          newFileName: existingFile.newFileName,
+          url: existingFile.url,
+          folderId: folderId || 0,
+          ext: existingFile.ext,
+          size: existingFile.size,
+          mimeType: existingFile.mimeType,
+          storageType: existingFile.storageType,
+          fileMd5: existingFile.fileMd5,
+          thumbnail: existingFile.thumbnail,
+          version: 1,
+          isLatest: true,
+          downloadCount: 0,
+          status: '0',
+          delFlag: '0',
+        },
+      });
+
+      // 秒传也要占用配额
+      await this.updateTenantStorage(tenantId, fileSizeMB);
+
+      return {
+        ...existingFile,
+        uploadId: newFile.uploadId,
+        fileName: originalFilename,
+        instantUpload: true,
+      };
+    }
+
+    // 5. 上传文件到存储
     let res;
     const storageType = this.isLocal ? 'local' : 'cos';
     if (this.isLocal) {
@@ -54,37 +121,189 @@ export class UploadService {
       const targetDir = this.config.get('cos.location');
       res = await this.saveFileCos(targetDir, file);
     }
+
+    const mimeType = Mime.lookup(originalFilename) || 'application/octet-stream';
+    const ext = path.extname(originalFilename).replace('.', '').toLowerCase();
+
+    // 6. 处理文件版本控制
+    const versionMode = await this.getConfigValue('sys.file.versionMode', 'overwrite');
+    let version = 1;
+    let parentFileId: string | null = null;
+    let isLatest = true;
+
+    if (versionMode === 'version') {
+      // 查找同名文件
+      const sameNameFiles = await this.prisma.sysUpload.findMany({
+        where: {
+          fileName: originalFilename,
+          folderId: folderId || 0,
+          tenantId,
+          delFlag: '0',
+        },
+        orderBy: { version: 'desc' },
+      });
+
+      if (sameNameFiles.length > 0) {
+        // 存在同名文件，创建新版本
+        const latestFile = sameNameFiles[0];
+        version = latestFile.version + 1;
+        parentFileId = latestFile.parentFileId || latestFile.uploadId;
+
+        // 使用事务更新旧版本的isLatest标志
+        await this.prisma.$transaction([
+          this.prisma.sysUpload.updateMany({
+            where: {
+              OR: [
+                { uploadId: parentFileId },
+                { parentFileId: parentFileId },
+              ],
+              isLatest: true,
+            },
+            data: { isLatest: false },
+          }),
+        ]);
+
+        this.logger.log(`创建文件新版本: ${originalFilename}, 版本号: ${version}`);
+      }
+    } else if (versionMode === 'overwrite') {
+      // 覆盖模式：软删除旧文件
+      await this.prisma.sysUpload.updateMany({
+        where: {
+          fileName: originalFilename,
+          folderId: folderId || 0,
+          tenantId,
+          delFlag: '0',
+        },
+        data: {
+          delFlag: '1',
+          updateTime: new Date(),
+        },
+      });
+    }
+
+    // 7. 创建上传记录
     const uploadId = GenerateUUID();
-    const mimeType = Mime.lookup(file.originalname) || 'application/octet-stream';
-
-    // 获取扩展名（去掉点号并转小写）
-    const ext = path.extname(file.originalname).replace('.', '').toLowerCase();
-
-    // 生成格式化的文件名用于前端显示：日期_时间_随机数.扩展名
-    const now = new Date();
-    const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-    const timeStr = `${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
-    const random = String(now.getTime()).slice(-4);
-    const displayFileName = `${dateStr}_${timeStr}_${random}${ext ? '.' + ext : ''}`;
-
-    // 创建上传记录
-    await this.prisma.sysUpload.create({
+    const newFile = await this.prisma.sysUpload.create({
       data: {
         uploadId,
-        fileName: displayFileName, // 前端显示用的格式化文件名
-        newFileName: res.newFileName, // 服务器实际存储的文件名
+        tenantId,
+        fileName: originalFilename,
+        newFileName: res.newFileName,
         url: res.url,
         folderId: folderId || 0,
         ext,
-        size: file.size, // 字节数
+        size: file.size,
         mimeType,
         storageType,
-        fileMd5: null,
-        thumbnail: null,
-      }
+        fileMd5,
+        thumbnail: null, // 稍后异步生成
+        version,
+        parentFileId,
+        isLatest,
+        downloadCount: 0,
+        status: '0',
+        delFlag: '0',
+      },
     });
 
-    return res;
+    // 8. 更新租户存储使用量
+    await this.updateTenantStorage(tenantId, fileSizeMB);
+
+    // 9. 异步生成缩略图
+    if (res.filePath || this.isLocal) {
+      const filePath = res.filePath || path.join(
+        process.cwd(),
+        this.config.get('app.file.location'),
+        res.newFileName
+      );
+
+      await this.thumbnailQueue.add('generate-thumbnail', {
+        uploadId,
+        filePath,
+        storageType,
+        ext,
+        mimeType,
+      }, {
+        priority: 1,
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 2000,
+        },
+      });
+
+      this.logger.log(`已加入缩略图生成队列: ${uploadId}`);
+    }
+
+    // 10. 检查并清理旧版本（如果启用版本控制）
+    if (versionMode === 'version' && parentFileId) {
+      await this.versionService.checkAndCleanOldVersions(parentFileId);
+    }
+
+    return {
+      ...res,
+      uploadId: newFile.uploadId,
+      fileName: originalFilename,
+      fileMd5,
+    };
+  }
+
+  /**
+   * 检查租户存储配额
+   */
+  private async checkStorageQuota(tenantId: string, requiredMB: number): Promise<void> {
+    const tenant = await this.prisma.sysTenant.findUnique({
+      where: { tenantId },
+      select: { storageQuota: true, storageUsed: true, companyName: true },
+    });
+
+    if (!tenant) {
+      throw new BadRequestException('租户不存在');
+    }
+
+    const { storageQuota, storageUsed, companyName } = tenant;
+    const remaining = storageQuota - storageUsed;
+
+    if (storageUsed + requiredMB > storageQuota) {
+      throw new BadRequestException(
+        `存储空间不足！已使用${storageUsed}MB，配额${storageQuota}MB，剩余${remaining}MB，需要${requiredMB}MB`
+      );
+    }
+
+    this.logger.log(
+      `租户${companyName}存储检查通过: 使用${storageUsed}MB/配额${storageQuota}MB, 即将使用${requiredMB}MB`
+    );
+  }
+
+  /**
+   * 更新租户存储使用量
+   */
+  private async updateTenantStorage(tenantId: string, incrementMB: number): Promise<void> {
+    await this.prisma.sysTenant.update({
+      where: { tenantId },
+      data: {
+        storageUsed: {
+          increment: incrementMB,
+        },
+      },
+    });
+
+    this.logger.log(`租户${tenantId}存储使用量增加${incrementMB}MB`);
+  }
+
+  /**
+   * 获取配置值
+   */
+  private async getConfigValue(key: string, defaultValue: string): Promise<string> {
+    try {
+      const config = await this.prisma.sysConfig.findFirst({
+        where: { configKey: key, delFlag: '0' },
+      });
+      return config?.configValue || defaultValue;
+    } catch (error) {
+      this.logger.warn(`获取配置失败: ${key}, 使用默认值: ${defaultValue}`);
+      return defaultValue;
+    }
   }
 
   /**

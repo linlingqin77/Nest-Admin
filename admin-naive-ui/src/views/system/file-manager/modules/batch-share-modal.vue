@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
 import { NModal, NCard, NForm, NFormItem, NInput, NInputNumber, NSwitch, NButton, NSpace, NList, NListItem, useMessage } from 'naive-ui';
+import { useThemeStore } from '@/store/modules/theme';
 import { fetchCreateShare } from '@/service/api';
 
 const message = useMessage();
+const themeStore = useThemeStore();
 const emit = defineEmits<{
     success: [];
 }>();
@@ -152,16 +154,18 @@ defineExpose({
                             <div class="flex items-center gap-2 mb-2">
                                 <span class="text-14px text-gray">链接：</span>
                                 <NInput :value="`${window.location.origin}/share/${result.data.shareId}`" readonly
-                                    size="small" />
-                                <NButton size="small"
+                                    :size="themeStore.componentSize" />
+                                <NButton :size="themeStore.componentSize"
                                     @click="copyToClipboard(`${window.location.origin}/share/${result.data.shareId}`)">
                                     复制
                                 </NButton>
                             </div>
                             <div v-if="result.data.shareCode" class="flex items-center gap-2">
                                 <span class="text-14px text-gray">提取码：</span>
-                                <NInput :value="result.data.shareCode" readonly size="small" class="w-100px" />
-                                <NButton size="small" @click="copyToClipboard(result.data.shareCode)">
+                                <NInput :value="result.data.shareCode" readonly :size="themeStore.componentSize"
+                                    class="w-100px" />
+                                <NButton :size="themeStore.componentSize"
+                                    @click="copyToClipboard(result.data.shareCode)">
                                     复制
                                 </NButton>
                             </div>

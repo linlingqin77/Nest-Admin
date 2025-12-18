@@ -24,6 +24,8 @@ model SysTenant {
   packageId       Int?      @map("package_id")
   expireTime      DateTime? @map("expire_time") @db.Timestamp(6)
   accountCount    Int       @default(-1) @map("account_count")
+  storageQuota    Int       @default(10240) @map("storage_quota") // 存储配额(MB)，默认10GB
+  storageUsed     Int       @default(0) @map("storage_used") // 已使用存储(MB)
   status          String    @default("0") @db.Char(1)
   delFlag         String    @default("0") @map("del_flag") @db.Char(1)
   createBy        String    @default("") @map("create_by") @db.VarChar(64)
@@ -435,31 +437,36 @@ model SysFileFolder {
 
 /// 文件表（扩展原 SysUpload）
 model SysUpload {
-  uploadId    String    @id @map("upload_id") @db.VarChar(255)
-  tenantId    String    @default("000000") @map("tenant_id") @db.VarChar(20)
-  folderId    Int       @default(0) @map("folder_id")
-  size        Int
-  fileName    String    @map("file_name") @db.VarChar(255)
-  newFileName String    @map("new_file_name") @db.VarChar(255)
-  url         String    @db.VarChar(500)
-  ext         String?   @db.VarChar(50)
-  mimeType    String?   @map("mime_type") @db.VarChar(100)
-  storageType String    @default("local") @map("storage_type") @db.VarChar(20)
-  fileMd5     String?   @map("file_md5") @db.VarChar(32)
-  downloadCount Int     @default(0) @map("download_count")
-  status      String    @default("0") @db.Char(1)
-  delFlag     String    @default("0") @map("del_flag") @db.Char(1)
-  createBy    String    @default("") @map("create_by") @db.VarChar(64)
-  createTime  DateTime? @map("create_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
-  updateBy    String    @default("") @map("update_by") @db.VarChar(64)
-  updateTime  DateTime? @map("update_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
-  remark      String?   @db.VarChar(500)
+  uploadId      String    @id @map("upload_id") @db.VarChar(255)
+  tenantId      String    @default("000000") @map("tenant_id") @db.VarChar(20)
+  folderId      Int       @default(0) @map("folder_id")
+  size          Int
+  fileName      String    @map("file_name") @db.VarChar(255)
+  newFileName   String    @map("new_file_name") @db.VarChar(255)
+  url           String    @db.VarChar(500)
+  ext           String?   @db.VarChar(50)
+  mimeType      String?   @map("mime_type") @db.VarChar(100)
+  storageType   String    @default("local") @map("storage_type") @db.VarChar(20)
+  fileMd5       String?   @map("file_md5") @db.VarChar(32)
+  thumbnail     String?   @db.VarChar(500) // 缩略图URL
+  parentFileId  String?   @map("parent_file_id") @db.VarChar(255) // 父文件ID（用于版本控制）
+  version       Int       @default(1) // 版本号
+  isLatest      Boolean   @default(true) @map("is_latest") // 是否最新版本
+  downloadCount Int       @default(0) @map("download_count")
+  status        String    @default("0") @db.Char(1)
+  delFlag       String    @default("0") @map("del_flag") @db.Char(1)
+  createBy      String    @default("") @map("create_by") @db.VarChar(64)
+  createTime    DateTime? @map("create_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
+  updateBy      String    @default("") @map("update_by") @db.VarChar(64)
+  updateTime    DateTime? @map("update_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
+  remark        String?   @db.VarChar(500)
 
   // Relations
-  shares      SysFileShare[]
+  shares        SysFileShare[]
 
   @@index([tenantId, folderId])
-  @@index([fileMd5])
+  @@index([fileMd5, delFlag])
+  @@index([parentFileId, version])
   @@map("sys_upload")
 }
 

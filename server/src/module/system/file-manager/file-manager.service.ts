@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, ConflictException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Result, ResponseCode } from 'src/common/response';
 import { DelFlagEnum, StatusEnum } from 'src/common/enum/index';
@@ -10,12 +10,23 @@ import { Prisma } from '@prisma/client';
 import { GenerateUUID } from 'src/common/utils';
 import * as crypto from 'crypto';
 import * as path from 'path';
+import * as fs from 'fs';
+import archiver from 'archiver';
+import { Response } from 'express';
+import { FileAccessService } from './services/file-access.service';
+import { VersionService } from '../upload/services/version.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class FileManagerService {
   private readonly logger = new Logger(FileManagerService.name);
 
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly fileAccessService: FileAccessService,
+    private readonly versionService: VersionService,
+    private readonly config: ConfigService,
+  ) { }
 
   // ==================== 文件夹管理 ====================
 
@@ -533,5 +544,425 @@ export class FileManagerService {
     });
 
     return Result.ok(shares);
+  }
+
+  // ==================== 回收站管理 ====================
+
+  /**
+   * 获取回收站文件列表
+   */
+  async getRecycleList(query: ListFileDto) {
+    const tenantId = TenantContext.getTenantId();
+    const { pageNum = 1, pageSize = 10, fileName } = query;
+
+    const where: Prisma.SysUploadWhereInput = {
+      tenantId,
+      delFlag: '1', // 只查询已删除的文件
+    };
+
+    if (fileName) {
+      where.fileName = { contains: fileName };
+    }
+
+    const skip = (pageNum - 1) * pageSize;
+    const [files, total] = await Promise.all([
+      this.prisma.sysUpload.findMany({
+        where,
+        skip,
+        take: pageSize,
+        orderBy: { updateTime: 'desc' },
+      }),
+      this.prisma.sysUpload.count({ where }),
+    ]);
+
+    return Result.ok({
+      rows: files,
+      total,
+      pageNum,
+      pageSize,
+    });
+  }
+
+  /**
+   * 恢复回收站文件
+   */
+  async restoreFiles(uploadIds: string[], username: string) {
+    const tenantId = TenantContext.getTenantId();
+
+    // 恢复文件并增加租户存储使用量
+    for (const uploadId of uploadIds) {
+      const file = await this.prisma.sysUpload.findUnique({
+        where: { uploadId },
+      });
+
+      if (!file || file.tenantId !== tenantId || file.delFlag !== '1') {
+        continue;
+      }
+
+      // 恢复文件
+      await this.prisma.sysUpload.update({
+        where: { uploadId },
+        data: {
+          delFlag: '0',
+          updateBy: username,
+          updateTime: new Date(),
+        },
+      });
+
+      // 增加存储使用量
+      const fileSizeMB = Math.ceil(file.size / 1024 / 1024);
+      await this.prisma.sysTenant.update({
+        where: { tenantId },
+        data: {
+          storageUsed: { increment: fileSizeMB },
+        },
+      });
+
+      this.logger.log(`恢复文件: ${file.fileName}, 大小: ${fileSizeMB}MB`);
+    }
+
+    return Result.ok();
+  }
+
+  /**
+   * 彻底删除回收站文件
+   */
+  async clearRecycle(uploadIds: string[], username: string) {
+    const tenantId = TenantContext.getTenantId();
+
+    for (const uploadId of uploadIds) {
+      const file = await this.prisma.sysUpload.findUnique({
+        where: { uploadId },
+      });
+
+      if (!file || file.tenantId !== tenantId || file.delFlag !== '1') {
+        continue;
+      }
+
+      // 删除物理文件
+      await this.versionService.deletePhysicalFile(file);
+
+      // 删除数据库记录
+      await this.prisma.sysUpload.delete({
+        where: { uploadId },
+      });
+
+      this.logger.log(`彻底删除文件: ${file.fileName}`);
+    }
+
+    return Result.ok();
+  }
+
+  // ==================== 文件版本管理 ====================
+
+  /**
+   * 获取文件版本历史
+   */
+  async getFileVersions(uploadId: string) {
+    const tenantId = TenantContext.getTenantId();
+
+    // 获取当前文件
+    const currentFile = await this.prisma.sysUpload.findUnique({
+      where: { uploadId },
+    });
+
+    if (!currentFile || currentFile.tenantId !== tenantId) {
+      return Result.fail(ResponseCode.INTERNAL_SERVER_ERROR, '文件不存在');
+    }
+
+    // 确定基础ID
+    const baseId = currentFile.parentFileId || currentFile.uploadId;
+
+    // 查询所有版本
+    const versions = await this.prisma.sysUpload.findMany({
+      where: {
+        OR: [
+          { uploadId: baseId },
+          { parentFileId: baseId },
+        ],
+        tenantId,
+        delFlag: '0',
+      },
+      orderBy: { version: 'desc' },
+      select: {
+        uploadId: true,
+        fileName: true,
+        size: true,
+        version: true,
+        isLatest: true,
+        createTime: true,
+        createBy: true,
+        updateTime: true,
+        url: true,
+        ext: true,
+      },
+    });
+
+    return Result.ok({
+      currentVersion: currentFile.version,
+      versions,
+    });
+  }
+
+  /**
+   * 恢复到指定版本
+   */
+  async restoreVersion(fileId: string, targetVersionId: string, username: string) {
+    const tenantId = TenantContext.getTenantId();
+
+    // 获取目标版本文件
+    const targetVersion = await this.prisma.sysUpload.findUnique({
+      where: { uploadId: targetVersionId },
+    });
+
+    if (!targetVersion || targetVersion.tenantId !== tenantId || targetVersion.delFlag !== '0') {
+      throw new BadRequestException('目标版本不存在');
+    }
+
+    // 获取当前最新版本
+    const baseId = targetVersion.parentFileId || targetVersion.uploadId;
+    const latestFile = await this.prisma.sysUpload.findFirst({
+      where: {
+        OR: [
+          { uploadId: baseId },
+          { parentFileId: baseId },
+        ],
+        isLatest: true,
+        delFlag: '0',
+      },
+    });
+
+    if (!latestFile) {
+      throw new BadRequestException('当前最新版本不存在');
+    }
+
+    // 检查isLatest状态（冲突检测）
+    if (!latestFile.isLatest) {
+      throw new ConflictException('文件已被修改，请刷新后重试');
+    }
+
+    // 使用事务创建新版本
+    const newVersion = latestFile.version + 1;
+    const newUploadId = GenerateUUID();
+
+    await this.prisma.$transaction([
+      // 更新旧版本的isLatest标志
+      this.prisma.sysUpload.updateMany({
+        where: {
+          OR: [
+            { uploadId: baseId },
+            { parentFileId: baseId },
+          ],
+          isLatest: true,
+        },
+        data: { isLatest: false },
+      }),
+      // 创建新版本（复制目标版本的内容）
+      this.prisma.sysUpload.create({
+        data: {
+          uploadId: newUploadId,
+          tenantId,
+          fileName: targetVersion.fileName,
+          newFileName: targetVersion.newFileName,
+          url: targetVersion.url,
+          folderId: latestFile.folderId,
+          ext: targetVersion.ext,
+          size: targetVersion.size,
+          mimeType: targetVersion.mimeType,
+          storageType: targetVersion.storageType,
+          fileMd5: targetVersion.fileMd5,
+          thumbnail: targetVersion.thumbnail,
+          version: newVersion,
+          parentFileId: baseId,
+          isLatest: true,
+          downloadCount: 0,
+          status: '0',
+          delFlag: '0',
+          createBy: username,
+          updateBy: username,
+        },
+      }),
+    ]);
+
+    // 增加存储使用量
+    const fileSizeMB = Math.ceil(targetVersion.size / 1024 / 1024);
+    await this.prisma.sysTenant.update({
+      where: { tenantId },
+      data: {
+        storageUsed: { increment: fileSizeMB },
+      },
+    });
+
+    // 检查并清理旧版本
+    await this.versionService.checkAndCleanOldVersions(baseId);
+
+    this.logger.log(`恢复版本: 从版本${targetVersion.version}创建新版本${newVersion}`);
+
+    return Result.ok({
+      newVersion,
+      uploadId: newUploadId,
+    });
+  }
+
+  // ==================== 文件下载 ====================
+
+  /**
+   * 获取文件访问令牌
+   */
+  async getAccessToken(uploadId: string) {
+    const tenantId = TenantContext.getTenantId();
+
+    const file = await this.prisma.sysUpload.findUnique({
+      where: { uploadId },
+    });
+
+    if (!file || file.tenantId !== tenantId || file.delFlag !== '0') {
+      return Result.fail(ResponseCode.INTERNAL_SERVER_ERROR, '文件不存在');
+    }
+
+    const token = this.fileAccessService.generateAccessToken(uploadId, tenantId);
+
+    return Result.ok({
+      token,
+      expiresIn: 1800, // 30分钟
+    });
+  }
+
+  /**
+   * 下载文件（需要令牌验证）
+   */
+  async downloadFile(uploadId: string, token: string, res: Response) {
+    // 验证令牌
+    const { fileId, tenantId } = this.fileAccessService.verifyAccessToken(token);
+
+    if (fileId !== uploadId) {
+      throw new BadRequestException('令牌与文件不匹配');
+    }
+
+    // 获取文件信息
+    const file = await this.prisma.sysUpload.findUnique({
+      where: { uploadId },
+    });
+
+    if (!file || file.tenantId !== tenantId || file.delFlag !== '0') {
+      throw new BadRequestException('文件不存在');
+    }
+
+    // 增加下载次数
+    await this.prisma.sysUpload.update({
+      where: { uploadId },
+      data: { downloadCount: { increment: 1 } },
+    });
+
+    // 根据存储类型返回文件
+    if (file.storageType === 'local') {
+      // 本地文件流式传输
+      const baseDir = path.join(process.cwd(), this.config.get('app.file.location'));
+      const serveRoot = this.config.get('app.file.serveRoot');
+      const relativePath = file.url.split(serveRoot)[1];
+
+      if (!relativePath) {
+        throw new BadRequestException('文件路径无效');
+      }
+
+      const filePath = path.join(baseDir, relativePath);
+
+      if (!fs.existsSync(filePath)) {
+        throw new BadRequestException('文件不存在');
+      }
+
+      res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(file.fileName)}"`);
+      res.setHeader('Content-Type', file.mimeType || 'application/octet-stream');
+
+      const fileStream = fs.createReadStream(filePath);
+      fileStream.pipe(res);
+    } else {
+      // COS文件重定向
+      res.redirect(302, file.url);
+    }
+  }
+
+  /**
+   * 批量下载文件（打包为zip）
+   */
+  async batchDownload(uploadIds: string[], res: Response) {
+    const tenantId = TenantContext.getTenantId();
+
+    // 获取所有文件信息
+    const files = await this.prisma.sysUpload.findMany({
+      where: {
+        uploadId: { in: uploadIds },
+        tenantId,
+        delFlag: '0',
+      },
+    });
+
+    if (files.length === 0) {
+      throw new BadRequestException('没有可下载的文件');
+    }
+
+    // 创建zip压缩流
+    const archive = archiver('zip', {
+      zlib: { level: 9 },
+    });
+
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="files_${Date.now()}.zip"`);
+
+    archive.pipe(res);
+
+    const baseDir = path.join(process.cwd(), this.config.get('app.file.location'));
+    const serveRoot = this.config.get('app.file.serveRoot');
+
+    // 添加文件到压缩包
+    for (const file of files) {
+      if (file.storageType === 'local') {
+        const relativePath = file.url.split(serveRoot)[1];
+        if (relativePath) {
+          const filePath = path.join(baseDir, relativePath);
+          if (fs.existsSync(filePath)) {
+            archive.file(filePath, { name: file.fileName });
+            this.logger.log(`添加文件到压缩包: ${file.fileName}`);
+          }
+        }
+      }
+      // COS文件暂不支持批量下载
+    }
+
+    await archive.finalize();
+    this.logger.log(`批量下载完成: ${files.length}个文件`);
+  }
+
+  // ==================== 租户存储统计 ====================
+
+  /**
+   * 获取租户存储使用统计
+   */
+  async getStorageStats() {
+    const tenantId = TenantContext.getTenantId();
+
+    const tenant = await this.prisma.sysTenant.findUnique({
+      where: { tenantId },
+      select: {
+        storageQuota: true,
+        storageUsed: true,
+        companyName: true,
+      },
+    });
+
+    if (!tenant) {
+      return Result.fail(ResponseCode.INTERNAL_SERVER_ERROR, '租户不存在');
+    }
+
+    const { storageQuota, storageUsed, companyName } = tenant;
+    const percentage = storageQuota > 0 ? (storageUsed / storageQuota) * 100 : 0;
+
+    return Result.ok({
+      used: storageUsed,
+      quota: storageQuota,
+      percentage: parseFloat(percentage.toFixed(2)),
+      remaining: storageQuota - storageUsed,
+      companyName,
+    });
   }
 }
