@@ -1,0 +1,112 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production build
+dist/
+dist-ssr/
+build/
+out/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+.jest-cache/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+
+# Editor directories and files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.VSCodeCounter/
+
+# Lock files (optional, uncomment if you want to ignore them)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Deployment files
+deploy.config.cjs
+.deploy-temp/
+*.tar.gz
+
+# Upload files (user uploaded content)
+upload/
+!upload/.gitkeep
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Cache
+.cache/
+.temp/
+.tmp/
+*.tsbuildinfo
+
+# Prisma
+# server/prisma/migrations/*
+# !server/prisma/migrations/.gitkeep
+
+# RSA keys (sensitive)
+server/keys/private.key
+server/keys/public.key
+
+# PM2
+.pm2/
+pm2.log
+ecosystem.config.cjs.local
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Misc
+*.orig
+*.rej
+.history/

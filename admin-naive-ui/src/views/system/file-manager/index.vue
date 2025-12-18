@@ -140,7 +140,7 @@
           <div v-if="fileList.length > 0" :class="isMobile ? 'flex justify-center mt-4' : 'flex justify-end mt-4'">
             <n-pagination v-model:page="pagination.page" v-model:page-size="pagination.pageSize"
               :item-count="pagination.itemCount" :page-sizes="[20, 50, 100]" :show-size-picker="!isMobile"
-              :size="isMobile ? 'small' : 'medium'" @update:page="loadFileList" @update:page-size="loadFileList" />
+              :size="paginationSize" @update:page="loadFileList" @update:page-size="loadFileList" />
           </div>
         </n-layout-content>
       </n-layout>
@@ -169,6 +169,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onUnmounted, h } from 'vue';
 import { useWindowSize } from '@vueuse/core';
+import { useThemeStore } from '@/store/modules/theme';
 import {
   NCard,
   NBreadcrumb,
@@ -242,6 +243,7 @@ defineOptions({
 
 const message = useMessage();
 const dialog = useDialog();
+const themeStore = useThemeStore();
 
 // 响应式相关
 const { width: windowWidth } = useWindowSize();
@@ -249,6 +251,12 @@ const isMobile = computed(() => windowWidth.value < 768);
 const isTablet = computed(() => windowWidth.value >= 768 && windowWidth.value < 1024);
 const sidebarCollapsed = ref(windowWidth.value < 768); // 移动端默认折叠
 const showSearch = ref(false);
+
+// 分页器尺寸 - 分页器不支持 tiny，所以需要转换
+const paginationSize = computed(() => {
+  const size = themeStore.componentSize;
+  return size === 'tiny' ? 'small' : size;
+});
 
 type FileTypeCategory = keyof typeof FILE_TYPE_CATEGORIES;
 
