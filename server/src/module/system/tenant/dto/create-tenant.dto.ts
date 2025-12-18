@@ -1,6 +1,7 @@
 import { IsString, IsEnum, Length, IsOptional, IsNumber, IsDateString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { StatusEnum, StatusEnumSchema } from 'src/common/enum';
+import { IsStrongPassword } from 'src/common/validators/password.validator';
 
 export class CreateTenantDto {
     @ApiProperty({ required: false, description: '租户ID（不传则自动生成）' })
@@ -83,6 +84,7 @@ export class CreateTenantDto {
 
     @ApiProperty({ required: true, description: '管理员密码' })
     @IsString()
+    @IsStrongPassword()
     @Length(6, 20)
     password: string;
 }

@@ -42,6 +42,7 @@ declare module "@elegant-router/types" {
     "system_config": "/system/config";
     "system_dept": "/system/dept";
     "system_dict": "/system/dict";
+    "system_file-manager": "/system/file-manager";
     "system_menu": "/system/menu";
     "system_notice": "/system/notice";
     "system_oss": "/system/oss";
@@ -139,6 +140,7 @@ declare module "@elegant-router/types" {
     | "system_config"
     | "system_dept"
     | "system_dict"
+    | "system_file-manager"
     | "system_menu"
     | "system_notice"
     | "system_oss-config"

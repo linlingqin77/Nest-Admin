@@ -1,6 +1,7 @@
 import { IsString, IsEnum, Length, IsOptional, IsEmail } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { SexEnum, SexEnumSchema } from 'src/common/enum';
+import { IsStrongPassword } from 'src/common/validators/password.validator';
 
 /**
  * 更新个人资料 DTO
@@ -46,6 +47,7 @@ export class UpdatePwdDto {
 
   @ApiProperty({ required: true, description: '新密码' })
   @IsString()
+  @IsStrongPassword()
   @Length(0, 200)
   newPassword: string;
 }

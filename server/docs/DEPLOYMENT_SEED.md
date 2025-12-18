@@ -7,6 +7,79 @@
 1. 部署脚本只运行了数据库迁移（`prisma migrate deploy`）或同步（`prisma db push`）
 2. **没有导入种子数据**（seed），导致数据库中缺少菜单、角色等初始数据
 
+## FFmpeg 安装与配置
+
+文件管理功能支持生成视频缩略图，需要服务器安装 FFmpeg。
+
+### Ubuntu/Debian
+
+```bash
+# 更新包列表
+sudo apt update
+
+# 安装 FFmpeg
+sudo apt install -y ffmpeg
+
+# 验证安装
+ffmpeg -version
+```
+
+确保版本 ≥ 4.0
+
+### RHEL/CentOS
+
+```bash
+# 安装 EPEL 仓库（如未安装）
+sudo yum install -y epel-release
+
+# 安装 FFmpeg
+sudo yum install -y ffmpeg
+
+# 验证安装
+ffmpeg -version
+```
+
+### macOS
+
+```bash
+# 使用 Homebrew 安装
+brew install ffmpeg
+
+# 验证安装
+ffmpeg -version
+```
+
+### Docker Alpine
+
+如果使用 Docker 部署，在 `Dockerfile` 中添加：
+
+```dockerfile
+RUN apk add --no-cache ffmpeg
+```
+
+### 配置缩略图功能
+
+在环境变量中配置：
+
+```bash
+# 启用缩略图生成（默认 true）
+UPLOAD_THUMBNAIL_ENABLED=true
+
+# 启用视频缩略图（需要 FFmpeg，默认 false）
+UPLOAD_THUMBNAIL_ENABLE_VIDEO=false
+
+# 缩略图宽度（默认 200px）
+UPLOAD_THUMBNAIL_WIDTH=200
+
+# 缩略图质量（默认 80）
+UPLOAD_THUMBNAIL_QUALITY=80
+
+# 缩略图格式（默认 webp）
+UPLOAD_THUMBNAIL_FORMAT=webp
+```
+
+**注意：** 视频缩略图生成会增加服务器负载，建议根据实际需求开启。
+
 ## 解决方案
 
 ### 1. 部署脚本增强（v2.0 新增功能）

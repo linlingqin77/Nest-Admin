@@ -1,11 +1,13 @@
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
+// import csurf from 'csurf';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { mw as requestIpMw } from 'request-ip';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from 'src/app.module';
-import { HttpExceptionsFilter } from 'src/common/filters/http-exceptions-filter';
+import { GlobalExceptionFilter } from 'src/common/filters/global-exception.filter';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger as PinoLogger } from 'nestjs-pino';
@@ -52,13 +54,26 @@ async function bootstrap() {
   // 信任代理（nginx 反向代理时需要，否则 express-rate-limit 会报错）
   app.set('trust proxy', 1);
 
-  // 设置访问频率
+  // 设置全局限流（保留作为后备）
   app.use(
     rateLimit({
       windowMs: 15 * 60 * 1000, // 15分钟
       max: 1000, // 限制15分钟内最多只能访问1000次
+      message: '请求过于频繁,请稍后再试',
+      standardHeaders: true, // 返回限流信息在 `RateLimit-*` 头中
+      legacyHeaders: false, // 禁用 `X-RateLimit-*` 头
     }),
   );
+
+  // CSRF 保护 (如需启用,取消注释)
+  // const csrf = require('csurf');
+  // app.use(csrf({
+  //   cookie: {
+  //     httpOnly: true,
+  //     sameSite: 'strict',
+  //     secure: process.env.NODE_ENV === 'production'
+  //   }
+  // }));
   // 设置 api 访问前缀
   const prefix = config.get<string>('app.prefix');
 
@@ -75,9 +90,19 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix(prefix);
+
   // 全局验证
-  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
-  app.useGlobalFilters(new HttpExceptionsFilter());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true, // 禁止未定义的属性
+      transformOptions: {
+        enableImplicitConversion: true, // 启用隐式类型转换
+      },
+    })
+  );
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   // web 安全，防常见漏洞
   // 注意： 开发环境如果开启 nest static module 需要将 crossOriginResourcePolicy 设置为 false 否则 静态资源 跨域不可访问
@@ -85,9 +110,44 @@ async function bootstrap() {
     helmet({
       crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
       crossOriginResourcePolicy: false,
-      contentSecurityPolicy: false, // 放开 CSP 限制
+      // 完善 CSP 策略
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", 'data:', 'https:', 'http:'],
+          connectSrc: ["'self'"],
+          fontSrc: ["'self'", 'data:'],
+          objectSrc: ["'none'"],
+          mediaSrc: ["'self'"],
+          frameSrc: ["'self'"],
+        },
+      },
+      // 其他安全头
+      hsts: {
+        maxAge: 31536000, // 1年
+        includeSubDomains: true,
+        preload: true,
+      },
+      noSniff: true, // X-Content-Type-Options
+      xssFilter: true, // X-XSS-Protection
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
     }),
   );
+  // cookie parser (required for CSRF when using cookie option)
+  app.use(cookieParser());
+
+  // CSRF 保护已禁用
+  // app.use(
+  //   csurf({
+  //     cookie: {
+  //       httpOnly: true,
+  //       sameSite: 'strict',
+  //       secure: process.env.NODE_ENV === 'production',
+  //     },
+  //   }),
+  // );
   const swaggerOptions = new DocumentBuilder()
     .setTitle(API_INFO.title)
     .setDescription(API_INFO.description)

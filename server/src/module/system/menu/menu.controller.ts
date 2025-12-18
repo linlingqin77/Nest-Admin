@@ -1,19 +1,20 @@
 import { Controller, Get, Post, Body, Query, Put, Param, Delete } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { MenuService } from './menu.service';
-import { CreateMenuDto, UpdateMenuDto, ListDeptDto } from './dto/index';
+import { CreateMenuDto, UpdateMenuDto, ListMenuDto } from './dto/index';
 import { RequirePermission } from 'src/common/decorators/require-premission.decorator';
 import { Api } from 'src/common/decorators/api.decorator';
 import { MenuVo, MenuTreeVo, RoleMenuTreeSelectVo } from './vo/menu.vo';
 import { User, UserDto } from 'src/module/system/user/user.decorator';
 import { Operlog } from 'src/common/decorators/operlog.decorator';
 import { BusinessType } from 'src/common/constant/business.constant';
+import { UserTool, UserToolType } from '../user/user.decorator';
 
 @ApiTags('菜单管理')
 @Controller('system/menu')
 @ApiBearerAuth('Authorization')
 export class MenuController {
-  constructor(private readonly menuService: MenuService) {}
+  constructor(private readonly menuService: MenuService) { }
 
   @Api({
     summary: '菜单管理-获取路由',
@@ -47,7 +48,7 @@ export class MenuController {
   })
   @RequirePermission('system:menu:list')
   @Get('/list')
-  findAll(@Query() query: ListDeptDto) {
+  findAll(@Query() query: ListMenuDto) {
     return this.menuService.findAll(query);
   }
 

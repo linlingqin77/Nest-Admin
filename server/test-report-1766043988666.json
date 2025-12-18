@@ -1,0 +1,400 @@
+{
+  "summary": {
+    "startTime": "2025-12-18T07:46:28.365Z",
+    "endTime": "2025-12-18T07:46:28.666Z",
+    "statistics": {
+      "total": 39,
+      "success": 32,
+      "failed": 2,
+      "skipped": 5,
+      "successRate": "82.05"
+    }
+  },
+  "results": [
+    {
+      "module": "基础",
+      "endpoint": "/captchaImage",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 20,
+      "timestamp": "2025-12-18T07:46:28.386Z"
+    },
+    {
+      "module": "基础",
+      "endpoint": "/health",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 12,
+      "timestamp": "2025-12-18T07:46:28.398Z"
+    },
+    {
+      "module": "基础",
+      "endpoint": "/health/liveness",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 3,
+      "timestamp": "2025-12-18T07:46:28.401Z"
+    },
+    {
+      "module": "基础",
+      "endpoint": "/health/readiness",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 2,
+      "timestamp": "2025-12-18T07:46:28.403Z"
+    },
+    {
+      "module": "基础",
+      "endpoint": "/metrics",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 2,
+      "timestamp": "2025-12-18T07:46:28.405Z"
+    },
+    {
+      "module": "认证",
+      "endpoint": "/getInfo",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 3,
+      "timestamp": "2025-12-18T07:46:28.530Z"
+    },
+    {
+      "module": "认证",
+      "endpoint": "/getRouters",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 2,
+      "timestamp": "2025-12-18T07:46:28.532Z"
+    },
+    {
+      "module": "用户管理",
+      "endpoint": "/system/user/list",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 7,
+      "timestamp": "2025-12-18T07:46:28.539Z"
+    },
+    {
+      "module": "用户管理",
+      "endpoint": "/system/user/1",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 9,
+      "timestamp": "2025-12-18T07:46:28.548Z"
+    },
+    {
+      "module": "用户管理",
+      "endpoint": "/system/user/authRole/1",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 5,
+      "timestamp": "2025-12-18T07:46:28.553Z"
+    },
+    {
+      "module": "用户管理",
+      "endpoint": "/system/user/deptTree",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 1,
+      "timestamp": "2025-12-18T07:46:28.555Z"
+    },
+    {
+      "module": "用户管理",
+      "endpoint": "/system/user",
+      "method": "POST",
+      "status": "skipped",
+      "message": "需要完整用户数据",
+      "duration": 0,
+      "timestamp": "2025-12-18T07:46:28.555Z"
+    },
+    {
+      "module": "角色管理",
+      "endpoint": "/system/role/list",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 10,
+      "timestamp": "2025-12-18T07:46:28.565Z"
+    },
+    {
+      "module": "角色管理",
+      "endpoint": "/system/role/optionselect",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 3,
+      "timestamp": "2025-12-18T07:46:28.568Z"
+    },
+    {
+      "module": "角色管理",
+      "endpoint": "/system/role/1",
+      "method": "GET",
+      "status": "skipped",
+      "message": "需要有效角色ID",
+      "duration": 0,
+      "timestamp": "2025-12-18T07:46:28.568Z"
+    },
+    {
+      "module": "菜单管理",
+      "endpoint": "/system/menu/list",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 5,
+      "timestamp": "2025-12-18T07:46:28.573Z"
+    },
+    {
+      "module": "菜单管理",
+      "endpoint": "/system/menu/treeselect",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 4,
+      "timestamp": "2025-12-18T07:46:28.577Z"
+    },
+    {
+      "module": "菜单管理",
+      "endpoint": "/system/menu/roleMenuTreeselect/1",
+      "method": "GET",
+      "status": "skipped",
+      "message": "需要有效角色ID",
+      "duration": 0,
+      "timestamp": "2025-12-18T07:46:28.577Z"
+    },
+    {
+      "module": "部门管理",
+      "endpoint": "/system/dept/list",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 2,
+      "timestamp": "2025-12-18T07:46:28.579Z"
+    },
+    {
+      "module": "部门管理",
+      "endpoint": "/system/dept/list/exclude/1",
+      "method": "GET",
+      "status": "skipped",
+      "message": "需要有效部门ID",
+      "duration": 0,
+      "timestamp": "2025-12-18T07:46:28.579Z"
+    },
+    {
+      "module": "岗位管理",
+      "endpoint": "/system/post/list",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 3,
+      "timestamp": "2025-12-18T07:46:28.582Z"
+    },
+    {
+      "module": "字典管理",
+      "endpoint": "/system/dict/type/list",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 3,
+      "timestamp": "2025-12-18T07:46:28.585Z"
+    },
+    {
+      "module": "字典管理",
+      "endpoint": "/system/dict/data/list",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 5,
+      "timestamp": "2025-12-18T07:46:28.591Z"
+    },
+    {
+      "module": "字典管理",
+      "endpoint": "/system/dict/data/type/sys_normal_disable",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 1,
+      "timestamp": "2025-12-18T07:46:28.592Z"
+    },
+    {
+      "module": "参数配置",
+      "endpoint": "/system/config/list",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 4,
+      "timestamp": "2025-12-18T07:46:28.596Z"
+    },
+    {
+      "module": "参数配置",
+      "endpoint": "/system/config/configKey/sys.index.skinName",
+      "method": "GET",
+      "status": "failed",
+      "statusCode": 500,
+      "message": "Request failed with status code 500",
+      "duration": 9,
+      "timestamp": "2025-12-18T07:46:28.605Z"
+    },
+    {
+      "module": "通知公告",
+      "endpoint": "/system/notice/list",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 4,
+      "timestamp": "2025-12-18T07:46:28.609Z"
+    },
+    {
+      "module": "租户管理",
+      "endpoint": "/system/tenant/list",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 3,
+      "timestamp": "2025-12-18T07:46:28.612Z"
+    },
+    {
+      "module": "租户管理",
+      "endpoint": "/system/tenant/package/list",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 3,
+      "timestamp": "2025-12-18T07:46:28.616Z"
+    },
+    {
+      "module": "文件管理",
+      "endpoint": "/system/file-manager/file/list",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 5,
+      "timestamp": "2025-12-18T07:46:28.621Z"
+    },
+    {
+      "module": "在线用户",
+      "endpoint": "/monitor/online/list",
+      "method": "GET",
+      "status": "failed",
+      "statusCode": 400,
+      "message": "Request failed with status code 400",
+      "duration": 2,
+      "timestamp": "2025-12-18T07:46:28.623Z"
+    },
+    {
+      "module": "定时任务",
+      "endpoint": "/monitor/job/list",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 4,
+      "timestamp": "2025-12-18T07:46:28.627Z"
+    },
+    {
+      "module": "定时任务",
+      "endpoint": "/monitor/jobLog/list",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 2,
+      "timestamp": "2025-12-18T07:46:28.629Z"
+    },
+    {
+      "module": "操作日志",
+      "endpoint": "/monitor/operlog/list",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 6,
+      "timestamp": "2025-12-18T07:46:28.635Z"
+    },
+    {
+      "module": "登录日志",
+      "endpoint": "/monitor/logininfor/list",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 7,
+      "timestamp": "2025-12-18T07:46:28.642Z"
+    },
+    {
+      "module": "缓存监控",
+      "endpoint": "/monitor/cache",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 2,
+      "timestamp": "2025-12-18T07:46:28.644Z"
+    },
+    {
+      "module": "缓存监控",
+      "endpoint": "/monitor/cache/getNames",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 1,
+      "timestamp": "2025-12-18T07:46:28.645Z"
+    },
+    {
+      "module": "服务器监控",
+      "endpoint": "/monitor/server",
+      "method": "GET",
+      "status": "success",
+      "statusCode": 200,
+      "message": "测试通过",
+      "duration": 11,
+      "timestamp": "2025-12-18T07:46:28.656Z"
+    },
+    {
+      "module": "系统工具",
+      "endpoint": "/tool/gen/list",
+      "method": "GET",
+      "status": "skipped",
+      "message": "代码生成功能可选",
+      "duration": 0,
+      "timestamp": "2025-12-18T07:46:28.656Z"
+    }
+  ]
+}

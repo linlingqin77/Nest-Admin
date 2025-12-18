@@ -1,15 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { ResultData } from 'src/common/utils/result';
+import { Result, ResponseCode } from 'src/common/response';
+import { BusinessException } from 'src/common/exceptions';
 import { CreateDeptDto, UpdateDeptDto, ListDeptDto } from './dto/index';
 import { FormatDateFields, ListToTree } from 'src/common/utils/index';
-import { CacheEnum, DataScopeEnum } from 'src/common/enum/index';
+import { CacheEnum, DataScopeEnum, DelFlagEnum, StatusEnum } from 'src/common/enum/index';
 import { Cacheable, CacheEvict } from 'src/common/decorators/redis.decorator';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { DeptRepository } from './dept.repository';
 
 @Injectable()
 export class DeptService {
-  constructor(private readonly prisma: PrismaService) { }
+  private readonly logger = new Logger(DeptService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly deptRepo: DeptRepository,
+  ) { }
 
   @CacheEvict(CacheEnum.SYS_DEPT_KEY, '*')
   async create(createDeptDto: CreateDeptDto) {
@@ -24,7 +31,7 @@ export class DeptService {
         },
       });
       if (!parent) {
-        return ResultData.fail(500, '父级部门不存在');
+        return Result.fail(ResponseCode.INTERNAL_SERVER_ERROR, '父级部门不存在');
       }
       ancestors = parent.ancestors ? `${parent.ancestors},${createDeptDto.parentId}` : `${createDeptDto.parentId}`;
     }
@@ -37,18 +44,17 @@ export class DeptService {
       phone: createDeptDto.phone ?? '',
       email: createDeptDto.email ?? '',
       status: createDeptDto.status ?? '0',
-      delFlag: '0',
-      createBy: 'system',
-      updateBy: 'system',
+      delFlag: DelFlagEnum.NORMAL,
+      ...createDeptDto,
       remark: null,
     };
-    await this.prisma.sysDept.create({ data: payload });
-    return ResultData.ok();
+    await this.deptRepo.create(payload);
+    return Result.ok();
   }
 
   async findAll(query: ListDeptDto) {
     const where: Prisma.SysDeptWhereInput = {
-      delFlag: '0',
+      delFlag: DelFlagEnum.NORMAL,
     };
 
     if (query.deptName) {
@@ -66,18 +72,14 @@ export class DeptService {
       orderBy: { orderNum: 'asc' },
     });
     const formattedRes = FormatDateFields(res);
-    return ResultData.ok(formattedRes);
+    return Result.ok(formattedRes);
   }
 
   @Cacheable(CacheEnum.SYS_DEPT_KEY, 'findOne:{deptId}')
   async findOne(deptId: number) {
-    const data = await this.prisma.sysDept.findUnique({
-      where: {
-        deptId,
-      },
-    });
+    const data = await this.deptRepo.findById(deptId);
     const formattedData = FormatDateFields(data);
-    return ResultData.ok(formattedData);
+    return Result.ok(formattedData);
   }
 
   /**
@@ -94,7 +96,7 @@ export class DeptService {
       }
 
       const where: Prisma.SysDeptWhereInput = {
-        delFlag: '0',
+        delFlag: DelFlagEnum.NORMAL,
       };
 
       if (dataScope === DataScopeEnum.DATA_SCOPE_DEPT) {
@@ -115,20 +117,28 @@ export class DeptService {
       const list = await this.prisma.sysDept.findMany({ where });
       return list.map((item) => item.deptId);
     } catch (error) {
-      console.error('Failed to query department IDs:', error);
-      throw new Error('Querying department IDs failed');
+      this.logger.error('Failed to query department IDs:', error);
+      BusinessException.throw(ResponseCode.INTERNAL_SERVER_ERROR, '查询部门ID失败', error);
     }
   }
 
   @Cacheable(CacheEnum.SYS_DEPT_KEY, 'findListExclude')
   async findListExclude(id: number) {
-    //TODO 需排出ancestors 中不出现id的数据
+    // 排除 ancestors 中包含指定 id 的部门（排除子部门）
     const data = await this.prisma.sysDept.findMany({
       where: {
-        delFlag: '0',
+        delFlag: DelFlagEnum.NORMAL,
+        NOT: {
+          OR: [
+            { deptId: id },
+            { ancestors: { contains: `,${id},` } },
+            { ancestors: { startsWith: `${id},` } },
+            { ancestors: { endsWith: `,${id}` } },
+          ],
+        },
       },
     });
-    return ResultData.ok(data);
+    return Result.ok(data);
   }
 
   @CacheEvict(CacheEnum.SYS_DEPT_KEY, '*')
@@ -141,22 +151,19 @@ export class DeptService {
         select: { ancestors: true },
       });
       if (!parent) {
-        return ResultData.fail(500, '父级部门不存在');
+        return Result.fail(ResponseCode.INTERNAL_SERVER_ERROR, '父级部门不存在');
       }
       const ancestors = parent.ancestors ? `${parent.ancestors},${updateDeptDto.parentId}` : `${updateDeptDto.parentId}`;
       Object.assign(updateDeptDto, { ancestors: ancestors });
     }
-    await this.prisma.sysDept.update({ where: { deptId: updateDeptDto.deptId }, data: updateDeptDto });
-    return ResultData.ok();
+    await this.deptRepo.update(updateDeptDto.deptId, updateDeptDto);
+    return Result.ok();
   }
 
   @CacheEvict(CacheEnum.SYS_DEPT_KEY, '*')
   async remove(deptId: number) {
-    const data = await this.prisma.sysDept.update({
-      where: { deptId },
-      data: { delFlag: '1' },
-    });
-    return ResultData.ok(data);
+    const data = await this.deptRepo.softDelete(deptId);
+    return Result.ok(data);
   }
 
   /**
@@ -165,12 +172,12 @@ export class DeptService {
   async optionselect() {
     const list = await this.prisma.sysDept.findMany({
       where: {
-        delFlag: '0',
-        status: '0',
+        delFlag: DelFlagEnum.NORMAL,
+        status: StatusEnum.NORMAL,
       },
       orderBy: { orderNum: 'asc' },
     });
-    return ResultData.ok(list);
+    return Result.ok(list);
   }
 
   /**
@@ -181,7 +188,7 @@ export class DeptService {
   async deptTree() {
     const res = await this.prisma.sysDept.findMany({
       where: {
-        delFlag: '0',
+        delFlag: DelFlagEnum.NORMAL,
       },
       orderBy: { orderNum: 'asc' },
     });
@@ -201,7 +208,7 @@ export class DeptService {
   async getChildDeptIds(deptId: number): Promise<number[]> {
     const depts = await this.prisma.sysDept.findMany({
       where: {
-        delFlag: '0',
+        delFlag: DelFlagEnum.NORMAL,
         OR: [{ deptId }, { ancestors: { contains: `,${deptId}` } }, { ancestors: { startsWith: `${deptId},` } }, { ancestors: { contains: `,${deptId},` } }],
       },
       select: { deptId: true },

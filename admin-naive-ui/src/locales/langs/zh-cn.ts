@@ -301,6 +301,7 @@ const local: App.I18n.Schema = {
     monitor_online: '在线用户',
     'user-center': '个人中心',
     system_role: '角色管理',
+    'system_file-manager': '文件管理',
     demo: '测试',
     demo_demo: '测试单表',
     demo_tree: '测试树表',

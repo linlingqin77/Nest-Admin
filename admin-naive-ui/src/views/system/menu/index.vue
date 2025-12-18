@@ -466,14 +466,16 @@ const renderIframeQuery = (queryParam: string) => {
 
 <style scoped lang="scss">
 :deep(.infinite-scroll) {
-  height: calc(100vh - 224px - var(--calc-footer-height, 0px)) !important;
+  min-height: 200px;
   max-height: calc(100vh - 224px - var(--calc-footer-height, 0px)) !important;
+  // overflow-y: auto;
 }
 
 @media screen and (max-width: 1024px) {
   :deep(.infinite-scroll) {
-    height: calc(100vh - 227px - var(--calc-footer-height, 0px)) !important;
+    min-height: 200px;
     max-height: calc(100vh - 227px - var(--calc-footer-height, 0px)) !important;
+    overflow-y: auto;
   }
 }
 

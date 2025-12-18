@@ -3,7 +3,7 @@ import { UploadService } from './upload.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ChunkFileDto, ChunkMergeFileDto, FileUploadDto, uploadIdDto } from './dto/index';
-import { ResultData } from 'src/common/utils/result';
+import { Result } from 'src/common/response';
 import { Api } from 'src/common/decorators/api.decorator';
 import { Operlog } from 'src/common/decorators/operlog.decorator';
 import { BusinessType } from 'src/common/constant/business.constant';
@@ -31,9 +31,9 @@ export class UploadController {
   @Operlog({ businessType: BusinessType.IMPORT })
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  async singleFileUpload(@UploadedFile() file: Express.Multer.File) {
-    const res = await this.uploadService.singleFileUpload(file);
-    return ResultData.ok(res);
+  async singleFileUpload(@UploadedFile() file: Express.Multer.File, @Body() body: FileUploadDto) {
+    const res = await this.uploadService.singleFileUpload(file, body.folderId || 0);
+    return Result.ok(res);
   }
 
   /**

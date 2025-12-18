@@ -49,7 +49,10 @@ const formatTreeNodeBuildMenus = (menus: any[]): any[] => {
     router.query = menu.query;
     router.meta = setMeta(menu);
 
-    if (menu.children && menu.children.length > 0 && menu.menuType === UserConstants.TYPE_DIR) {
+    const hasChildren = menu.children && menu.children.length > 0;
+    const isDirectory = menu.menuType === UserConstants.TYPE_DIR;
+
+    if (hasChildren && isDirectory) {
       router.alwaysShow = true;
       router.redirect = 'noRedirect';
       router.children = formatTreeNodeBuildMenus(menu.children);

@@ -235,7 +235,7 @@ function handleResetSearch() {
       <NSpin class="dept-tree" :show="treeLoading">
         <NTree v-model:expanded-keys="expandedKeys" v-model:selected-keys="selectedKeys" block-node show-line
           :data="deptData as []" :show-irrelevant-nodes="false" :pattern="deptPattern" block-line
-          class="infinite-scroll h-full min-h-200px py-3" key-field="id" label-field="label" virtual-scroll
+          class="dept-tree-wrapper min-h-200px py-3" key-field="id" label-field="label" virtual-scroll
           :selectable="selectable" @update:selected-keys="handleClickTree">
           <template #empty>
             <NEmpty description="暂无部门信息" class="h-full min-h-200px justify-center" />
@@ -278,14 +278,16 @@ function handleResetSearch() {
   }
 
   :deep(.infinite-scroll) {
-    height: calc(100vh - 228px - var(--calc-footer-height, 0px)) !important;
+    min-height: 200px;
     max-height: calc(100vh - 228px - var(--calc-footer-height, 0px)) !important;
+    // overflow-y: auto;
   }
 
   @media screen and (max-width: 1024px) {
     :deep(.infinite-scroll) {
-      height: calc(100vh - 227px - var(--calc-footer-height, 0px)) !important;
+      min-height: 200px;
       max-height: calc(100vh - 227px - var(--calc-footer-height, 0px)) !important;
+      overflow-y: auto;
     }
   }
 

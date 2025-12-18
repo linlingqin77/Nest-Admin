@@ -153,6 +153,8 @@ model SysConfig {
   delFlag    String    @default("0") @map("del_flag") @db.Char(1)
 
   @@unique([tenantId, configKey], name: "unique_tenant_config_key")
+  @@index([tenantId, status])
+  @@index([configKey])
   @@map("sys_config")
 }
 
@@ -174,6 +176,9 @@ model SysDept {
   updateTime DateTime? @map("update_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
   remark    String?   @db.VarChar(500)
 
+  @@index([tenantId, status])
+  @@index([tenantId, parentId])
+  @@index([status])
   @@map("sys_dept")
 }
 
@@ -196,6 +201,8 @@ model SysDictData {
   delFlag    String    @default("0") @map("del_flag") @db.Char(1)
 
   @@unique([tenantId, dictType, dictValue], name: "unique_tenant_dict_data")
+  @@index([tenantId, dictType, status])
+  @@index([dictType])
   @@map("sys_dict_data")
 }
 
@@ -213,6 +220,8 @@ model SysDictType {
   delFlag   String    @default("0") @map("del_flag") @db.Char(1)
 
   @@unique([tenantId, dictType], name: "unique_tenant_dict_type")
+  @@index([tenantId, status])
+  @@index([dictType])
   @@map("sys_dict_type")
 }
 
@@ -232,6 +241,7 @@ model SysJob {
   updateTime     DateTime? @map("update_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
   remark         String?   @db.VarChar(500)
 
+  @@index([tenantId, status])
   @@map("sys_job")
 }
 
@@ -262,6 +272,10 @@ model SysLogininfor {
   delFlag       String    @default("0") @map("del_flag") @db.Char(1)
   loginTime     DateTime  @map("login_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
 
+  @@index([tenantId, loginTime])
+  @@index([userName])
+  @@index([status])
+  @@index([loginTime])
   @@map("sys_logininfor")
 }
 
@@ -288,6 +302,9 @@ model SysMenu {
   remark    String?   @db.VarChar(500)
   delFlag   String    @default("0") @map("del_flag") @db.Char(1)
 
+  @@index([tenantId, status])
+  @@index([tenantId, parentId])
+  @@index([status])
   @@map("sys_menu")
 }
 
@@ -328,6 +345,11 @@ model SysOperLog {
   status       String    @db.Char(1)
   costTime     Int       @map("cost_time")
 
+  @@index([tenantId, operTime])
+  @@index([operName])
+  @@index([status])
+  @@index([operTime])
+  @@index([businessType])
   @@map("sys_oper_log")
 }
 
@@ -347,6 +369,8 @@ model SysPost {
   remark    String?   @db.VarChar(500)
   delFlag   String    @default("0") @map("del_flag") @db.Char(1)
 
+  @@index([tenantId, status])
+  @@index([deptId])
   @@map("sys_post")
 }
 
@@ -367,6 +391,9 @@ model SysRole {
   updateTime       DateTime? @map("update_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
   remark           String?   @db.VarChar(500)
 
+  @@index([tenantId, status])
+  @@index([tenantId, roleKey])
+  @@index([roleKey])
   @@map("sys_role")
 }
 
@@ -386,14 +413,14 @@ model SysRoleMenu {
   @@map("sys_role_menu")
 }
 
-model SysUpload {
-  uploadId   String    @id @map("upload_id") @db.VarChar(255)
+/// 文件夹表
+model SysFileFolder {
+  folderId   Int       @id @default(autoincrement()) @map("folder_id")
   tenantId   String    @default("000000") @map("tenant_id") @db.VarChar(20)
-  size       Int
-  fileName   String    @map("file_name") @db.VarChar(255)
-  newFileName String   @map("new_file_name") @db.VarChar(255)
-  url        String    @db.VarChar(255)
-  ext        String?   @db.VarChar(255)
+  parentId   Int       @default(0) @map("parent_id")
+  folderName String    @map("folder_name") @db.VarChar(100)
+  folderPath String    @map("folder_path") @db.VarChar(500)
+  orderNum   Int       @default(0) @map("order_num")
   status     String    @default("0") @db.Char(1)
   delFlag    String    @default("0") @map("del_flag") @db.Char(1)
   createBy   String    @default("") @map("create_by") @db.VarChar(64)
@@ -402,7 +429,59 @@ model SysUpload {
   updateTime DateTime? @map("update_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
   remark     String?   @db.VarChar(500)
 
+  @@index([tenantId, parentId])
+  @@map("sys_file_folder")
+}
+
+/// 文件表（扩展原 SysUpload）
+model SysUpload {
+  uploadId    String    @id @map("upload_id") @db.VarChar(255)
+  tenantId    String    @default("000000") @map("tenant_id") @db.VarChar(20)
+  folderId    Int       @default(0) @map("folder_id")
+  size        Int
+  fileName    String    @map("file_name") @db.VarChar(255)
+  newFileName String    @map("new_file_name") @db.VarChar(255)
+  url         String    @db.VarChar(500)
+  ext         String?   @db.VarChar(50)
+  mimeType    String?   @map("mime_type") @db.VarChar(100)
+  storageType String    @default("local") @map("storage_type") @db.VarChar(20)
+  fileMd5     String?   @map("file_md5") @db.VarChar(32)
+  downloadCount Int     @default(0) @map("download_count")
+  status      String    @default("0") @db.Char(1)
+  delFlag     String    @default("0") @map("del_flag") @db.Char(1)
+  createBy    String    @default("") @map("create_by") @db.VarChar(64)
+  createTime  DateTime? @map("create_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
+  updateBy    String    @default("") @map("update_by") @db.VarChar(64)
+  updateTime  DateTime? @map("update_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
+  remark      String?   @db.VarChar(500)
+
+  // Relations
+  shares      SysFileShare[]
+
+  @@index([tenantId, folderId])
+  @@index([fileMd5])
   @@map("sys_upload")
+}
+
+/// 文件分享表
+model SysFileShare {
+  shareId    String    @id @default(uuid()) @map("share_id") @db.VarChar(64)
+  tenantId   String    @default("000000") @map("tenant_id") @db.VarChar(20)
+  uploadId   String    @map("upload_id") @db.VarChar(255)
+  shareCode  String?   @map("share_code") @db.VarChar(6)
+  expireTime DateTime? @map("expire_time") @db.Timestamp(6)
+  maxDownload Int      @default(-1) @map("max_download")
+  downloadCount Int    @default(0) @map("download_count")
+  status     String    @default("0") @db.Char(1)
+  createBy   String    @default("") @map("create_by") @db.VarChar(64)
+  createTime DateTime? @map("create_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
+  
+  // Relations
+  upload     SysUpload @relation(fields: [uploadId], references: [uploadId], onDelete: Cascade)
+
+  @@index([shareId, shareCode])
+  @@index([uploadId])
+  @@map("sys_file_share")
 }
 
 model SysUser {
@@ -427,6 +506,12 @@ model SysUser {
   updateTime DateTime? @map("update_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
   remark    String?   @db.VarChar(500)
 
+  @@index([tenantId, status])
+  @@index([tenantId, userName])
+  @@index([tenantId, createTime])
+  @@index([userName])
+  @@index([deptId])
+  @@index([status])
   @@map("sys_user")
 }
 

@@ -1,6 +1,7 @@
 import { IsString, IsEnum, IsArray, Length, IsOptional, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { StatusEnum, StatusEnumSchema, SexEnum, SexEnumSchema } from 'src/common/enum';
+import { IsStrongPassword } from 'src/common/validators/password.validator';
 
 /**
  * 创建用户 DTO
@@ -28,6 +29,7 @@ export class CreateUserDto {
 
   @ApiProperty({ required: true, description: '用户密码' })
   @IsString()
+  @IsStrongPassword()
   @Length(0, 200)
   password: string;
 

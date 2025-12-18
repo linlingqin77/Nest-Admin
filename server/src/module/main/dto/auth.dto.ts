@@ -1,11 +1,13 @@
 import { IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsStrongPassword } from 'src/common/validators/password.validator';
+import { TenantContext } from 'src/common/tenant/tenant.context';
 
 /**
  * 登录请求 DTO - 匹配 Soybean 前端
  */
 export class AuthLoginDto {
-  @ApiProperty({ description: '租户ID', required: false, default: '000000' })
+  @ApiProperty({ description: '租户ID', required: false, default: TenantContext.SUPER_TENANT_ID })
   @IsOptional()
   @IsString()
   tenantId?: string;
@@ -49,7 +51,7 @@ export class AuthLoginDto {
  * 注册请求 DTO
  */
 export class AuthRegisterDto {
-  @ApiProperty({ description: '租户ID', required: false, default: '000000' })
+  @ApiProperty({ description: '租户ID', required: false, default: TenantContext.SUPER_TENANT_ID })
   @IsOptional()
   @IsString()
   tenantId?: string;
@@ -64,6 +66,7 @@ export class AuthRegisterDto {
   @ApiProperty({ description: '密码', required: true })
   @IsNotEmpty({ message: '密码不能为空' })
   @IsString()
+  @IsStrongPassword()
   @MinLength(5)
   @MaxLength(20)
   password: string;

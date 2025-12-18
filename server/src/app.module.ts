@@ -1,15 +1,18 @@
 import { Module, Global, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule } from '@nestjs/throttler';
 import configuration from './config/index';
 import { validate } from './config/env.validation';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from 'src/common/guards/auth.guard';
 import { PermissionGuard } from 'src/common/guards/permission.guard';
 import { RolesGuard } from './common/guards/roles.guard';
+import { CustomThrottlerGuard } from './common/guards/throttle.guard';
 import { TenantMiddleware, TenantGuard, TenantModule } from './common/tenant';
 import { CryptoModule, DecryptInterceptor } from './common/crypto';
 import { LoggerModule } from './common/logger';
 import { ClsModule } from './common/cls';
+import { TransactionalInterceptor } from './common/interceptors/transactional.interceptor';
 
 import { MainModule } from './module/main/main.module';
 import { UploadModule } from './module/upload/upload.module';
@@ -44,6 +47,11 @@ import { PrismaModule } from './prisma/prisma.module';
     TenantModule,
     // 加解密模块
     CryptoModule,
+    // API 限流模块
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 100,
+    }]),
 
     MainModule,
     UploadModule,
@@ -59,10 +67,20 @@ import { PrismaModule } from './prisma/prisma.module';
       provide: APP_INTERCEPTOR,
       useClass: DecryptInterceptor,
     },
+    // 事务拦截器 (自动处理 @Transactional 装饰器)
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransactionalInterceptor,
+    },
     // 租户守卫
     {
       provide: APP_GUARD,
       useClass: TenantGuard,
+    },
+    // API 限流守卫
+    {
+      provide: APP_GUARD,
+      useClass: CustomThrottlerGuard,
     },
     {
       provide: APP_GUARD,
