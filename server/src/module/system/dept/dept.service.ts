@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Result, ResponseCode } from 'src/common/response';
+import { BusinessException } from 'src/common/exceptions';
 import { CreateDeptDto, UpdateDeptDto, ListDeptDto } from './dto/index';
 import { FormatDateFields, ListToTree } from 'src/common/utils/index';
 import { CacheEnum, DataScopeEnum, DelFlagEnum, StatusEnum } from 'src/common/enum/index';
@@ -117,16 +118,24 @@ export class DeptService {
       return list.map((item) => item.deptId);
     } catch (error) {
       this.logger.error('Failed to query department IDs:', error);
-      throw new Error('Querying department IDs failed');
+      BusinessException.throw(ResponseCode.INTERNAL_SERVER_ERROR, '查询部门ID失败', error);
     }
   }
 
   @Cacheable(CacheEnum.SYS_DEPT_KEY, 'findListExclude')
   async findListExclude(id: number) {
-    //TODO 需排出ancestors 中不出现id的数据
+    // 排除 ancestors 中包含指定 id 的部门（排除子部门）
     const data = await this.prisma.sysDept.findMany({
       where: {
         delFlag: DelFlagEnum.NORMAL,
+        NOT: {
+          OR: [
+            { deptId: id },
+            { ancestors: { contains: `,${id},` } },
+            { ancestors: { startsWith: `${id},` } },
+            { ancestors: { endsWith: `,${id}` } },
+          ],
+        },
       },
     });
     return Result.ok(data);

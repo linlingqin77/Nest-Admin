@@ -4,11 +4,11 @@ import { ApiProperty } from '@nestjs/swagger';
 export class OnlineListDto {
   @ApiProperty({ required: false, description: '当前页码' })
   @IsNumberString()
-  pageNum: number;
+  pageNum: string;
 
   @ApiProperty({ required: false, description: '每页条数' })
   @IsNumberString()
-  pageSize: number;
+  pageSize: string;
   @ApiProperty({
     required: false,
     description: '登录IP地址',

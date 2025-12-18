@@ -95,7 +95,14 @@ export class RedisService {
   async get(key: string): Promise<any> {
     if (!key || key === '*') return null;
     const res = await this.client.get(key);
-    return JSON.parse(res);
+    if (!res) return null;
+
+    // 尝试解析 JSON，如果失败则返回原始字符串
+    try {
+      return JSON.parse(res);
+    } catch {
+      return res;
+    }
   }
 
   async del(keys: string | string[]): Promise<number> {

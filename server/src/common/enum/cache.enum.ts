@@ -34,4 +34,7 @@ export enum CacheEnum {
 
   /** 部门缓存 */
   SYS_DEPT_KEY = 'sys_dept:',
+
+  /** 菜单缓存 */
+  SYS_MENU_KEY = 'sys_menu:',
 }

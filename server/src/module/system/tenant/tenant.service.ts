@@ -2,6 +2,7 @@ import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Result, ResponseCode } from 'src/common/response';
 import { DelFlagEnum, StatusEnum } from 'src/common/enum/index';
+import { SYS_USER_TYPE } from 'src/common/constant/index';
 import { BusinessException } from 'src/common/exceptions';
 import { ExportTable } from 'src/common/utils/export';
 import { FormatDateFields } from 'src/common/utils/index';
@@ -9,6 +10,7 @@ import { Response } from 'express';
 import { CreateTenantDto, UpdateTenantDto, ListTenantDto, SyncTenantPackageDto } from './dto/index';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IgnoreTenant } from 'src/common/tenant/tenant.decorator';
+import { TenantContext } from 'src/common/tenant/tenant.context';
 import { Transactional } from 'src/common/decorators/transactional.decorator';
 import { RedisService } from 'src/module/common/redis/redis.service';
 import { CacheEnum } from 'src/common/enum/cache.enum';
@@ -33,7 +35,7 @@ export class TenantService {
         let tenantId = createTenantDto.tenantId;
         if (!tenantId) {
             const lastTenant = await this.prisma.sysTenant.findFirst({
-                where: { tenantId: { not: '000000' } }, // 排除超级管理员租户
+                where: { tenantId: { not: TenantContext.SUPER_TENANT_ID } }, // 排除超级管理员租户
                 orderBy: { id: 'desc' },
             });
             const lastId = lastTenant?.tenantId ? parseInt(lastTenant.tenantId) : 100000;
@@ -88,7 +90,7 @@ export class TenantService {
                     tenantId,
                     userName: createTenantDto.username,
                     nickName: '租户管理员',
-                    userType: '00',
+                    userType: SYS_USER_TYPE.SYS,
                     password: hashedPassword,
                     status: StatusEnum.NORMAL,
                     delFlag: DelFlagEnum.NORMAL,
@@ -265,7 +267,7 @@ export class TenantService {
                 where: {
                     status: StatusEnum.NORMAL,
                     delFlag: DelFlagEnum.NORMAL,
-                    tenantId: { not: '000000' }
+                    tenantId: { not: TenantContext.SUPER_TENANT_ID }
                 },
                 select: { tenantId: true, companyName: true },
             });
@@ -273,9 +275,8 @@ export class TenantService {
             this.logger.log(`找到 ${tenants.length} 个租户需要同步字典`);
 
             // 获取超级管理员租户的字典类型
-            const superTenantId = '000000';
             const dictTypes = await this.prisma.sysDictType.findMany({
-                where: { tenantId: superTenantId, delFlag: DelFlagEnum.NORMAL },
+                where: { tenantId: TenantContext.SUPER_TENANT_ID, delFlag: DelFlagEnum.NORMAL },
             });
 
             this.logger.log(`找到 ${dictTypes.length} 个字典类型需要同步`);
@@ -314,7 +315,7 @@ export class TenantService {
                         // 获取该字典类型下的所有字典数据
                         const dictDatas = await this.prisma.sysDictData.findMany({
                             where: {
-                                tenantId: superTenantId,
+                                tenantId: TenantContext.SUPER_TENANT_ID,
                                 dictType: dictType.dictType,
                                 delFlag: DelFlagEnum.NORMAL,
                             },
@@ -430,7 +431,7 @@ export class TenantService {
                 where: {
                     status: StatusEnum.NORMAL,
                     delFlag: DelFlagEnum.NORMAL,
-                    tenantId: { not: '000000' }
+                    tenantId: { not: TenantContext.SUPER_TENANT_ID }
                 },
                 select: { tenantId: true, companyName: true },
             });
@@ -438,9 +439,8 @@ export class TenantService {
             this.logger.log(`找到 ${tenants.length} 个租户需要同步配置`);
 
             // 获取超级管理员租户的配置
-            const superTenantId = '000000';
             const configs = await this.prisma.sysConfig.findMany({
-                where: { tenantId: superTenantId, delFlag: DelFlagEnum.NORMAL },
+                where: { tenantId: TenantContext.SUPER_TENANT_ID, delFlag: DelFlagEnum.NORMAL },
             });
 
             this.logger.log(`找到 ${configs.length} 个配置项需要同步`);

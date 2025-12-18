@@ -6809,6 +6809,24 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "parentId",
+            "required": false,
+            "in": "query",
+            "description": "父菜单ID",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "menuType",
+            "required": false,
+            "in": "query",
+            "description": "菜单类型（M目录 C菜单 F按钮）",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -22276,7 +22294,7 @@
             "in": "query",
             "description": "当前页码",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           },
           {
@@ -22285,7 +22303,7 @@
             "in": "query",
             "description": "每页条数",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           },
           {

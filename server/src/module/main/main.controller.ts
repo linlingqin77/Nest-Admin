@@ -31,6 +31,7 @@ export class MainController {
     security: false,
     type: LoginVo,
   })
+  @NotRequireAuth()
   @Post('/login')
   @HttpCode(200)
   login(@Body() user: LoginDto, @ClientInfo() clientInfo: ClientInfoDto) {
@@ -57,6 +58,7 @@ export class MainController {
     body: RegisterDto,
     security: false,
   })
+  @NotRequireAuth()
   @Post('/register')
   @HttpCode(200)
   register(@Body() user: RegisterDto) {
@@ -68,6 +70,7 @@ export class MainController {
     description: '查询系统是否开启用户自主注册功能',
     security: false,
   })
+  @NotRequireAuth()
   @Get('/registerUser')
   async registerUser() {
     //是否开启验证码
@@ -82,6 +85,7 @@ export class MainController {
     security: false,
     type: CaptchaVo,
   })
+  @NotRequireAuth()
   @Get('/captchaImage')
   async captchaImage() {
     //是否开启验证码

@@ -16,6 +16,13 @@ export class UserRepository extends SoftDeleteRepository<SysUser, Prisma.SysUser
     }
 
     /**
+     * 覆盖主键名称
+     */
+    protected getPrimaryKeyName(): string {
+        return 'userId';
+    }
+
+    /**
      * 根据用户名查询用户
      */
     async findByUserName(userName: string): Promise<SysUser | null> {

@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { BusinessException } from 'src/common/exceptions/index';
+import { BusinessException } from 'src/common/exceptions';
 import { ResponseCode } from 'src/common/response';
 import { DelFlagEnum, StatusEnum } from 'src/common/enum/index';
 import { isNotEmpty } from 'class-validator';
@@ -368,7 +368,9 @@ export class ToolService {
       ];
 
       for (const template of templates) {
-        if (!template.content) throw new Error('One or more templates are undefined');
+        if (!template.content) {
+          BusinessException.throw(ResponseCode.DATA_NOT_FOUND, '代码模板内容不存在');
+        }
         archive.append(Buffer.from(template.content), { name: template.path });
       }
     }

@@ -4,7 +4,7 @@ import { CronJob } from 'cron';
 import { Prisma } from '@prisma/client';
 import { CreateJobDto, ListJobDto } from './dto/create-job.dto';
 import { Result, ResponseCode } from 'src/common/response';
-import { BusinessException } from 'src/common/exceptions/index';
+import { BusinessException } from 'src/common/exceptions';
 import { FormatDateFields } from 'src/common/utils/index';
 import { TaskService } from './task.service';
 import { ExportTable } from 'src/common/utils/export';
@@ -100,7 +100,12 @@ export class JobService {
     const nextInvokeTarget = updateJobDto.invokeTarget ?? job.invokeTarget;
 
     // 如果更新了cron表达式或状态，需要重新调度
-    if (nextCron !== job.cronExpression || nextStatus !== job.status || nextInvokeTarget !== job.invokeTarget) {
+    const hasJobConfigChanged =
+      nextCron !== job.cronExpression ||
+      nextStatus !== job.status ||
+      nextInvokeTarget !== job.invokeTarget;
+
+    if (hasJobConfigChanged) {
       const cronJob = this.getCronJob(job.jobName);
       if (cronJob) {
         this.deleteCronJob(job.jobName);

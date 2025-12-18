@@ -1,8 +1,9 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Result } from 'src/common/response';
-import { DelFlagEnum, StatusEnum } from 'src/common/enum/index';
-import { CreateMenuDto, UpdateMenuDto, ListDeptDto } from './dto/index';
+import { DelFlagEnum, StatusEnum, CacheEnum } from 'src/common/enum/index';
+import { Cacheable } from 'src/common/decorators/redis.decorator';
+import { CreateMenuDto, UpdateMenuDto, ListMenuDto } from './dto/index';
 import { ListToTree, Uniq } from 'src/common/utils/index';
 import { UserService } from '../user/user.service';
 import { buildMenus } from './utils';
@@ -28,8 +29,8 @@ export class MenuService {
     return Result.ok(res);
   }
 
-  async findAll(query: ListDeptDto) {
-    const res = await this.menuRepo.findAllMenus(query?.status);
+  async findAll(query: ListMenuDto) {
+    const res = await this.menuRepo.findAllMenus(query);
     return Result.ok(res);
   }
 
@@ -123,6 +124,7 @@ export class MenuService {
    * @param userId 用户ID
    * @return 菜单列表
    */
+  @Cacheable(CacheEnum.SYS_MENU_KEY, 'user:{userId}')
   async getMenuListByUserId(userId: number) {
     const roleIds = await this.userService.getRoleIds([userId]);
     let menuIds: number[] = [];

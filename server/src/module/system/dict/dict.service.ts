@@ -3,6 +3,7 @@ import { Response } from 'express';
 import { Prisma } from '@prisma/client';
 import { Result } from 'src/common/response';
 import { CacheEnum, DelFlagEnum } from 'src/common/enum/index';
+import { Cacheable } from 'src/common/decorators/redis.decorator';
 import { ExportTable } from 'src/common/utils/export';
 import { FormatDateFields } from 'src/common/utils/index';
 import { CreateDictTypeDto, UpdateDictTypeDto, ListDictType, CreateDictDataDto, UpdateDictDataDto, ListDictData } from './dto/index';
@@ -223,6 +224,7 @@ export class DictService {
    * 加载字典缓存
    * @returns
    */
+  @Cacheable(CacheEnum.SYS_DICT_KEY, 'all')
   async loadingDictCache() {
     const dictData = await this.prisma.sysDictData.findMany({
       where: {

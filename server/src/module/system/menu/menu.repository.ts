@@ -83,11 +83,19 @@ export class MenuRepository extends BaseRepository<SysMenu, Prisma.SysMenuDelega
     /**
      * 查询所有菜单（树形结构用）
      */
-    async findAllMenus(status?: string): Promise<SysMenu[]> {
+    async findAllMenus(query?: { status?: string; parentId?: number; menuType?: string }): Promise<SysMenu[]> {
         const where: Prisma.SysMenuWhereInput = {};
 
-        if (status) {
-            where.status = status;
+        if (query?.status) {
+            where.status = query.status;
+        }
+
+        if (query?.parentId !== undefined) {
+            where.parentId = query.parentId;
+        }
+
+        if (query?.menuType) {
+            where.menuType = query.menuType;
         }
 
         return this.delegate.findMany({

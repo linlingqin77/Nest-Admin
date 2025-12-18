@@ -1,6 +1,7 @@
-import { IsString, IsEnum, IsOptional } from 'class-validator';
+import { IsString, IsEnum, IsOptional, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { StatusEnum } from 'src/common/enum';
+import { Type } from 'class-transformer';
 
 export class ListMenuDto {
   @ApiProperty({
@@ -19,4 +20,21 @@ export class ListMenuDto {
   @IsString()
   @IsEnum(StatusEnum)
   status?: string;
+
+  @ApiProperty({
+    required: false,
+    description: '父菜单ID',
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  parentId?: number;
+
+  @ApiProperty({
+    required: false,
+    description: '菜单类型（M目录 C菜单 F按钮）',
+  })
+  @IsOptional()
+  @IsString()
+  menuType?: string;
 }
