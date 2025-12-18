@@ -201,3 +201,82 @@ export function arraysEqualSet(arr1: Array<any>, arr2: Array<any>) {
     [...arr1].sort().join() === [...arr2].sort().join()
   );
 }
+
+/**
+ * Format file size to human readable format
+ *
+ * @param bytes - File size in bytes
+ * @returns Formatted file size string
+ */
+export function formatFileSize(bytes: number): string {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
+}
+
+/**
+ * Format date time to string
+ *
+ * @param date - Date string or Date object
+ * @param format - Format pattern (default: 'YYYY-MM-DD HH:mm:ss')
+ * @returns Formatted date string
+ */
+export function formatDateTime(date: string | Date | null | undefined, format = 'YYYY-MM-DD HH:mm:ss'): string {
+  if (!date) return '';
+  const d = typeof date === 'string' ? new Date(date) : date;
+  if (Number.isNaN(d.getTime())) return '';
+
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  const seconds = String(d.getSeconds()).padStart(2, '0');
+
+  return format
+    .replace('YYYY', String(year))
+    .replace('MM', month)
+    .replace('DD', day)
+    .replace('HH', hours)
+    .replace('mm', minutes)
+    .replace('ss', seconds);
+}
+
+/**
+ * Get file extension from filename
+ *
+ * @param filename - File name
+ * @returns File extension (lowercase, without dot)
+ */
+export function getFileExtension(filename: string): string {
+  const lastDot = filename.lastIndexOf('.');
+  if (lastDot === -1) return '';
+  return filename.slice(lastDot + 1).toLowerCase();
+}
+
+/**
+ * Get file icon based on file extension
+ *
+ * @param ext - File extension
+ * @returns Icon name
+ */
+export function getFileIcon(ext: string): string {
+  const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'];
+  const videoExts = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv', 'webm'];
+  const audioExts = ['mp3', 'wav', 'flac', 'aac', 'ogg', 'wma'];
+  const documentExts = ['doc', 'docx', 'pdf', 'txt', 'xls', 'xlsx', 'ppt', 'pptx'];
+  const archiveExts = ['zip', 'rar', '7z', 'tar', 'gz'];
+  const codeExts = ['js', 'ts', 'vue', 'html', 'css', 'json', 'xml', 'java', 'py', 'go', 'c', 'cpp'];
+
+  if (imageExts.includes(ext)) return 'ant-design:file-image-outlined';
+  if (videoExts.includes(ext)) return 'ant-design:video-camera-outlined';
+  if (audioExts.includes(ext)) return 'ant-design:audio-outlined';
+  if (documentExts.includes(ext)) return 'ant-design:file-text-outlined';
+  if (archiveExts.includes(ext)) return 'ant-design:file-zip-outlined';
+  if (codeExts.includes(ext)) return 'ant-design:file-outlined';
+
+  return 'ant-design:file-unknown-outlined';
+}
+

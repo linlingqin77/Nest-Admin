@@ -1,9 +1,17 @@
 import { createParamDecorator, ExecutionContext, SetMetadata } from '@nestjs/common';
 import { UserType } from 'src/module/system/user/dto/user';
 
-export const User = createParamDecorator((data: unknown, ctx: ExecutionContext) => {
+export const User = createParamDecorator((data: string | undefined, ctx: ExecutionContext) => {
   const request = ctx.switchToHttp().getRequest();
-  return request.user;
+  const user = request.user;
+
+  // 如果指定了属性名，返回该属性（支持嵌套属性如 'user.userName'）
+  if (data) {
+    const keys = data.split('.');
+    return keys.reduce((obj, key) => obj?.[key], user);
+  }
+
+  return user;
 });
 
 export type UserDto = UserType;

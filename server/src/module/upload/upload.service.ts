@@ -9,6 +9,7 @@ import iconv from 'iconv-lite';
 import COS from 'cos-nodejs-sdk-v5';
 import Mime from 'mime-types';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { TenantContext } from 'src/common/tenant/tenant.context';
 
 @Injectable()
 export class UploadService {
@@ -34,15 +35,18 @@ export class UploadService {
 
   /**
    * 单文件上传
-   * @param file
+   * @param file 上传的文件
+   * @param folderId 文件夹ID（可选）
    * @returns
    */
-  async singleFileUpload(file: Express.Multer.File) {
-    const fileSize = (file.size / 1024 / 1024).toFixed(2);
-    if (fileSize > this.config.get('app.file.maxSize')) {
-      return ResultData.fail(500, `文件大小不能超过${this.config.get('app.file.maxSize')}MB`);
+  async singleFileUpload(file: Express.Multer.File, folderId?: number) {
+    const fileSizeMB = file.size / 1024 / 1024;
+    const maxSize = this.config.get('app.file.maxSize');
+    if (fileSizeMB > maxSize) {
+      throw new Error(`文件大小不能超过${maxSize}MB`);
     }
     let res;
+    const storageType = this.isLocal ? 'local' : 'cos';
     if (this.isLocal) {
       res = await this.saveFileLocal(file);
     } else {
@@ -50,7 +54,35 @@ export class UploadService {
       res = await this.saveFileCos(targetDir, file);
     }
     const uploadId = GenerateUUID();
-    await this.prisma.sysUpload.create({ data: { uploadId, ...res, ext: path.extname(res.newFileName), size: file.size } });
+    const mimeType = Mime.lookup(file.originalname) || 'application/octet-stream';
+
+    // 获取扩展名（去掉点号并转小写）
+    const ext = path.extname(file.originalname).replace('.', '').toLowerCase();
+
+    // 生成格式化的文件名用于前端显示：日期_时间_随机数.扩展名
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+    const random = String(now.getTime()).slice(-4);
+    const displayFileName = `${dateStr}_${timeStr}_${random}${ext ? '.' + ext : ''}`;
+
+    // 创建上传记录
+    await this.prisma.sysUpload.create({
+      data: {
+        uploadId,
+        fileName: displayFileName, // 前端显示用的格式化文件名
+        newFileName: res.newFileName, // 服务器实际存储的文件名
+        url: res.url,
+        folderId: folderId || 0,
+        ext,
+        size: file.size, // 字节数
+        mimeType,
+        storageType,
+        fileMd5: null,
+        thumbnail: null,
+      }
+    });
+
     return res;
   }
 
@@ -136,7 +168,13 @@ export class UploadService {
     await this.thunkStreamMerge(sourceFilesDir, targetFile);
     //文件相对地址
     const relativeFilePath = targetFile.replace(baseDirPath, '');
-    const url = path.posix.join(this.config.get('app.file.domain'), fileName);
+    const fileServePath = path.posix.join(this.config.get('app.file.serveRoot'), relativeFilePath);
+    // 使用字符串拼接生成URL
+    let domain = this.config.get('app.file.domain');
+    if (domain.endsWith('/')) {
+      domain = domain.slice(0, -1);
+    }
+    const url = `${domain}${fileServePath}`;
     const key = path.posix.join('test', relativeFilePath);
     const data = {
       fileName: key,
@@ -144,17 +182,26 @@ export class UploadService {
       url: url,
     };
     const stats = fs.statSync(targetFile);
+    const ext = path.extname(data.newFileName).replace('.', '').toLowerCase();
 
     if (!this.isLocal) {
       this.uploadLargeFileCos(targetFile, key);
-      data.url = path.posix.join(this.config.get('cos.domain'), key);
+      // 使用字符串拼接生成COS URL
+      let cosDomain = this.config.get('cos.domain');
+      if (cosDomain.endsWith('/')) {
+        cosDomain = cosDomain.slice(0, -1);
+      }
+      // key 不以 / 开头，需要添加
+      data.url = key.startsWith('/') ? `${cosDomain}${key}` : `${cosDomain}/${key}`;
       // 写入上传记录
       await this.prisma.sysUpload.create({
         data: {
           uploadId,
           ...data,
-          ext: path.extname(data.newFileName),
+          ext,
           size: stats.size,
+          thumbnail: null,
+          storageType: 'cos',
         },
       });
       return ResultData.ok(data);
@@ -163,8 +210,10 @@ export class UploadService {
       data: {
         uploadId,
         ...data,
-        ext: path.extname(data.newFileName),
+        ext,
         size: stats.size,
+        thumbnail: null,
+        storageType: 'local',
       },
     });
     return ResultData.ok(data);
@@ -248,11 +297,18 @@ export class UploadService {
 
     //文件服务完整路径
     const fileName = path.posix.join(this.config.get('app.file.serveRoot'), relativeFilePath);
-    const url = path.posix.join(this.config.get('app.file.domain'), fileName);
+    // 使用字符串拼接生成URL，避免path.posix.join破坏http://协议
+    let domain = this.config.get('app.file.domain');
+    // 移除domain尾部的斜杠（如果有）
+    if (domain.endsWith('/')) {
+      domain = domain.slice(0, -1);
+    }
+    const url = `${domain}${fileName}`;
     return {
       fileName: fileName,
       newFileName: newFileName,
       url: url,
+      filePath: targetFile, // 实际文件路径，用于缩略图生成
     };
   }
   /**
@@ -281,12 +337,31 @@ export class UploadService {
     //重新生成文件名加上时间戳
     const newFileName = this.getNewFileName(originalname);
     const targetFile = path.posix.join(targetDir, newFileName);
+
+    // 先保存到本地临时文件（用于生成缩略图）
+    const rootPath = process.cwd();
+    const baseDirPath = path.posix.join(rootPath, this.config.get('app.file.location'));
+    const localTempFile = path.posix.join(baseDirPath, 'temp', newFileName);
+    const tempDir = path.dirname(localTempFile);
+    if (!fs.existsSync(tempDir)) {
+      this.mkdirsSync(tempDir);
+    }
+    fs.writeFileSync(localTempFile, file.buffer);
+
+    // 上传到COS
     await this.uploadCos(targetFile, file.buffer);
-    const url = path.posix.join(this.config.get('cos.domain'), targetFile);
+    // 使用字符串拼接生成URL
+    let cosDomain = this.config.get('cos.domain');
+    if (cosDomain.endsWith('/')) {
+      cosDomain = cosDomain.slice(0, -1);
+    }
+    // targetFile 不以 / 开头，需要添加
+    const url = targetFile.startsWith('/') ? `${cosDomain}${targetFile}` : `${cosDomain}/${targetFile}`;
     return {
       fileName: targetFile,
       newFileName: newFileName,
       url: url,
+      filePath: localTempFile, // 本地临时文件路径，用于缩略图生成
     };
   }
 

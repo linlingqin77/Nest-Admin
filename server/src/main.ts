@@ -1,7 +1,7 @@
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
-import csurf from 'csurf';
+// import csurf from 'csurf';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { mw as requestIpMw } from 'request-ip';
@@ -138,16 +138,16 @@ async function bootstrap() {
   // cookie parser (required for CSRF when using cookie option)
   app.use(cookieParser());
 
-  // 启用 CSRF 保护，使用 cookie 模式，前端需从 cookie 中读取或由后端在页面注入 token
-  app.use(
-    csurf({
-      cookie: {
-        httpOnly: true,
-        sameSite: 'strict',
-        secure: process.env.NODE_ENV === 'production',
-      },
-    }),
-  );
+  // CSRF 保护已禁用
+  // app.use(
+  //   csurf({
+  //     cookie: {
+  //       httpOnly: true,
+  //       sameSite: 'strict',
+  //       secure: process.env.NODE_ENV === 'production',
+  //     },
+  //   }),
+  // );
   const swaggerOptions = new DocumentBuilder()
     .setTitle(API_INFO.title)
     .setDescription(API_INFO.description)

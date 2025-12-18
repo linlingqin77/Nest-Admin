@@ -31,8 +31,8 @@ export class UploadController {
   @Operlog({ businessType: BusinessType.IMPORT })
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  async singleFileUpload(@UploadedFile() file: Express.Multer.File) {
-    const res = await this.uploadService.singleFileUpload(file);
+  async singleFileUpload(@UploadedFile() file: Express.Multer.File, @Body() body: FileUploadDto) {
+    const res = await this.uploadService.singleFileUpload(file, body.folderId || 0);
     return ResultData.ok(res);
   }
 

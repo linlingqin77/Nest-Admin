@@ -4,12 +4,12 @@ import { Request } from 'express';
 
 @Injectable()
 export class CustomThrottlerGuard extends ThrottlerGuard {
-  protected async getTracker(context: ExecutionContext): Promise<string> {
-    const req = context.switchToHttp().getRequest<Request>();
-    const user = (req as any).user;
+  protected async getTracker(req: Record<string, any>): Promise<string> {
+    // In newer versions, req is already the request object, not ExecutionContext
+    const user = req.user;
     if (user && user.userId) return `user-${user.userId}`;
 
-    const ip = req.ip || (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'unknown';
+    const ip = req.ip || req.headers?.['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown';
     return `ip-${ip}`;
   }
 

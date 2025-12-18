@@ -25,14 +25,19 @@ export function setupUnplugin(viteEnv: Env.ImportMeta) {
         )
       },
       scale: 1,
-      defaultClass: 'inline-block'
+      defaultClass: 'inline-block',
+      autoInstall: true
     }),
     Components({
       dts: 'src/typings/components.d.ts',
       types: [{ from: 'vue-router', names: ['RouterLink', 'RouterView'] }],
       resolvers: [
         NaiveUiResolver(),
-        IconsResolver({ customCollections: [collectionName], componentPrefix: VITE_ICON_PREFIX })
+        IconsResolver({
+          customCollections: [collectionName],
+          componentPrefix: VITE_ICON_PREFIX,
+          enabledCollections: ['carbon', 'mdi', 'material-symbols']
+        })
       ]
     }),
     createSvgIconsPlugin({

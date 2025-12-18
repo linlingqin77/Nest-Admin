@@ -219,6 +219,15 @@ export const generatedRoutes: GeneratedRoute[] = [
         }
       },
       {
+        name: 'system_file-manager',
+        path: '/system/file-manager',
+        component: 'view.system_file-manager',
+        meta: {
+          title: 'system_file-manager',
+          i18nKey: 'route.system_file-manager'
+        }
+      },
+      {
         name: 'system_menu',
         path: '/system/menu',
         component: 'view.system_menu',

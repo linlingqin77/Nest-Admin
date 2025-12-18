@@ -11,6 +11,7 @@ import { ToolModule } from './tool/tool.module';
 import { UserModule } from './user/user.module';
 import { TenantModule } from './tenant/tenant.module';
 import { TenantPackageModule } from './tenant-package/tenant-package.module';
+import { FileManagerModule } from './file-manager/file-manager.module';
 
 @Global()
 @Module({
@@ -27,6 +28,7 @@ import { TenantPackageModule } from './tenant-package/tenant-package.module';
     TenantPackageModule, // 租户套餐管理
     ToolModule,
     UserModule,
+    FileManagerModule, // 文件管理
   ],
 })
 export class SystemModule { }

@@ -44,3 +44,5 @@ pnpm-lock.yaml
 deploy.config.cjs
 .deploy-temp/
 server_deploy_*.tar.gz
+
+upload

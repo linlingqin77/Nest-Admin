@@ -542,7 +542,7 @@ declare namespace Api {
     /** tenant search params */
     type TenantSearchParams = CommonType.RecordNullable<
       Pick<Api.System.Tenant, 'tenantId' | 'contactUserName' | 'contactPhone' | 'companyName'> &
-        Api.Common.CommonSearchParams
+      Api.Common.CommonSearchParams
     >;
 
     /** tenant operate params */
@@ -596,7 +596,7 @@ declare namespace Api {
     /** tenant package search params */
     type TenantPackageSearchParams = CommonType.RecordNullable<
       Pick<Api.System.TenantPackage, 'packageName' | 'menuIds' | 'menuCheckStrictly' | 'status'> &
-        Api.Common.CommonSearchParams
+      Api.Common.CommonSearchParams
     >;
 
     /** tenant package operate params */
@@ -818,5 +818,159 @@ declare namespace Api {
 
     /** oss config list */
     type OssConfigList = Api.Common.PaginatingQueryRecord<OssConfig>;
+
+    /** file folder */
+    type FileFolder = Common.CommonRecord<{
+      /** 文件夹ID */
+      folderId: number;
+      /** 父文件夹ID */
+      parentId: number;
+      /** 文件夹名称 */
+      folderName: string;
+      /** 文件夹路径 */
+      folderPath: string;
+      /** 显示顺序 */
+      orderNum: number;
+      /** 备注 */
+      remark?: string;
+      /** 租户ID */
+      tenantId: string;
+    }>;
+
+    /** file folder tree node */
+    type FileFolderTreeNode = FileFolder & {
+      /** 子节点 */
+      children?: FileFolderTreeNode[];
+    };
+
+    /** folder search params */
+    type FolderSearchParams = CommonType.RecordNullable<
+      Pick<Api.System.FileFolder, 'folderName' | 'parentId'> & Api.Common.CommonSearchParams
+    >;
+
+    /** folder operate params */
+    type FolderOperateParams = CommonType.RecordNullable<
+      Pick<Api.System.FileFolder, 'folderId' | 'parentId' | 'folderName' | 'orderNum' | 'remark'>
+    >;
+
+    /** folder list */
+    type FolderList = Common.PaginatingQueryRecord<FileFolder>;
+
+    /** file info */
+    type FileInfo = Common.CommonRecord<{
+      /** 上传ID */
+      uploadId: string;
+      /** 文件夹ID */
+      folderId?: number;
+      /** 文件名 */
+      fileName: string;
+      /** 原始文件名 */
+      originalName: string;
+      /** 文件大小 */
+      fileSize: number;
+      /** 文件扩展名 */
+      ext: string;
+      /** 文件MIME类型 */
+      mimeType?: string;
+      /** 文件路径 */
+      filePath: string;
+      /** 文件URL */
+      url: string;
+      /** 缩略图 */
+      thumbnail?: string;
+      /** 文件MD5 */
+      fileMd5?: string;
+      /** 存储类型 */
+      storageType: string;
+      /** 租户ID */
+      tenantId: string;
+    }>;
+
+    /** file search params */
+    type FileSearchParams = CommonType.RecordNullable<{
+      folderId?: number;
+      fileName?: string;
+      ext?: string;
+      exts?: string; // 多个扩展名，逗号分隔
+      storageType?: string;
+    }> &
+      Api.Common.CommonSearchParams;
+
+    /** move files params */
+    type MoveFilesParams = {
+      uploadIds: string[];
+      targetFolderId: number;
+    };
+
+    /** rename file params */
+    type RenameFileParams = {
+      uploadId: string;
+      newFileName: string;
+    };
+
+    /** file detail */
+    type FileDetail = FileInfo;
+
+    /** file list */
+    type FileList = Common.PaginatingQueryRecord<FileInfo>;
+
+    /** share status */
+    type ShareStatus = '0' | '1' | '2'; // 0: 未分享, 1: 分享中, 2: 已过期
+
+    /** file share */
+    type FileShare = Common.CommonRecord<{
+      /** 分享ID */
+      shareId: number;
+      /** 上传ID */
+      uploadId: string;
+      /** 分享码 */
+      shareCode: string;
+      /** 分享密码 */
+      password?: string;
+      /** 过期时间 */
+      expireTime?: string;
+      /** 最大下载次数 */
+      maxDownload?: number;
+      /** 已下载次数 */
+      downloadCount: number;
+      /** 分享状态 */
+      status: ShareStatus;
+      /** 租户ID */
+      tenantId: string;
+    }>;
+
+    /** create share params */
+    type CreateShareParams = {
+      uploadId: string;
+      password?: string;
+      expireTime?: string;
+      maxDownload?: number;
+    };
+
+    /** get share params */
+    type GetShareParams = {
+      shareId: number;
+      shareCode: string;
+      password?: string;
+    };
+
+    /** share info */
+    type ShareInfo = Pick<FileShare, 'shareId' | 'shareCode' | 'password' | 'expireTime' | 'maxDownload'>;
+
+    /** share detail */
+    type ShareDetail = FileShare & {
+      fileInfo: FileInfo;
+    };
+
+    /** share search params */
+    type ShareSearchParams = CommonType.RecordNullable<{
+      uploadId?: string;
+      status?: ShareStatus;
+    }> &
+      Api.Common.CommonSearchParams;
+
+    /** share list */
+    type ShareList = Common.PaginatingQueryRecord<FileShare & { fileInfo: FileInfo }>;
   }
 }
+
