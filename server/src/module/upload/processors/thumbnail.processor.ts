@@ -1,7 +1,7 @@
 import { Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
-import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from 'src/config/app-config.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import sharp from 'sharp';
 import ffmpeg from 'fluent-ffmpeg';
@@ -30,7 +30,7 @@ export class ThumbnailProcessor {
   private readonly VIDEO_EXTENSIONS = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv', 'webm', 'm4v'];
 
   constructor(
-    private readonly configService: ConfigService,
+    private readonly config: AppConfigService,
     private readonly prisma: PrismaService,
   ) { }
 
@@ -42,7 +42,7 @@ export class ThumbnailProcessor {
 
     try {
       // 检查缩略图功能是否启用
-      const thumbnailEnabled = await this.configService.get<boolean>('app.file.thumbnailEnabled');
+      const thumbnailEnabled = this.config.app.file.thumbnailEnabled;
       if (!thumbnailEnabled) {
         this.logger.warn('缩略图功能未启用，跳过生成');
         return;
@@ -68,8 +68,8 @@ export class ThumbnailProcessor {
       }
 
       // 生成缩略图URL
-      const domain = this.configService.get<string>('app.file.domain');
-      const serveRoot = this.configService.get<string>('app.file.serveRoot');
+      const domain = this.config.app.file.domain;
+      const serveRoot = this.config.app.file.serveRoot;
       const relativePath = thumbnailPath.split('/upload/')[1];
       const thumbnailUrl = `${domain}${serveRoot}/${relativePath}`;
 
@@ -93,7 +93,7 @@ export class ThumbnailProcessor {
     const now = new Date();
     const yearMonth = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-    const uploadDir = this.configService.get<string>('app.file.location');
+    const uploadDir = this.config.app.file.location;
     const thumbnailDir = path.join(uploadDir, 'thumbnails', yearMonth);
 
     // 确保目录存在
@@ -123,7 +123,7 @@ export class ThumbnailProcessor {
     const now = new Date();
     const yearMonth = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-    const uploadDir = this.configService.get<string>('app.file.location');
+    const uploadDir = this.config.app.file.location;
     const thumbnailDir = path.join(uploadDir, 'thumbnails', yearMonth);
 
     // 确保目录存在

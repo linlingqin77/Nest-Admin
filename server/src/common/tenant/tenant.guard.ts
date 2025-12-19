@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from 'src/config/app-config.service';
 import { IGNORE_TENANT_KEY } from './tenant.decorator';
 import { TenantContext } from './tenant.context';
 
@@ -13,12 +13,12 @@ export class TenantGuard implements CanActivate {
 
   constructor(
     private reflector: Reflector,
-    private configService: ConfigService,
-  ) {}
+    private config: AppConfigService,
+  ) { }
 
   canActivate(context: ExecutionContext): boolean {
     // 检查是否启用多租户
-    const tenantEnabled = this.configService.get<boolean>('tenant.enabled', true);
+    const tenantEnabled = this.config.tenant.enabled;
     if (!tenantEnabled) {
       return true;
     }

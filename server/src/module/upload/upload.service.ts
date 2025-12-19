@@ -1,5 +1,5 @@
 import { Injectable, Inject, BadRequestException, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from 'src/config/app-config.service';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { Result, ResponseCode } from 'src/common/response';
@@ -23,8 +23,8 @@ export class UploadService {
   private thunkDir: string;
   private cos = new COS({
     // 必选参数
-    SecretId: this.config.get('cos.secretId'),
-    SecretKey: this.config.get('cos.secretKey'),
+    SecretId: this.config.cos.secretId,
+    SecretKey: this.config.cos.secretKey,
     //可选参数
     FileParallelLimit: 3, // 控制文件上传并发数
     ChunkParallelLimit: 8, // 控制单个文件下分片上传并发数，在同园区上传可以设置较大的并发数
@@ -33,13 +33,12 @@ export class UploadService {
   private isLocal: boolean;
   constructor(
     private readonly prisma: PrismaService,
-    @Inject(ConfigService)
-    private config: ConfigService,
+    private config: AppConfigService,
     private readonly versionService: VersionService,
     @InjectQueue('thumbnail') private readonly thumbnailQueue: Queue<ThumbnailJobData>,
   ) {
     this.thunkDir = 'thunk';
-    this.isLocal = this.config.get('app.file.isLocal');
+    this.isLocal = this.config.app.file.isLocal;
   }
 
   /**
@@ -54,7 +53,7 @@ export class UploadService {
 
     // 1. 文件大小检查
     const fileSizeMB = Math.ceil(file.size / 1024 / 1024);
-    const maxSize = this.config.get('app.file.maxSize');
+    const maxSize = this.config.app.file.maxSize;
     if (fileSizeMB > maxSize) {
       throw new BadRequestException(`文件大小不能超过${maxSize}MB`);
     }
@@ -118,7 +117,7 @@ export class UploadService {
     if (this.isLocal) {
       res = await this.saveFileLocal(file);
     } else {
-      const targetDir = this.config.get('cos.location');
+      const targetDir = this.config.cos.location;
       res = await this.saveFileCos(targetDir, file);
     }
 
@@ -213,7 +212,7 @@ export class UploadService {
     if (res.filePath || this.isLocal) {
       const filePath = res.filePath || path.join(
         process.cwd(),
-        this.config.get('app.file.location'),
+        this.config.app.file.location,
         res.newFileName
       );
 
@@ -322,7 +321,7 @@ export class UploadService {
    */
   async chunkFileUpload(file: Express.Multer.File, body: ChunkFileDto) {
     const rootPath = process.cwd();
-    const baseDirPath = path.posix.join(rootPath, this.config.get('app.file.location'));
+    const baseDirPath = path.posix.join(rootPath, this.config.app.file.location);
     const chunckDirPath = path.posix.join(baseDirPath, this.thunkDir, body.uploadId);
     if (!fs.existsSync(chunckDirPath)) {
       this.mkdirsSync(chunckDirPath);
@@ -343,7 +342,7 @@ export class UploadService {
    */
   async checkChunkFile(body) {
     const rootPath = process.cwd();
-    const baseDirPath = path.posix.join(rootPath, this.config.get('app.file.location'));
+    const baseDirPath = path.posix.join(rootPath, this.config.app.file.location);
     const chunckDirPath = path.posix.join(baseDirPath, this.thunkDir, body.uploadId);
     const chunckFilePath = path.posix.join(chunckDirPath, `${body.uploadId}${body.fileName}@${body.index}`);
     if (!fs.existsSync(chunckFilePath)) {
@@ -375,7 +374,7 @@ export class UploadService {
   async chunkMergeFile(body: ChunkMergeFileDto) {
     const { uploadId, fileName } = body;
     const rootPath = process.cwd();
-    const baseDirPath = path.posix.join(rootPath, this.config.get('app.file.location'));
+    const baseDirPath = path.posix.join(rootPath, this.config.app.file.location);
     const sourceFilesDir = path.posix.join(baseDirPath, this.thunkDir, uploadId);
 
     if (!fs.existsSync(sourceFilesDir)) {
@@ -388,9 +387,9 @@ export class UploadService {
     await this.thunkStreamMerge(sourceFilesDir, targetFile);
     //文件相对地址
     const relativeFilePath = targetFile.replace(baseDirPath, '');
-    const fileServePath = path.posix.join(this.config.get('app.file.serveRoot'), relativeFilePath);
+    const fileServePath = path.posix.join(this.config.app.file.serveRoot, relativeFilePath);
     // 使用字符串拼接生成URL
-    let domain = this.config.get('app.file.domain');
+    let domain = this.config.app.file.domain;
     if (domain.endsWith('/')) {
       domain = domain.slice(0, -1);
     }
@@ -407,7 +406,7 @@ export class UploadService {
     if (!this.isLocal) {
       this.uploadLargeFileCos(targetFile, key);
       // 使用字符串拼接生成COS URL
-      let cosDomain = this.config.get('cos.domain');
+      let cosDomain = this.config.cos.domain;
       if (cosDomain.endsWith('/')) {
         cosDomain = cosDomain.slice(0, -1);
       }
@@ -496,7 +495,7 @@ export class UploadService {
   async saveFileLocal(file: Express.Multer.File) {
     const rootPath = process.cwd();
     //文件根目录
-    const baseDirPath = path.posix.join(rootPath, this.config.get('app.file.location'));
+    const baseDirPath = path.posix.join(rootPath, this.config.app.file.location);
 
     //对文件名转码
     const originalname = iconv.decode(Buffer.from(file.originalname, 'binary'), 'utf8');
@@ -515,9 +514,9 @@ export class UploadService {
     fs.writeFileSync(targetFile, file.buffer);
 
     //文件服务完整路径
-    const fileName = path.posix.join(this.config.get('app.file.serveRoot'), relativeFilePath);
+    const fileName = path.posix.join(this.config.app.file.serveRoot, relativeFilePath);
     // 使用字符串拼接生成URL，避免path.posix.join破坏http://协议
-    let domain = this.config.get('app.file.domain');
+    let domain = this.config.app.file.domain;
     // 移除domain尾部的斜杠（如果有）
     if (domain.endsWith('/')) {
       domain = domain.slice(0, -1);
@@ -559,7 +558,7 @@ export class UploadService {
 
     // 先保存到本地临时文件（用于生成缩略图）
     const rootPath = process.cwd();
-    const baseDirPath = path.posix.join(rootPath, this.config.get('app.file.location'));
+    const baseDirPath = path.posix.join(rootPath, this.config.app.file.location);
     const localTempFile = path.posix.join(baseDirPath, 'temp', newFileName);
     const tempDir = path.dirname(localTempFile);
     if (!fs.existsSync(tempDir)) {
@@ -570,7 +569,7 @@ export class UploadService {
     // 上传到COS
     await this.uploadCos(targetFile, file.buffer);
     // 使用字符串拼接生成URL
-    let cosDomain = this.config.get('cos.domain');
+    let cosDomain = this.config.cos.domain;
     if (cosDomain.endsWith('/')) {
       cosDomain = cosDomain.slice(0, -1);
     }
@@ -595,8 +594,8 @@ export class UploadService {
     if (statusCode !== 200) {
       //不存在
       const data = await this.cos.putObject({
-        Bucket: this.config.get('cos.bucket'),
-        Region: this.config.get('cos.region'),
+        Bucket: this.config.cos.bucket,
+        Region: this.config.cos.region,
         Key: targetFile,
         Body: buffer,
       });
@@ -637,8 +636,8 @@ export class UploadService {
     if (statusCode !== 200) {
       //不存在
       await this.cos.uploadFile({
-        Bucket: this.config.get('cos.bucket'),
-        Region: this.config.get('cos.region'),
+        Bucket: this.config.cos.bucket,
+        Region: this.config.cos.region,
         Key: targetFile,
         FilePath: sourceFile,
         SliceSize: 1024 * 1024 * 5 /* 触发分块上传的阈值，超过5MB使用分块上传，非必须 */,
@@ -663,8 +662,8 @@ export class UploadService {
   async cosHeadObject(targetFile: string) {
     try {
       return await this.cos.headObject({
-        Bucket: this.config.get('cos.bucket'),
-        Region: this.config.get('cos.region'),
+        Bucket: this.config.cos.bucket,
+        Region: this.config.cos.region,
         Key: targetFile,
       });
     } catch (error) {
@@ -678,8 +677,8 @@ export class UploadService {
    */
   async getAuthorization(Key: string) {
     const authorization = COS.getAuthorization({
-      SecretId: this.config.get('cos.secretId'),
-      SecretKey: this.config.get('cos.secretKey'),
+      SecretId: this.config.cos.secretId,
+      SecretKey: this.config.cos.secretKey,
       Method: 'post',
       Key: Key,
       Expires: 60,

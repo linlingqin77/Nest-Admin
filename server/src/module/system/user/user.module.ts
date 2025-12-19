@@ -1,6 +1,6 @@
 import { Module, Global } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AppConfigService } from 'src/config/app-config.service';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { UserRepository } from './user.repository';
@@ -9,11 +9,10 @@ import { UserRepository } from './user.repository';
 @Module({
   imports: [
     JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: async (config: ConfigService) => ({
-        secret: config.get('jwt.secretkey'),
+      useFactory: async (config: AppConfigService) => ({
+        secret: config.jwt.secretkey,
       }),
-      inject: [ConfigService],
+      inject: [AppConfigService],
     }),
   ],
   controllers: [UserController],

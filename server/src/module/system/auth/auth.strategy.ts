@@ -1,6 +1,6 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from 'src/config/app-config.service';
 import { UnauthorizedException, Injectable } from '@nestjs/common';
 import { RedisService } from 'src/module/common/redis/redis.service';
 import { CacheEnum } from 'src/common/enum/index';
@@ -12,12 +12,12 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
    * 而这个请求头的内容前缀也必须为 Bearer，在解码授权令牌时，使用秘钥 secretOrKey: 'secretKey' 来将授权令牌解码为创建令牌时的 payload。
    */
   constructor(
-    private readonly config: ConfigService,
+    private readonly config: AppConfigService,
     private readonly redisService: RedisService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: config.get('jwt.secretkey'),
+      secretOrKey: config.jwt.secretkey,
     });
   }
 

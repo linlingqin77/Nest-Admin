@@ -1,23 +1,14 @@
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
-
-interface PostgresConfig {
-  host: string;
-  port: number;
-  username: string;
-  password: string;
-  database: string;
-  schema?: string;
-  ssl?: boolean | Record<string, any>;
-}
+import { AppConfigService } from 'src/config/app-config.service';
+import { PostgresqlConfig } from 'src/config/types';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(PrismaService.name);
 
-  constructor(private readonly configService: ConfigService) {
-    const pgConfig = configService.get<PostgresConfig>('db.postgresql');
+  constructor(private readonly config: AppConfigService) {
+    const pgConfig = config.db.postgresql;
     if (!pgConfig) {
       throw new Error('PostgreSQL configuration (db.postgresql) is missing.');
     }
@@ -32,7 +23,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     });
   }
 
-  private static buildConnectionString(config: PostgresConfig): string {
+  private static buildConnectionString(config: PostgresqlConfig): string {
     const { username, password, host, port, database, schema, ssl } = config;
     const encodedUser = encodeURIComponent(username);
     const encodedPassword = encodeURIComponent(password ?? '');

@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, HttpCode, Logger, Headers } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiHeader } from '@nestjs/swagger';
-import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from 'src/config/app-config.service';
 import { MainService } from './main.service';
 import { AuthLoginDto, AuthRegisterDto, SocialLoginDto } from './dto/auth.dto';
 import { LoginTokenVo, CaptchaCodeVo, LoginTenantVo, UserInfoVo } from './vo/auth.vo';
@@ -34,7 +34,7 @@ export class AuthController {
     private readonly mainService: MainService,
     private readonly redisService: RedisService,
     private readonly sysConfigService: SysConfigService,
-    private readonly configService: ConfigService,
+    private readonly config: AppConfigService,
     private readonly prisma: PrismaService,
   ) { }
 
@@ -52,7 +52,7 @@ export class AuthController {
   @NotRequireAuth()
   @IgnoreTenant()
   async getTenantList(): Promise<Result> {
-    const tenantEnabled = this.configService.get<boolean>('tenant.enabled', true);
+    const tenantEnabled = this.config.tenant.enabled;
 
     const result: LoginTenantVo = {
       tenantEnabled,
@@ -166,8 +166,8 @@ export class AuthController {
 
       // 转换响应格式为 Soybean 前端期望的格式
       if (result.code === 200 && result.data?.token) {
-        const jwtExpires = this.configService.get<string>('jwt.expiresin', '1h');
-        const refreshExpires = this.configService.get<string>('jwt.refreshExpiresIn', '2h');
+        const jwtExpires = this.config.jwt.expiresin;
+        const refreshExpires = this.config.jwt.refreshExpiresIn;
 
         const loginToken: LoginTokenVo = {
           access_token: result.data.token,

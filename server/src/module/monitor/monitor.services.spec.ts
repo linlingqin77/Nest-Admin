@@ -143,10 +143,23 @@ describe('Monitor module services', () => {
     const jobLogService = {
       addJobLog: jest.fn().mockResolvedValue(Result.ok()),
     };
+    const prisma = createPrismaMock();
+    const noticeService = {
+      sendBatchNotice: jest.fn(),
+    };
+    const versionService = {
+      cleanExpiredVersions: jest.fn(),
+    };
 
     beforeEach(() => {
       jest.clearAllMocks();
-      service = new TaskService(moduleRef, jobLogService as any);
+      service = new TaskService(
+        moduleRef,
+        jobLogService as any,
+        prisma as any,
+        noticeService as any,
+        versionService as any
+      );
       (service as any).taskMap.set('demoTask', jest.fn());
     });
 

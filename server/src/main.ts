@@ -9,7 +9,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from 'src/app.module';
 import { GlobalExceptionFilter } from 'src/common/filters/global-exception.filter';
 import { ValidationPipe, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from 'src/config/app-config.service';
 import { Logger as PinoLogger } from 'nestjs-pino';
 import path from 'path';
 import { writeFileSync } from 'fs';
@@ -45,7 +45,7 @@ async function bootstrap() {
     cors: true, // 开启跨域访问
     bufferLogs: true, // 缓冲日志
   });
-  const config = app.get(ConfigService);
+  const config = app.get(AppConfigService);
 
   // 使用 Pino Logger
   app.useLogger(app.get(PinoLogger));
@@ -75,10 +75,10 @@ async function bootstrap() {
   //   }
   // }));
   // 设置 api 访问前缀
-  const prefix = config.get<string>('app.prefix');
+  const prefix = config.app.prefix;
 
   const rootPath = process.cwd();
-  const baseDirPath = path.posix.join(rootPath, config.get('app.file.location'));
+  const baseDirPath = path.posix.join(rootPath, config.app.file.location);
   app.useStaticAssets(baseDirPath, {
     prefix: '/profile/',
     maxAge: 86400000 * 365,
@@ -165,7 +165,7 @@ async function bootstrap() {
       },
       'Authorization',
     )
-    .addServer(config.get<string>('app.file.domain'))
+    .addServer(config.app.file.domain)
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerOptions);
@@ -185,7 +185,7 @@ async function bootstrap() {
   // 获取真实 ip
   app.use(requestIpMw({ attributeName: 'ip' }));
   //服务端口
-  const port = config.get<number>('app.port') || 8080;
+  const port = config.app.port || 8080;
   await app.listen(port);
 
   // 使用 Logger 而不是 console.log

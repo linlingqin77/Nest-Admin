@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bull';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AppConfigService } from 'src/config/app-config.service';
 
 /**
  * Bull队列模块配置
@@ -9,14 +9,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 @Module({
   imports: [
     BullModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
+      useFactory: (config: AppConfigService) => ({
         redis: {
-          host: configService.get<string>('redis.host'),
-          port: configService.get<number>('redis.port'),
-          password: configService.get<string>('redis.password'),
-          db: configService.get<number>('redis.db'),
-          keyPrefix: configService.get<string>('redis.keyPrefix') + 'bull:',
+          host: config.redis.host,
+          port: config.redis.port,
+          password: config.redis.password,
+          db: config.redis.db,
+          keyPrefix: config.redis.keyPrefix + 'bull:',
         },
         defaultJobOptions: {
           attempts: 3,
@@ -28,7 +27,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           removeOnFail: 500, // 保留最近500个失败任务
         },
       }),
-      inject: [ConfigService],
+      inject: [AppConfigService],
     }),
   ],
   exports: [BullModule],

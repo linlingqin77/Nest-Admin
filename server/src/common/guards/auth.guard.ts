@@ -1,5 +1,5 @@
 import { Reflector } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from 'src/config/app-config.service';
 import { AuthGuard } from '@nestjs/passport';
 import { pathToRegexp } from 'path-to-regexp';
 import { ExecutionContext, ForbiddenException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
@@ -13,10 +13,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     private readonly reflector: Reflector,
     @Inject(UserService)
     private readonly userService: UserService,
-    private readonly config: ConfigService,
+    private readonly config: AppConfigService,
   ) {
     super();
-    this.globalWhiteList = [].concat(this.config.get('perm.router.whitelist') || []);
+    this.globalWhiteList = [].concat(this.config.perm.router.whitelist || []);
   }
 
   async canActivate(ctx: ExecutionContext): Promise<boolean> {

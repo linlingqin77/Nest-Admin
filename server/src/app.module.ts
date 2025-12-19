@@ -1,9 +1,11 @@
 import { Module, Global, MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
+import { AppConfigService } from './config/app-config.service';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { BullModule } from '@nestjs/bull';
 import configuration from './config/index';
 import { validate } from './config/env.validation';
+import { AppConfigModule } from './config/app-config.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from 'src/common/guards/auth.guard';
 import { PermissionGuard } from 'src/common/guards/permission.guard';
@@ -26,7 +28,7 @@ import { PrismaModule } from './prisma/prisma.module';
 @Global()
 @Module({
   imports: [
-    // 配置模块
+    // 配置模块 - 强类型配置验证
     ConfigModule.forRoot({
       cache: true,
       load: [configuration],
@@ -38,6 +40,8 @@ import { PrismaModule } from './prisma/prisma.module';
         abortEarly: false,
       },
     }),
+    // 类型安全的配置服务模块
+    AppConfigModule,
     // Pino 日志模块
     LoggerModule,
     // CLS 上下文模块 (Request ID)
@@ -55,13 +59,13 @@ import { PrismaModule } from './prisma/prisma.module';
     }]),
     // Bull 队列模块 (用于异步任务处理)
     BullModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
+      inject: [AppConfigService],
+      useFactory: (config: AppConfigService) => ({
         redis: {
-          host: configService.get('redis.host'),
-          port: configService.get('redis.port'),
-          password: configService.get('redis.password'),
-          db: configService.get('redis.db'),
+          host: config.redis.host,
+          port: config.redis.port,
+          password: config.redis.password,
+          db: config.redis.db,
         },
       }),
     }),

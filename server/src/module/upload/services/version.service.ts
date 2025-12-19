@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from 'src/config/app-config.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -10,7 +10,7 @@ export class VersionService {
 
     constructor(
         private readonly prisma: PrismaService,
-        private readonly config: ConfigService,
+        private readonly config: AppConfigService,
     ) { }
 
     /**
@@ -80,11 +80,11 @@ export class VersionService {
         try {
             if (file.storageType === 'local') {
                 // 删除本地文件
-                const baseDir = path.join(process.cwd(), this.config.get('app.file.location'));
+                const baseDir = path.join(process.cwd(), this.config.app.file.location);
 
                 // 从URL中提取文件路径
                 const url = file.url;
-                const serveRoot = this.config.get('app.file.serveRoot');
+                const serveRoot = this.config.app.file.serveRoot;
                 const relativePath = url.split(serveRoot)[1];
 
                 if (relativePath) {

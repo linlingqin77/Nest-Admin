@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from 'src/config/app-config.service';
 
 interface FileAccessPayload {
     type: 'file-access';
@@ -15,7 +15,7 @@ export class FileAccessService {
 
     constructor(
         private readonly jwtService: JwtService,
-        private readonly config: ConfigService,
+        private readonly config: AppConfigService,
     ) { }
 
     /**
@@ -30,7 +30,7 @@ export class FileAccessService {
         };
 
         return this.jwtService.sign(payload, {
-            secret: this.config.get('jwt.secret'),
+            secret: this.config.jwt.secretkey,
         });
     }
 
@@ -40,7 +40,7 @@ export class FileAccessService {
     verifyAccessToken(token: string): { fileId: string; tenantId: string } {
         try {
             const payload = this.jwtService.verify<FileAccessPayload>(token, {
-                secret: this.config.get('jwt.secret'),
+                secret: this.config.jwt.secretkey,
             });
 
             if (payload.type !== 'file-access') {
@@ -73,7 +73,7 @@ export class FileAccessService {
         };
 
         return this.jwtService.sign(payload, {
-            secret: this.config.get('jwt.secret'),
+            secret: this.config.jwt.secretkey,
         });
     }
 }

@@ -15,7 +15,7 @@ import archiver from 'archiver';
 import { Response } from 'express';
 import { FileAccessService } from './services/file-access.service';
 import { VersionService } from '../../upload/services/version.service';
-import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from 'src/config/app-config.service';
 
 @Injectable()
 export class FileManagerService {
@@ -25,7 +25,7 @@ export class FileManagerService {
     private readonly prisma: PrismaService,
     private readonly fileAccessService: FileAccessService,
     private readonly versionService: VersionService,
-    private readonly config: ConfigService,
+    private readonly config: AppConfigService,
   ) { }
 
   // ==================== 文件夹管理 ====================
@@ -904,8 +904,8 @@ export class FileManagerService {
     // 根据存储类型返回文件
     if (file.storageType === 'local') {
       // 本地文件流式传输
-      const baseDir = path.join(process.cwd(), this.config.get('app.file.location'));
-      const serveRoot = this.config.get('app.file.serveRoot');
+      const baseDir = path.join(process.cwd(), this.config.app.file.location);
+      const serveRoot = this.config.app.file.serveRoot;
       const relativePath = file.url.split(serveRoot)[1];
 
       if (!relativePath) {
@@ -958,8 +958,8 @@ export class FileManagerService {
 
     archive.pipe(res);
 
-    const baseDir = path.join(process.cwd(), this.config.get('app.file.location'));
-    const serveRoot = this.config.get('app.file.serveRoot');
+    const baseDir = path.join(process.cwd(), this.config.app.file.location);
+    const serveRoot = this.config.app.file.serveRoot;
 
     // 添加文件到压缩包
     for (const file of files) {

@@ -1,6 +1,6 @@
 import { Injectable, NestMiddleware, Logger } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from 'src/config/app-config.service';
 import { TenantContext } from './tenant.context';
 
 /**
@@ -10,11 +10,11 @@ import { TenantContext } from './tenant.context';
 export class TenantMiddleware implements NestMiddleware {
   private readonly logger = new Logger(TenantMiddleware.name);
 
-  constructor(private configService: ConfigService) {}
+  constructor(private config: AppConfigService) { }
 
   use(req: Request, res: Response, next: NextFunction) {
     // 检查是否启用多租户
-    const tenantEnabled = this.configService.get<boolean>('tenant.enabled', true);
+    const tenantEnabled = this.config.tenant.enabled;
 
     if (!tenantEnabled) {
       // 未启用多租户时，使用默认租户ID

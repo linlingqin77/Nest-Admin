@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from 'src/config/app-config.service';
 import { Prisma } from '@prisma/client';
 import { TenantContext } from './tenant.context';
 
@@ -35,8 +35,8 @@ export class TenantHelper {
     'sysUser',
   ]);
 
-  constructor(private configService: ConfigService) {
-    this.enabled = this.configService.get<boolean>('tenant.enabled', true);
+  constructor(private config: AppConfigService) {
+    this.enabled = this.config.tenant.enabled;
   }
 
   /**

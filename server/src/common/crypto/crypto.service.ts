@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { AppConfigService } from 'src/config/app-config.service';
 import * as crypto from 'crypto';
 import * as forge from 'node-forge';
 
@@ -23,15 +23,15 @@ export class CryptoService implements OnModuleInit {
   // 是否启用加密
   private enabled: boolean = false;
 
-  constructor(private configService: ConfigService) {}
+  constructor(private config: AppConfigService) { }
 
   onModuleInit() {
-    this.enabled = this.configService.get<boolean>('crypto.enabled', false);
+    this.enabled = this.config.crypto.enabled;
 
     if (this.enabled) {
       // 从配置加载或生成 RSA 密钥对
-      const publicKeyConfig = this.configService.get<string>('crypto.rsaPublicKey', '');
-      const privateKeyConfig = this.configService.get<string>('crypto.rsaPrivateKey', '');
+      const publicKeyConfig = this.config.crypto.rsaPublicKey || '';
+      const privateKeyConfig = this.config.crypto.rsaPrivateKey || '';
 
       if (!publicKeyConfig || !privateKeyConfig) {
         this.logger.warn('RSA keys not configured, generating new key pair...');
