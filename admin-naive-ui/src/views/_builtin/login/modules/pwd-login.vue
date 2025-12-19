@@ -51,7 +51,7 @@ const rules = computed<Record<RuleKey, App.Global.FormRule[]>>(() => {
 async function handleFetchTenantList() {
   startTenantLoading();
   try {
-    const data = await fetchTenantList();
+    const { data } = await fetchTenantList();
     tenantEnabled.value = data.tenantEnabled;
     if (data.tenantEnabled) {
       tenantOption.value = data.voList.map(tenant => {
@@ -90,7 +90,7 @@ async function handleSubmit() {
 async function handleFetchCaptchaCode() {
   startCodeLoading();
   try {
-    const data = await fetchCaptchaCode();
+    const { data } = await fetchCaptchaCode();
     captchaEnabled.value = data.captchaEnabled;
     if (data.captchaEnabled && data.img) {
       model.uuid = data.uuid;
@@ -131,7 +131,7 @@ handleLoginRember();
 
 async function handleSocialLogin(type: Api.System.SocialSource) {
   try {
-    const data = await fetchSocialAuthBinding(type, model.tenantId);
+    const { data } = await fetchSocialAuthBinding(type, model.tenantId);
     window.location.href = data;
   } catch {
     // error handled by request interceptor

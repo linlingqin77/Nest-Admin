@@ -9,6 +9,7 @@ import { CreatePostDto, UpdatePostDto, ListPostDto } from './dto/index';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { DeptService } from '../dept/dept.service';
 import { PostRepository } from './post.repository';
+import { Transactional } from 'src/common/decorators/transactional.decorator';
 
 @Injectable()
 export class PostService {
@@ -75,6 +76,7 @@ export class PostService {
     return Result.ok(res);
   }
 
+  @Transactional()
   async remove(postIds: string[]) {
     const ids = postIds.map((id) => Number(id));
     const data = await this.postRepo.softDeleteBatch(ids);

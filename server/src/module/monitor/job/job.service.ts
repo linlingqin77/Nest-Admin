@@ -11,6 +11,7 @@ import { ExportTable } from 'src/common/utils/export';
 import { StatusEnum } from 'src/common/enum/index';
 import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Transactional } from 'src/common/decorators/transactional.decorator';
 
 @Injectable()
 export class JobService {
@@ -33,28 +34,24 @@ export class JobService {
   }
 
   // 查询任务列表
-  async list(query: { pageNum?: number; pageSize?: number; jobName?: string; jobGroup?: string; status?: string }) {
-    const { pageNum = 1, pageSize = 10, jobName, jobGroup, status } = query;
+  async list(query: ListJobDto) {
     const where: Prisma.SysJobWhereInput = {};
 
-    if (jobName) {
-      where.jobName = { contains: jobName };
+    if (query.jobName) {
+      where.jobName = { contains: query.jobName };
     }
-    if (jobGroup) {
-      where.jobGroup = jobGroup;
+    if (query.jobGroup) {
+      where.jobGroup = query.jobGroup;
     }
-    if (status) {
-      where.status = status;
+    if (query.status) {
+      where.status = query.status;
     }
-
-    const take = Number(pageSize);
-    const skip = take * (Number(pageNum) - 1);
 
     const [list, total] = await this.prisma.$transaction([
       this.prisma.sysJob.findMany({
         where,
-        skip,
-        take,
+        skip: query.skip,
+        take: query.take,
         orderBy: {
           createTime: 'desc',
         },
@@ -73,6 +70,7 @@ export class JobService {
   }
 
   // 创建任务
+  @Transactional()
   async create(createJobDto: CreateJobDto, userName: string) {
     const job = await this.prisma.sysJob.create({
       data: {
@@ -90,6 +88,7 @@ export class JobService {
     return Result.ok();
   }
 
+  @Transactional()
   // 更新任务
   async update(jobId: number, updateJobDto: Partial<CreateJobDto>, userName: string) {
     const job = await this.prisma.sysJob.findUnique({ where: { jobId: Number(jobId) } });
@@ -128,6 +127,7 @@ export class JobService {
     return Result.ok();
   }
 
+  @Transactional()
   // 删除任务
   async remove(jobIds: number | number[]) {
     const ids = Array.isArray(jobIds) ? jobIds : [jobIds];

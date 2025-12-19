@@ -204,7 +204,7 @@ async function getBtnMenuList() {
   startBtnLoading();
   btnData.value = [];
   try {
-    const data = await fetchGetMenuList(
+    const { data } = await fetchGetMenuList(
       { parentId: currentMenu.value?.menuId, menuType: 'F' },
       controller.signal
     );

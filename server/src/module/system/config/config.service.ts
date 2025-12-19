@@ -11,6 +11,7 @@ import { CacheEnum, DelFlagEnum } from 'src/common/enum/index';
 import { Cacheable, CacheEvict } from 'src/common/decorators/redis.decorator';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigRepository } from './config.repository';
+import { Transactional } from 'src/common/decorators/transactional.decorator';
 
 @Injectable()
 export class ConfigService {
@@ -91,6 +92,7 @@ export class ConfigService {
   /**
    * 根据Key更新配置
    */
+  @Transactional()
   async updateByKey(updateConfigDto: UpdateConfigDto) {
     const config = await this.configRepo.findByConfigKey(updateConfigDto.configKey);
     BusinessException.throwIfNull(config, '参数不存在', ResponseCode.DATA_NOT_FOUND);
@@ -100,6 +102,7 @@ export class ConfigService {
     return Result.ok();
   }
 
+  @Transactional()
   async remove(configIds: number[]) {
     const list = await this.configRepo.findMany({
       where: {

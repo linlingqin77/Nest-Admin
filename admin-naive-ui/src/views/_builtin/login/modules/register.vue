@@ -70,7 +70,7 @@ async function handleSubmit() {
 
 async function handleFetchTenantList() {
   try {
-    const data = await fetchTenantList();
+    const { data } = await fetchTenantList();
     tenantEnabled.value = data.tenantEnabled;
     tenantOption.value = data.voList.map(tenant => {
       return {
@@ -88,7 +88,7 @@ handleFetchTenantList();
 async function handleFetchCaptchaCode() {
   startCodeLoading();
   try {
-    const data = await fetchCaptchaCode();
+    const { data } = await fetchCaptchaCode();
     captchaEnabled.value = data.captchaEnabled;
     if (data.captchaEnabled) {
       model.uuid = data.uuid;

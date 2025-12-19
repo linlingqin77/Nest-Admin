@@ -16,6 +16,7 @@ import { Response } from 'express';
 import { FileAccessService } from './services/file-access.service';
 import { VersionService } from '../../upload/services/version.service';
 import { AppConfigService } from 'src/config/app-config.service';
+import { Transactional } from 'src/common/decorators/transactional.decorator';
 
 @Injectable()
 export class FileManagerService {
@@ -383,6 +384,7 @@ export class FileManagerService {
   /**
    * 删除文件
    */
+  @Transactional()
   async deleteFiles(uploadIds: string[], username: string) {
     const tenantId = TenantContext.getTenantId();
 
@@ -633,6 +635,7 @@ export class FileManagerService {
   /**
    * 恢复回收站文件
    */
+  @Transactional()
   async restoreFiles(uploadIds: string[], username: string) {
     const tenantId = TenantContext.getTenantId();
 
@@ -674,6 +677,7 @@ export class FileManagerService {
   /**
    * 彻底删除回收站文件
    */
+  @Transactional()
   async clearRecycle(uploadIds: string[], username: string) {
     const tenantId = TenantContext.getTenantId();
 

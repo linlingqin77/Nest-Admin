@@ -20380,7 +20380,91 @@
       "get": {
         "description": "分页查询定时任务列表",
         "operationId": "JobController_list",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "pageNum",
+            "required": false,
+            "in": "query",
+            "description": "页码",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "每页条数",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "orderByColumn",
+            "required": false,
+            "in": "query",
+            "description": "排序字段",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isAsc",
+            "required": false,
+            "in": "query",
+            "description": "排序方向",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "params",
+            "required": false,
+            "in": "query",
+            "description": "时间范围",
+            "schema": {
+              "$ref": "#/components/schemas/DateRangeDto"
+            }
+          },
+          {
+            "name": "jobName",
+            "required": false,
+            "in": "query",
+            "description": "任务名称",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "jobGroup",
+            "required": false,
+            "in": "query",
+            "description": "任务组名",
+            "schema": {
+              "minLength": 1,
+              "maxLength": 64,
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "状态（0正常 1暂停）",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "操作成功",
@@ -29138,6 +29222,39 @@
       "ListJobDto": {
         "type": "object",
         "properties": {
+          "pageNum": {
+            "type": "number",
+            "default": 1,
+            "minimum": 1,
+            "description": "页码"
+          },
+          "pageSize": {
+            "type": "number",
+            "default": 10,
+            "minimum": 1,
+            "maximum": 100,
+            "description": "每页条数"
+          },
+          "orderByColumn": {
+            "type": "string",
+            "description": "排序字段"
+          },
+          "isAsc": {
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "type": "string",
+            "description": "排序方向"
+          },
+          "params": {
+            "description": "时间范围",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DateRangeDto"
+              }
+            ]
+          },
           "jobName": {
             "type": "string",
             "description": "任务名称"

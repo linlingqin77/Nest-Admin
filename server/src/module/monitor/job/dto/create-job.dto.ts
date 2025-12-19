@@ -46,19 +46,19 @@ export class CreateJobDto {
   remark?: string;
 }
 
-export class ListJobDto {
-  @ApiProperty({ description: '任务名称' })
+export class ListJobDto extends PageQueryDto {
+  @ApiProperty({ description: '任务名称', required: false })
   @IsOptional()
   @IsString()
   jobName?: string;
 
-  @ApiProperty({ description: '任务组名' })
+  @ApiProperty({ description: '任务组名', required: false })
   @IsOptional()
   @IsString()
   @Length(1, 64)
   jobGroup?: string;
 
-  @ApiProperty({ description: '状态（0正常 1暂停）' })
+  @ApiProperty({ description: '状态（0正常 1暂停）', required: false })
   @IsOptional()
   @IsString()
   status?: string;

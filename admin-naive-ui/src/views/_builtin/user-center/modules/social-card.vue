@@ -19,7 +19,7 @@ const { loading: btnLoading, startLoading: startBtnLoading, endLoading: endBtnLo
 async function getSsoUserList() {
   startLoading();
   try {
-    const data = await fetchSocialList();
+    const { data } = await fetchSocialList();
     socialList.value = data || [];
   } catch {
     // error handled by request interceptor
@@ -31,7 +31,7 @@ async function getSsoUserList() {
 /** 绑定SSO账户 */
 async function bindSsoAccount(type: Api.System.SocialSource) {
   try {
-    const data = await fetchSocialAuthBinding(type, userInfo.user?.tenantId);
+    const { data } = await fetchSocialAuthBinding(type, userInfo.user?.tenantId);
     window.location.href = data;
   } catch {
     // error handled by request interceptor

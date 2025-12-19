@@ -89,7 +89,7 @@ async function handleUpdateModelWhenEdit() {
     startMenuLoading();
     Object.assign(model, props.rowData);
     try {
-      const data = await fetchGetRoleMenuTreeSelect(model.roleId!);
+      const { data } = await fetchGetRoleMenuTreeSelect(model.roleId!);
       model.menuIds = data.checkedKeys;
       menuOptions.value = data.menus;
     } catch {

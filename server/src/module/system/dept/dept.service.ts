@@ -8,6 +8,7 @@ import { CacheEnum, DataScopeEnum, DelFlagEnum, StatusEnum } from 'src/common/en
 import { Cacheable, CacheEvict } from 'src/common/decorators/redis.decorator';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { DeptRepository } from './dept.repository';
+import { Transactional } from 'src/common/decorators/transactional.decorator';
 
 @Injectable()
 export class DeptService {
@@ -19,6 +20,7 @@ export class DeptService {
   ) { }
 
   @CacheEvict(CacheEnum.SYS_DEPT_KEY, '*')
+  @Transactional()
   async create(createDeptDto: CreateDeptDto) {
     let ancestors = '0';
     if (createDeptDto.parentId) {
@@ -142,6 +144,7 @@ export class DeptService {
   }
 
   @CacheEvict(CacheEnum.SYS_DEPT_KEY, '*')
+  @Transactional()
   async update(updateDeptDto: UpdateDeptDto) {
     if (updateDeptDto.parentId && updateDeptDto.parentId !== 0) {
       const parent = await this.prisma.sysDept.findUnique({

@@ -9,6 +9,7 @@ import { Response } from 'express';
 import { CreateTenantPackageDto, UpdateTenantPackageDto, ListTenantPackageDto } from './dto/index';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IgnoreTenant } from 'src/common/tenant/tenant.decorator';
+import { Transactional } from 'src/common/decorators/transactional.decorator';
 
 @Injectable()
 export class TenantPackageService {
@@ -20,6 +21,7 @@ export class TenantPackageService {
      * 创建租户套餐
      */
     @IgnoreTenant()
+    @Transactional()
     async create(createTenantPackageDto: CreateTenantPackageDto) {
         // 检查套餐名称是否已存在
         const existPackage = await this.prisma.sysTenantPackage.findFirst({
@@ -122,6 +124,7 @@ export class TenantPackageService {
      * 更新租户套餐
      */
     @IgnoreTenant()
+    @Transactional()
     async update(updateTenantPackageDto: UpdateTenantPackageDto) {
         const { packageId, menuIds, ...updateData } = updateTenantPackageDto;
 
@@ -166,6 +169,7 @@ export class TenantPackageService {
      * 批量删除租户套餐
      */
     @IgnoreTenant()
+    @Transactional()
     async remove(packageIds: number[]) {
         // 检查是否有租户正在使用这些套餐
         const tenantsUsingPackage = await this.prisma.sysTenant.findFirst({

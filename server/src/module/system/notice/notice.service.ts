@@ -6,6 +6,7 @@ import { FormatDateFields } from 'src/common/utils/index';
 import { CreateNoticeDto, UpdateNoticeDto, ListNoticeDto } from './dto/index';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { NoticeRepository } from './notice.repository';
+import { Transactional } from 'src/common/decorators/transactional.decorator';
 
 @Injectable()
 export class NoticeService {
@@ -65,6 +66,7 @@ export class NoticeService {
     return Result.ok();
   }
 
+  @Transactional()
   async remove(noticeIds: number[]) {
     const data = await this.noticeRepo.softDeleteBatch(noticeIds);
     return Result.ok(data);
