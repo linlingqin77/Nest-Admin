@@ -158,7 +158,6 @@ async function handleSubmit() {
     // error handled by request interceptor
   }
 }
-}
 
 watch(visible, () => {
   if (visible.value) {

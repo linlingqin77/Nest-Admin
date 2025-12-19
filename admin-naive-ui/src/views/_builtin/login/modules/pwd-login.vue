@@ -103,8 +103,11 @@ async function handleFetchCaptchaCode() {
         codeUrl.value = `data:image/gif;base64,${data.img}`;
       }
     }
+  } catch {
+    // error handled by request interceptor
+  } finally {
+    endCodeLoading();
   }
-  endCodeLoading();
 }
 
 handleFetchCaptchaCode();

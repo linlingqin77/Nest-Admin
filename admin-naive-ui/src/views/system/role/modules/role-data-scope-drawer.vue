@@ -99,7 +99,10 @@ async function handleSubmit() {
     window.$message?.success($t('common.updateSuccess'));
     closeDrawer();
     emit('submitted');
+  } catch {
+    // error handled by request interceptor
   }
+}
 
 watch(visible, () => {
     if (visible.value) {
