@@ -11,6 +11,7 @@ import { MenuService } from '../menu/menu.service';
 import { CreateRoleDto, UpdateRoleDto, ListRoleDto, ChangeRoleStatusDto } from './dto/index';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RoleRepository } from './role.repository';
+import { Uniq } from 'src/common/utils/index';
 
 @Injectable()
 export class RoleService {
@@ -186,24 +187,29 @@ export class RoleService {
    */
   async getPermissionsByRoleIds(roleIds: number[]) {
     if (roleIds.includes(1)) return [{ perms: '*:*:*' }]; //当角色为超级管理员时，开放所有权限
-    const list = await this.prisma.sysRoleMenu.findMany({
+    if (!roleIds.length) return [];
+
+    // 单次查询拉取菜单权限，避免 role→roleMenu→menu 的多次往返
+    // 先取 role-menu 关联，再一次性查菜单
+    const roleMenuRows = await this.prisma.sysRoleMenu.findMany({
+      where: { roleId: { in: roleIds } },
+      select: { menuId: true },
+    });
+    if (!roleMenuRows?.length) return [];
+    const menuIds = Uniq(roleMenuRows.map((row) => row.menuId));
+    if (!menuIds.length) return [];
+
+    const permissions = await this.prisma.sysMenu.findMany({
       where: {
-        roleId: {
-          in: roleIds,
-        },
+        delFlag: DelFlagEnum.NORMAL,
+        status: StatusEnum.NORMAL,
+        menuId: { in: menuIds },
       },
-      select: {
-        menuId: true,
-      },
+      select: { perms: true },
     });
-    const menuIds = list.map((item) => item.menuId);
-    if (menuIds.length === 0) {
-      return [];
-    }
-    const permission = await this.menuService.findMany({
-      where: { delFlag: DelFlagEnum.NORMAL, status: StatusEnum.NORMAL, menuId: { in: menuIds } },
-    });
-    return permission;
+
+    const uniqPerms = Uniq(permissions.map((item) => item.perms).filter(Boolean));
+    return uniqPerms.map((perms) => ({ perms }));
   }
 
   /**

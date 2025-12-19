@@ -89,22 +89,22 @@ export class UserService {
     let dataScopeSelf = false;
     const roles = currentUser.roles ?? [];
 
+    const customRoleIds: number[] = [];
+    const deptScopes = new Set<DataScopeEnum>();
+
+    // 分类收集，避免在循环内触发多次查询
     for (const role of roles) {
       switch (role.dataScope) {
         case DataScopeEnum.DATA_SCOPE_ALL:
           dataScopeAll = true;
           break;
-        case DataScopeEnum.DATA_SCOPE_CUSTOM: {
-          const roleDeptIds = await this.roleService.findRoleWithDeptIds(role.roleId);
-          roleDeptIds.forEach((id) => deptIdSet.add(id));
+        case DataScopeEnum.DATA_SCOPE_CUSTOM:
+          customRoleIds.push(role.roleId);
           break;
-        }
         case DataScopeEnum.DATA_SCOPE_DEPT:
-        case DataScopeEnum.DATA_SCOPE_DEPT_AND_CHILD: {
-          const deptIds = await this.deptService.findDeptIdsByDataScope(currentUser.deptId, role.dataScope);
-          deptIds.forEach((id) => deptIdSet.add(+id));
+        case DataScopeEnum.DATA_SCOPE_DEPT_AND_CHILD:
+          deptScopes.add(role.dataScope);
           break;
-        }
         case DataScopeEnum.DATA_SCOPE_SELF:
           dataScopeSelf = true;
           break;
@@ -118,6 +118,21 @@ export class UserService {
 
     if (dataScopeAll) {
       return [];
+    }
+
+    // 批量查询自定义数据范围的部门
+    if (customRoleIds.length > 0) {
+      const roleDeptRows = await this.prisma.sysRoleDept.findMany({
+        where: { roleId: { in: customRoleIds } },
+        select: { deptId: true },
+      });
+      roleDeptRows.forEach((row) => deptIdSet.add(row.deptId));
+    }
+
+    // 针对部门/部门含子部门的数据范围，只调用一次/两次部门查询
+    for (const scope of deptScopes) {
+      const deptIds = await this.deptService.findDeptIdsByDataScope(currentUser.deptId, scope);
+      deptIds.forEach((id) => deptIdSet.add(+id));
     }
 
     if (deptIdSet.size > 0) {

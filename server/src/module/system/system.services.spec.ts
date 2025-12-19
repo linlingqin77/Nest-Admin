@@ -33,15 +33,23 @@ describe('System module services', () => {
     const redisService = {
       set: jest.fn(),
     };
+    const configRepo = {
+      findPageWithFilter: jest.fn(),
+      findByConfigKey: jest.fn(),
+      findMany: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+    };
     let service: ConfigService;
 
     beforeEach(() => {
       prisma = createPrismaMock();
-      service = new ConfigService(prisma, redisService as any, {} as any);
+      service = new ConfigService(prisma, redisService as any, configRepo as any);
+      jest.clearAllMocks();
     });
 
     it('should paginate config list', async () => {
-      prisma.$transaction.mockResolvedValue([[{ configId: 1 }], 1]);
+      configRepo.findPageWithFilter.mockResolvedValue({ list: [{ configId: 1 }], total: 1 });
       const res = await service.findAll({ pageNum: 1, pageSize: 10 } as any);
       expect(res.data).toEqual({ rows: [{ configId: 1 }], total: 1 });
     });
@@ -64,19 +72,26 @@ describe('System module services', () => {
       get: jest.fn().mockResolvedValue(null),
       set: jest.fn(),
     });
+    const deptRepo = {
+      create: jest.fn(),
+      update: jest.fn(),
+      softDelete: jest.fn(),
+      findById: jest.fn(),
+    };
     let redisMock: ReturnType<typeof createRedisMock>;
 
     beforeEach(() => {
       prisma = createPrismaMock();
-      service = new DeptService(prisma, {} as any);
+      service = new DeptService(prisma, deptRepo as any);
       redisMock = createRedisMock();
       (service as any).redis = redisMock;
+      jest.clearAllMocks();
     });
 
     it('should create dept by inheriting parent ancestors', async () => {
       (prisma.sysDept.findUnique as jest.Mock).mockResolvedValue({ ancestors: '0' });
       await service.create({ parentId: 1, deptName: '研发部', orderNum: 1 } as any);
-      expect(prisma.sysDept.create).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ deptName: '研发部' }) }));
+      expect(deptRepo.create).toHaveBeenCalledWith(expect.objectContaining({ deptName: '研发部' }));
     });
 
     it('should resolve dept ids by data scope', async () => {
@@ -94,15 +109,24 @@ describe('System module services', () => {
       del: jest.fn(),
       keys: jest.fn(),
     };
+    const dictTypeRepo = {
+      findPageWithFilter: jest.fn(),
+    };
+    const dictDataRepo = {
+      findPageWithFilter: jest.fn(),
+      findByDictType: jest.fn(),
+      findById: jest.fn(),
+    };
     let service: DictService;
 
     beforeEach(() => {
       prisma = createPrismaMock();
-      service = new DictService(prisma, redisService as any, {} as any, {} as any);
+      service = new DictService(prisma, redisService as any, dictTypeRepo as any, dictDataRepo as any);
+      jest.clearAllMocks();
     });
 
     it('should list dict types', async () => {
-      prisma.$transaction.mockResolvedValue([[{ dictId: 1 }], 1]);
+      dictTypeRepo.findPageWithFilter.mockResolvedValue({ list: [{ dictId: 1 }], total: 1 });
       const res = await service.findAllType({ pageNum: 1, pageSize: 10 } as any);
       expect(res.data.total).toBe(1);
     });
@@ -113,7 +137,7 @@ describe('System module services', () => {
       expect(cached.data).toEqual([{ dictValue: '1' }]);
 
       redisService.get.mockResolvedValueOnce(null);
-      (prisma.sysDictData.findMany as jest.Mock).mockResolvedValue([{ dictValue: '2' }] as any);
+      dictDataRepo.findByDictType.mockResolvedValue([{ dictValue: '2' }] as any);
       const fresh = await service.findOneDataType('sys_oper_type');
       expect(redisService.set).toHaveBeenCalledWith(`${CacheEnum.SYS_DICT_KEY}sys_oper_type`, [{ dictValue: '2' }]);
       expect(fresh.data).toEqual([{ dictValue: '2' }]);
@@ -125,11 +149,24 @@ describe('System module services', () => {
     const userService = {
       getRoleIds: jest.fn(),
     };
+    const createRedisMock = () => ({
+      get: jest.fn().mockResolvedValue(null),
+      set: jest.fn(),
+      del: jest.fn(),
+    });
+    let redisMock: ReturnType<typeof createRedisMock>;
+    const menuRepo = {
+      findAllMenus: jest.fn(),
+      findRoleMenus: jest.fn(),
+    };
     let service: MenuService;
 
     beforeEach(() => {
       prisma = createPrismaMock();
-      service = new MenuService(userService as any, prisma, {} as any);
+      service = new MenuService(userService as any, prisma, menuRepo as any);
+      redisMock = createRedisMock();
+      (service as any).redis = redisMock;
+      jest.clearAllMocks();
     });
 
     it('should return full menu tree for super admin', async () => {
@@ -138,15 +175,15 @@ describe('System module services', () => {
         { menuId: 1, parentId: 0, menuType: 'M', orderNum: 1, menuName: '仪表盘', path: '/dashboard', visible: '0', status: '0', perms: '*:*:*', component: 'Dashboard', delFlag: '0' } as any,
       ]);
       const data = await service.getMenuListByUserId(1);
-      expect(data).toHaveLength(1);
+      expect(data.data).toHaveLength(1);
     });
 
     it('should build role menu tree select payload', async () => {
-      (prisma.sysMenu.findMany as jest.Mock).mockResolvedValue([
+      menuRepo.findAllMenus.mockResolvedValue([
         { menuId: 1, parentId: 0, menuName: '系统管理', orderNum: 1, status: '0', delFlag: '0' },
         { menuId: 2, parentId: 1, menuName: '用户管理', orderNum: 1, status: '0', delFlag: '0' },
       ] as any);
-      (prisma.sysRoleMenu.findMany as jest.Mock).mockResolvedValue([{ menuId: 2 }]);
+      menuRepo.findRoleMenus.mockResolvedValue([{ menuId: 2 }]);
       const res = await service.roleMenuTreeselect(1);
       expect(res.data.checkedKeys).toEqual([2]);
     });
@@ -155,37 +192,46 @@ describe('System module services', () => {
   describe('NoticeService', () => {
     let prisma: PrismaMock;
     let service: NoticeService;
+    const noticeRepo = {
+      findPageWithFilter: jest.fn(),
+      softDeleteBatch: jest.fn(),
+    };
 
     beforeEach(() => {
       prisma = createPrismaMock();
-      service = new NoticeService(prisma, {} as any);
+      service = new NoticeService(prisma, noticeRepo as any);
+      jest.clearAllMocks();
     });
 
     it('should list notices', async () => {
-      prisma.$transaction.mockResolvedValue([[{ noticeId: 1 }], 1]);
+      noticeRepo.findPageWithFilter.mockResolvedValue({ list: [{ noticeId: 1 }], total: 1 });
       const res = await service.findAll({ pageNum: 1, pageSize: 10 } as any);
       expect(res.data.total).toBe(1);
     });
 
     it('should soft delete notices', async () => {
-      (prisma.sysNotice.updateMany as jest.Mock).mockResolvedValue({ count: 1 });
+      noticeRepo.softDeleteBatch.mockResolvedValue({ count: 1 } as any);
       await service.remove([1]);
-      expect(prisma.sysNotice.updateMany).toHaveBeenCalled();
+      expect(noticeRepo.softDeleteBatch).toHaveBeenCalled();
     });
   });
 
   describe('PostService', () => {
     let prisma: PrismaMock;
     let service: PostService;
+    const postRepo = {
+      findPageWithFilter: jest.fn(),
+    };
 
     beforeEach(() => {
       prisma = createPrismaMock();
       const deptService = { getChildDeptIds: jest.fn().mockResolvedValue([]) } as any;
-      service = new PostService(prisma, deptService, {} as any);
+      service = new PostService(prisma, deptService, postRepo as any);
+      jest.clearAllMocks();
     });
 
     it('should list posts via prisma transaction', async () => {
-      prisma.$transaction.mockResolvedValue([[{ postId: 1 }], 1]);
+      postRepo.findPageWithFilter.mockResolvedValue({ list: [{ postId: 1 }], total: 1 });
       const res = await service.findAll({ skip: 0, take: 10 } as any);
       expect(res.data.total).toBe(1);
     });
@@ -229,8 +275,7 @@ describe('System module services', () => {
     });
 
     it('should merge permissions from menu service', async () => {
-      (prisma.sysRoleMenu.findMany as jest.Mock).mockResolvedValue([{ menuId: 1 }]);
-      menuService.findMany.mockResolvedValue([{ perms: 'system:user:list' }]);
+      (prisma.sysMenu.findMany as jest.Mock).mockResolvedValue([{ perms: 'system:user:list' }]);
       const perms = await service.getPermissionsByRoleIds([2]);
       expect(perms).toEqual([{ perms: 'system:user:list' }]);
     });
@@ -307,17 +352,27 @@ describe('System module services', () => {
       get: jest.fn(),
     };
     const userRepo = {
+      create: jest.fn(),
       findByUserName: jest.fn(),
       findById: jest.fn(),
       updateLoginTime: jest.fn(),
+      softDeleteBatch: jest.fn(),
+      update: jest.fn(),
     };
+    let userAuthService: any;
 
     beforeEach(() => {
       prisma = createPrismaMock();
-      const userAuthService = {
-        getRoleIds: jest.fn().mockResolvedValue([[1]]),
+      userAuthService = {
+        getRoleIds: jest.fn().mockResolvedValue([1]),
         login: jest.fn(),
         register: jest.fn(),
+        createToken: jest.fn(),
+        parseToken: jest.fn(),
+        updateRedisToken: jest.fn(),
+        updateRedisUserRolesAndPermissions: jest.fn(),
+        getUserPermissions: jest.fn(),
+        getUserinfo: jest.fn(),
       } as any;
       const userProfileService = {} as any;
       const userRoleService = {} as any;
@@ -338,28 +393,27 @@ describe('System module services', () => {
     });
 
     it('should create user with posts and roles', async () => {
-      (prisma.sysUser.create as jest.Mock).mockResolvedValue({ userId: 10 } as any);
+      userRepo.create.mockResolvedValue({ userId: 10 } as any);
       await service.create({ userName: 'admin', password: '123456', postIds: [1], roleIds: [2] } as any);
-      expect(prisma.sysUser.create).toHaveBeenCalled();
+      expect(userRepo.create).toHaveBeenCalled();
       expect(prisma.sysUserPost.createMany).toHaveBeenCalled();
       expect(prisma.sysUserRole.createMany).toHaveBeenCalled();
     });
 
     it('should deduplicate role ids when querying relations', async () => {
-      (prisma.sysUserRole.findMany as jest.Mock).mockResolvedValue([{ roleId: 1 }, { roleId: 1 }, { roleId: 2 }]);
-      const ids = await service.getRoleIds([1]);
+      userAuthService.getRoleIds.mockResolvedValue([1, 2]);
+      const ids = await service.getRoleIds([1, 1, 2]);
       expect(ids).toEqual([1, 2]);
     });
 
     it('should merge redis session metadata when updating token', async () => {
-      redisService.get.mockResolvedValueOnce({ token: 'abc', roles: [] });
+      userAuthService.updateRedisToken.mockResolvedValue({ token: 'abc', roles: [] });
       await service.updateRedisToken('token', { roles: ['admin'] } as any);
-      expect(redisService.set).toHaveBeenCalledWith(`${CacheEnum.LOGIN_TOKEN_KEY}token`, expect.objectContaining({ roles: ['admin'] }), expect.any(Number));
+      expect(userAuthService.updateRedisToken).toHaveBeenCalledWith('token', { roles: ['admin'] });
     });
 
     it('should aggregate permissions from roles', async () => {
-      jest.spyOn(service, 'getRoleIds').mockResolvedValue([2, 3]);
-      roleService.getPermissionsByRoleIds.mockResolvedValue([{ perms: 'system:user:list' }, { perms: 'system:user:list' }]);
+      userAuthService.getUserPermissions.mockResolvedValue(['system:user:list']);
       const perms = await service.getUserPermissions(1);
       expect(perms).toEqual(['system:user:list']);
     });

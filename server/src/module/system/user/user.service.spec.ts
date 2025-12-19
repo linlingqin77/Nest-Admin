@@ -324,6 +324,7 @@ describe('UserService', () => {
         });
 
         it('should fail with wrong password', async () => {
+            (configService.getConfigValue as jest.Mock).mockResolvedValue('false');
             userAuthService.login.mockReset();
             userAuthService.login.mockResolvedValue({ code: 401, msg: '帐号或密码错误' });
 
@@ -349,6 +350,7 @@ describe('UserService', () => {
         });
 
         it('should fail when user is disabled', async () => {
+            (configService.getConfigValue as jest.Mock).mockResolvedValue('false');
             userAuthService.login.mockReset();
             userAuthService.login.mockResolvedValue({ code: 403, msg: '用户已禁用' });
 

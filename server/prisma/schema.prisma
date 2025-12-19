@@ -407,6 +407,7 @@ model SysRole {
   remark           String?   @db.VarChar(500)
 
   @@index([tenantId, status])
+  @@index([tenantId, delFlag, status])
   @@index([tenantId, roleKey])
   @@index([roleKey])
   @@map("sys_role")
@@ -425,6 +426,8 @@ model SysRoleMenu {
   menuId Int @map("menu_id")
 
   @@id([roleId, menuId])
+  @@index([roleId])
+  @@index([menuId])
   @@map("sys_role_menu")
 }
 
@@ -540,6 +543,7 @@ model SysUserPost {
   postId Int @map("post_id")
 
   @@id([userId, postId])
+  @@index([postId])
   @@map("sys_user_post")
 }
 
@@ -548,5 +552,6 @@ model SysUserRole {
   roleId Int @map("role_id")
 
   @@id([userId, roleId])
+  @@index([roleId])
   @@map("sys_user_role")
 }
