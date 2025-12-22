@@ -70,43 +70,29 @@ const flatRequest = createFlatRequest<App.Service.Response, RequestInstanceState
 
       // when the backend response code is in `logoutCodes`, it means the user will be logged out and redirected to login page
       const logoutCodes = import.meta.env.VITE_SERVICE_LOGOUT_CODES?.split(',') || [];
-      if (logoutCodes.includes(responseCode) && !isLogin) {
-        logoutAndCleanup();
-        return null;
-      }
-
-      // when the backend response code is in `modalLogoutCodes`, it means the user will be logged out by displaying a modal
       const modalLogoutCodes = import.meta.env.VITE_SERVICE_MODAL_LOGOUT_CODES?.split(',') || [];
-      if (modalLogoutCodes.includes(responseCode) && isLogin) {
-        const isExist = flatRequest.state.errMsgStack?.includes(response.data.msg);
-        if (isExist) {
-          return null;
-        }
+      
+      // 合并处理登出代码：如果在登出代码列表中，直接登出并跳转
+      const allLogoutCodes = [...logoutCodes, ...modalLogoutCodes].filter(code => code);
+      if (allLogoutCodes.includes(responseCode)) {
+        // 如果已经在登录页，直接清理即可
         if (window.location.pathname?.startsWith('/login')) {
           logoutAndCleanup();
           return null;
         }
 
-        flatRequest.state.errMsgStack = [...(flatRequest.state.errMsgStack || []), response.data.msg];
+        // 检查是否已经在处理登出
+        const isExist = flatRequest.state.errMsgStack?.includes(response.data.msg);
+        if (isExist) {
+          return null;
+        }
 
-        window.$dialog?.warning({
-          title: '系统提示',
-          content: '登录状态已过期，请重新登录',
-          positiveText: '重新登录',
-          maskClosable: false,
-          closeOnEsc: false,
-          onAfterEnter() {
-            // prevent the user from refreshing the page
-            window.addEventListener('beforeunload', handleLogout);
-          },
-          onPositiveClick() {
-            logoutAndCleanup();
-          },
-          onClose() {
-            logoutAndCleanup();
-          }
-        });
+        // 取消所有待处理的请求
         flatRequest.cancelAllRequest();
+        
+        // 直接登出并跳转到登录页
+        logoutAndCleanup();
+        
         return null;
       }
 
