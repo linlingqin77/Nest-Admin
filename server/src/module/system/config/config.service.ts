@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Response } from 'express';
 import { Prisma, SysConfig } from '@prisma/client';
 import { Result, ResponseCode } from 'src/common/response';
@@ -12,13 +12,17 @@ import { Cacheable, CacheEvict } from 'src/common/decorators/redis.decorator';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigRepository } from './config.repository';
 import { Transactional } from 'src/common/decorators/transactional.decorator';
+import { SystemConfigService } from '../system-config/system-config.service';
 
 @Injectable()
 export class ConfigService {
+  private readonly logger = new Logger(ConfigService.name);
+  
   constructor(
     private readonly prisma: PrismaService,
     private readonly redisService: RedisService,
     private readonly configRepo: ConfigRepository,
+    private readonly systemConfigService: SystemConfigService,
   ) { }
   async create(createConfigDto: CreateConfigDto) {
     await this.configRepo.create(createConfigDto);
@@ -72,7 +76,7 @@ export class ConfigService {
   }
 
   /**
-   * 根据配置键值异步查找一条配置信息。
+   * 根据配置键值异步查找一条配置信息（租户级）。
    *
    * @param configKey 配置的键值，用于查询配置信息。
    * @returns 返回一个结果对象，包含查询到的配置信息。如果未查询到，则返回空结果。
@@ -81,6 +85,52 @@ export class ConfigService {
   async getConfigValue(configKey: string) {
     const data = await this.configRepo.findByConfigKey(configKey);
     return data?.configValue ?? null;
+  }
+
+  /**
+   * 获取系统配置值（不受租户隔离影响）
+   * 
+   * 优先从 sys_system_config 表获取，回退到超级租户配置
+   * 适用于登录前、验证码等场景
+   * 
+   * @param configKey 配置键
+   * @returns 配置值
+   * 
+   * @example
+   * ```typescript
+   * const enabled = await this.configService.getSystemConfigValue('sys.account.captchaEnabled');
+   * ```
+   */
+  async getSystemConfigValue(configKey: string): Promise<string | null> {
+    // 优先从系统配置表获取
+    const systemValue = await this.systemConfigService.getConfigValue(configKey);
+    if (systemValue !== null) {
+      return systemValue;
+    }
+
+    // 回退：从租户配置表的超级租户记录获取（兼容性）
+    return this.getPublicConfigValue(configKey);
+  }
+
+  /**
+   * 获取公共配置值（仅从租户表的超级租户获取）
+   * 
+   * @deprecated 使用 getSystemConfigValue() 替代
+   * @param configKey 配置键
+   * @returns 配置值
+   */
+  async getPublicConfigValue(configKey: string): Promise<string | null> {
+    // 使用原生SQL直接查询，完全绕过租户扩展和缓存机制
+    const config = await this.prisma.$queryRaw<Array<{ config_value: string }>>`
+      SELECT config_value 
+      FROM sys_config 
+      WHERE config_key = ${configKey}
+        AND tenant_id = '000000'
+        AND del_flag = '0'
+      LIMIT 1
+    `;
+    
+    return config.length > 0 ? config[0].config_value : null;
   }
 
   @CacheEvict(CacheEnum.SYS_CONFIG_KEY, '{updateConfigDto.configKey}')

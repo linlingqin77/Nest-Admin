@@ -70,12 +70,23 @@ export class MenuRepository extends BaseRepository<SysMenu, Prisma.SysMenuDelega
      * 查询角色的菜单列表
      */
     async findRoleMenus(roleId: number): Promise<SysMenu[]> {
+        // 先查询角色拥有的菜单ID
+        const roleMenus = await this.prisma.sysRoleMenu.findMany({
+            where: { roleId },
+            select: { menuId: true },
+        });
+        
+        const menuIds = roleMenus.map(rm => rm.menuId);
+        
+        if (menuIds.length === 0) {
+            return [];
+        }
+        
+        // 再查询这些菜单的详细信息
         return this.prisma.sysMenu.findMany({
             where: {
-                roleMenus: {
-                    some: { roleId },
-                },
-            } as any,
+                menuId: { in: menuIds },
+            },
             orderBy: [{ parentId: 'asc' }, { orderNum: 'asc' }],
         });
     }

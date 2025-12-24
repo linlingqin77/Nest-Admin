@@ -398,9 +398,9 @@ const renderIframeQuery = (queryParam: string) => {
                 </template>
                 {{ $t('common.edit') }}
               </NButton>
-              <NPopconfirm @positive-click="() => handleDeleteMenu()">
+              <NPopconfirm v-if="hasAuth('system:menu:remove')" @positive-click="() => handleDeleteMenu()">
                 <template #trigger>
-                  <NButton v-if="hasAuth('system:menu:remove')" size="small" ghost type="error"
+                  <NButton size="small" ghost type="error"
                     :disabled="btnData.length > 0 || btnLoading">
                     <template #icon>
                       <icon-material-symbols-delete-outline />

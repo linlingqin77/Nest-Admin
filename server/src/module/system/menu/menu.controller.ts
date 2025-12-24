@@ -68,12 +68,12 @@ export class MenuController {
     summary: '菜单管理-角色菜单树',
     description: '获取角色已分配的菜单树结构',
     type: RoleMenuTreeSelectVo,
-    params: [{ name: 'menuId', description: '角色ID', type: 'number' }],
+    params: [{ name: 'roleId', description: '角色ID', type: 'number' }],
   })
   @RequirePermission('system:menu:query')
-  @Get('/roleMenuTreeselect/:menuId')
-  roleMenuTreeselect(@Param('menuId') menuId: string) {
-    return this.menuService.roleMenuTreeselect(+menuId);
+  @Get('/roleMenuTreeselect/:roleId')
+  roleMenuTreeselect(@Param('roleId') roleId: string) {
+    return this.menuService.roleMenuTreeselect(+roleId);
   }
 
   @Api({

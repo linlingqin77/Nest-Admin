@@ -106,8 +106,8 @@ export class AuthController {
   @Get('code')
   @NotRequireAuth()
   async getCaptchaCode(): Promise<Result> {
-    // 检查是否开启验证码
-    const enable = await this.sysConfigService.getConfigValue('sys.account.captchaEnabled');
+    // 使用公共配置方法，不依赖租户上下文（登录前没有租户信息）
+    const enable = await this.sysConfigService.getSystemConfigValue('sys.account.captchaEnabled');
     const captchaEnabled: boolean = enable === 'true';
 
     const result: CaptchaCodeVo = {

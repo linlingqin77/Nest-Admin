@@ -7046,13 +7046,13 @@
         ]
       }
     },
-    "/api/system/menu/roleMenuTreeselect/{menuId}": {
+    "/api/system/menu/roleMenuTreeselect/{roleId}": {
       "get": {
         "description": "获取角色已分配的菜单树结构",
         "operationId": "MenuController_roleMenuTreeselect",
         "parameters": [
           {
-            "name": "menuId",
+            "name": "roleId",
             "required": true,
             "in": "path",
             "description": "角色ID",

@@ -88,8 +88,8 @@ export class MainController {
   @NotRequireAuth()
   @Get('/captchaImage')
   async captchaImage() {
-    //是否开启验证码
-    const enable = await this.configService.getConfigValue('sys.account.captchaEnabled');
+    // 使用公共配置方法，不依赖租户上下文（登录前没有租户信息）
+    const enable = await this.configService.getSystemConfigValue('sys.account.captchaEnabled');
     const captchaEnabled: boolean = enable === 'true';
     const data = {
       captchaEnabled,

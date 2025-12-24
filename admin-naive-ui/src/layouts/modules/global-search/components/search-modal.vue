@@ -5,6 +5,7 @@ import { onKeyStroke, useDebounceFn } from '@vueuse/core';
 import { useRouteStore } from '@/store/modules/route';
 import { useAppStore } from '@/store/modules/app';
 import { $t } from '@/locales';
+import SvgIcon from '@/components/custom/svg-icon.vue';
 import SearchResult from './search-result.vue';
 import SearchFooter from './search-footer.vue';
 
@@ -104,7 +105,7 @@ registerShortcut();
     <NInputGroup>
       <NInput v-model:value="keyword" clearable :placeholder="$t('common.keywordSearch')" @input="handleSearch">
         <template #prefix>
-          <icon-uil-search class="text-15px text-#c2c2c2" />
+          <SvgIcon icon="ic:round-search" class="text-15px text-#c2c2c2" />
         </template>
       </NInput>
       <NButton v-if="isMobile" type="primary" ghost @click="handleClose">{{ $t('common.cancel') }}</NButton>

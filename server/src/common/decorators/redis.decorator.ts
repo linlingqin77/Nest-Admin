@@ -1,6 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { RedisService } from 'src/module/common/redis/redis.service';
 import { paramsKeyFormat } from '../utils/decorator';
+import { TenantContext } from '../tenant';
 
 /** 随机过期时间偏移范围（秒） */
 const JITTER_RANGE = 300; // 5分钟
@@ -42,9 +43,14 @@ export function CacheEvict(CACHE_NAME: string, CACHE_KEY: string) {
           await this.redis.del(res);
         }
       } else if (key !== null) {
-        await this.redis.del(`${CACHE_NAME}${key}`);
+        // 包含租户ID到缓存键中（如果存在）
+        const tenantId = TenantContext.getTenantId();
+        const fullKey = tenantId ? `${CACHE_NAME}${tenantId}:${key}` : `${CACHE_NAME}${key}`;
+        await this.redis.del(fullKey);
       } else {
-        await this.redis.del(`${CACHE_NAME}${CACHE_KEY}`);
+        const tenantId = TenantContext.getTenantId();
+        const fullKey = tenantId ? `${CACHE_NAME}${tenantId}:${CACHE_KEY}` : `${CACHE_NAME}${CACHE_KEY}`;
+        await this.redis.del(fullKey);
       }
 
       return await originMethod.apply(this, args);
@@ -114,14 +120,18 @@ export function Cacheable(CACHE_NAME: string, CACHE_KEY: string, CACHE_EXPIRESIN
         return await originMethod.apply(this, args);
       }
 
-      const cacheResult = await this.redis.get(`${CACHE_NAME}${key}`);
+      // 包含租户ID到缓存键中（如果存在）
+      const tenantId = TenantContext.getTenantId();
+      const fullKey = tenantId ? `${CACHE_NAME}${tenantId}:${key}` : `${CACHE_NAME}${key}`;
+
+      const cacheResult = await this.redis.get(fullKey);
 
       if (!cacheResult) {
         const result = await originMethod.apply(this, args);
 
         // 添加随机偏移防止缓存雪崩
         const ttl = addJitter(CACHE_EXPIRESIN);
-        await this.redis.set(`${CACHE_NAME}${key}`, result, ttl);
+        await this.redis.set(fullKey, result, ttl);
 
         return result;
       }
