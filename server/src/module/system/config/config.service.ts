@@ -13,6 +13,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ConfigRepository } from './config.repository';
 import { Transactional } from 'src/common/decorators/transactional.decorator';
 import { SystemConfigService } from '../system-config/system-config.service';
+import { TenantContext } from 'src/common/tenant/tenant.context';
 
 @Injectable()
 export class ConfigService {
@@ -125,8 +126,8 @@ export class ConfigService {
       SELECT config_value 
       FROM sys_config 
       WHERE config_key = ${configKey}
-        AND tenant_id = '000000'
-        AND del_flag = '0'
+        AND tenant_id = ${TenantContext.SUPER_TENANT_ID}
+        AND del_flag = ${DelFlagEnum.NORMAL}
       LIMIT 1
     `;
 

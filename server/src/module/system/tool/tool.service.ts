@@ -509,8 +509,8 @@ export class ToolService {
     column.createTime = column.createTime || new Date();
     column.updateBy = 'admin';
     column.updateTime = new Date();
-    column.status = column.status || '0';
-    column.delFlag = column.delFlag || '0';
+    column.status = column.status || StatusEnum.NORMAL;
+    column.delFlag = column.delFlag || DelFlagEnum.NORMAL;
     column.dictType = column.dictType || '';
     column.isInsert = column.isInsert ?? GenConstants.NOT_REQUIRE;
     column.isEdit = column.isEdit ?? GenConstants.NOT_REQUIRE;

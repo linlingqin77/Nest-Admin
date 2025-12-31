@@ -618,7 +618,7 @@ export class UploadService {
     if (data) {
       return Result.ok({
         data: data,
-        msg: data.status === '0' ? '上传成功' : '上传中',
+        msg: data.status === StatusEnum.NORMAL ? '上传成功' : '上传中',
       });
     } else {
       return Result.fail(ResponseCode.INTERNAL_SERVER_ERROR, '文件不存在');

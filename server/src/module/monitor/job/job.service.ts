@@ -81,7 +81,7 @@ export class JobService {
     });
 
     // 如果状态为正常，则添加到调度器
-    if (job.status === '0') {
+    if (job.status === StatusEnum.NORMAL) {
       this.addCronJob(job.jobName, job.cronExpression, createJobDto.invokeTarget);
     }
 
@@ -108,7 +108,7 @@ export class JobService {
         this.deleteCronJob(job.jobName);
       }
 
-      if (nextStatus === '0') {
+      if (nextStatus === StatusEnum.NORMAL) {
         this.addCronJob(job.jobName, nextCron, nextInvokeTarget);
       }
     }
@@ -155,7 +155,7 @@ export class JobService {
 
     const cronJob = this.getCronJob(job.jobName);
 
-    if (status === '0') {
+    if (status === StatusEnum.NORMAL) {
       // 启用
       if (!cronJob) {
         this.addCronJob(job.jobName, job.cronExpression, job.invokeTarget);
@@ -235,8 +235,8 @@ export class JobService {
       ],
       dictMap: {
         status: {
-          '0': '成功',
-          '1': '失败',
+          [StatusEnum.NORMAL]: '成功',
+          [StatusEnum.STOP]: '失败',
         },
         jobGroup: {
           SYSTEM: '系统',

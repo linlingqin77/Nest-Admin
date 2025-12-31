@@ -2,6 +2,7 @@ import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
 import { SysAuditLog, Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
+import { TenantContext } from '../tenant/tenant.context';
 
 /**
  * 审计日志数据接口
@@ -111,7 +112,7 @@ export class AuditService implements OnModuleDestroy {
 
     return {
       ...data,
-      tenantId: user?.tenantId || '000000',
+      tenantId: user?.tenantId || TenantContext.SUPER_TENANT_ID,
       userId: user?.userId,
       userName: user?.userName,
       ip: request?.ip || '0.0.0.0',

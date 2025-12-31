@@ -72,7 +72,7 @@ export class FileManagerService {
       const parent = await this.prisma.sysFileFolder.findUnique({
         where: { folderId: parentId },
       });
-      BusinessException.throwIf(!parent || parent.delFlag === '1', '父文件夹不存在', ResponseCode.DATA_NOT_FOUND);
+      BusinessException.throwIf(!parent || parent.delFlag === DelFlagEnum.DELETE, '父文件夹不存在', ResponseCode.DATA_NOT_FOUND);
       folderPath = `${parent.folderPath}${parent.folderName}/`;
     }
 
@@ -192,7 +192,7 @@ export class FileManagerService {
     await this.prisma.sysFileFolder.update({
       where: { folderId },
       data: {
-        delFlag: '1',
+        delFlag: DelFlagEnum.DELETE,
         updateBy: username,
         updateTime: new Date(),
       },
@@ -333,7 +333,7 @@ export class FileManagerService {
         where: { folderId: targetFolderId },
       });
 
-      if (!targetFolder || targetFolder.tenantId !== tenantId || targetFolder.delFlag === '1') {
+      if (!targetFolder || targetFolder.tenantId !== tenantId || targetFolder.delFlag === DelFlagEnum.DELETE) {
         return Result.fail(ResponseCode.INTERNAL_SERVER_ERROR, '目标文件夹不存在');
       }
     }
@@ -399,7 +399,7 @@ export class FileManagerService {
       });
 
       // 只有未删除的文件才需要计算大小和更新
-      if (file && file.delFlag !== '1') {
+      if (file && file.delFlag !== DelFlagEnum.DELETE) {
         // 将字节转换为MB（向上取整，与上传时保持一致）
         const fileSizeMB = Math.ceil(file.size / 1024 / 1024);
         totalSizeMB += fileSizeMB;
@@ -408,7 +408,7 @@ export class FileManagerService {
         await this.prisma.sysUpload.update({
           where: { uploadId },
           data: {
-            delFlag: '1',
+            delFlag: DelFlagEnum.DELETE,
             updateBy: username,
             updateTime: new Date(),
           },
@@ -442,7 +442,7 @@ export class FileManagerService {
       where: { uploadId },
     });
 
-    if (!file || file.tenantId !== tenantId || file.delFlag === '1') {
+    if (!file || file.tenantId !== tenantId || file.delFlag === DelFlagEnum.DELETE) {
       return Result.fail(ResponseCode.INTERNAL_SERVER_ERROR, '文件不存在');
     }
 
@@ -463,7 +463,7 @@ export class FileManagerService {
       where: { uploadId },
     });
 
-    if (!file || file.tenantId !== tenantId || file.delFlag === '1') {
+    if (!file || file.tenantId !== tenantId || file.delFlag === DelFlagEnum.DELETE) {
       return Result.fail(ResponseCode.INTERNAL_SERVER_ERROR, '文件不存在');
     }
 
@@ -504,7 +504,7 @@ export class FileManagerService {
       where: { shareId },
     });
 
-    if (!share || share.status === '1') {
+    if (!share || share.status === StatusEnum.STOP) {
       return Result.fail(ResponseCode.INTERNAL_SERVER_ERROR, '分享不存在或已失效');
     }
 
@@ -528,7 +528,7 @@ export class FileManagerService {
       where: { uploadId: share.uploadId },
     });
 
-    if (!file || file.delFlag === '1') {
+    if (!file || file.delFlag === DelFlagEnum.DELETE) {
       return Result.fail(ResponseCode.INTERNAL_SERVER_ERROR, '文件不存在');
     }
 
@@ -605,7 +605,7 @@ export class FileManagerService {
 
     const where: Prisma.SysUploadWhereInput = {
       tenantId,
-      delFlag: '1', // 只查询已删除的文件
+      delFlag: DelFlagEnum.DELETE, // 只查询已删除的文件
     };
 
     if (fileName) {
@@ -644,7 +644,7 @@ export class FileManagerService {
         where: { uploadId },
       });
 
-      if (!file || file.tenantId !== tenantId || file.delFlag !== '1') {
+      if (!file || file.tenantId !== tenantId || file.delFlag !== DelFlagEnum.DELETE) {
         continue;
       }
 
@@ -652,7 +652,7 @@ export class FileManagerService {
       await this.prisma.sysUpload.update({
         where: { uploadId },
         data: {
-          delFlag: '0',
+          delFlag: DelFlagEnum.NORMAL,
           updateBy: username,
           updateTime: new Date(),
         },
@@ -685,7 +685,7 @@ export class FileManagerService {
         where: { uploadId },
       });
 
-      if (!file || file.tenantId !== tenantId || file.delFlag !== '1') {
+      if (!file || file.tenantId !== tenantId || file.delFlag !== DelFlagEnum.DELETE) {
         continue;
       }
 
@@ -762,7 +762,7 @@ export class FileManagerService {
       where: { uploadId: targetVersionId },
     });
 
-    if (!targetVersion || targetVersion.tenantId !== tenantId || targetVersion.delFlag !== '0') {
+    if (!targetVersion || targetVersion.tenantId !== tenantId || targetVersion.delFlag !== DelFlagEnum.NORMAL) {
       throw new BusinessException(ResponseCode.DATA_NOT_FOUND, '目标版本不存在');
     }
 
@@ -817,8 +817,8 @@ export class FileManagerService {
           parentFileId: baseId,
           isLatest: true,
           downloadCount: 0,
-          status: '0',
-          delFlag: '0',
+          status: StatusEnum.NORMAL,
+          delFlag: DelFlagEnum.NORMAL,
           createBy: username,
           updateBy: username,
         },
@@ -857,7 +857,7 @@ export class FileManagerService {
       where: { uploadId },
     });
 
-    if (!file || file.tenantId !== tenantId || file.delFlag !== '0') {
+    if (!file || file.tenantId !== tenantId || file.delFlag !== DelFlagEnum.NORMAL) {
       return Result.fail(ResponseCode.INTERNAL_SERVER_ERROR, '文件不存在');
     }
 
@@ -885,7 +885,7 @@ export class FileManagerService {
       where: { uploadId },
     });
 
-    if (!file || file.tenantId !== tenantId || file.delFlag !== '0') {
+    if (!file || file.tenantId !== tenantId || file.delFlag !== DelFlagEnum.NORMAL) {
       throw new BusinessException(ResponseCode.DATA_NOT_FOUND, '文件不存在');
     }
 

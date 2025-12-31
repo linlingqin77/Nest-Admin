@@ -78,7 +78,7 @@ describe('Result Property-Based Tests', () => {
       fc.assert(
         fc.property(
           fc.uuid(),
-          fc.date(),
+          fc.date({ noInvalidDate: true }), // 排除无效日期
           fc.integer({ min: 400, max: 599 }),
           fc.string({ minLength: 1, maxLength: 100 }),
           (requestId, date, code, message) => {
