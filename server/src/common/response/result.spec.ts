@@ -1,93 +1,141 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { Result, SUCCESS_CODE } from './result';
-import { ResponseCode, IPaginatedData } from './response.interface';
+import { ResponseCode } from './response.interface';
 
 describe('Result', () => {
-  describe('ok', () => {
-    it('should create success response with data', () => {
-      const data = { id: 1, name: 'test' };
-      const result = Result.ok(data);
+  describe('constructor', () => {
+    it('should create result with all parameters', () => {
+      const result = new Result(200, 'success', { id: 1 }, 'req-123', '2025-01-01');
+      
+      expect(result.code).toBe(200);
+      expect(result.msg).toBe('success');
+      expect(result.data).toEqual({ id: 1 });
+      expect(result.requestId).toBe('req-123');
+      expect(result.timestamp).toBe('2025-01-01');
+    });
 
-      expect(result.code).toBe(ResponseCode.SUCCESS);
-      expect(result.msg).toBe('操作成功');
-      expect(result.data).toEqual(data);
+    it('should create result with default null data', () => {
+      const result = new Result(200, 'success');
+      expect(result.data).toBeNull();
+    });
+  });
+
+  describe('isSuccess', () => {
+    it('should return true for success code', () => {
+      const result = Result.ok({ id: 1 });
       expect(result.isSuccess()).toBe(true);
     });
 
-    it('should create success response with custom message', () => {
-      const result = Result.ok(null, '创建成功');
+    it('should return false for error code', () => {
+      const result = Result.fail(ResponseCode.BUSINESS_ERROR);
+      expect(result.isSuccess()).toBe(false);
+    });
+  });
 
+  describe('ok', () => {
+    it('should create success result with data', () => {
+      const result = Result.ok({ name: 'test' });
+      
       expect(result.code).toBe(ResponseCode.SUCCESS);
+      expect(result.data).toEqual({ name: 'test' });
+    });
+
+    it('should create success result with custom message', () => {
+      const result = Result.ok(null, '创建成功');
+      
       expect(result.msg).toBe('创建成功');
+    });
+
+    it('should create success result without data', () => {
+      const result = Result.ok();
+      
+      expect(result.code).toBe(ResponseCode.SUCCESS);
       expect(result.data).toBeNull();
     });
 
-    it('should create success response without data', () => {
-      const result = Result.ok();
-
-      expect(result.code).toBe(ResponseCode.SUCCESS);
-      expect(result.data).toBeNull();
+    it('should use default success message', () => {
+      const result = Result.ok({ id: 1 });
+      expect(result.msg).toBe('操作成功');
     });
   });
 
   describe('fail', () => {
-    it('should create failure response with code', () => {
-      const result = Result.fail(ResponseCode.USER_NOT_FOUND);
-
-      expect(result.code).toBe(ResponseCode.USER_NOT_FOUND);
-      expect(result.msg).toBe('用户不存在');
-      expect(result.data).toBeNull();
-      expect(result.isSuccess()).toBe(false);
-    });
-
-    it('should create failure response with custom message', () => {
-      const result = Result.fail(ResponseCode.PARAM_INVALID, '用户名不能为空');
-
+    it('should create fail result with code', () => {
+      const result = Result.fail(ResponseCode.PARAM_INVALID);
+      
       expect(result.code).toBe(ResponseCode.PARAM_INVALID);
-      expect(result.msg).toBe('用户名不能为空');
     });
 
-    it('should create failure response with data', () => {
-      const errorData = { field: 'username' };
-      const result = Result.fail(ResponseCode.PARAM_INVALID, '参数错误', errorData);
+    it('should create fail result with custom message', () => {
+      const result = Result.fail(ResponseCode.BUSINESS_ERROR, '自定义错误');
+      
+      expect(result.msg).toBe('自定义错误');
+    });
 
-      expect(result.data).toEqual(errorData);
+    it('should create fail result with data', () => {
+      const result = Result.fail(ResponseCode.BUSINESS_ERROR, '错误', { field: 'name' });
+      
+      expect(result.data).toEqual({ field: 'name' });
+    });
+
+    it('should use default error code', () => {
+      const result = Result.fail();
+      expect(result.code).toBe(ResponseCode.BUSINESS_ERROR);
+    });
+
+    it('should use default message for unknown code', () => {
+      const result = Result.fail(99999);
+      expect(result.msg).toBe('操作失败');
     });
   });
 
   describe('page', () => {
-    it('should create paginated response', () => {
+    it('should create paginated result', () => {
       const rows = [{ id: 1 }, { id: 2 }];
       const result = Result.page(rows, 100, 1, 10);
-
+      
       expect(result.code).toBe(ResponseCode.SUCCESS);
-      expect(result.data).toBeDefined();
-      expect(result.data?.rows).toEqual(rows);
-      expect(result.data?.total).toBe(100);
-      expect(result.data?.pageNum).toBe(1);
-      expect(result.data?.pageSize).toBe(10);
-      expect(result.data?.pages).toBe(10);
+      expect(result.data.rows).toEqual(rows);
+      expect(result.data.total).toBe(100);
+      expect(result.data.pageNum).toBe(1);
+      expect(result.data.pageSize).toBe(10);
+      expect(result.data.pages).toBe(10);
     });
 
     it('should calculate pages correctly', () => {
       const result = Result.page([], 25, 1, 10);
+      expect(result.data.pages).toBe(3);
+    });
 
-      expect(result.data?.pages).toBe(3);
+    it('should handle empty rows', () => {
+      const result = Result.page([], 0, 1, 10);
+      
+      expect(result.data.rows).toEqual([]);
+      expect(result.data.total).toBe(0);
+    });
+
+    it('should handle undefined pageSize', () => {
+      const result = Result.page([{ id: 1 }], 1);
+      expect(result.data.pages).toBeUndefined();
     });
   });
 
   describe('when', () => {
     it('should return success when condition is true', () => {
       const result = Result.when(true, { id: 1 });
-
-      expect(result.isSuccess()).toBe(true);
+      
+      expect(result.code).toBe(ResponseCode.SUCCESS);
       expect(result.data).toEqual({ id: 1 });
     });
 
-    it('should return failure when condition is false', () => {
-      const result = Result.when(false, { id: 1 }, ResponseCode.OPERATION_FAILED);
+    it('should return fail when condition is false', () => {
+      const result = Result.when(false, null, ResponseCode.DATA_NOT_FOUND, '数据不存在');
+      
+      expect(result.code).toBe(ResponseCode.DATA_NOT_FOUND);
+      expect(result.msg).toBe('数据不存在');
+    });
 
-      expect(result.isSuccess()).toBe(false);
+    it('should use default fail code', () => {
+      const result = Result.when(false, null);
       expect(result.code).toBe(ResponseCode.OPERATION_FAILED);
     });
   });
@@ -96,47 +144,38 @@ describe('Result', () => {
     it('should return success for resolved promise', async () => {
       const promise = Promise.resolve({ id: 1 });
       const result = await Result.fromPromise(promise);
-
-      expect(result.isSuccess()).toBe(true);
+      
+      expect(result.code).toBe(ResponseCode.SUCCESS);
       expect(result.data).toEqual({ id: 1 });
     });
 
-    it('should return failure for rejected promise', async () => {
-      const promise = Promise.reject(new Error('Test error'));
+    it('should return fail for rejected promise with Error', async () => {
+      const promise = Promise.reject(new Error('Something went wrong'));
       const result = await Result.fromPromise(promise);
+      
+      expect(result.code).toBe(ResponseCode.OPERATION_FAILED);
+      expect(result.msg).toBe('Something went wrong');
+    });
 
-      expect(result.isSuccess()).toBe(false);
-      expect(result.msg).toBe('Test error');
+    it('should return fail for rejected promise with non-Error', async () => {
+      const promise = Promise.reject('string error');
+      const result = await Result.fromPromise(promise);
+      
+      expect(result.code).toBe(ResponseCode.OPERATION_FAILED);
+      expect(result.msg).toBe('操作失败');
+    });
+
+    it('should use custom fail code', async () => {
+      const promise = Promise.reject(new Error('error'));
+      const result = await Result.fromPromise(promise, ResponseCode.SERVICE_UNAVAILABLE);
+      
+      expect(result.code).toBe(ResponseCode.SERVICE_UNAVAILABLE);
     });
   });
 
-  describe('requestId and timestamp', () => {
-    it('should support requestId and timestamp in constructor', () => {
-      const requestId = 'test-request-id-123';
-      const timestamp = '2025-01-01T00:00:00.000Z';
-      const result = new Result(200, '操作成功', { id: 1 }, requestId, timestamp);
-
-      expect(result.requestId).toBe(requestId);
-      expect(result.timestamp).toBe(timestamp);
-    });
-
-    it('should allow setting requestId and timestamp after creation', () => {
-      const result = Result.ok({ id: 1 });
-      const requestId = 'test-request-id-456';
-      const timestamp = '2025-01-01T12:00:00.000Z';
-
-      result.requestId = requestId;
-      result.timestamp = timestamp;
-
-      expect(result.requestId).toBe(requestId);
-      expect(result.timestamp).toBe(timestamp);
-    });
-
-    it('should have undefined requestId and timestamp by default', () => {
-      const result = Result.ok({ id: 1 });
-
-      expect(result.requestId).toBeUndefined();
-      expect(result.timestamp).toBeUndefined();
+  describe('SUCCESS_CODE', () => {
+    it('should equal ResponseCode.SUCCESS', () => {
+      expect(SUCCESS_CODE).toBe(ResponseCode.SUCCESS);
     });
   });
 });

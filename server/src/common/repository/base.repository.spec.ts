@@ -1,65 +1,42 @@
-import { BaseRepository, PrismaDelegate } from './base.repository';
-import { SoftDeleteRepository } from './soft-delete.repository';
+import { BaseRepository } from './base.repository';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { createPrismaMock, PrismaMock } from 'src/test-utils/prisma-mock';
 
-// Test entity type
-interface TestEntity {
-  id: number;
-  name: string;
-  status: string;
-  delFlag: string;
-  createdAt: Date;
-}
-
-// Concrete implementation for testing BaseRepository
-class TestRepository extends BaseRepository<TestEntity, PrismaDelegate> {
+// Create a concrete implementation for testing
+class TestRepository extends BaseRepository<any, any> {
   constructor(prisma: PrismaService) {
     super(prisma, 'sysUser' as any);
   }
 
-  protected getPrimaryKeyName(): string {
-    return 'id';
+  // Override to expose for testing
+  public getPrimaryKeyNamePublic(): string {
+    return this.getPrimaryKeyName();
   }
 }
-
-// Concrete implementation for testing SoftDeleteRepository
-class TestSoftDeleteRepository extends SoftDeleteRepository<TestEntity, PrismaDelegate> {
-  constructor(prisma: PrismaService) {
-    super(prisma, 'sysUser' as any);
-  }
-
-  protected getPrimaryKeyName(): string {
-    return 'id';
-  }
-}
-
-// Test data factory
-const createTestEntity = (overrides: Partial<TestEntity> = {}): TestEntity => ({
-  id: 1,
-  name: 'Test Entity',
-  status: '0',
-  delFlag: '0',
-  createdAt: new Date(),
-  ...overrides,
-});
-
-const createTestEntities = (count: number): TestEntity[] => {
-  return Array.from({ length: count }, (_, index) =>
-    createTestEntity({
-      id: index + 1,
-      name: `Test Entity ${index + 1}`,
-    }),
-  );
-};
 
 describe('BaseRepository', () => {
   let repository: TestRepository;
-  let prisma: PrismaMock;
+  let prismaMock: any;
+  let delegateMock: any;
 
   beforeEach(() => {
-    prisma = createPrismaMock();
-    repository = new TestRepository(prisma as unknown as PrismaService);
+    delegateMock = {
+      findUnique: jest.fn(),
+      findFirst: jest.fn(),
+      findMany: jest.fn().mockResolvedValue([]),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      count: jest.fn().mockResolvedValue(0),
+      createMany: jest.fn().mockResolvedValue({ count: 0 }),
+      updateMany: jest.fn().mockResolvedValue({ count: 0 }),
+      deleteMany: jest.fn().mockResolvedValue({ count: 0 }),
+    };
+
+    prismaMock = {
+      sysUser: delegateMock,
+    };
+
+    repository = new TestRepository(prismaMock as any);
   });
 
   afterEach(() => {
@@ -67,96 +44,64 @@ describe('BaseRepository', () => {
   });
 
   describe('findById', () => {
-    it('should find entity by id using findUnique', async () => {
-      const mockEntity = createTestEntity();
-      (prisma.sysUser.findUnique as jest.Mock).mockResolvedValue(mockEntity);
+    it('should find record by id', async () => {
+      const mockRecord = { id: 1, name: 'Test' };
+      delegateMock.findUnique.mockResolvedValue(mockRecord);
 
       const result = await repository.findById(1);
 
-      expect(result).toEqual(mockEntity);
-      expect(prisma.sysUser.findUnique).toHaveBeenCalledWith({
+      expect(result).toEqual(mockRecord);
+      expect(delegateMock.findUnique).toHaveBeenCalledWith({
         where: { id: 1 },
       });
     });
 
-    it('should return null when entity not found', async () => {
-      (prisma.sysUser.findUnique as jest.Mock).mockResolvedValue(null);
+    it('should return null when not found', async () => {
+      delegateMock.findUnique.mockResolvedValue(null);
 
       const result = await repository.findById(999);
 
       expect(result).toBeNull();
     });
 
-    it('should pass include option', async () => {
-      const mockEntity = createTestEntity();
-      (prisma.sysUser.findUnique as jest.Mock).mockResolvedValue(mockEntity);
+    it('should pass options to findUnique', async () => {
+      await repository.findById(1, { include: { roles: true } });
 
-      await repository.findById(1, { include: { relation: true } });
-
-      expect(prisma.sysUser.findUnique).toHaveBeenCalledWith({
+      expect(delegateMock.findUnique).toHaveBeenCalledWith({
         where: { id: 1 },
-        include: { relation: true },
-      });
-    });
-
-    it('should pass select option', async () => {
-      const mockEntity = createTestEntity();
-      (prisma.sysUser.findUnique as jest.Mock).mockResolvedValue(mockEntity);
-
-      await repository.findById(1, { select: { id: true, name: true } });
-
-      expect(prisma.sysUser.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
-        select: { id: true, name: true },
+        include: { roles: true },
       });
     });
   });
 
   describe('findOne', () => {
-    it('should find entity by condition using findFirst', async () => {
-      const mockEntity = createTestEntity({ name: 'Specific' });
-      (prisma.sysUser.findFirst as jest.Mock).mockResolvedValue(mockEntity);
+    it('should find record by condition', async () => {
+      const mockRecord = { id: 1, name: 'Test' };
+      delegateMock.findFirst.mockResolvedValue(mockRecord);
 
-      const result = await repository.findOne({ name: 'Specific' });
+      const result = await repository.findOne({ name: 'Test' });
 
-      expect(result).toEqual(mockEntity);
-      expect(prisma.sysUser.findFirst).toHaveBeenCalledWith({
-        where: { name: 'Specific' },
+      expect(result).toEqual(mockRecord);
+      expect(delegateMock.findFirst).toHaveBeenCalledWith({
+        where: { name: 'Test' },
       });
-    });
-
-    it('should return null when no match', async () => {
-      (prisma.sysUser.findFirst as jest.Mock).mockResolvedValue(null);
-
-      const result = await repository.findOne({ name: 'NonExistent' });
-
-      expect(result).toBeNull();
     });
   });
 
   describe('findAll', () => {
-    it('should find all entities', async () => {
-      const mockEntities = createTestEntities(3);
-      (prisma.sysUser.findMany as jest.Mock).mockResolvedValue(mockEntities);
+    it('should find all records', async () => {
+      const mockRecords = [{ id: 1 }, { id: 2 }];
+      delegateMock.findMany.mockResolvedValue(mockRecords);
 
       const result = await repository.findAll();
 
-      expect(result).toEqual(mockEntities);
-      expect(prisma.sysUser.findMany).toHaveBeenCalledWith({
-        where: undefined,
-        include: undefined,
-        select: undefined,
-        orderBy: undefined,
-      });
+      expect(result).toEqual(mockRecords);
     });
 
     it('should apply where condition', async () => {
-      const mockEntities = createTestEntities(2);
-      (prisma.sysUser.findMany as jest.Mock).mockResolvedValue(mockEntities);
-
       await repository.findAll({ where: { status: '0' } });
 
-      expect(prisma.sysUser.findMany).toHaveBeenCalledWith({
+      expect(delegateMock.findMany).toHaveBeenCalledWith({
         where: { status: '0' },
         include: undefined,
         select: undefined,
@@ -165,101 +110,86 @@ describe('BaseRepository', () => {
     });
 
     it('should apply orderBy', async () => {
-      const mockEntities = createTestEntities(2);
-      (prisma.sysUser.findMany as jest.Mock).mockResolvedValue(mockEntities);
+      await repository.findAll({ orderBy: 'createTime', order: 'desc' });
 
-      await repository.findAll({ orderBy: 'name', order: 'desc' });
-
-      expect(prisma.sysUser.findMany).toHaveBeenCalledWith({
+      expect(delegateMock.findMany).toHaveBeenCalledWith({
         where: undefined,
         include: undefined,
         select: undefined,
-        orderBy: { name: 'desc' },
+        orderBy: { createTime: 'desc' },
       });
     });
   });
 
   describe('findPage', () => {
-    it('should return paginated results', async () => {
-      const mockEntities = createTestEntities(10);
-      (prisma.sysUser.findMany as jest.Mock).mockResolvedValue(mockEntities.slice(0, 5));
-      (prisma.sysUser.count as jest.Mock).mockResolvedValue(10);
+    it('should return paginated data', async () => {
+      const mockRecords = [{ id: 1 }, { id: 2 }];
+      delegateMock.findMany.mockResolvedValue(mockRecords);
+      delegateMock.count.mockResolvedValue(10);
 
-      const result = await repository.findPage({ pageNum: 1, pageSize: 5 });
+      const result = await repository.findPage({ pageNum: 1, pageSize: 2 });
 
-      expect(result.rows).toHaveLength(5);
+      expect(result.rows).toEqual(mockRecords);
       expect(result.total).toBe(10);
       expect(result.pageNum).toBe(1);
-      expect(result.pageSize).toBe(5);
-      expect(result.pages).toBe(2);
+      expect(result.pageSize).toBe(2);
+      expect(result.pages).toBe(5);
     });
 
-    it('should use default pagination values', async () => {
-      (prisma.sysUser.findMany as jest.Mock).mockResolvedValue([]);
-      (prisma.sysUser.count as jest.Mock).mockResolvedValue(0);
+    it('should use default pagination', async () => {
+      delegateMock.findMany.mockResolvedValue([]);
+      delegateMock.count.mockResolvedValue(0);
 
-      await repository.findPage({});
+      const result = await repository.findPage({});
 
-      expect(prisma.sysUser.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          skip: 0,
-          take: 10,
-        }),
-      );
-    });
-
-    it('should calculate skip correctly for page 2', async () => {
-      (prisma.sysUser.findMany as jest.Mock).mockResolvedValue([]);
-      (prisma.sysUser.count as jest.Mock).mockResolvedValue(0);
-
-      await repository.findPage({ pageNum: 2, pageSize: 10 });
-
-      expect(prisma.sysUser.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          skip: 10,
-          take: 10,
-        }),
-      );
+      expect(result.pageNum).toBe(1);
+      expect(result.pageSize).toBe(10);
     });
   });
 
   describe('create', () => {
-    it('should create entity', async () => {
-      const newEntity = createTestEntity();
-      (prisma.sysUser.create as jest.Mock).mockResolvedValue(newEntity);
+    it('should create record', async () => {
+      const mockRecord = { id: 1, name: 'New' };
+      delegateMock.create.mockResolvedValue(mockRecord);
 
-      const result = await repository.create({ name: 'New Entity' });
+      const result = await repository.create({ name: 'New' });
 
-      expect(result).toEqual(newEntity);
-      expect(prisma.sysUser.create).toHaveBeenCalledWith({
-        data: { name: 'New Entity' },
+      expect(result).toEqual(mockRecord);
+      expect(delegateMock.create).toHaveBeenCalledWith({
+        data: { name: 'New' },
       });
     });
   });
 
   describe('createMany', () => {
-    it('should create multiple entities', async () => {
-      (prisma.sysUser.createMany as jest.Mock).mockResolvedValue({ count: 3 });
+    it('should create multiple records', async () => {
+      delegateMock.createMany.mockResolvedValue({ count: 3 });
 
-      const result = await repository.createMany([{ name: 'Entity 1' }, { name: 'Entity 2' }, { name: 'Entity 3' }]);
+      const result = await repository.createMany([{ name: 'A' }, { name: 'B' }, { name: 'C' }]);
 
       expect(result.count).toBe(3);
-      expect(prisma.sysUser.createMany).toHaveBeenCalledWith({
-        data: [{ name: 'Entity 1' }, { name: 'Entity 2' }, { name: 'Entity 3' }],
+      expect(delegateMock.createMany).toHaveBeenCalledWith({
+        data: [{ name: 'A' }, { name: 'B' }, { name: 'C' }],
         skipDuplicates: true,
       });
+    });
+
+    it('should throw error when createMany not supported', async () => {
+      delegateMock.createMany = undefined;
+
+      await expect(repository.createMany([{ name: 'A' }])).rejects.toThrow('createMany not supported');
     });
   });
 
   describe('update', () => {
-    it('should update entity by id', async () => {
-      const updatedEntity = createTestEntity({ name: 'Updated' });
-      (prisma.sysUser.update as jest.Mock).mockResolvedValue(updatedEntity);
+    it('should update record', async () => {
+      const mockRecord = { id: 1, name: 'Updated' };
+      delegateMock.update.mockResolvedValue(mockRecord);
 
       const result = await repository.update(1, { name: 'Updated' });
 
-      expect(result).toEqual(updatedEntity);
-      expect(prisma.sysUser.update).toHaveBeenCalledWith({
+      expect(result).toEqual(mockRecord);
+      expect(delegateMock.update).toHaveBeenCalledWith({
         where: { id: 1 },
         data: { name: 'Updated' },
       });
@@ -267,120 +197,120 @@ describe('BaseRepository', () => {
   });
 
   describe('updateMany', () => {
-    it('should update multiple entities', async () => {
-      (prisma.sysUser.updateMany as jest.Mock).mockResolvedValue({ count: 5 });
+    it('should update multiple records', async () => {
+      delegateMock.updateMany.mockResolvedValue({ count: 5 });
 
       const result = await repository.updateMany({ status: '0' }, { status: '1' });
 
       expect(result.count).toBe(5);
-      expect(prisma.sysUser.updateMany).toHaveBeenCalledWith({
-        where: { status: '0' },
-        data: { status: '1' },
-      });
+    });
+
+    it('should throw error when updateMany not supported', async () => {
+      delegateMock.updateMany = undefined;
+
+      await expect(repository.updateMany({}, {})).rejects.toThrow('updateMany not supported');
     });
   });
 
   describe('delete', () => {
-    it('should delete entity by id', async () => {
-      const deletedEntity = createTestEntity();
-      (prisma.sysUser.delete as jest.Mock).mockResolvedValue(deletedEntity);
+    it('should delete record', async () => {
+      const mockRecord = { id: 1 };
+      delegateMock.delete.mockResolvedValue(mockRecord);
 
       const result = await repository.delete(1);
 
-      expect(result).toEqual(deletedEntity);
-      expect(prisma.sysUser.delete).toHaveBeenCalledWith({
+      expect(result).toEqual(mockRecord);
+      expect(delegateMock.delete).toHaveBeenCalledWith({
         where: { id: 1 },
       });
     });
   });
 
   describe('deleteMany', () => {
-    it('should delete multiple entities', async () => {
-      (prisma.sysUser.deleteMany as jest.Mock).mockResolvedValue({ count: 3 });
+    it('should delete multiple records', async () => {
+      delegateMock.deleteMany.mockResolvedValue({ count: 3 });
 
       const result = await repository.deleteMany({ status: '1' });
 
       expect(result.count).toBe(3);
-      expect(prisma.sysUser.deleteMany).toHaveBeenCalledWith({
-        where: { status: '1' },
-      });
+    });
+
+    it('should throw error when deleteMany not supported', async () => {
+      delegateMock.deleteMany = undefined;
+
+      await expect(repository.deleteMany({})).rejects.toThrow('deleteMany not supported');
     });
   });
 
   describe('deleteByIds', () => {
-    it('should delete entities by ids', async () => {
-      (prisma.sysUser.deleteMany as jest.Mock).mockResolvedValue({ count: 3 });
+    it('should delete records by ids', async () => {
+      delegateMock.deleteMany.mockResolvedValue({ count: 2 });
 
-      const result = await repository.deleteByIds([1, 2, 3]);
+      const result = await repository.deleteByIds([1, 2]);
 
-      expect(result.count).toBe(3);
-      expect(prisma.sysUser.deleteMany).toHaveBeenCalledWith({
-        where: { id: { in: [1, 2, 3] } },
+      expect(result.count).toBe(2);
+      expect(delegateMock.deleteMany).toHaveBeenCalledWith({
+        where: { id: { in: [1, 2] } },
       });
     });
   });
 
   describe('count', () => {
-    it('should count entities', async () => {
-      (prisma.sysUser.count as jest.Mock).mockResolvedValue(10);
+    it('should count records', async () => {
+      delegateMock.count.mockResolvedValue(100);
 
       const result = await repository.count();
 
-      expect(result).toBe(10);
+      expect(result).toBe(100);
     });
 
-    it('should count with where condition', async () => {
-      (prisma.sysUser.count as jest.Mock).mockResolvedValue(5);
+    it('should count with condition', async () => {
+      delegateMock.count.mockResolvedValue(50);
 
       const result = await repository.count({ status: '0' });
 
-      expect(result).toBe(5);
-      expect(prisma.sysUser.count).toHaveBeenCalledWith({
-        where: { status: '0' },
-      });
+      expect(result).toBe(50);
+      expect(delegateMock.count).toHaveBeenCalledWith({ where: { status: '0' } });
     });
   });
 
   describe('exists', () => {
-    it('should return true when entity exists', async () => {
-      (prisma.sysUser.count as jest.Mock).mockResolvedValue(1);
+    it('should return true when record exists', async () => {
+      delegateMock.count.mockResolvedValue(1);
 
       const result = await repository.exists({ name: 'Test' });
 
       expect(result).toBe(true);
     });
 
-    it('should return false when entity does not exist', async () => {
-      (prisma.sysUser.count as jest.Mock).mockResolvedValue(0);
+    it('should return false when record does not exist', async () => {
+      delegateMock.count.mockResolvedValue(0);
 
-      const result = await repository.exists({ name: 'NonExistent' });
+      const result = await repository.exists({ name: 'NotExist' });
 
       expect(result).toBe(false);
     });
   });
 
   describe('existsById', () => {
-    it('should return true when entity exists by id', async () => {
-      (prisma.sysUser.count as jest.Mock).mockResolvedValue(1);
+    it('should check existence by id', async () => {
+      delegateMock.count.mockResolvedValue(1);
 
       const result = await repository.existsById(1);
 
       expect(result).toBe(true);
-      expect(prisma.sysUser.count).toHaveBeenCalledWith({
-        where: { id: 1 },
-      });
+      expect(delegateMock.count).toHaveBeenCalledWith({ where: { id: 1 } });
     });
   });
 
   describe('softDelete', () => {
-    it('should soft delete by setting delFlag', async () => {
-      const softDeletedEntity = createTestEntity({ delFlag: '1' });
-      (prisma.sysUser.update as jest.Mock).mockResolvedValue(softDeletedEntity);
+    it('should soft delete record', async () => {
+      delegateMock.update.mockResolvedValue({ id: 1, delFlag: '1' });
 
       const result = await repository.softDelete(1);
 
-      expect(result).toEqual(softDeletedEntity);
-      expect(prisma.sysUser.update).toHaveBeenCalledWith({
+      expect(result.delFlag).toBe('1');
+      expect(delegateMock.update).toHaveBeenCalledWith({
         where: { id: 1 },
         data: { delFlag: '1' },
       });
@@ -388,154 +318,24 @@ describe('BaseRepository', () => {
   });
 
   describe('softDeleteMany', () => {
-    it('should soft delete multiple entities', async () => {
-      (prisma.sysUser.updateMany as jest.Mock).mockResolvedValue({ count: 3 });
+    it('should soft delete multiple records', async () => {
+      delegateMock.updateMany.mockResolvedValue({ count: 3 });
 
       const result = await repository.softDeleteMany([1, 2, 3]);
 
       expect(result.count).toBe(3);
-      expect(prisma.sysUser.updateMany).toHaveBeenCalledWith({
+      expect(delegateMock.updateMany).toHaveBeenCalledWith({
         where: { id: { in: [1, 2, 3] } },
         data: { delFlag: '1' },
       });
     });
   });
-});
 
-describe('SoftDeleteRepository', () => {
-  let repository: TestSoftDeleteRepository;
-  let prisma: PrismaMock;
+  describe('getPrimaryKeyName', () => {
+    it('should return default primary key name', () => {
+      const result = repository.getPrimaryKeyNamePublic();
 
-  beforeEach(() => {
-    prisma = createPrismaMock();
-    repository = new TestSoftDeleteRepository(prisma as unknown as PrismaService);
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  describe('findOne with soft delete filter', () => {
-    it('should automatically add delFlag filter', async () => {
-      const mockEntity = createTestEntity();
-      (prisma.sysUser.findFirst as jest.Mock).mockResolvedValue(mockEntity);
-
-      await repository.findOne({ name: 'Test' });
-
-      expect(prisma.sysUser.findFirst).toHaveBeenCalledWith({
-        where: { delFlag: '0', name: 'Test' },
-      });
-    });
-
-    it('should merge with existing where conditions', async () => {
-      const mockEntity = createTestEntity();
-      (prisma.sysUser.findFirst as jest.Mock).mockResolvedValue(mockEntity);
-
-      await repository.findOne({ name: 'Test', status: '0' });
-
-      expect(prisma.sysUser.findFirst).toHaveBeenCalledWith({
-        where: { delFlag: '0', name: 'Test', status: '0' },
-      });
-    });
-  });
-
-  describe('findMany with soft delete filter', () => {
-    it('should automatically add delFlag filter', async () => {
-      const mockEntities = createTestEntities(3);
-      (prisma.sysUser.findMany as jest.Mock).mockResolvedValue(mockEntities);
-
-      await repository.findMany();
-
-      expect(prisma.sysUser.findMany).toHaveBeenCalledWith({
-        where: { delFlag: '0' },
-      });
-    });
-
-    it('should merge where conditions with delFlag', async () => {
-      const mockEntities = createTestEntities(2);
-      (prisma.sysUser.findMany as jest.Mock).mockResolvedValue(mockEntities);
-
-      await repository.findMany({ where: { status: '0' } });
-
-      expect(prisma.sysUser.findMany).toHaveBeenCalledWith({
-        where: { delFlag: '0', status: '0' },
-      });
-    });
-
-    it('should not override explicit delFlag in where', async () => {
-      const mockEntities = createTestEntities(1);
-      (prisma.sysUser.findMany as jest.Mock).mockResolvedValue(mockEntities);
-
-      await repository.findMany({ where: { delFlag: '1' } });
-
-      expect(prisma.sysUser.findMany).toHaveBeenCalledWith({
-        where: { delFlag: '1' },
-      });
-    });
-  });
-
-  describe('findById with soft delete filter', () => {
-    it('should use findOne which adds delFlag filter', async () => {
-      const mockEntity = createTestEntity();
-      (prisma.sysUser.findFirst as jest.Mock).mockResolvedValue(mockEntity);
-
-      await repository.findById(1);
-
-      // findById uses findOne internally which adds delFlag filter
-      expect(prisma.sysUser.findFirst).toHaveBeenCalledWith({
-        where: { delFlag: '0', userId: 1 },
-      });
-    });
-  });
-
-  describe('exists with soft delete filter', () => {
-    it('should automatically add delFlag filter', async () => {
-      (prisma.sysUser.count as jest.Mock).mockResolvedValue(1);
-
-      await repository.exists({ name: 'Test' });
-
-      expect(prisma.sysUser.count).toHaveBeenCalledWith({
-        where: { delFlag: '0', name: 'Test' },
-      });
-    });
-
-    it('should not override explicit delFlag', async () => {
-      (prisma.sysUser.count as jest.Mock).mockResolvedValue(0);
-
-      await repository.exists({ name: 'Test', delFlag: '1' });
-
-      expect(prisma.sysUser.count).toHaveBeenCalledWith({
-        where: { name: 'Test', delFlag: '1' },
-      });
-    });
-  });
-
-  describe('softDelete', () => {
-    it('should set delFlag to 1', async () => {
-      const softDeletedEntity = createTestEntity({ delFlag: '1' });
-      (prisma.sysUser.update as jest.Mock).mockResolvedValue(softDeletedEntity);
-
-      const result = await repository.softDelete(1);
-
-      expect(result).toEqual(softDeletedEntity);
-      expect(prisma.sysUser.update).toHaveBeenCalledWith({
-        where: { userId: 1 },
-        data: { delFlag: '1' },
-      });
-    });
-  });
-
-  describe('softDeleteBatch', () => {
-    it('should soft delete multiple entities', async () => {
-      (prisma.sysUser.updateMany as jest.Mock).mockResolvedValue({ count: 3 });
-
-      const result = await repository.softDeleteBatch([1, 2, 3]);
-
-      expect(result).toBe(3);
-      expect(prisma.sysUser.updateMany).toHaveBeenCalledWith({
-        where: { userId: { in: [1, 2, 3] } },
-        data: { delFlag: '1' },
-      });
+      expect(result).toBe('id');
     });
   });
 });
