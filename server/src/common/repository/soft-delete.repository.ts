@@ -14,34 +14,10 @@ export abstract class SoftDeleteRepository<T, D extends PrismaDelegate> extends 
 
   /**
    * 获取模型的ID字段名
+   * @deprecated 使用 getPrimaryKeyName() 代替
    */
   protected getIdField(): string {
-    // 根据模型名推断ID字段名
-    const modelNameStr = String(this.modelName).toLowerCase();
-
-    // 特殊映射
-    const idFieldMap: Record<string, string> = {
-      sysuser: 'userId',
-      sysrole: 'roleId',
-      sysmenu: 'menuId',
-      sysdept: 'deptId',
-      sysconfig: 'configId',
-      sysdicttype: 'dictId',
-      sysdictdata: 'dictCode',
-      syspost: 'postId',
-      sysnotice: 'noticeId',
-      sysjob: 'jobId',
-      sysupload: 'uploadId',
-    };
-
-    return idFieldMap[modelNameStr] || 'id';
-  }
-
-  /**
-   * 覆盖主键名称
-   */
-  protected override getPrimaryKeyName(): string {
-    return this.getIdField();
+    return this.getPrimaryKeyName();
   }
 
   /**

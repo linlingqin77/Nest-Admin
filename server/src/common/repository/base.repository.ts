@@ -1,6 +1,51 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { IPaginatedData } from '../response/response.interface';
+
+/**
+ * 主键缓存，避免重复查询 DMMF
+ */
+const primaryKeyCache = new Map<string, string>();
+
+/**
+ * 从 Prisma DMMF 获取模型的主键字段名
+ * @param modelName Prisma 模型名（如 'sysUser'）
+ * @returns 主键字段名
+ */
+export function getPrimaryKeyFromDMMF(modelName: string): string {
+  // 检查缓存
+  const cached = primaryKeyCache.get(modelName);
+  if (cached) return cached;
+
+  // 从 DMMF 查找模型
+  const model = Prisma.dmmf.datamodel.models.find(
+    (m) => m.name.toLowerCase() === modelName.toLowerCase(),
+  );
+
+  if (!model) {
+    primaryKeyCache.set(modelName, 'id');
+    return 'id';
+  }
+
+  // 查找带有 @id 的字段
+  const idField = model.fields.find((f) => f.isId);
+  if (idField) {
+    primaryKeyCache.set(modelName, idField.name);
+    return idField.name;
+  }
+
+  // 查找复合主键 @@id（只支持单字段主键）
+  const primaryKey = model.primaryKey;
+  if (primaryKey?.fields?.length === 1) {
+    const pkName = primaryKey.fields[0];
+    primaryKeyCache.set(modelName, pkName);
+    return pkName;
+  }
+
+  // 默认返回 id
+  primaryKeyCache.set(modelName, 'id');
+  return 'id';
+}
 
 /**
  * 分页查询选项
@@ -253,11 +298,11 @@ export abstract class BaseRepository<T, D extends PrismaDelegate = PrismaDelegat
   }
 
   /**
-   * 获取主键字段名（子类可覆盖）
+   * 获取主键字段名
+   * 自动从 Prisma DMMF 获取，子类也可覆盖此方法
    */
   protected getPrimaryKeyName(): string {
-    // 默认使用 id，子类可以覆盖此方法
-    return 'id';
+    return getPrimaryKeyFromDMMF(this.modelName as string);
   }
 
   /**

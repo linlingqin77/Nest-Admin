@@ -1,8 +1,8 @@
-import { BaseRepository } from './base.repository';
+import { BaseRepository, getPrimaryKeyFromDMMF } from './base.repository';
 import { PrismaService } from 'src/prisma/prisma.service';
 
-// Create a concrete implementation for testing
-class TestRepository extends BaseRepository<any, any> {
+// Create a concrete implementation for testing with sysUser (primary key: userId)
+class TestUserRepository extends BaseRepository<any, any> {
   constructor(prisma: PrismaService) {
     super(prisma, 'sysUser' as any);
   }
@@ -13,8 +13,30 @@ class TestRepository extends BaseRepository<any, any> {
   }
 }
 
+// Create a concrete implementation for testing with sysTenant (primary key: id)
+class TestTenantRepository extends BaseRepository<any, any> {
+  constructor(prisma: PrismaService) {
+    super(prisma, 'sysTenant' as any);
+  }
+
+  public getPrimaryKeyNamePublic(): string {
+    return this.getPrimaryKeyName();
+  }
+}
+
+// Create a concrete implementation for testing with unknown model
+class TestUnknownRepository extends BaseRepository<any, any> {
+  constructor(prisma: PrismaService) {
+    super(prisma, 'unknownModel' as any);
+  }
+
+  public getPrimaryKeyNamePublic(): string {
+    return this.getPrimaryKeyName();
+  }
+}
+
 describe('BaseRepository', () => {
-  let repository: TestRepository;
+  let repository: TestUserRepository;
   let prismaMock: any;
   let delegateMock: any;
 
@@ -34,9 +56,11 @@ describe('BaseRepository', () => {
 
     prismaMock = {
       sysUser: delegateMock,
+      sysTenant: delegateMock,
+      unknownModel: delegateMock,
     };
 
-    repository = new TestRepository(prismaMock as any);
+    repository = new TestUserRepository(prismaMock as any);
   });
 
   afterEach(() => {
@@ -44,15 +68,16 @@ describe('BaseRepository', () => {
   });
 
   describe('findById', () => {
-    it('should find record by id', async () => {
-      const mockRecord = { id: 1, name: 'Test' };
+    it('should find record by id using correct primary key', async () => {
+      const mockRecord = { userId: 1, name: 'Test' };
       delegateMock.findUnique.mockResolvedValue(mockRecord);
 
       const result = await repository.findById(1);
 
       expect(result).toEqual(mockRecord);
+      // sysUser 的主键是 userId
       expect(delegateMock.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
+        where: { userId: 1 },
       });
     });
 
@@ -68,7 +93,7 @@ describe('BaseRepository', () => {
       await repository.findById(1, { include: { roles: true } });
 
       expect(delegateMock.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 },
+        where: { userId: 1 },
         include: { roles: true },
       });
     });
@@ -182,15 +207,15 @@ describe('BaseRepository', () => {
   });
 
   describe('update', () => {
-    it('should update record', async () => {
-      const mockRecord = { id: 1, name: 'Updated' };
+    it('should update record using correct primary key', async () => {
+      const mockRecord = { userId: 1, name: 'Updated' };
       delegateMock.update.mockResolvedValue(mockRecord);
 
       const result = await repository.update(1, { name: 'Updated' });
 
       expect(result).toEqual(mockRecord);
       expect(delegateMock.update).toHaveBeenCalledWith({
-        where: { id: 1 },
+        where: { userId: 1 },
         data: { name: 'Updated' },
       });
     });
@@ -213,15 +238,15 @@ describe('BaseRepository', () => {
   });
 
   describe('delete', () => {
-    it('should delete record', async () => {
-      const mockRecord = { id: 1 };
+    it('should delete record using correct primary key', async () => {
+      const mockRecord = { userId: 1 };
       delegateMock.delete.mockResolvedValue(mockRecord);
 
       const result = await repository.delete(1);
 
       expect(result).toEqual(mockRecord);
       expect(delegateMock.delete).toHaveBeenCalledWith({
-        where: { id: 1 },
+        where: { userId: 1 },
       });
     });
   });
@@ -243,14 +268,14 @@ describe('BaseRepository', () => {
   });
 
   describe('deleteByIds', () => {
-    it('should delete records by ids', async () => {
+    it('should delete records by ids using correct primary key', async () => {
       delegateMock.deleteMany.mockResolvedValue({ count: 2 });
 
       const result = await repository.deleteByIds([1, 2]);
 
       expect(result.count).toBe(2);
       expect(delegateMock.deleteMany).toHaveBeenCalledWith({
-        where: { id: { in: [1, 2] } },
+        where: { userId: { in: [1, 2] } },
       });
     });
   });
@@ -293,49 +318,104 @@ describe('BaseRepository', () => {
   });
 
   describe('existsById', () => {
-    it('should check existence by id', async () => {
+    it('should check existence by id using correct primary key', async () => {
       delegateMock.count.mockResolvedValue(1);
 
       const result = await repository.existsById(1);
 
       expect(result).toBe(true);
-      expect(delegateMock.count).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(delegateMock.count).toHaveBeenCalledWith({ where: { userId: 1 } });
     });
   });
 
   describe('softDelete', () => {
-    it('should soft delete record', async () => {
-      delegateMock.update.mockResolvedValue({ id: 1, delFlag: '1' });
+    it('should soft delete record using correct primary key', async () => {
+      delegateMock.update.mockResolvedValue({ userId: 1, delFlag: '1' });
 
       const result = await repository.softDelete(1);
 
       expect(result.delFlag).toBe('1');
       expect(delegateMock.update).toHaveBeenCalledWith({
-        where: { id: 1 },
+        where: { userId: 1 },
         data: { delFlag: '1' },
       });
     });
   });
 
   describe('softDeleteMany', () => {
-    it('should soft delete multiple records', async () => {
+    it('should soft delete multiple records using correct primary key', async () => {
       delegateMock.updateMany.mockResolvedValue({ count: 3 });
 
       const result = await repository.softDeleteMany([1, 2, 3]);
 
       expect(result.count).toBe(3);
       expect(delegateMock.updateMany).toHaveBeenCalledWith({
-        where: { id: { in: [1, 2, 3] } },
+        where: { userId: { in: [1, 2, 3] } },
         data: { delFlag: '1' },
       });
     });
   });
 
   describe('getPrimaryKeyName', () => {
-    it('should return default primary key name', () => {
+    it('should return userId for sysUser model', () => {
       const result = repository.getPrimaryKeyNamePublic();
+      expect(result).toBe('userId');
+    });
 
+    it('should return id for sysTenant model', () => {
+      const tenantRepo = new TestTenantRepository(prismaMock as any);
+      const result = tenantRepo.getPrimaryKeyNamePublic();
       expect(result).toBe('id');
+    });
+
+    it('should return id for unknown model (fallback)', () => {
+      const unknownRepo = new TestUnknownRepository(prismaMock as any);
+      const result = unknownRepo.getPrimaryKeyNamePublic();
+      expect(result).toBe('id');
+    });
+  });
+
+  describe('getPrimaryKeyFromDMMF', () => {
+    it('should return correct primary key for models with custom primary key', () => {
+      expect(getPrimaryKeyFromDMMF('sysUser')).toBe('userId');
+      expect(getPrimaryKeyFromDMMF('sysRole')).toBe('roleId');
+      expect(getPrimaryKeyFromDMMF('sysDept')).toBe('deptId');
+      expect(getPrimaryKeyFromDMMF('sysMenu')).toBe('menuId');
+      expect(getPrimaryKeyFromDMMF('sysConfig')).toBe('configId');
+      expect(getPrimaryKeyFromDMMF('sysDictType')).toBe('dictId');
+      expect(getPrimaryKeyFromDMMF('sysDictData')).toBe('dictCode');
+      expect(getPrimaryKeyFromDMMF('sysPost')).toBe('postId');
+      expect(getPrimaryKeyFromDMMF('sysJob')).toBe('jobId');
+      expect(getPrimaryKeyFromDMMF('sysNotice')).toBe('noticeId');
+      expect(getPrimaryKeyFromDMMF('sysOperLog')).toBe('operId');
+      expect(getPrimaryKeyFromDMMF('sysLogininfor')).toBe('infoId');
+      expect(getPrimaryKeyFromDMMF('sysUpload')).toBe('uploadId');
+      expect(getPrimaryKeyFromDMMF('sysFileShare')).toBe('shareId');
+      expect(getPrimaryKeyFromDMMF('sysFileFolder')).toBe('folderId');
+      expect(getPrimaryKeyFromDMMF('genTable')).toBe('tableId');
+      expect(getPrimaryKeyFromDMMF('genTableColumn')).toBe('columnId');
+      expect(getPrimaryKeyFromDMMF('sysTenantPackage')).toBe('packageId');
+      expect(getPrimaryKeyFromDMMF('sysSystemConfig')).toBe('configId');
+      expect(getPrimaryKeyFromDMMF('sysJobLog')).toBe('jobLogId');
+    });
+
+    it('should return id for models using id as primary key', () => {
+      expect(getPrimaryKeyFromDMMF('sysTenant')).toBe('id');
+      expect(getPrimaryKeyFromDMMF('sysClient')).toBe('id');
+      expect(getPrimaryKeyFromDMMF('sysAuditLog')).toBe('id');
+      expect(getPrimaryKeyFromDMMF('sysTenantFeature')).toBe('id');
+      expect(getPrimaryKeyFromDMMF('sysTenantUsage')).toBe('id');
+    });
+
+    it('should return id for unknown models', () => {
+      expect(getPrimaryKeyFromDMMF('unknownModel')).toBe('id');
+      expect(getPrimaryKeyFromDMMF('nonExistent')).toBe('id');
+    });
+
+    it('should be case insensitive', () => {
+      expect(getPrimaryKeyFromDMMF('SysUser')).toBe('userId');
+      expect(getPrimaryKeyFromDMMF('SYSUSER')).toBe('userId');
+      expect(getPrimaryKeyFromDMMF('sysuser')).toBe('userId');
     });
   });
 });
