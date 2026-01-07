@@ -16,6 +16,14 @@ const runWithTenant = <T>(tenantId: string, ignoreTenant: boolean, fn: () => T):
   return TenantContext.run({ tenantId, ignoreTenant }, fn);
 };
 
+// 类型定义用于测试断言
+interface TestQueryArgs {
+  where?: Record<string, unknown>;
+  data?: Record<string, unknown> | Record<string, unknown>[];
+  create?: Record<string, unknown>;
+  update?: Record<string, unknown>;
+}
+
 describe('Tenant Middleware', () => {
   describe('hasTenantField', () => {
     it('should return true for tenant models', () => {
@@ -49,124 +57,128 @@ describe('Tenant Middleware', () => {
         'SysUpload',
         'SysUser',
       ];
-      expect(TENANT_MODELS).toEqual(expectedModels);
+      // TENANT_MODELS 现在是 Set，验证包含所有预期模型
+      expectedModels.forEach((model) => {
+        expect(TENANT_MODELS.has(model)).toBe(true);
+      });
     });
   });
 
   describe('addTenantFilter', () => {
     it('should not modify args for non-tenant models', () => {
       runWithTenant('100001', false, () => {
-        const args = { where: { id: 1 } };
-        const result = addTenantFilter('GenTable', args);
-        expect(result.where.tenantId).toBeUndefined();
+        const args: TestQueryArgs = { where: { id: 1 } };
+        const result = addTenantFilter('GenTable', args) as TestQueryArgs;
+        expect(result.where?.tenantId).toBeUndefined();
       });
     });
 
     it('should add tenantId to args for tenant models', () => {
       runWithTenant('100001', false, () => {
-        const args = { where: { status: '0' } };
-        const result = addTenantFilter('SysUser', args);
-        expect(result.where.tenantId).toBe('100001');
-        expect(result.where.status).toBe('0');
+        const args: TestQueryArgs = { where: { status: '0' } };
+        const result = addTenantFilter('SysUser', args) as TestQueryArgs;
+        expect(result.where?.tenantId).toBe('100001');
+        expect(result.where?.status).toBe('0');
       });
     });
 
     it('should not add tenantId when ignoreTenant is set', () => {
       runWithTenant('100001', true, () => {
-        const args = { where: { status: '0' } };
-        const result = addTenantFilter('SysUser', args);
-        expect(result.where.tenantId).toBeUndefined();
+        const args: TestQueryArgs = { where: { status: '0' } };
+        const result = addTenantFilter('SysUser', args) as TestQueryArgs;
+        expect(result.where?.tenantId).toBeUndefined();
       });
     });
 
     it('should not add tenantId for super tenant (000000)', () => {
       runWithTenant('000000', false, () => {
-        const args = { where: { status: '0' } };
-        const result = addTenantFilter('SysUser', args);
-        expect(result.where.tenantId).toBeUndefined();
+        const args: TestQueryArgs = { where: { status: '0' } };
+        const result = addTenantFilter('SysUser', args) as TestQueryArgs;
+        expect(result.where?.tenantId).toBeUndefined();
       });
     });
 
     it('should handle empty args', () => {
       runWithTenant('100001', false, () => {
-        const args = {};
-        const result = addTenantFilter('SysUser', args);
+        const args: TestQueryArgs = {};
+        const result = addTenantFilter('SysUser', args) as TestQueryArgs;
         expect(result.where).toBeDefined();
-        expect(result.where.tenantId).toBe('100001');
+        expect(result.where?.tenantId).toBe('100001');
       });
     });
 
     it('should handle null args', () => {
       runWithTenant('100001', false, () => {
-        const result = addTenantFilter('SysUser', null);
-        expect(result.where.tenantId).toBe('100001');
+        const result = addTenantFilter('SysUser', null as unknown as TestQueryArgs) as TestQueryArgs;
+        expect(result.where?.tenantId).toBe('100001');
       });
     });
 
     it('should handle AND conditions', () => {
       runWithTenant('100001', false, () => {
-        const args = {
+        const args: TestQueryArgs = {
           where: {
             AND: [{ status: '0' }, { delFlag: '0' }],
           },
         };
-        const result = addTenantFilter('SysUser', args);
-        expect(result.where.AND).toContainEqual({ tenantId: '100001' });
+        const result = addTenantFilter('SysUser', args) as TestQueryArgs;
+        expect(result.where?.AND).toContainEqual({ tenantId: '100001' });
       });
     });
 
     it('should handle OR conditions by wrapping with AND', () => {
       runWithTenant('100001', false, () => {
-        const args = {
+        const args: TestQueryArgs = {
           where: {
             OR: [{ userName: 'admin' }, { userName: 'test' }],
           },
         };
-        const result = addTenantFilter('SysUser', args);
-        expect(result.where.AND).toBeDefined();
-        expect(result.where.AND[0]).toEqual({ tenantId: '100001' });
-        expect(result.where.AND[1]).toEqual({
+        const result = addTenantFilter('SysUser', args) as TestQueryArgs;
+        const whereAnd = result.where?.AND as unknown[];
+        expect(whereAnd).toBeDefined();
+        expect(whereAnd[0]).toEqual({ tenantId: '100001' });
+        expect(whereAnd[1]).toEqual({
           OR: [{ userName: 'admin' }, { userName: 'test' }],
         });
       });
     });
 
     it('should not add tenantId when no tenant context', () => {
-      const args = { where: { status: '0' } };
-      const result = addTenantFilter('SysUser', args);
-      expect(result.where.tenantId).toBeUndefined();
+      const args: TestQueryArgs = { where: { status: '0' } };
+      const result = addTenantFilter('SysUser', args) as TestQueryArgs;
+      expect(result.where?.tenantId).toBeUndefined();
     });
   });
 
   describe('setTenantId', () => {
     it('should set tenantId when creating data', () => {
       runWithTenant('100001', false, () => {
-        const args = { data: { userName: 'test', nickName: 'Test' } };
-        const result = setTenantId('SysUser', args);
-        expect(result.data.tenantId).toBe('100001');
+        const args: TestQueryArgs = { data: { userName: 'test', nickName: 'Test' } };
+        const result = setTenantId('SysUser', args) as TestQueryArgs;
+        expect((result.data as Record<string, unknown>)?.tenantId).toBe('100001');
       });
     });
 
     it('should not override existing tenantId', () => {
       runWithTenant('100001', false, () => {
-        const args = { data: { userName: 'test', tenantId: '100002' } };
-        const result = setTenantId('SysUser', args);
-        expect(result.data.tenantId).toBe('100002');
+        const args: TestQueryArgs = { data: { userName: 'test', tenantId: '100002' } };
+        const result = setTenantId('SysUser', args) as TestQueryArgs;
+        expect((result.data as Record<string, unknown>)?.tenantId).toBe('100002');
       });
     });
 
     it('should not set tenantId for non-tenant models', () => {
       runWithTenant('100001', false, () => {
-        const args = { data: { tableName: 'test' } };
-        const result = setTenantId('GenTable', args);
-        expect(result.data.tenantId).toBeUndefined();
+        const args: TestQueryArgs = { data: { tableName: 'test' } };
+        const result = setTenantId('GenTable', args) as TestQueryArgs;
+        expect((result.data as Record<string, unknown>)?.tenantId).toBeUndefined();
       });
     });
 
     it('should handle empty args', () => {
       runWithTenant('100001', false, () => {
-        const result = setTenantId('SysUser', {});
-        expect(result.data.tenantId).toBe('100001');
+        const result = setTenantId('SysUser', {} as TestQueryArgs) as TestQueryArgs;
+        expect((result.data as Record<string, unknown>)?.tenantId).toBe('100001');
       });
     });
   });
@@ -174,37 +186,40 @@ describe('Tenant Middleware', () => {
   describe('setTenantIdForMany', () => {
     it('should set tenantId for all items in batch create', () => {
       runWithTenant('100001', false, () => {
-        const args = {
+        const args: TestQueryArgs = {
           data: [
             { userName: 'user1', nickName: 'User 1' },
             { userName: 'user2', nickName: 'User 2' },
           ],
         };
-        const result = setTenantIdForMany('SysUser', args);
-        expect(result.data[0].tenantId).toBe('100001');
-        expect(result.data[1].tenantId).toBe('100001');
+        const result = setTenantIdForMany('SysUser', args) as TestQueryArgs;
+        const dataArray = result.data as Record<string, unknown>[];
+        expect(dataArray[0].tenantId).toBe('100001');
+        expect(dataArray[1].tenantId).toBe('100001');
       });
     });
 
     it('should not override existing tenantId in batch create', () => {
       runWithTenant('100001', false, () => {
-        const args = {
+        const args: TestQueryArgs = {
           data: [{ userName: 'user1', tenantId: '100002' }, { userName: 'user2' }],
         };
-        const result = setTenantIdForMany('SysUser', args);
-        expect(result.data[0].tenantId).toBe('100002');
-        expect(result.data[1].tenantId).toBe('100001');
+        const result = setTenantIdForMany('SysUser', args) as TestQueryArgs;
+        const dataArray = result.data as Record<string, unknown>[];
+        expect(dataArray[0].tenantId).toBe('100002');
+        expect(dataArray[1].tenantId).toBe('100001');
       });
     });
 
     it('should not modify non-tenant models', () => {
       runWithTenant('100001', false, () => {
-        const args = {
+        const args: TestQueryArgs = {
           data: [{ tableName: 'table1' }, { tableName: 'table2' }],
         };
-        const result = setTenantIdForMany('GenTable', args);
-        expect(result.data[0].tenantId).toBeUndefined();
-        expect(result.data[1].tenantId).toBeUndefined();
+        const result = setTenantIdForMany('GenTable', args) as TestQueryArgs;
+        const dataArray = result.data as Record<string, unknown>[];
+        expect(dataArray[0].tenantId).toBeUndefined();
+        expect(dataArray[1].tenantId).toBeUndefined();
       });
     });
   });
@@ -212,26 +227,26 @@ describe('Tenant Middleware', () => {
   describe('setTenantIdForUpsert', () => {
     it('should set tenantId in create data for upsert', () => {
       runWithTenant('100001', false, () => {
-        const args = {
+        const args: TestQueryArgs = {
           where: { id: 1 },
           create: { userName: 'test', nickName: 'Test' },
           update: { nickName: 'Updated' },
         };
-        const result = setTenantIdForUpsert('SysUser', args);
-        expect(result.create.tenantId).toBe('100001');
-        expect(result.where.tenantId).toBe('100001');
+        const result = setTenantIdForUpsert('SysUser', args) as TestQueryArgs;
+        expect(result.create?.tenantId).toBe('100001');
+        expect(result.where?.tenantId).toBe('100001');
       });
     });
 
     it('should not override existing tenantId in upsert create', () => {
       runWithTenant('100001', false, () => {
-        const args = {
+        const args: TestQueryArgs = {
           where: { id: 1 },
           create: { userName: 'test', tenantId: '100002' },
           update: { nickName: 'Updated' },
         };
-        const result = setTenantIdForUpsert('SysUser', args);
-        expect(result.create.tenantId).toBe('100002');
+        const result = setTenantIdForUpsert('SysUser', args) as TestQueryArgs;
+        expect(result.create?.tenantId).toBe('100002');
       });
     });
   });

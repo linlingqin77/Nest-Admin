@@ -1,36 +1,18 @@
 import { Prisma } from '@prisma/client';
+import { Logger } from '@nestjs/common';
 import { TenantContext } from '../context/tenant.context';
+import { TENANT_MODELS, hasTenantField, SUPER_TENANT_ID } from '../constants/tenant-models';
+import { PrismaQueryArgs } from '../types';
 
-/**
- * 需要租户隔离的模型列表
- */
-export const TENANT_MODELS = [
-  'SysConfig',
-  'SysDept',
-  'SysDictData',
-  'SysDictType',
-  'SysJob',
-  'SysLogininfor',
-  'SysMenu',
-  'SysNotice',
-  'SysOperLog',
-  'SysPost',
-  'SysRole',
-  'SysUpload',
-  'SysUser',
-];
+// 重新导出常量，保持向后兼容
+export { TENANT_MODELS, hasTenantField, SUPER_TENANT_ID };
 
-/**
- * 检查模型是否需要租户过滤
- */
-export function hasTenantField(model: string): boolean {
-  return TENANT_MODELS.includes(model);
-}
+const logger = new Logger('TenantMiddleware');
 
 /**
  * 添加租户过滤条件
  */
-export function addTenantFilter(model: string, args: any): any {
+export function addTenantFilter<T extends PrismaQueryArgs>(model: string, args: T): T {
   if (!hasTenantField(model)) {
     return args;
   }
@@ -44,100 +26,95 @@ export function addTenantFilter(model: string, args: any): any {
     return args;
   }
 
-  args = args || {};
-  args.where = args.where || {};
+  const result = { ...args } as T;
+  result.where = result.where || {};
 
   // 处理复杂的 where 条件
-  if (args.where.AND) {
-    args.where.AND.push({ tenantId });
-  } else if (args.where.OR) {
-    args.where = {
-      AND: [{ tenantId }, { OR: args.where.OR }],
-    };
+  if (result.where.AND) {
+    (result.where.AND as unknown[]).push({ tenantId });
+  } else if (result.where.OR) {
+    result.where = {
+      AND: [{ tenantId }, { OR: result.where.OR }],
+    } as typeof result.where;
   } else {
-    args.where.tenantId = tenantId;
+    result.where.tenantId = tenantId;
   }
 
-  return args;
+  return result;
 }
 
 /**
  * 创建时设置租户ID
  */
-export function setTenantId(model: string, args: any): any {
+export function setTenantId<T extends PrismaQueryArgs>(model: string, args: T): T {
   if (!hasTenantField(model)) {
     return args;
   }
 
-  const tenantId = TenantContext.getTenantId();
-  if (!tenantId) {
-    return args;
+  const tenantId = TenantContext.getTenantId() || SUPER_TENANT_ID;
+
+  const result = { ...args } as T;
+  result.data = result.data || {};
+
+  if (!Array.isArray(result.data) && !result.data.tenantId) {
+    result.data.tenantId = tenantId;
   }
 
-  args = args || {};
-  args.data = args.data || {};
-
-  if (!args.data.tenantId) {
-    args.data.tenantId = tenantId;
-  }
-
-  return args;
+  return result;
 }
 
 /**
  * 批量创建时设置租户ID
  */
-export function setTenantIdForMany(model: string, args: any): any {
+export function setTenantIdForMany<T extends PrismaQueryArgs>(model: string, args: T): T {
   if (!hasTenantField(model)) {
     return args;
   }
 
-  const tenantId = TenantContext.getTenantId();
-  if (!tenantId) {
-    return args;
-  }
+  const tenantId = TenantContext.getTenantId() || SUPER_TENANT_ID;
 
-  args = args || {};
-  if (Array.isArray(args.data)) {
-    args.data = args.data.map((item: any) => ({
+  const result = { ...args } as T;
+  if (Array.isArray(result.data)) {
+    result.data = result.data.map((item) => ({
       ...item,
       tenantId: item.tenantId || tenantId,
     }));
   }
 
-  return args;
+  return result;
 }
 
 /**
  * upsert 时设置租户ID
  */
-export function setTenantIdForUpsert(model: string, args: any): any {
+export function setTenantIdForUpsert<T extends PrismaQueryArgs>(model: string, args: T): T {
   if (!hasTenantField(model)) {
     return args;
   }
 
-  const tenantId = TenantContext.getTenantId();
-  if (!tenantId) {
-    return args;
-  }
+  const tenantId = TenantContext.getTenantId() || SUPER_TENANT_ID;
 
-  args = args || {};
+  const result = { ...args } as T;
 
   // 设置 create 数据的租户ID
-  if (args.create && !args.create.tenantId) {
-    args.create.tenantId = tenantId;
+  if (result.create && !result.create.tenantId) {
+    result.create.tenantId = tenantId;
   }
 
   // 添加 where 条件的租户过滤
-  args = addTenantFilter(model, args);
-
-  return args;
+  return addTenantFilter(model, result);
 }
 
 /**
  * 验证查询结果是否属于当前租户 (用于 findUnique)
+ *
+ * 对于 findUnique 操作，由于无法在 where 条件中添加租户过滤，
+ * 需要在查询结果返回后验证数据是否属于当前租户
  */
-export function validateTenantOwnership(model: string, result: any): any {
+export function validateTenantOwnership<T extends Record<string, unknown> | null>(
+  model: string,
+  result: T,
+): T | null {
   if (!result || !hasTenantField(model)) {
     return result;
   }
@@ -152,6 +129,11 @@ export function validateTenantOwnership(model: string, result: any): any {
   }
 
   if (result.tenantId && result.tenantId !== currentTenantId) {
+    const requestId = TenantContext.getRequestId();
+    logger.warn(
+      `[${requestId}] Cross-tenant access attempt blocked: ` +
+        `model=${model}, expected tenantId=${currentTenantId}, actual tenantId=${result.tenantId}`,
+    );
     return null;
   }
 
@@ -170,17 +152,17 @@ const FILTER_ACTIONS = [
   'groupBy',
   'updateMany',
   'deleteMany',
-];
+] as const;
 
 /**
  * 需要添加租户过滤的更新/删除操作
  */
-const MODIFY_ACTIONS = ['update', 'delete'];
+const MODIFY_ACTIONS = ['update', 'delete'] as const;
 
 /**
  * 需要设置租户ID的创建操作
  */
-const CREATE_ACTIONS = ['create'];
+const CREATE_ACTIONS = ['create'] as const;
 
 /**
  * 创建 Prisma 租户中间件
@@ -202,15 +184,15 @@ export function createTenantMiddleware(): Prisma.Middleware {
     }
 
     // 查询操作：添加租户过滤
-    if (FILTER_ACTIONS.includes(action)) {
+    if ((FILTER_ACTIONS as readonly string[]).includes(action)) {
       params.args = addTenantFilter(model, args);
     }
     // 更新/删除操作：添加租户过滤
-    else if (MODIFY_ACTIONS.includes(action)) {
+    else if ((MODIFY_ACTIONS as readonly string[]).includes(action)) {
       params.args = addTenantFilter(model, args);
     }
     // 创建操作：设置租户ID
-    else if (CREATE_ACTIONS.includes(action)) {
+    else if ((CREATE_ACTIONS as readonly string[]).includes(action)) {
       params.args = setTenantId(model, args);
     }
     // 批量创建：设置租户ID
@@ -224,7 +206,7 @@ export function createTenantMiddleware(): Prisma.Middleware {
     // findUnique：执行后验证租户归属
     else if (action === 'findUnique') {
       const result = await next(params);
-      return validateTenantOwnership(model, result);
+      return validateTenantOwnership(model, result as Record<string, unknown> | null);
     }
 
     return next(params);

@@ -13,8 +13,14 @@ export * from './guards';
 // Services
 export * from './services';
 
-// Extensions (deprecated, for backward compatibility)
-export * from './extensions';
+// Constants
+export * from './constants';
+
+// Types
+export * from './types';
+
+// Exceptions
+export * from './exceptions';
 
 // Module
 export * from './tenant.module';

@@ -36,7 +36,8 @@
 
 #### 系统架构
 - [架构优化](../server/docs/ARCHITECTURE_OPTIMIZATION.md) - 系统架构设计与优化方案
-- [多租户迁移](../server/docs/MULTI_TENANT_MIGRATION.md) - 多租户架构实施指南
+- [多租户架构](guide/multi-tenant.md) - 企业级多租户架构实施指南
+- [多租户迁移](../server/docs/MULTI_TENANT_MIGRATION.md) - 多租户架构迁移指南
 - [性能优化总结](../server/docs/PERFORMANCE_OPTIMIZATION_SUMMARY.md) - 性能优化实践
 
 #### 优化报告（⭐ 重点）
@@ -209,6 +210,7 @@ server/scripts/
 
 | 日期 | 更新内容 |
 |------|----------|
+| 2026-01-06 | 完成多租户架构重构，更新架构文档 |
 | 2025-12-22 | 添加演示账户系统文档 |
 | 2025-12-21 | 完成优化报告（91分） |
 | 2025-12-20 | 添加日志监控文档 |
@@ -243,7 +245,7 @@ server/scripts/
 
 ## 📅 维护信息
 
-- **最近更新**: 2025-12-22
+- **最近更新**: 2026-01-06
 - **维护状态**: 🟢 活跃维护
 - **文档覆盖率**: 95%+
 - **语言**: 简体中文
