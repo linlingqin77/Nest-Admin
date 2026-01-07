@@ -70,6 +70,51 @@ export class TenantController {
   }
 
   @Api({
+    summary: '租户管理-可切换租户列表',
+    description: '获取可切换的租户列表（仅超级管理员可用）',
+    type: TenantSelectListVo,
+  })
+  @RequirePermission('system:tenant:switch')
+  @Get('/select-list')
+  getSelectList(@User() user: UserDto) {
+    return this.tenantService.getSelectList(user);
+  }
+
+  @Api({
+    summary: '租户管理-获取切换状态',
+    description: '获取当前租户切换状态',
+  })
+  @Get('/switch-status')
+  getSwitchStatus(@User() user: UserDto) {
+    return this.tenantService.getSwitchStatus(user);
+  }
+
+  @Api({
+    summary: '租户管理-切换租户',
+    description: '切换到指定租户（仅超级管理员可用）',
+    type: TenantSwitchVo,
+    params: [{ name: 'tenantId', description: '目标租户ID', type: 'string' }],
+  })
+  @RequirePermission('system:tenant:switch')
+  @Operlog({ businessType: BusinessType.UPDATE })
+  @Get('/dynamic/:tenantId')
+  switchTenant(@Param('tenantId') tenantId: string, @User() user: UserDto) {
+    return this.tenantService.switchTenant(tenantId, user);
+  }
+
+  @Api({
+    summary: '租户管理-恢复原租户',
+    description: '清除租户切换状态，恢复到原租户',
+    type: TenantRestoreVo,
+  })
+  @RequirePermission('system:tenant:switch')
+  @Operlog({ businessType: BusinessType.UPDATE })
+  @Get('/dynamic/clear')
+  restoreTenant(@User() user: UserDto) {
+    return this.tenantService.restoreTenant(user);
+  }
+
+  @Api({
     summary: '租户管理-详情',
     description: '根据ID获取租户详情',
     type: TenantVo,
@@ -115,50 +160,5 @@ export class TenantController {
   @Post('/export')
   export(@Res() res: Response, @Body() body: ListTenantDto) {
     return this.tenantService.export(res, body);
-  }
-
-  @Api({
-    summary: '租户管理-可切换租户列表',
-    description: '获取可切换的租户列表（仅超级管理员可用）',
-    type: TenantSelectListVo,
-  })
-  @RequirePermission('system:tenant:switch')
-  @Get('/select-list')
-  getSelectList(@User() user: UserDto) {
-    return this.tenantService.getSelectList(user);
-  }
-
-  @Api({
-    summary: '租户管理-切换租户',
-    description: '切换到指定租户（仅超级管理员可用）',
-    type: TenantSwitchVo,
-    params: [{ name: 'tenantId', description: '目标租户ID', type: 'string' }],
-  })
-  @RequirePermission('system:tenant:switch')
-  @Operlog({ businessType: BusinessType.UPDATE })
-  @Get('/dynamic/:tenantId')
-  switchTenant(@Param('tenantId') tenantId: string, @User() user: UserDto) {
-    return this.tenantService.switchTenant(tenantId, user);
-  }
-
-  @Api({
-    summary: '租户管理-恢复原租户',
-    description: '清除租户切换状态，恢复到原租户',
-    type: TenantRestoreVo,
-  })
-  @RequirePermission('system:tenant:switch')
-  @Operlog({ businessType: BusinessType.UPDATE })
-  @Get('/dynamic/clear')
-  restoreTenant(@User() user: UserDto) {
-    return this.tenantService.restoreTenant(user);
-  }
-
-  @Api({
-    summary: '租户管理-获取切换状态',
-    description: '获取当前租户切换状态',
-  })
-  @Get('/switch-status')
-  getSwitchStatus(@User() user: UserDto) {
-    return this.tenantService.getSwitchStatus(user);
   }
 }

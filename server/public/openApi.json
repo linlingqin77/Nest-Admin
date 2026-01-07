@@ -12313,6 +12313,455 @@
         ]
       }
     },
+    "/api/v1/system/tenant/select-list": {
+      "get": {
+        "description": "获取可切换的租户列表（仅超级管理员可用）",
+        "operationId": "TenantController_getSelectList_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/TenantSelectListVo"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "租户管理-可切换租户列表",
+        "tags": [
+          "租户管理"
+        ]
+      }
+    },
+    "/api/v1/system/tenant/switch-status": {
+      "get": {
+        "description": "获取当前租户切换状态",
+        "operationId": "TenantController_getSwitchStatus_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "value": {
+                              "type": "boolean",
+                              "default": true
+                            }
+                          },
+                          "nullable": true
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "租户管理-获取切换状态",
+        "tags": [
+          "租户管理"
+        ]
+      }
+    },
+    "/api/v1/system/tenant/dynamic/{tenantId}": {
+      "get": {
+        "description": "切换到指定租户（仅超级管理员可用）",
+        "operationId": "TenantController_switchTenant_v1",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "description": "目标租户ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/TenantSwitchVo"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "租户管理-切换租户",
+        "tags": [
+          "租户管理"
+        ]
+      }
+    },
+    "/api/v1/system/tenant/dynamic/clear": {
+      "get": {
+        "description": "清除租户切换状态，恢复到原租户",
+        "operationId": "TenantController_restoreTenant_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/TenantRestoreVo"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "租户管理-恢复原租户",
+        "tags": [
+          "租户管理"
+        ]
+      }
+    },
     "/api/v1/system/tenant/{id}": {
       "get": {
         "description": "根据ID获取租户详情",
@@ -12679,455 +13128,6 @@
           }
         ],
         "summary": "租户管理-导出",
-        "tags": [
-          "租户管理"
-        ]
-      }
-    },
-    "/api/v1/system/tenant/select-list": {
-      "get": {
-        "description": "获取可切换的租户列表（仅超级管理员可用）",
-        "operationId": "TenantController_getSelectList_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "操作成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Result"
-                    },
-                    {
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/TenantSelectListVo"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未登录或登录已过期",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "code": {
-                      "type": "number",
-                      "example": 401
-                    },
-                    "msg": {
-                      "type": "string",
-                      "example": "请先登录"
-                    },
-                    "data": {
-                      "type": "object",
-                      "nullable": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "无权限访问",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "code": {
-                      "type": "number",
-                      "example": 403
-                    },
-                    "msg": {
-                      "type": "string",
-                      "example": "没有操作权限"
-                    },
-                    "data": {
-                      "type": "object",
-                      "nullable": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "服务器内部错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "code": {
-                      "type": "number",
-                      "example": 500
-                    },
-                    "msg": {
-                      "type": "string",
-                      "example": "系统异常"
-                    },
-                    "data": {
-                      "type": "object",
-                      "nullable": true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": []
-          }
-        ],
-        "summary": "租户管理-可切换租户列表",
-        "tags": [
-          "租户管理"
-        ]
-      }
-    },
-    "/api/v1/system/tenant/dynamic/{tenantId}": {
-      "get": {
-        "description": "切换到指定租户（仅超级管理员可用）",
-        "operationId": "TenantController_switchTenant_v1",
-        "parameters": [
-          {
-            "name": "tenantId",
-            "required": true,
-            "in": "path",
-            "description": "目标租户ID",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "操作成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Result"
-                    },
-                    {
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/TenantSwitchVo"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未登录或登录已过期",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "code": {
-                      "type": "number",
-                      "example": 401
-                    },
-                    "msg": {
-                      "type": "string",
-                      "example": "请先登录"
-                    },
-                    "data": {
-                      "type": "object",
-                      "nullable": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "无权限访问",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "code": {
-                      "type": "number",
-                      "example": 403
-                    },
-                    "msg": {
-                      "type": "string",
-                      "example": "没有操作权限"
-                    },
-                    "data": {
-                      "type": "object",
-                      "nullable": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "服务器内部错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "code": {
-                      "type": "number",
-                      "example": 500
-                    },
-                    "msg": {
-                      "type": "string",
-                      "example": "系统异常"
-                    },
-                    "data": {
-                      "type": "object",
-                      "nullable": true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": []
-          }
-        ],
-        "summary": "租户管理-切换租户",
-        "tags": [
-          "租户管理"
-        ]
-      }
-    },
-    "/api/v1/system/tenant/dynamic/clear": {
-      "get": {
-        "description": "清除租户切换状态，恢复到原租户",
-        "operationId": "TenantController_restoreTenant_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "操作成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Result"
-                    },
-                    {
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/TenantRestoreVo"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未登录或登录已过期",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "code": {
-                      "type": "number",
-                      "example": 401
-                    },
-                    "msg": {
-                      "type": "string",
-                      "example": "请先登录"
-                    },
-                    "data": {
-                      "type": "object",
-                      "nullable": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "无权限访问",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "code": {
-                      "type": "number",
-                      "example": 403
-                    },
-                    "msg": {
-                      "type": "string",
-                      "example": "没有操作权限"
-                    },
-                    "data": {
-                      "type": "object",
-                      "nullable": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "服务器内部错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "code": {
-                      "type": "number",
-                      "example": 500
-                    },
-                    "msg": {
-                      "type": "string",
-                      "example": "系统异常"
-                    },
-                    "data": {
-                      "type": "object",
-                      "nullable": true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": []
-          }
-        ],
-        "summary": "租户管理-恢复原租户",
-        "tags": [
-          "租户管理"
-        ]
-      }
-    },
-    "/api/v1/system/tenant/switch-status": {
-      "get": {
-        "description": "获取当前租户切换状态",
-        "operationId": "TenantController_getSwitchStatus_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "操作成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Result"
-                    },
-                    {
-                      "properties": {
-                        "data": {
-                          "type": "object",
-                          "properties": {
-                            "value": {
-                              "type": "boolean",
-                              "default": true
-                            }
-                          },
-                          "nullable": true
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未登录或登录已过期",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "code": {
-                      "type": "number",
-                      "example": 401
-                    },
-                    "msg": {
-                      "type": "string",
-                      "example": "请先登录"
-                    },
-                    "data": {
-                      "type": "object",
-                      "nullable": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "无权限访问",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "code": {
-                      "type": "number",
-                      "example": 403
-                    },
-                    "msg": {
-                      "type": "string",
-                      "example": "没有操作权限"
-                    },
-                    "data": {
-                      "type": "object",
-                      "nullable": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "服务器内部错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "code": {
-                      "type": "number",
-                      "example": 500
-                    },
-                    "msg": {
-                      "type": "string",
-                      "example": "系统异常"
-                    },
-                    "data": {
-                      "type": "object",
-                      "nullable": true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "Authorization": []
-          }
-        ],
-        "summary": "租户管理-获取切换状态",
         "tags": [
           "租户管理"
         ]
@@ -37058,6 +37058,16 @@
           "perms": {
             "type": "string",
             "description": "权限标识"
+          },
+          "queryParam": {
+            "type": "string",
+            "description": "路由参数"
+          },
+          "remark": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 500,
+            "description": "备注"
           }
         },
         "required": [
@@ -37180,6 +37190,16 @@
           "perms": {
             "type": "string",
             "description": "权限标识"
+          },
+          "queryParam": {
+            "type": "string",
+            "description": "路由参数"
+          },
+          "remark": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 500,
+            "description": "备注"
           },
           "menuId": {
             "type": "number",
@@ -38160,6 +38180,91 @@
           "total"
         ]
       },
+      "TenantSelectItemVo": {
+        "type": "object",
+        "properties": {
+          "tenantId": {
+            "type": "string",
+            "description": "租户ID"
+          },
+          "companyName": {
+            "type": "string",
+            "description": "企业名称"
+          },
+          "status": {
+            "type": "string",
+            "description": "状态"
+          }
+        },
+        "required": [
+          "tenantId",
+          "companyName",
+          "status"
+        ]
+      },
+      "TenantSelectListVo": {
+        "type": "object",
+        "properties": {
+          "list": {
+            "description": "可切换租户列表",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TenantSelectItemVo"
+            }
+          }
+        },
+        "required": [
+          "list"
+        ]
+      },
+      "TenantSwitchVo": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "是否成功"
+          },
+          "tenantId": {
+            "type": "string",
+            "description": "目标租户ID"
+          },
+          "companyName": {
+            "type": "string",
+            "description": "企业名称"
+          },
+          "originalTenantId": {
+            "type": "string",
+            "description": "原租户ID"
+          }
+        },
+        "required": [
+          "success",
+          "tenantId",
+          "companyName"
+        ]
+      },
+      "TenantRestoreVo": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "是否成功"
+          },
+          "originalTenantId": {
+            "type": "string",
+            "description": "原租户ID"
+          },
+          "originalCompanyName": {
+            "type": "string",
+            "description": "原企业名称"
+          }
+        },
+        "required": [
+          "success",
+          "originalTenantId",
+          "originalCompanyName"
+        ]
+      },
       "UpdateTenantDto": {
         "type": "object",
         "properties": {
@@ -38310,91 +38415,6 @@
             "description": "结束时间"
           }
         }
-      },
-      "TenantSelectItemVo": {
-        "type": "object",
-        "properties": {
-          "tenantId": {
-            "type": "string",
-            "description": "租户ID"
-          },
-          "companyName": {
-            "type": "string",
-            "description": "企业名称"
-          },
-          "status": {
-            "type": "string",
-            "description": "状态"
-          }
-        },
-        "required": [
-          "tenantId",
-          "companyName",
-          "status"
-        ]
-      },
-      "TenantSelectListVo": {
-        "type": "object",
-        "properties": {
-          "list": {
-            "description": "可切换租户列表",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TenantSelectItemVo"
-            }
-          }
-        },
-        "required": [
-          "list"
-        ]
-      },
-      "TenantSwitchVo": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "description": "是否成功"
-          },
-          "tenantId": {
-            "type": "string",
-            "description": "目标租户ID"
-          },
-          "companyName": {
-            "type": "string",
-            "description": "企业名称"
-          },
-          "originalTenantId": {
-            "type": "string",
-            "description": "原租户ID"
-          }
-        },
-        "required": [
-          "success",
-          "tenantId",
-          "companyName"
-        ]
-      },
-      "TenantRestoreVo": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "description": "是否成功"
-          },
-          "originalTenantId": {
-            "type": "string",
-            "description": "原租户ID"
-          },
-          "originalCompanyName": {
-            "type": "string",
-            "description": "原企业名称"
-          }
-        },
-        "required": [
-          "success",
-          "originalTenantId",
-          "originalCompanyName"
-        ]
       },
       "TenantStatsVo": {
         "type": "object",

@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Nest-Admin-Soybean Logo](https://img.shields.io/badge/Nest--Admin--Soybean-2.1.0-blue)
+![Nest-Admin-Soybean Logo](https://img.shields.io/badge/Nest--Admin--Soybean-2.2.0-blue)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Node Version](https://img.shields.io/badge/node-%3E%3D20.19.0-brightgreen)](https://nodejs.org)
 [![NestJS](https://img.shields.io/badge/NestJS-10.x-red)](https://nestjs.com/)
@@ -37,6 +37,8 @@
 - 🌐 **国际化** - 支持中文/英文切换
 - 🎨 **主题定制** - 多种主题预设，支持深色模式
 - 📱 **响应式设计** - 完美适配各种屏幕尺寸
+- 📨 **消息中心** - 短信、邮件、站内信统一管理（🆕 新增）
+- 📈 **租户仪表盘** - 租户统计、趋势分析、配额监控（🆕 新增）
 
 ### 🛠️ 技术栈
 
@@ -210,6 +212,10 @@ sequenceDiagram
 - **租户生命周期** - 创建、初始化、状态变更、禁用
 - **数据隔离** - 自动化租户数据隔离（Prisma Middleware）
 - **缓存隔离** - 租户级别缓存键隔离
+- **🆕 租户仪表盘** - 租户统计概览、趋势图、套餐分布、即将到期列表
+- **🆕 租户配额管理** - 配额查询、编辑、使用监控、变更记录
+- **🆕 租户审计日志** - 操作追踪、数据对比、筛选导出
+- **🆕 租户切换** - 管理员快速切换租户上下文
 
 ### 3️⃣ 系统监控
 - **在线用户** - 实时在线用户、强制下线
@@ -230,7 +236,12 @@ sequenceDiagram
 - **快速登录** - 登录页面一键填充
 - **灵活配置** - 基于 RBAC 可随时调整权限范围
 
-### 6️⃣ 代码生成（开发中）
+### 6️⃣ 消息管理（🆕 新增）
+- **短信管理** - 短信渠道配置（阿里云、腾讯云）、模板管理、发送日志
+- **邮件管理** - 邮箱账号配置、邮件模板、发送日志
+- **站内信** - 站内信模板、消息发送、已读管理、通知铃铛
+
+### 7️⃣ 代码生成（开发中）
 - **表管理** - 数据库表导入
 - **代码生成** - 前后端代码一键生成
 
@@ -534,6 +545,38 @@ async findAll() {
 }
 ```
 
+### 核心装饰器（🆕 新增）
+
+```typescript
+// 幂等性控制 - 防止重复提交
+@Idempotent({ timeout: 5000, message: '请勿重复提交' })
+@Post()
+async create(@Body() dto: CreateDto) {
+  return this.service.create(dto);
+}
+
+// 分布式锁 - 防止并发冲突
+@Lock({ key: 'order:${orderId}', timeout: 10000 })
+@Put(':orderId')
+async update(@Param('orderId') orderId: string) {
+  return this.service.update(orderId);
+}
+
+// 数据权限 - 自动过滤数据范围
+@DataPermission({ deptAlias: 'd', userAlias: 'u' })
+@Get()
+async findAll() {
+  return this.service.findAll();
+}
+
+// 租户定时任务 - 遍历所有租户执行
+@TenantJob()
+@Cron('0 0 * * *')
+async dailyTask() {
+  // 自动为每个租户执行
+}
+```
+
 ### 权限控制
 
 使用装饰器控制权限:
@@ -668,12 +711,13 @@ pnpm cleanup               # 清理依赖
 
 ### 短期计划（1-3个月）
 
+- [x] **消息中心** - 站内消息、邮件、短信通知 ✅ 已完成
+- [x] **租户增强** - 仪表盘、配额管理、审计日志 ✅ 已完成
 - [ ] **移动端适配** - 开发移动端 H5 版本
 - [ ] **微服务拆分** - 将单体应用拆分为微服务架构
 - [ ] **Docker 部署** - 提供完整的 Docker Compose 方案
 - [ ] **代码生成优化** - 完善代码生成器功能
 - [ ] **工作流引擎** - 集成审批流程引擎
-- [ ] **消息中心** - 站内消息、邮件、短信通知
 - [ ] **数据大屏** - 可视化数据展示
 
 ### 中期计划（3-6个月）

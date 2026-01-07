@@ -98,13 +98,16 @@ export class MenuService {
   }
 
   /**
-   * 级联删除菜单
+   * 级联删除菜单（包含所有子菜单）
    */
   async cascadeRemove(menuIds: number[]) {
+    // 递归获取所有子菜单ID
+    const allMenuIds = await this.getAllChildMenuIds(menuIds);
+
     const data = await this.prisma.sysMenu.updateMany({
       where: {
         menuId: {
-          in: menuIds,
+          in: allMenuIds,
         },
       },
       data: {
@@ -112,6 +115,35 @@ export class MenuService {
       },
     });
     return Result.ok(data.count);
+  }
+
+  /**
+   * 递归获取所有子菜单ID
+   */
+  private async getAllChildMenuIds(parentIds: number[]): Promise<number[]> {
+    const result = new Set<number>(parentIds);
+
+    const findChildren = async (ids: number[]) => {
+      if (ids.length === 0) return;
+
+      const children = await this.prisma.sysMenu.findMany({
+        where: {
+          parentId: { in: ids },
+          delFlag: DelFlagEnum.NORMAL,
+        },
+        select: { menuId: true },
+      });
+
+      const childIds = children.map((c) => c.menuId).filter((id) => !result.has(id));
+
+      if (childIds.length > 0) {
+        childIds.forEach((id) => result.add(id));
+        await findChildren(childIds);
+      }
+    };
+
+    await findChildren(parentIds);
+    return Array.from(result);
   }
 
   async findMany(args: Prisma.SysMenuFindManyArgs) {

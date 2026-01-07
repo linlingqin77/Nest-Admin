@@ -45,20 +45,22 @@ declare module "@elegant-router/types" {
     "system_file-manager": "/system/file-manager";
     "system_menu": "/system/menu";
     "system_notice": "/system/notice";
+    "system_notify": "/system/notify";
+    "system_notify_message": "/system/notify/message";
+    "system_notify_template": "/system/notify/template";
     "system_oss": "/system/oss";
     "system_oss-config": "/system/oss-config";
     "system_post": "/system/post";
     "system_role": "/system/role";
+    "system_sms": "/system/sms";
+    "system_sms_channel": "/system/sms/channel";
+    "system_sms_log": "/system/sms/log";
+    "system_sms_template": "/system/sms/template";
     "system_tenant": "/system/tenant";
-    "system_tenant-package": "/system/tenant-package";
-    "system_tenant-dashboard": "/system/tenant-dashboard";
-    "system_tenant-quota": "/system/tenant-quota";
     "system_tenant-audit": "/system/tenant-audit";
-    "system_sms-channel": "/system/sms-channel";
-    "system_sms-template": "/system/sms-template";
-    "system_sms-log": "/system/sms-log";
-    "system_notify-template": "/system/notify-template";
-    "system_notify-message": "/system/notify-message";
+    "system_tenant-dashboard": "/system/tenant-dashboard";
+    "system_tenant-package": "/system/tenant-package";
+    "system_tenant-quota": "/system/tenant-quota";
     "system_user": "/system/user";
     "tool": "/tool";
     "tool_build": "/tool/build";
@@ -151,20 +153,20 @@ declare module "@elegant-router/types" {
     | "system_file-manager"
     | "system_menu"
     | "system_notice"
+    | "system_notify_message"
+    | "system_notify_template"
     | "system_oss-config"
     | "system_oss"
     | "system_post"
     | "system_role"
-    | "system_tenant-package"
-    | "system_tenant"
-    | "system_tenant-dashboard"
-    | "system_tenant-quota"
+    | "system_sms_channel"
+    | "system_sms_log"
+    | "system_sms_template"
     | "system_tenant-audit"
-    | "system_sms-channel"
-    | "system_sms-template"
-    | "system_sms-log"
-    | "system_notify-template"
-    | "system_notify-message"
+    | "system_tenant-dashboard"
+    | "system_tenant-package"
+    | "system_tenant-quota"
+    | "system_tenant"
     | "system_user"
     | "tool_build"
     | "tool_gen"

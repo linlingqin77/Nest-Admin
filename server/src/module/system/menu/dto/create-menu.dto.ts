@@ -75,4 +75,15 @@ export class CreateMenuDto {
   @IsOptional()
   @IsString()
   perms: string;
+
+  @ApiProperty({ required: false, description: '路由参数' })
+  @IsOptional()
+  @IsString()
+  queryParam?: string;
+
+  @ApiProperty({ required: false, description: '备注' })
+  @IsOptional()
+  @IsString()
+  @Length(0, 500)
+  remark?: string;
 }
