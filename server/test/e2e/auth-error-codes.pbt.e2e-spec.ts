@@ -116,13 +116,13 @@ describe('Authentication Error Codes Property Tests', () => {
                 .getRequest()
                 .get(fullPath)
                 .set('Authorization', `Bearer ${invalidToken}`)
-                .set('tenant-id', '000000');
+                .set('x-tenant-id', '000000');
             } else {
               response = await helper
                 .getRequest()
                 .post(fullPath)
                 .set('Authorization', `Bearer ${invalidToken}`)
-                .set('tenant-id', '000000')
+                .set('x-tenant-id', '000000')
                 .send({});
             }
 
@@ -158,7 +158,7 @@ describe('Authentication Error Codes Property Tests', () => {
           const response = await helper
             .getRequest()
             .get(fullPath)
-            .set('tenant-id', '000000');
+            .set('x-tenant-id', '000000');
 
           const responseCode = response.body.code || response.status;
           const isValidErrorCode = VALID_AUTH_FAILURE_CODES.includes(responseCode);
@@ -213,7 +213,7 @@ describe('Authentication Error Codes Property Tests', () => {
           const response = await helper
             .getRequest()
             .post(`${apiPrefix}/auth/login`)
-            .set('tenant-id', '000000')
+            .set('x-tenant-id', '000000')
             .send(credentials);
 
           const responseCode = response.body.code;
@@ -247,7 +247,7 @@ describe('Authentication Error Codes Property Tests', () => {
           const response = await helper
             .getRequest()
             .post(`${apiPrefix}/auth/login`)
-            .set('tenant-id', '000000')
+            .set('x-tenant-id', '000000')
             .send({
               username: 'admin',
               password: wrongPassword,
@@ -284,7 +284,7 @@ describe('Authentication Error Codes Property Tests', () => {
           const response = await helper
             .getRequest()
             .post(`${apiPrefix}/auth/login`)
-            .set('tenant-id', '000000')
+            .set('x-tenant-id', '000000')
             .send({
               username,
               password: 'somepassword123',

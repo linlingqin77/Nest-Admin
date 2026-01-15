@@ -262,18 +262,18 @@ import {
   NTooltip,
   NTag,
   NDivider,
+  NEllipsis,
 } from 'naive-ui';
-import type { DropdownOption } from 'naive-ui';
+import type { DropdownOption, DataTableColumns } from 'naive-ui';
 import {
-  fetchGetFolderTree,
-  fetchGetFileList,
-  fetchCreateFolder,
-  fetchDeleteFolder,
-  fetchBatchDeleteFiles,
-  fetchRenameFile,
-  fetchUploadFile,
-  fetchMoveFiles,
-} from '@/service/api';
+  fetchFileManagerGetFolderTree,
+  fetchFileManagerListFiles,
+  fetchFileManagerDeleteFolder,
+  fetchFileManagerRenameFile,
+  fetchFileManagerMoveFiles,
+} from '@/service/api-gen';
+import { fetchUploadFile, fetchBatchDeleteFiles } from '@/service/api';
+import type { FolderTreeNodeResponseDto, FileResponseDto } from '@/service/api-gen/types';
 import FolderModal from './modules/folder-modal.vue';
 import FilePreviewModal from './modules/file-preview-modal.vue';
 import FileShareModal from './modules/file-share-modal.vue';
@@ -382,7 +382,7 @@ const sidebarMenuRef = ref();
 const uploadRef = ref();
 
 // 文件夹树数据
-const allFolders = ref<any[]>([]);
+const allFolders = ref<FolderTreeNodeResponseDto[]>([]);
 
 // 上传进度面板
 const showUploadPanel = ref(false);
@@ -408,7 +408,7 @@ const { isDragging, dragHandlers } = useFileDrag(selectedDragItems);
 // 加载文件夹树
 async function loadFolderTree() {
   try {
-    const { data } = await fetchGetFolderTree();
+    const { data } = await fetchFileManagerGetFolderTree();
     allFolders.value = data || [];
   } catch (error) {
     message.error('加载文件夹失败');
@@ -448,13 +448,13 @@ async function loadFileList() {
     console.log('🔍 [loadFileList] 当前文件夹ID:', currentFolderId.value);
     console.log('🔍 [loadFileList] 活跃文件类型:', activeFileType.value);
 
-    const { data: filesData } = await fetchGetFileList(queryParams);
+    const { data: filesData } = await fetchFileManagerListFiles(queryParams);
 
     console.log('✅ [loadFileList] API 响应:', filesData);
 
     console.log('✅ [loadFileList] API 响应:', filesData);
 
-    const folderItems: FileItem[] = currentFolderChildren.map((f: any) => ({
+    const folderItems: FileItem[] = currentFolderChildren.map((f: FolderTreeNodeResponseDto) => ({
       type: 'folder' as const,
       id: f.folderId,
       name: f.folderName,
@@ -463,7 +463,7 @@ async function loadFileList() {
 
     console.log('📁 [loadFileList] 文件夹项:', folderItems);
 
-    let fileItems: FileItem[] = (filesData?.rows || []).map((f: any) => ({
+    let fileItems: FileItem[] = (filesData?.rows || []).map((f: FileResponseDto) => ({
       type: 'file' as const,
       id: f.uploadId,
       name: f.fileName,
@@ -707,7 +707,7 @@ function handleRename(item: FileItem) {
         message.info($t('page.fileManager.folderRenameNotImplemented'));
       } else {
         try {
-          await fetchRenameFile({
+          await fetchFileManagerRenameFile({
             uploadId: item.id as string,
             newFileName: newName,
           });
@@ -732,7 +732,7 @@ function handleDelete(item: FileItem) {
     onPositiveClick: async () => {
       try {
         if (item.type === 'folder') {
-          await fetchDeleteFolder(item.id as number);
+          await fetchFileManagerDeleteFolder(item.id as number);
         } else {
           await fetchBatchDeleteFiles([item.id as string]);
         }
@@ -776,7 +776,7 @@ function handleBatchDelete() {
       // 逐个删除文件夹（因为可能有不同的错误）
       for (const folderId of folderIds) {
         try {
-          await fetchDeleteFolder(folderId as number);
+          await fetchFileManagerDeleteFolder(folderId as number);
         } catch {
           hasError = true;
         }
@@ -1082,7 +1082,7 @@ async function handleFileDrop(fileId: string | number, targetFolderId: string | 
   console.log('Current folder:', currentFolderId.value);
 
   try {
-    const { data: result } = await fetchMoveFiles({
+    const { data: result } = await fetchFileManagerMoveFiles({
       uploadIds: [String(fileId)],
       targetFolderId: Number(targetFolderId),
     });
@@ -1124,7 +1124,7 @@ async function handleFolderDrop(targetFolderId: number, e: DragEvent) {
   if (!fileId) return;
 
   try {
-    await fetchMoveFiles({
+    await fetchFileManagerMoveFiles({
       uploadIds: [fileId],
       targetFolderId,
     });

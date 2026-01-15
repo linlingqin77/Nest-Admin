@@ -18,13 +18,17 @@ const { formRef, validate, restoreValidation } = useNaiveForm();
 
 const dateRangeOperTime = ref<[string, string] | null>(null);
 
-const model = defineModel<Api.Monitor.OperLogSearchParams>('model', { required: true });
+const model = defineModel<Record<string, unknown>>('model', { required: true });
 
 function onDateRangeOperTimeUpdate(value: [string, string] | null) {
-  if (value?.length) {
-    model.value.params!.beginTime = value[0];
-    model.value.params!.endTime = value[1];
+  const params = (model.value.params || {}) as { beginTime?: string; endTime?: string };
+  if (value && value.length === 2) {
+    [params.beginTime, params.endTime] = value;
+  } else {
+    params.beginTime = undefined;
+    params.endTime = undefined;
   }
+  model.value.params = params;
 }
 
 async function reset() {
@@ -46,7 +50,7 @@ async function search() {
         <NForm ref="formRef" :model="model" label-placement="left" :label-width="80">
           <NGrid responsive="screen" item-responsive>
             <NFormItemGi span="24 s:12 m:6" label="系统模块" path="title" class="pr-24px">
-              <NInput v-model:value="model.title" placeholder="请输入系统模块" />
+              <NInput v-model:value="(model.title as string)" placeholder="请输入系统模块" />
             </NFormItemGi>
             <NFormItemGi span="24 s:12 m:6" label="操作类型" path="businessType" class="pr-24px">
               <DictSelect
@@ -57,10 +61,10 @@ async function search() {
               />
             </NFormItemGi>
             <NFormItemGi span="24 s:12 m:6" label="操作人员" path="operName" class="pr-24px">
-              <NInput v-model:value="model.operName" placeholder="请输入操作人员" />
+              <NInput v-model:value="(model.operName as string)" placeholder="请输入操作人员" />
             </NFormItemGi>
             <NFormItemGi span="24 s:12 m:6" label="操作IP" path="operIp" class="pr-24px">
-              <NInput v-model:value="model.operIp" placeholder="请输入操作IP" />
+              <NInput v-model:value="(model.operIp as string)" placeholder="请输入操作IP" />
             </NFormItemGi>
             <NFormItemGi span="24 s:12 m:8" label="操作状态" path="status" class="pr-24px">
               <DictSelect
@@ -83,13 +87,13 @@ async function search() {
               <NSpace class="w-full" justify="end">
                 <NButton @click="reset">
                   <template #icon>
-                    <icon-ic-round-refresh class="text-icon" />
+                    <SvgIcon icon="ic:round-refresh" class="text-icon" />
                   </template>
                   {{ $t('common.reset') }}
                 </NButton>
                 <NButton type="primary" ghost @click="search">
                   <template #icon>
-                    <icon-ic-round-search class="text-icon" />
+                    <SvgIcon icon="ic:round-search" class="text-icon" />
                   </template>
                   {{ $t('common.search') }}
                 </NButton>

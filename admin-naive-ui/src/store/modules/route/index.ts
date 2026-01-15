@@ -4,7 +4,7 @@ import { defineStore } from 'pinia';
 import { useBoolean } from '@sa/hooks';
 import type { CustomRoute, ElegantConstRoute, LastLevelRouteKey, RouteKey, RouteMap } from '@elegant-router/types';
 import { router } from '@/router';
-import { fetchGetRoutes } from '@/service/api';
+import { fetchMenuGetRouters } from '@/service/api-gen';
 import { humpToLine, isNotNull } from '@/utils/common';
 import { SetupStoreId } from '@/enum';
 import { createDynamicRoutes, createStaticRoutes, getAuthVueRoutes } from '@/router/routes';
@@ -298,14 +298,15 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   /** Init dynamic auth route */
   async function initDynamicAuthRoute() {
     try {
-      const { data } = await fetchGetRoutes();
+      const { data } = await fetchMenuGetRouters();
 
       if (!data) {
         authStore.resetStore();
         return;
       }
 
-      addAuthRoutes(data);
+      // 转换 MenuResponseDto[] 为 ElegantConstRoute[]
+      addAuthRoutes(data as unknown as ElegantConstRoute[]);
 
       handleConstantAndAuthRoutes();
 

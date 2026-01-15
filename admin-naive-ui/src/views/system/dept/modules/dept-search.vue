@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { DeptResponseDto } from '@/service/api-gen/types';
 import { useNaiveForm } from '@/hooks/common/form';
 import { useDict } from '@/hooks/business/dict';
 import { $t } from '@/locales';
@@ -15,7 +16,7 @@ const emit = defineEmits<Emits>();
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
 
-const model = defineModel<Api.System.DeptSearchParams>('model', { required: true });
+const model = defineModel<Partial<DeptResponseDto>>('model', { required: true });
 
 const { options: sysNormalDisableOptions } = useDict('sys_normal_disable', false);
 
@@ -51,13 +52,13 @@ async function search() {
               <NSpace class="w-full" justify="end">
                 <NButton @click="reset">
                   <template #icon>
-                    <icon-ic-round-refresh class="text-icon" />
+                    <SvgIcon icon="ic:round-refresh" class="text-icon" />
                   </template>
                   {{ $t('common.reset') }}
                 </NButton>
                 <NButton type="primary" ghost @click="search">
                   <template #icon>
-                    <icon-ic-round-search class="text-icon" />
+                    <SvgIcon icon="ic:round-search" class="text-icon" />
                   </template>
                   {{ $t('common.search') }}
                 </NButton>

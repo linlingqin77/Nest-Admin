@@ -50,7 +50,7 @@ describe('Post E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/post/list`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -65,7 +65,7 @@ describe('Post E2E Tests', () => {
         .get(`${apiPrefix}/system/post/list`)
         .query({ pageNum: 1, pageSize: 5 })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -78,7 +78,7 @@ describe('Post E2E Tests', () => {
         .get(`${apiPrefix}/system/post/list`)
         .query({ postName: '董事长' })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -90,7 +90,7 @@ describe('Post E2E Tests', () => {
         .get(`${apiPrefix}/system/post/list`)
         .query({ postCode: 'ceo' })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -102,7 +102,7 @@ describe('Post E2E Tests', () => {
         .get(`${apiPrefix}/system/post/list`)
         .query({ status: '0' })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -134,7 +134,7 @@ describe('Post E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/post`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(postData);
 
       // Accept both 201 (success) and 500 (database constraint issue)
@@ -149,7 +149,7 @@ describe('Post E2E Tests', () => {
           .get(`${apiPrefix}/system/post/list`)
           .query({ postCode: postData.postCode })
           .set('Authorization', `Bearer ${token}`)
-          .set('tenant-id', '000000');
+          .set('x-tenant-id', '000000');
 
         if (listResponse.body.data?.rows?.length > 0) {
           createdPostIds.push(listResponse.body.data.rows[0].postId);
@@ -167,7 +167,7 @@ describe('Post E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/post`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(postData);
 
       expect([201, 500]).toContain(response.status);
@@ -181,7 +181,7 @@ describe('Post E2E Tests', () => {
           .get(`${apiPrefix}/system/post/list`)
           .query({ postCode: postData.postCode })
           .set('Authorization', `Bearer ${token}`)
-          .set('tenant-id', '000000');
+          .set('x-tenant-id', '000000');
 
         if (listResponse.body.data?.rows?.length > 0) {
           createdPostIds.push(listResponse.body.data.rows[0].postId);
@@ -212,7 +212,7 @@ describe('Post E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/post`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(postData);
 
       expect([400, 500]).toContain(response.status);
@@ -235,7 +235,7 @@ describe('Post E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/post`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(postData);
 
       // Find the created post
@@ -244,7 +244,7 @@ describe('Post E2E Tests', () => {
         .get(`${apiPrefix}/system/post/list`)
         .query({ postCode: postData.postCode })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       if (listResponse.body.data?.rows?.length > 0) {
         testPostId = listResponse.body.data.rows[0].postId;
@@ -262,7 +262,7 @@ describe('Post E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/post/${testPostId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -276,7 +276,7 @@ describe('Post E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/post/99999999`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -308,7 +308,7 @@ describe('Post E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/post`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(postData);
 
       // Find the created post
@@ -317,7 +317,7 @@ describe('Post E2E Tests', () => {
         .get(`${apiPrefix}/system/post/list`)
         .query({ postCode: postData.postCode })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       if (listResponse.body.data?.rows?.length > 0) {
         testPostId = listResponse.body.data.rows[0].postId;
@@ -343,7 +343,7 @@ describe('Post E2E Tests', () => {
         .getAuthRequest()
         .put(`${apiPrefix}/system/post`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(updateData)
         .expect(200);
 
@@ -354,7 +354,7 @@ describe('Post E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/post/${testPostId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       expect(getResponse.body.data.postSort).toBe(96);
     });
@@ -389,7 +389,7 @@ describe('Post E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/post`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(postData);
 
       // Find the created post
@@ -398,7 +398,7 @@ describe('Post E2E Tests', () => {
         .get(`${apiPrefix}/system/post/list`)
         .query({ postCode: postData.postCode })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       if (listResponse.body.data?.rows?.length > 0) {
         const postId = listResponse.body.data.rows[0].postId;
@@ -408,7 +408,7 @@ describe('Post E2E Tests', () => {
           .getAuthRequest()
           .delete(`${apiPrefix}/system/post/${postId}`)
           .set('Authorization', `Bearer ${token}`)
-          .set('tenant-id', '000000')
+          .set('x-tenant-id', '000000')
           .expect(200);
 
         expect(response.body.code).toBe(200);
@@ -434,14 +434,14 @@ describe('Post E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/post`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(post1Data);
 
       await helper
         .getAuthRequest()
         .post(`${apiPrefix}/system/post`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(post2Data);
 
       // Find the created posts
@@ -450,14 +450,14 @@ describe('Post E2E Tests', () => {
         .get(`${apiPrefix}/system/post/list`)
         .query({ postCode: post1Data.postCode })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       const list2Response = await helper
         .getAuthRequest()
         .get(`${apiPrefix}/system/post/list`)
         .query({ postCode: post2Data.postCode })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       const ids: number[] = [];
       if (list1Response.body.data?.rows?.length > 0) {
@@ -473,7 +473,7 @@ describe('Post E2E Tests', () => {
           .getAuthRequest()
           .delete(`${apiPrefix}/system/post/${ids.join(',')}`)
           .set('Authorization', `Bearer ${token}`)
-          .set('tenant-id', '000000')
+          .set('x-tenant-id', '000000')
           .expect(200);
 
         expect(response.body.code).toBe(200);
@@ -495,7 +495,7 @@ describe('Post E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/post/optionselect`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -507,7 +507,7 @@ describe('Post E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/post/optionselect`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       if (response.body.data.length > 0) {
@@ -524,7 +524,7 @@ describe('Post E2E Tests', () => {
         .get(`${apiPrefix}/system/post/optionselect`)
         .query({ deptId: '100' })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -537,7 +537,7 @@ describe('Post E2E Tests', () => {
         .get(`${apiPrefix}/system/post/optionselect`)
         .query({ postIds: '1,2' })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -562,7 +562,7 @@ describe('Post E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/post/deptTree`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -574,7 +574,7 @@ describe('Post E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/post/deptTree`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       if (response.body.data.length > 0) {

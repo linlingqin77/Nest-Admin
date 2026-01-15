@@ -15,7 +15,8 @@ import {
   useMessage,
 } from 'naive-ui';
 import { useThemeStore } from '@/store/modules/theme';
-import { fetchCreateShare } from '@/service/api';
+import { fetchFileManagerCreateShare } from '@/service/api-gen';
+import type { CreateShareRequestDto } from '@/service/api-gen/types';
 import { $t } from '@/locales';
 
 const message = useMessage();
@@ -23,6 +24,9 @@ const themeStore = useThemeStore();
 const emit = defineEmits<{
   success: [];
 }>();
+
+// 获取当前页面的 origin
+const locationOrigin = typeof window !== 'undefined' ? window.location.origin : '';
 
 const visible = ref(false);
 const loading = ref(false);
@@ -53,16 +57,14 @@ async function openModal(fileIds: string[]) {
 async function handleCreateShares() {
   loading.value = true;
   try {
-    const params: any = {};
+    const params: Partial<CreateShareRequestDto> = {};
 
     if (formModel.needPassword) {
-      params.password = formModel.password;
+      params.shareCode = formModel.password;
     }
 
     if (formModel.expireHours > 0) {
-      const expireTime = new Date();
-      expireTime.setHours(expireTime.getHours() + formModel.expireHours);
-      params.expireTime = expireTime.toISOString();
+      params.expireHours = formModel.expireHours;
     }
 
     if (formModel.maxDownload > 0) {
@@ -70,7 +72,7 @@ async function handleCreateShares() {
     }
 
     // 批量创建分享
-    const promises = uploadIds.value.map((uploadId) => fetchCreateShare({ ...params, uploadId }));
+    const promises = uploadIds.value.map((uploadId) => fetchFileManagerCreateShare({ ...params, uploadId } as CreateShareRequestDto));
 
     const results = await Promise.allSettled(promises);
 
@@ -163,13 +165,13 @@ defineExpose({
               <div class="flex items-center gap-2 mb-2">
                 <span class="text-14px text-gray">链接：</span>
                 <NInput
-                  :value="`${window.location.origin}/share/${result.data.shareId}`"
+                  :value="`${locationOrigin}/share/${result.data.shareId}`"
                   readonly
                   :size="themeStore.componentSize"
                 />
                 <NButton
                   :size="themeStore.componentSize"
-                  @click="copyToClipboard(`${window.location.origin}/share/${result.data.shareId}`)"
+                  @click="copyToClipboard(`${locationOrigin}/share/${result.data.shareId}`)"
                 >
                   复制
                 </NButton>

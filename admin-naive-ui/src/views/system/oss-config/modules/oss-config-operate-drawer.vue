@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue';
 import { ossAccessPolicyOptions, ossConfigIsHttpsOptions } from '@/constants/business';
-import { fetchCreateOssConfig, fetchUpdateOssConfig } from '@/service/api/system/oss-config';
+import { fetchOssConfigCreate, fetchOssConfigUpdate } from '@/service/api-gen';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -108,18 +108,18 @@ async function handleSubmit() {
       remark,
     } = model;
     try {
-      await fetchCreateOssConfig({
-        configKey,
-        accessKey,
-        secretKey,
-        bucketName,
-        prefix,
-        endpoint,
-        domain,
-        isHttps,
-        region,
-        accessPolicy,
-        remark,
+      await fetchOssConfigCreate({
+        configKey: configKey!,
+        accessKey: accessKey!,
+        secretKey: secretKey!,
+        bucketName: bucketName!,
+        prefix: prefix ?? undefined,
+        endpoint: endpoint!,
+        domain: domain ?? undefined,
+        isHttps: isHttps ?? undefined,
+        region: region ?? undefined,
+        accessPolicy: accessPolicy ?? undefined,
+        remark: remark ?? undefined,
       });
     } catch {
       return;
@@ -142,19 +142,19 @@ async function handleSubmit() {
       remark,
     } = model;
     try {
-      await fetchUpdateOssConfig({
-        ossConfigId,
-        configKey,
-        accessKey,
-        secretKey,
-        bucketName,
-        prefix,
-        endpoint,
-        domain,
-        isHttps,
-        region,
-        accessPolicy,
-        remark,
+      await fetchOssConfigUpdate({
+        ossConfigId: ossConfigId as number,
+        configKey: configKey ?? undefined,
+        accessKey: accessKey ?? undefined,
+        secretKey: secretKey ?? undefined,
+        bucketName: bucketName ?? undefined,
+        prefix: prefix ?? undefined,
+        endpoint: endpoint ?? undefined,
+        domain: domain ?? undefined,
+        isHttps: isHttps ?? undefined,
+        region: region ?? undefined,
+        accessPolicy: accessPolicy ?? undefined,
+        remark: remark ?? undefined,
       });
     } catch {
       return;

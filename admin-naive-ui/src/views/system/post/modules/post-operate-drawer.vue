@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue';
 import { useLoading } from '@sa/hooks';
-import { fetchCreatePost, fetchUpdatePost } from '@/service/api/system/post';
+import { fetchPostCreate, fetchPostUpdate } from '@/service/api-gen';
+import type { PostResponseDto, CreatePostRequestDto, UpdatePostRequestDto, DeptTreeResponseDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 defineOptions({
@@ -12,9 +13,9 @@ interface Props {
   /** the type of operation */
   operateType: NaiveUI.TableOperateType;
   /** the edit row data */
-  rowData?: Api.System.Post | null;
+  rowData?: PostResponseDto | null;
   /** the dept tree data */
-  deptData?: Api.Common.CommonTreeRecord;
+  deptData?: DeptTreeResponseDto[];
 }
 
 const props = defineProps<Props>();
@@ -40,17 +41,17 @@ const title = computed(() => {
   return titles[props.operateType];
 });
 
-type Model = Api.System.PostOperateParams;
+type Model = CreatePostRequestDto & { postId?: number };
 
 const model: Model = reactive(createDefaultModel());
 
 function createDefaultModel(): Model {
   return {
-    deptId: null,
+    deptId: undefined,
     postCode: '',
     postCategory: '',
     postName: '',
-    postSort: null,
+    postSort: undefined,
     status: '0',
     remark: '',
   };
@@ -91,11 +92,11 @@ async function handleSubmit() {
   try {
     if (props.operateType === 'add') {
       const { deptId, postCode, postCategory, postName, postSort, status, remark } = model;
-      await fetchCreatePost({ deptId, postCode, postCategory, postName, postSort, status, remark });
+      await fetchPostCreate({ deptId, postCode, postCategory, postName, postSort, status, remark } as CreatePostRequestDto);
     } else if (props.operateType === 'edit') {
       const { postId, deptId, postCode, postCategory, postName, postSort, status, remark } = model;
-      await fetchUpdatePost({
-        postId,
+      await fetchPostUpdate({
+        postId: postId!,
         deptId,
         postCode,
         postCategory,
@@ -103,7 +104,7 @@ async function handleSubmit() {
         postSort,
         status,
         remark,
-      });
+      } as UpdatePostRequestDto);
     }
 
     window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));

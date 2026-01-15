@@ -2,7 +2,7 @@
 import { useAttrs } from 'vue';
 import type { TreeSelectProps } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { fetchGetDeptTree } from '@/service/api/system';
+import { fetchUserDeptTree } from '@/service/api-gen';
 
 defineOptions({ name: 'DeptTreeSelect' });
 
@@ -13,7 +13,7 @@ interface Props {
 defineProps<Props>();
 
 const value = defineModel<CommonType.IdType | null>('value', { required: false });
-const options = defineModel<Api.Common.CommonTreeRecord>('options', { required: false, default: [] });
+const options = defineModel<any[]>('options', { required: false, default: [] });
 const expandedKeys = defineModel<CommonType.IdType[]>('expandedKeys', { required: false, default: [] });
 
 const attrs: TreeSelectProps = useAttrs();
@@ -22,8 +22,8 @@ const { loading, startLoading, endLoading } = useLoading();
 async function getDeptList() {
   startLoading();
   try {
-    const { data } = await fetchGetDeptTree();
-    options.value = data;
+    const { data } = await fetchUserDeptTree();
+    options.value = data as any[];
     // 设置默认展开的节点
     if (data?.length && !expandedKeys.value.length) {
       expandedKeys.value = [data[0].id];

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import { useLoading } from '@sa/hooks';
-import { fetchCreateTenantPackage, fetchUpdateTenantPackage } from '@/service/api/system/tenant-package';
-import { fetchGetTenantPackageMenuTreeSelect } from '@/service/api/system/menu';
+import { fetchTenantPackageCreate, fetchTenantPackageUpdate, fetchMenuTenantPackageMenuTreeselect } from '@/service/api-gen';
+import type { TenantPackageResponseDto, CreateTenantPackageRequestDto, UpdateTenantPackageRequestDto, MenuTreeResponseDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import MenuTree from '@/components/custom/menu-tree.vue';
 import { $t } from '@/locales';
@@ -15,7 +15,7 @@ interface Props {
   /** the type of operation */
   operateType: NaiveUI.TableOperateType;
   /** the edit row data */
-  rowData?: Api.System.TenantPackage | null;
+  rowData?: TenantPackageResponseDto | null;
 }
 
 const props = defineProps<Props>();
@@ -28,7 +28,7 @@ const emit = defineEmits<Emits>();
 
 const menuTreeRef = ref<InstanceType<typeof MenuTree> | null>(null);
 
-const menuOptions = ref<Api.System.MenuList>([]);
+const menuOptions = ref<MenuTreeResponseDto[]>([]);
 
 const { loading: menuLoading, startLoading: startMenuLoading, endLoading: stopMenuLoading } = useLoading();
 
@@ -47,7 +47,13 @@ const title = computed(() => {
   return titles[props.operateType];
 });
 
-type Model = Api.System.TenantPackageOperateParams;
+type Model = {
+  packageId?: number;
+  packageName: string;
+  menuIds: number[];
+  remark: string;
+  menuCheckStrictly: boolean;
+};
 
 const model: Model = reactive(createDefaultModel());
 
@@ -74,7 +80,7 @@ async function handleUpdateModelWhenEdit() {
   if (props.operateType === 'add') {
     Object.assign(model, createDefaultModel());
     try {
-      const { data } = await fetchGetTenantPackageMenuTreeSelect(0);
+      const { data } = await fetchMenuTenantPackageMenuTreeselect(0);
       if (!data) {
         return;
       }
@@ -90,7 +96,7 @@ async function handleUpdateModelWhenEdit() {
     startMenuLoading();
     Object.assign(model, { ...props.rowData, menuIds: [] });
     try {
-      const { data } = await fetchGetTenantPackageMenuTreeSelect(model.packageId!);
+      const { data } = await fetchMenuTenantPackageMenuTreeselect(model.packageId!);
       if (!data) {
         return;
       }
@@ -112,19 +118,26 @@ async function handleSubmit() {
   await validate();
 
   const { packageId, packageName, remark, menuCheckStrictly } = model;
-  const menuIds = menuTreeRef.value?.getCheckedMenuIds();
+  const menuIds = menuTreeRef.value?.getCheckedMenuIds() as number[] | undefined;
   // request
   try {
     if (props.operateType === 'add') {
-      await fetchCreateTenantPackage({ packageName, menuIds, remark, menuCheckStrictly });
-    } else if (props.operateType === 'edit') {
-      await fetchUpdateTenantPackage({
-        packageId,
+      const createData: CreateTenantPackageRequestDto = {
         packageName,
         menuIds,
         remark,
         menuCheckStrictly,
-      });
+      };
+      await fetchTenantPackageCreate(createData);
+    } else if (props.operateType === 'edit') {
+      const updateData: UpdateTenantPackageRequestDto = {
+        packageId: packageId!,
+        packageName,
+        menuIds,
+        remark,
+        menuCheckStrictly,
+      };
+      await fetchTenantPackageUpdate(updateData);
     }
 
     window.$message?.success($t('common.saveSuccess'));

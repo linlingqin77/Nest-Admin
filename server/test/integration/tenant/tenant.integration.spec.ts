@@ -104,9 +104,15 @@ describe('Tenant Integration Tests', () => {
 
       expect(result.code).toBe(200);
       expect(result.data.rows).toBeDefined();
-      result.data.rows.forEach((tenant: any) => {
-        expect(tenant.delFlag).toBe(DelFlagEnum.NORMAL);
-      });
+      // Note: delFlag is excluded from TenantResponseDto, so we verify by checking
+      // that the query only returns non-deleted tenants (which is enforced by the service)
+      // We can verify this by checking that all returned tenants exist in DB with delFlag='0'
+      for (const tenant of result.data.rows) {
+        const dbTenant = await prisma.sysTenant.findUnique({
+          where: { id: tenant.id },
+        });
+        expect(dbTenant?.delFlag).toBe(DelFlagEnum.NORMAL);
+      }
     });
 
     it('should filter tenants by company name', async () => {

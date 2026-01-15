@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import { useLoading } from '@sa/hooks';
-import { fetchCreateRole, fetchUpdateRole } from '@/service/api/system/role';
-import { fetchGetRoleMenuTreeSelect } from '@/service/api/system';
+import { fetchRoleCreate, fetchRoleUpdate } from '@/service/api-gen';
+import { fetchMenuRoleMenuTreeselect } from '@/service/api-gen';
+import type { CreateRoleRequestDto, UpdateRoleRequestDto, RoleResponseDto, MenuResponseDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { useDict } from '@/hooks/business/dict';
 import { $t } from '@/locales';
@@ -16,7 +17,7 @@ interface Props {
   /** the type of operation */
   operateType: NaiveUI.TableOperateType;
   /** the edit row data */
-  rowData?: Api.System.Role | null;
+  rowData?: RoleResponseDto | null;
 }
 
 const props = defineProps<Props>();
@@ -35,7 +36,7 @@ const visible = defineModel<boolean>('visible', {
 
 const { options: sysNormalDisableOptions } = useDict('sys_normal_disable', false);
 
-const menuOptions = ref<Api.System.MenuList>([]);
+const menuOptions = ref<MenuResponseDto[]>([]);
 
 const { loading: menuLoading, startLoading: startMenuLoading, endLoading: stopMenuLoading } = useLoading();
 
@@ -50,7 +51,7 @@ const title = computed(() => {
   return titles[props.operateType];
 });
 
-type Model = Api.System.RoleOperateParams;
+type Model = Partial<CreateRoleRequestDto & UpdateRoleRequestDto> & { roleId?: number };
 
 const model: Model = reactive(createDefaultModel());
 
@@ -61,7 +62,7 @@ function createDefaultModel(): Model {
     roleKey: '',
     roleSort: 1,
     menuCheckStrictly: true,
-    status: '0',
+    status: '0' as any,
     remark: '',
   };
 }
@@ -89,12 +90,12 @@ async function handleUpdateModelWhenEdit() {
     startMenuLoading();
     Object.assign(model, props.rowData);
     try {
-      const { data } = await fetchGetRoleMenuTreeSelect(model.roleId!);
+      const { data } = await fetchMenuRoleMenuTreeselect(model.roleId!);
       if (!data) {
         return;
       }
-      model.menuIds = data.checkedKeys;
-      menuOptions.value = data.menus;
+      model.menuIds = data.checkedKeys as any;
+      menuOptions.value = data.menus as any;
     } catch {
       // error handled by request interceptor
     } finally {
@@ -114,25 +115,25 @@ async function handleSubmit() {
   // request
   try {
     if (props.operateType === 'add') {
-      await fetchCreateRole({
-        roleName,
-        roleKey,
-        roleSort,
+      await fetchRoleCreate({
+        roleName: roleName!,
+        roleKey: roleKey!,
+        roleSort: roleSort!,
         menuCheckStrictly,
         status,
         remark,
-        menuIds,
+        menuIds: menuIds as any,
       });
     } else if (props.operateType === 'edit') {
-      await fetchUpdateRole({
-        roleId,
-        roleName,
-        roleKey,
-        roleSort,
+      await fetchRoleUpdate({
+        roleId: roleId!,
+        roleName: roleName!,
+        roleKey: roleKey!,
+        roleSort: roleSort!,
         menuCheckStrictly,
         status,
         remark,
-        menuIds,
+        menuIds: menuIds as any,
       });
     }
 

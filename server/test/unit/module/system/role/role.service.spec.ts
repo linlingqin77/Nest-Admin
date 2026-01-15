@@ -271,5 +271,123 @@ describe('RoleService', () => {
 
       expect(result).toEqual([100, 101]);
     });
+
+    it('should return empty array when no dept ids', async () => {
+      prismaMock.sysRoleDept.findMany.mockResolvedValue([]);
+
+      const result = await service.findRoleWithDeptIds(999);
+
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('findRoles', () => {
+    it('should return roles with custom args', async () => {
+      const mockRoles = [{ roleId: 1, roleName: 'Admin' }];
+      prismaMock.sysRole.findMany.mockResolvedValue(mockRoles);
+
+      const result = await service.findRoles({ where: { status: '0' } });
+
+      expect(result).toEqual(mockRoles);
+      expect(prismaMock.sysRole.findMany).toHaveBeenCalledWith({ where: { status: '0' } });
+    });
+  });
+
+  describe('create - edge cases', () => {
+    it('should create role with default values', async () => {
+      const result = await service.create({ roleName: 'Test', roleKey: 'test' } as any);
+
+      expect(result.code).toBe(200);
+      expect(prismaMock.sysRole.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          roleName: 'Test',
+          roleKey: 'test',
+          roleSort: 0,
+          status: '0',
+          delFlag: '0',
+        }),
+      });
+    });
+
+    it('should create role with custom sort and status', async () => {
+      const result = await service.create({
+        roleName: 'Test',
+        roleKey: 'test',
+        roleSort: 5,
+        status: '1',
+      } as any);
+
+      expect(result.code).toBe(200);
+      expect(prismaMock.sysRole.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          roleSort: 5,
+          status: '1',
+        }),
+      });
+    });
+  });
+
+  describe('update - edge cases', () => {
+    it('should update role and clear all menu associations when menuIds is empty', async () => {
+      const result = await service.update({ roleId: 1, roleName: 'Updated', menuIds: [] } as any);
+
+      expect(result.code).toBe(200);
+      expect(prismaMock.sysRoleMenu.deleteMany).toHaveBeenCalledWith({ where: { roleId: 1 } });
+      expect(prismaMock.sysRoleMenu.createMany).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('dataScope - edge cases', () => {
+    it('should update data scope and clear all dept associations when deptIds is empty', async () => {
+      const result = await service.dataScope({ roleId: 1, dataScope: '1', deptIds: [] } as any);
+
+      expect(result.code).toBe(200);
+      expect(prismaMock.sysRoleDept.deleteMany).toHaveBeenCalledWith({ where: { roleId: 1 } });
+      expect(prismaMock.sysRoleDept.createMany).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getPermissionsByRoleIds - edge cases', () => {
+    it('should filter out null/empty perms', async () => {
+      prismaMock.sysRoleMenu.findMany.mockResolvedValue([{ menuId: 1 }, { menuId: 2 }]);
+      prismaMock.sysMenu.findMany.mockResolvedValue([
+        { perms: 'system:user:list' },
+        { perms: null },
+        { perms: '' },
+        { perms: 'system:user:add' },
+      ]);
+
+      const result = await service.getPermissionsByRoleIds([2]);
+
+      // 应该过滤掉 null 和空字符串
+      expect(result.length).toBeLessThanOrEqual(2);
+    });
+
+    it('should deduplicate permissions', async () => {
+      prismaMock.sysRoleMenu.findMany.mockResolvedValue([{ menuId: 1 }, { menuId: 2 }]);
+      prismaMock.sysMenu.findMany.mockResolvedValue([
+        { perms: 'system:user:list' },
+        { perms: 'system:user:list' }, // 重复
+        { perms: 'system:user:add' },
+      ]);
+
+      const result = await service.getPermissionsByRoleIds([2]);
+
+      // 应该去重
+      expect(result.length).toBe(2);
+    });
+  });
+
+  describe('deptTree - edge cases', () => {
+    it('should return empty tree when no depts', async () => {
+      prismaMock.sysDept.findMany.mockResolvedValue([]);
+      prismaMock.sysRoleDept.findMany.mockResolvedValue([]);
+
+      const result = await service.deptTree(1);
+
+      expect(result.code).toBe(200);
+      expect(result.data.depts).toEqual([]);
+      expect(result.data.checkedKeys).toEqual([]);
+    });
   });
 });

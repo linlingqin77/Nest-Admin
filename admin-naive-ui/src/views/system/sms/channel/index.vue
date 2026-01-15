@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { NDivider } from 'naive-ui';
-import { fetchBatchDeleteSmsChannel, fetchGetSmsChannelList } from '@/service/api/system/sms';
+import { fetchSmsChannelRemove, fetchSmsChannelFindAll } from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
@@ -39,7 +39,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetSmsChannelList,
+  apiFn: fetchSmsChannelFindAll as any,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -74,7 +74,8 @@ const {
       align: 'center',
       minWidth: 100,
       render(row) {
-        return channelCodeMap[row.code] || row.code;
+        const typedRow = row as unknown as Api.System.SmsChannel;
+        return channelCodeMap[typedRow.code] || typedRow.code;
       },
     },
     {
@@ -101,7 +102,8 @@ const {
       align: 'center',
       minWidth: 80,
       render(row) {
-        return <DictTag size="small" value={row.status} dictCode="sys_normal_disable" />;
+        const typedRow = row as unknown as Api.System.SmsChannel;
+        return <DictTag size="small" value={typedRow.status} dictCode="sys_normal_disable" />;
       },
     },
     {
@@ -116,6 +118,7 @@ const {
       align: 'center',
       width: 130,
       render: (row) => {
+        const typedRow = row as unknown as Api.System.SmsChannel;
         const divider = () => {
           if (!hasAuth('system:sms:channel:edit') || !hasAuth('system:sms:channel:remove')) {
             return null;
@@ -133,7 +136,7 @@ const {
               type="primary"
               icon="material-symbols:drive-file-rename-outline-outline"
               tooltipContent={$t('common.edit')}
-              onClick={() => edit(row.id!)}
+              onClick={() => edit(typedRow.id!)}
             />
           );
         };
@@ -149,7 +152,7 @@ const {
               icon="material-symbols:delete-outline"
               tooltipContent={$t('common.delete')}
               popconfirmContent={$t('common.confirmDelete')}
-              onPositiveClick={() => handleDelete(row.id!)}
+              onPositiveClick={() => handleDelete(typedRow.id!)}
             />
           );
         };
@@ -171,7 +174,7 @@ const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedR
 
 async function handleBatchDelete() {
   try {
-    await fetchBatchDeleteSmsChannel(checkedRowKeys.value);
+    await fetchSmsChannelRemove(checkedRowKeys.value.join(','));
     onBatchDeleted();
   } catch {
     // error handled by request interceptor
@@ -180,7 +183,7 @@ async function handleBatchDelete() {
 
 async function handleDelete(id: CommonType.IdType) {
   try {
-    await fetchBatchDeleteSmsChannel([id]);
+    await fetchSmsChannelRemove(id);
     onDeleted();
   } catch {
     // error handled by request interceptor
@@ -188,7 +191,7 @@ async function handleDelete(id: CommonType.IdType) {
 }
 
 async function edit(id: CommonType.IdType) {
-  handleEdit('id', id);
+  handleEdit('id' as any, id);
 }
 </script>
 
@@ -225,7 +228,7 @@ async function edit(id: CommonType.IdType) {
       <ChannelOperateDrawer
         v-model:visible="drawerVisible"
         :operate-type="operateType"
-        :row-data="editingData"
+        :row-data="(editingData as any)"
         @submitted="getData"
       />
     </NCard>

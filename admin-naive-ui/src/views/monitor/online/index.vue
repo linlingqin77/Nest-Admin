@@ -1,9 +1,10 @@
 <script setup lang="tsx">
 import dayjs from 'dayjs';
-import { fetchForceLogout, fetchGetOnlineUserList } from '@/service/api/monitor/online';
+import { fetchOnlineFindAll, fetchOnlineDelete } from '@/service/api-gen/online';
+import type { OnlineUserResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
-import { useTable, useTableProps } from '@/hooks/common/table';
+import { useTable } from '@/hooks/common/table';
 import { useDict } from '@/hooks/business/dict';
 import { getBrowserIcon, getOsIcon } from '@/utils/icon-tag-format';
 import ButtonIcon from '@/components/custom/button-icon.vue';
@@ -16,16 +17,22 @@ defineOptions({
   name: 'OnlineList',
 });
 
+/** 搜索参数接口 */
+interface SearchParams {
+  pageNum: number;
+  pageSize: number;
+  userName: string | null;
+  ipaddr: string | null;
+}
+
 const appStore = useAppStore();
 const { hasAuth } = useAuth();
-
-const tableProps = useTableProps();
 
 useDict('sys_common_status');
 useDict('sys_device_type');
 
 const { columns, columnChecks, data, getData, loading, mobilePagination, searchParams, resetSearchParams } = useTable({
-  apiFn: fetchGetOnlineUserList,
+  apiFn: fetchOnlineFindAll as any,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -47,7 +54,7 @@ const { columns, columnChecks, data, getData, loading, mobilePagination, searchP
       align: 'center',
       minWidth: 120,
       render: (row) => {
-        return <DictTag size="small" value={row.deviceType} dict-code="sys_device_type" />;
+        return <DictTag size="small" value={(row as unknown as OnlineUserResponseDto).deviceType} dict-code="sys_device_type" />;
       },
     },
     {
@@ -68,10 +75,11 @@ const { columns, columnChecks, data, getData, loading, mobilePagination, searchP
       align: 'center',
       minWidth: 120,
       render: (row) => {
+        const typedRow = row as unknown as OnlineUserResponseDto;
         return (
           <div class="flex items-center justify-center gap-2">
-            <SvgIcon icon={getBrowserIcon(row.browser)} />
-            {row.browser}
+            <SvgIcon icon={getBrowserIcon(typedRow.browser)} />
+            {typedRow.browser}
           </div>
         );
       },
@@ -85,7 +93,8 @@ const { columns, columnChecks, data, getData, loading, mobilePagination, searchP
       },
       minWidth: 120,
       render: (row) => {
-        const osName = row.os?.split(' or ')[0] ?? '';
+        const typedRow = row as unknown as OnlineUserResponseDto;
+        const osName = typedRow.os?.split(' or ')[0] ?? '';
         return (
           <div class="flex items-center justify-center gap-2">
             <SvgIcon icon={getOsIcon(osName)} />
@@ -103,7 +112,7 @@ const { columns, columnChecks, data, getData, loading, mobilePagination, searchP
       },
       minWidth: 120,
       render: (row) => {
-        return dayjs(row.loginTime).format('YYYY-MM-DD HH:mm:ss');
+        return dayjs((row as unknown as OnlineUserResponseDto).loginTime).format('YYYY-MM-DD HH:mm:ss');
       },
     },
     {
@@ -112,6 +121,7 @@ const { columns, columnChecks, data, getData, loading, mobilePagination, searchP
       align: 'center',
       width: 130,
       render: (row) => {
+        const typedRow = row as unknown as OnlineUserResponseDto;
         const forceLogoutBtn = () => {
           if (!hasAuth('monitor:online:forceLogout')) {
             return null;
@@ -124,7 +134,7 @@ const { columns, columnChecks, data, getData, loading, mobilePagination, searchP
               class="text-20px"
               tooltipContent="强制下线"
               popconfirmContent="确认强制下线吗？"
-              onPositiveClick={() => handleForceLogout(row.tokenId)}
+              onPositiveClick={() => handleForceLogout(typedRow.tokenId)}
             />
           );
         };
@@ -137,7 +147,7 @@ const { columns, columnChecks, data, getData, loading, mobilePagination, searchP
 async function handleForceLogout(tokenId: string) {
   // request
   try {
-    await fetchForceLogout(tokenId);
+    await fetchOnlineDelete(tokenId);
     getData();
   } catch {
     // error handled by request interceptor
@@ -147,7 +157,7 @@ async function handleForceLogout(tokenId: string) {
 
 <template>
   <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
-    <OnlineSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getData" />
+    <OnlineSearch v-model:model="(searchParams as any)" @reset="resetSearchParams" @search="getData" />
     <NCard title="在线用户列表" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
       <template #header-extra>
         <TableHeaderOperation
@@ -162,12 +172,12 @@ async function handleForceLogout(tokenId: string) {
       <NDataTable
         :columns="columns"
         :data="data"
-        v-bind="tableProps"
+        size="small"
         :flex-height="!appStore.isMobile"
         :scroll-x="962"
         :loading="loading"
         remote
-        :row-key="(row) => row.tokenId"
+        :row-key="(row: OnlineUserResponseDto) => row.tokenId"
         :pagination="mobilePagination"
         class="sm:h-full"
       />

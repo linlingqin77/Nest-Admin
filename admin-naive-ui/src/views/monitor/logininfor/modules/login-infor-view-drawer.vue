@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { LoginLogResponseDto } from '@/service/api-gen/types';
 import { getBrowserIcon, getOsIcon } from '@/utils/icon-tag-format';
 import { $t } from '@/locales';
 
@@ -8,7 +9,7 @@ defineOptions({
 
 interface Props {
   /** the edit row data */
-  rowData: Api.Monitor.LoginInfor | null;
+  rowData: LoginLogResponseDto | null;
 }
 
 const props = defineProps<Props>();
@@ -32,10 +33,10 @@ function closeDrawer() {
           {{ props.rowData?.userName }} | {{ props.rowData?.ipaddr }} | {{ props.rowData?.loginLocation }}
         </NDescriptionsItem>
         <NDescriptionsItem label="客户端">
-          {{ props.rowData?.clientKey }}
+          {{ (props.rowData as any)?.clientKey }}
         </NDescriptionsItem>
         <NDescriptionsItem label="设备类型">
-          <DictTag size="small" :value="props.rowData?.deviceType" dict-code="sys_device_type" />
+          <DictTag size="small" :value="(props.rowData as any)?.deviceType" dict-code="sys_device_type" />
         </NDescriptionsItem>
         <NDescriptionsItem label="浏览器类型">
           <div class="flex items-center gap-2">

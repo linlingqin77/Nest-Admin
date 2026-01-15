@@ -2,7 +2,8 @@
 import { computed, ref } from 'vue';
 import { NButton, NDivider } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { fetchBatchDeletePost, fetchGetPostDeptSelect, fetchGetPostList } from '@/service/api/system/post';
+import { fetchPostFindAll, fetchPostRemove, fetchPostDeptTree } from '@/service/api-gen';
+import type { PostResponseDto, DeptTreeResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useDownload } from '@/hooks/business/download';
@@ -36,7 +37,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetPostList,
+  apiFn: fetchPostFindAll,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -163,7 +164,8 @@ const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedR
 async function handleBatchDelete() {
   // request
   try {
-    await fetchBatchDeletePost(checkedRowKeys.value);
+    const ids = checkedRowKeys.value.join(',');
+    await fetchPostRemove(ids);
     onBatchDeleted();
   } catch {
     // error handled by request interceptor
@@ -173,7 +175,7 @@ async function handleBatchDelete() {
 async function handleDelete(postId: CommonType.IdType) {
   // request
   try {
-    await fetchBatchDeletePost([postId]);
+    await fetchPostRemove(postId);
     onDeleted();
   } catch {
     // error handled by request interceptor
@@ -196,15 +198,15 @@ const selectable = computed(() => {
 
 const { loading: treeLoading, startLoading: startTreeLoading, endLoading: endTreeLoading } = useLoading();
 const deptPattern = ref<string>();
-const deptData = ref<Api.Common.CommonTreeRecord>([]);
+const deptData = ref<DeptTreeResponseDto[]>([]);
 const selectedKeys = ref<string[]>([]);
 
 async function getDeptOptions() {
   // 加载
   startTreeLoading();
   try {
-    const { data: tree } = await fetchGetPostDeptSelect();
-    deptData.value = tree;
+    const { data } = await fetchPostDeptTree();
+    deptData.value = data || [];
   } catch {
     // error handled by request interceptor
   } finally {

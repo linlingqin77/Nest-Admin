@@ -1,6 +1,17 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch, onMounted } from 'vue';
-import { fetchSendNotifyMessage, fetchSendNotifyAll, fetchGetNotifyTemplateSelect } from '@/service/api/system/notify';
+import { fetchNotifyMessageSend, fetchNotifyMessageSendAll, fetchNotifyTemplateGetSelectList } from '@/service/api-gen';
+
+interface SendNotifyMessageDto {
+  userIds: number[];
+  templateCode: string;
+  params?: Record<string, string>;
+}
+
+interface SendNotifyAllDto {
+  templateCode: string;
+  params?: Record<string, string>;
+}
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -26,8 +37,8 @@ const sendType = ref<'single' | 'all'>('single');
 
 async function loadTemplateOptions() {
   try {
-    const { data } = await fetchGetNotifyTemplateSelect();
-    templateOptions.value = data.map((item) => ({
+    const { data } = await fetchNotifyTemplateGetSelectList() as any;
+    templateOptions.value = (data || []).map((item: any) => ({
       label: `${item.name} (${item.code})`,
       value: item.code,
     }));
@@ -124,16 +135,18 @@ async function handleSubmit() {
 
   try {
     if (sendType.value === 'single') {
-      await fetchSendNotifyMessage({
+      const sendData: SendNotifyMessageDto = {
         userIds: model.userIds,
         templateCode: model.templateCode,
         params: Object.keys(model.params).length > 0 ? model.params : undefined,
-      });
+      };
+      await fetchNotifyMessageSend(sendData);
     } else {
-      await fetchSendNotifyAll({
+      const sendAllData: SendNotifyAllDto = {
         templateCode: model.templateCode,
         params: Object.keys(model.params).length > 0 ? model.params : undefined,
-      });
+      };
+      await fetchNotifyMessageSendAll(sendAllData);
     }
 
     window.$message?.success('发送成功');

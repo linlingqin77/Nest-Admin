@@ -27,7 +27,7 @@ const attrs = useAttrs() as TagProps;
 
 const { transformDictData } = useDict(props.dictCode, props.immediate);
 
-const dictTagData = computed<Api.System.DictData[]>(() => {
+const dictTagData = computed(() => {
   if (props.dictData) {
     const dictData = jsonClone(props.dictData);
     if (dictData.dictLabel?.startsWith(`dict.${dictData.dictType}.`)) {
@@ -52,7 +52,7 @@ const dictTagData = computed<Api.System.DictData[]>(() => {
       class="m-1"
       :class="[item.cssClass]"
       v-bind="attrs"
-      :type="item.listClass || 'default'"
+      :type="(item.listClass as NaiveUI.ThemeColor) || 'default'"
     >
       {{ item.dictLabel }}
     </NTag>

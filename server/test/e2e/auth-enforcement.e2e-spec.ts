@@ -188,6 +188,9 @@ describe('Property 2: Authentication Enforcement', () => {
    * should NOT return 401/403 (unless permission denied)
    */
   it('should allow access to protected endpoints with valid token', async () => {
+    // Unlock account before testing
+    await helper.unlockAccount('admin');
+    
     // Login to get a valid token
     const token = await helper.login();
     expect(token).toBeTruthy();
@@ -207,7 +210,7 @@ describe('Property 2: Authentication Enforcement', () => {
           .getRequest()
           .get(fullPath)
           .set('Authorization', `Bearer ${token}`)
-          .set('tenant-id', '000000');
+          .set('x-tenant-id', '000000');
 
         // Property: With valid token, should not get 401 Unauthorized
         // (403 Forbidden is acceptable if user lacks specific permissions)

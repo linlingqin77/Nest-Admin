@@ -2,11 +2,12 @@
 import { computed, ref, watch } from 'vue';
 import { NDatePicker } from 'naive-ui';
 import {
-  fetchGetRoleUserList,
-  fetchGetUserList,
-  fetchUpdateRoleAuthUser,
-  fetchUpdateRoleAuthUserCancel,
-} from '@/service/api/system';
+  fetchRoleAuthUserAllocatedList,
+  fetchUserFindAll,
+  fetchRoleAuthUserSelectAll,
+  fetchRoleAuthUserCancelAll,
+} from '@/service/api-gen';
+import type { RoleResponseDto, AuthUserSelectAllRequestDto, AuthUserCancelAllRequestDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useDict } from '@/hooks/business/dict';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
@@ -20,7 +21,7 @@ defineOptions({
 
 interface Props {
   /** the edit row data */
-  rowData?: Api.System.Role | null;
+  rowData?: RoleResponseDto | null;
 }
 
 const props = defineProps<Props>();
@@ -45,7 +46,7 @@ useDict('sys_normal_disable', false);
 
 const { columns, data, getData, getDataByPage, loading, mobilePagination, searchParams, resetSearchParams } = useTable({
   immediate: false,
-  apiFn: fetchGetUserList,
+  apiFn: fetchUserFindAll,
   apiParams: {
     pageNum: 1,
     pageSize: 20,
@@ -123,10 +124,10 @@ const checkedUserIds = ref<CommonType.IdType[]>([]);
 async function handleUpdateModelWhenEdit() {
   checkedRowKeys.value = [];
   getDataByPage();
-  const { data: roleUserList } = await fetchGetRoleUserList({
+  const { data: roleUserList } = await fetchRoleAuthUserAllocatedList({
     roleId: props.rowData?.roleId,
   });
-  checkedUserIds.value = roleUserList?.rows.map((item) => item.userId) || [];
+  checkedUserIds.value = roleUserList?.rows.map((item: any) => item.userId) || [];
   checkedRowKeys.value = checkedUserIds.value;
 }
 
@@ -144,7 +145,11 @@ async function handleSubmit() {
   const cancelUserIds = checkedUserIds.value.filter((item) => !checkedRowKeys.value.includes(item));
   if (cancelUserIds.length > 0) {
     try {
-      await fetchUpdateRoleAuthUserCancel(props.rowData!.roleId, cancelUserIds);
+      const data: AuthUserCancelAllRequestDto = {
+        roleId: props.rowData!.roleId,
+        userIds: cancelUserIds.join(','),
+      };
+      await fetchRoleAuthUserCancelAll(data);
     } catch {
       return;
     }
@@ -154,7 +159,11 @@ async function handleSubmit() {
   const addUserIds = checkedRowKeys.value.filter((item) => !checkedUserIds.value.includes(item));
   if (addUserIds.length > 0) {
     try {
-      await fetchUpdateRoleAuthUser(props.rowData!.roleId, addUserIds);
+      const data: AuthUserSelectAllRequestDto = {
+        roleId: props.rowData!.roleId,
+        userIds: addUserIds.join(','),
+      };
+      await fetchRoleAuthUserSelectAll(data);
     } catch {
       return;
     }
@@ -176,13 +185,14 @@ const dateRangeCreateTime = ref<[string, string] | null>(null);
 const datePickerRef = ref<InstanceType<typeof NDatePicker>>();
 
 function onDateRangeCreateTimeUpdate(value: [string, string] | null) {
-  const params = searchParams.params!;
+  const params = (searchParams as any).params || {};
   if (value && value.length === 2) {
     [params.beginTime, params.endTime] = value;
   } else {
     params.beginTime = undefined;
     params.endTime = undefined;
   }
+  (searchParams as any).params = params;
 }
 
 function reset() {
@@ -206,16 +216,16 @@ function reset() {
         <NForm :model="searchParams" label-placement="left" :label-width="80">
           <NGrid responsive="screen" item-responsive>
             <NFormItemGi span="24 s:12 m:8" label="用户名称" path="userName" class="pr-24px">
-              <NInput v-model:value="searchParams.userName" placeholder="请输入用户名称" />
+              <NInput v-model:value="(searchParams as any).userName" placeholder="请输入用户名称" />
             </NFormItemGi>
             <NFormItemGi span="24 s:12 m:8" label="用户昵称" path="nickName" class="pr-24px">
-              <NInput v-model:value="searchParams.nickName" placeholder="请输入用户昵称" />
+              <NInput v-model:value="(searchParams as any).nickName" placeholder="请输入用户昵称" />
             </NFormItemGi>
             <NFormItemGi span="24 s:12 m:8" label="手机号码" path="phonenumber" class="pr-24px">
-              <NInput v-model:value="searchParams.phonenumber" placeholder="请输入手机号码" />
+              <NInput v-model:value="(searchParams as any).phonenumber" placeholder="请输入手机号码" />
             </NFormItemGi>
             <NFormItemGi span="24 s:12 m:8" label="所属部门" path="deptId" class="pr-24px">
-              <DeptTreeSelect v-model:value="searchParams.deptId" placeholder="请选择部门" />
+              <DeptTreeSelect v-model:value="(searchParams as any).deptId" placeholder="请选择部门" />
             </NFormItemGi>
             <NFormItemGi span="24 s:12 m:10" label="创建时间" path="createTime" class="pr-24px">
               <NDatePicker
@@ -231,13 +241,13 @@ function reset() {
               <NSpace class="w-full" justify="end">
                 <NButton @click="reset">
                   <template #icon>
-                    <icon-ic-round-refresh class="text-icon" />
+                    <SvgIcon icon="ic:round-refresh" class="text-icon" />
                   </template>
                   {{ $t('common.reset') }}
                 </NButton>
                 <NButton type="primary" ghost @click="() => getDataByPage()">
                   <template #icon>
-                    <icon-ic-round-search class="text-icon" />
+                    <SvgIcon icon="ic:round-search" class="text-icon" />
                   </template>
                   {{ $t('common.search') }}
                 </NButton>

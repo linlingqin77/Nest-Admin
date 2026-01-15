@@ -5,12 +5,13 @@ import type { TreeOption } from 'naive-ui';
 import { NDivider, NEllipsis, NTooltip } from 'naive-ui';
 import { useBoolean, useLoading } from '@sa/hooks';
 import {
-  fetchBatchDeleteDictData,
-  fetchBatchDeleteDictType,
-  fetchGetDictDataList,
-  fetchGetDictTypeOption,
-  fetchRefreshCache,
-} from '@/service/api/system';
+  fetchDictDeleteDictData,
+  fetchDictDeleteType,
+  fetchDictFindAllData,
+  fetchDictFindOptionselect,
+  fetchDictRefreshCache,
+} from '@/service/api-gen';
+import type { DictTypeResponseDto, DictDataResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
 import { useDict } from '@/hooks/business/dict';
@@ -38,12 +39,12 @@ const route = useRoute();
 const tableProps = useTableProps();
 
 const selectedKeys = ref<string[]>([]);
-const dictTypeData = ref<Api.System.DictType>();
+const dictTypeData = ref<DictTypeResponseDto>();
 const dictOperateType = ref<NaiveUI.TableOperateType>('add');
 const { bool: dictTypeDrawerVisible, setTrue: openDictTypeDrawer } = useBoolean();
 const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagination, searchParams } = useTable({
   immediate: false,
-  apiFn: fetchGetDictDataList,
+  apiFn: fetchDictFindAllData as NaiveUI.TableApiFn<DictDataResponseDto>,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -51,7 +52,7 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
     // the value can not be undefined, otherwise the property in Form will not be reactive
     dictLabel: null,
     dictType: null,
-  },
+  } as any,
   columns: () => [
     {
       type: 'selection',
@@ -168,12 +169,12 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, mobilePagi
 });
 
 const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedRowKeys, onBatchDeleted, onDeleted } =
-  useTableOperate(data, getData);
+  useTableOperate(data as any, getData);
 
 async function handleBatchDelete() {
   // request
   try {
-    await fetchBatchDeleteDictData(checkedRowKeys.value);
+    await fetchDictDeleteDictData(checkedRowKeys.value.join(','));
     onBatchDeleted();
   } catch {
     // 错误消息已在请求工具中显示
@@ -183,7 +184,7 @@ async function handleBatchDelete() {
 async function handleDelete(dictCode: CommonType.IdType) {
   // request
   try {
-    await fetchBatchDeleteDictData([dictCode]);
+    await fetchDictDeleteDictData(dictCode);
     onDeleted();
   } catch {
     // 错误消息已在请求工具中显示
@@ -191,7 +192,7 @@ async function handleDelete(dictCode: CommonType.IdType) {
 }
 
 async function edit(dictCode: CommonType.IdType) {
-  handleEdit('dictCode', dictCode);
+  handleEdit('dictCode' as any, dictCode);
 }
 
 async function handleExport() {
@@ -199,13 +200,13 @@ async function handleExport() {
 }
 
 async function handleReset() {
-  searchParams.dictLabel = null;
+  (searchParams as any).dictLabel = null;
   await getDataByPage();
 }
 
 async function handleRefreshCache() {
   try {
-    await fetchRefreshCache();
+    await fetchDictRefreshCache();
     window.$message?.success($t('page.system.dict.refreshCacheSuccess'));
     await getData();
   } catch {
@@ -215,7 +216,7 @@ async function handleRefreshCache() {
 
 const { loading: treeLoading, startLoading: startTreeLoading, endLoading: endTreeLoading } = useLoading();
 const dictPattern = ref<string>();
-const dictData = ref<Api.System.DictType[]>([]);
+const dictData = ref<DictTypeResponseDto[]>([]);
 
 function dictFilter(pattern: string, node: TreeOption) {
   const dictName = node.dictName as string;
@@ -226,7 +227,7 @@ function dictFilter(pattern: string, node: TreeOption) {
 async function getTreeData() {
   startTreeLoading();
   try {
-    const { data: tree } = await fetchGetDictTypeOption();
+    const { data: tree } = await fetchDictFindOptionselect();
     dictData.value = tree;
     handleClickTree(route.query.dictType ? [route.query.dictType as string] : []);
   } catch {
@@ -241,7 +242,7 @@ getTreeData();
 function handleClickTree(keys: string[]) {
   const dictType = keys.length ? keys[0] : null;
   selectedKeys.value = keys;
-  searchParams.dictType = dictType;
+  (searchParams as any).dictType = dictType;
   window.history.pushState(null, '', `${route.path}${dictType ? `?dictType=${dictType}` : ''}`);
   checkedRowKeys.value = [];
   getDataByPage();
@@ -286,7 +287,7 @@ function renderSuffix({ option }: { option: TreeOption }) {
         tooltip-content={$t('common.edit')}
         onClick={(event: Event) => {
           event.stopPropagation();
-          handleEditType(option as Api.System.DictType);
+          handleEditType(option as unknown as DictTypeResponseDto);
         }}
       />
       <ButtonIcon
@@ -296,7 +297,7 @@ function renderSuffix({ option }: { option: TreeOption }) {
         tooltip-content={$t('common.delete')}
         popconfirm-content={`${$t('page.system.dict.confirmDeleteDictType')} ${option.dictType} ？`}
         onClick={(event: Event) => event.stopPropagation()}
-        onPositiveClick={() => handleDeleteType(option as Api.System.DictType)}
+        onPositiveClick={() => handleDeleteType(option as unknown as DictTypeResponseDto)}
       />
     </div>
   );
@@ -308,15 +309,15 @@ function handleAddType() {
   openDictTypeDrawer();
 }
 
-function handleEditType(dictType: Api.System.DictType) {
+function handleEditType(dictType: DictTypeResponseDto) {
   dictTypeData.value = dictType;
   dictOperateType.value = 'edit';
   openDictTypeDrawer();
 }
 
-async function handleDeleteType(dictType: Api.System.DictType) {
+async function handleDeleteType(dictType: DictTypeResponseDto) {
   try {
-    await fetchBatchDeleteDictType([dictType.dictId]);
+    await fetchDictDeleteType(dictType.dictId);
     window.$message?.success($t('common.deleteSuccess'));
     getTreeData();
   } catch {
@@ -333,7 +334,7 @@ const selectable = computed(() => {
 });
 
 const tableTitle = computed(() => {
-  const dictType = dictData.value.find((item) => item.dictType === searchParams.dictType);
+  const dictType = dictData.value.find((item) => item.dictType === (searchParams as any).dictType);
   return dictType ? (
     <NEllipsis lineClamp={2} class="flex">
       <span>{dictType.dictName}</span>
@@ -408,7 +409,7 @@ const tableTitle = computed(() => {
           <TableHeaderOperation
             v-model:columns="columnChecks"
             :disabled-delete="checkedRowKeys.length === 0"
-            :disable-add="!searchParams.dictType"
+            :disable-add="!(searchParams as any).dictType"
             :loading="loading"
             :show-add="hasAuth('system:user:add')"
             :show-delete="hasAuth('system:user:remove')"
@@ -444,8 +445,8 @@ const tableTitle = computed(() => {
         <DictDataOperateDrawer
           v-model:visible="drawerVisible"
           :operate-type="operateType"
-          :row-data="editingData"
-          :dict-type="searchParams.dictType || ''"
+          :row-data="editingData as DictDataResponseDto | null"
+          :dict-type="(searchParams as any).dictType || ''"
           @submitted="getData"
         />
         <DictTypeOperateDrawer

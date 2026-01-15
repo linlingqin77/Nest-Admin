@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { ref } from 'vue';
 import { NDivider, NTag } from 'naive-ui';
-import { fetchGetNotifyMessageList, fetchBatchDeleteNotifyMessage } from '@/service/api/system/notify';
+import { fetchNotifyMessageFindAll, fetchNotifyMessageRemoveBatch } from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
@@ -30,7 +30,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetNotifyMessageList,
+  apiFn: fetchNotifyMessageFindAll as any,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -89,9 +89,10 @@ const {
       align: 'center',
       minWidth: 80,
       render(row) {
+        const typedRow = row as unknown as Api.System.NotifyMessage;
         return (
-          <NTag size="small" type={row.readStatus ? 'success' : 'warning'}>
-            {row.readStatus ? '已读' : '未读'}
+          <NTag size="small" type={typedRow.readStatus ? 'success' : 'warning'}>
+            {typedRow.readStatus ? '已读' : '未读'}
           </NTag>
         );
       },
@@ -102,7 +103,8 @@ const {
       align: 'center',
       minWidth: 160,
       render(row) {
-        return row.readTime || '-';
+        const typedRow = row as unknown as Api.System.NotifyMessage;
+        return typedRow.readTime || '-';
       },
     },
     {
@@ -117,6 +119,7 @@ const {
       align: 'center',
       width: 130,
       render: (row) => {
+        const typedRow = row as unknown as Api.System.NotifyMessage;
         const divider = () => {
           if (!hasAuth('system:notify:message:query') || !hasAuth('system:notify:message:remove')) {
             return null;
@@ -134,7 +137,7 @@ const {
               type="primary"
               icon="material-symbols:visibility-outline"
               tooltipContent="查看详情"
-              onClick={() => viewDetail(row.id)}
+              onClick={() => viewDetail(typedRow.id as string)}
             />
           );
         };
@@ -150,7 +153,7 @@ const {
               icon="material-symbols:delete-outline"
               tooltipContent={$t('common.delete')}
               popconfirmContent={$t('common.confirmDelete')}
-              onPositiveClick={() => handleDelete(row.id)}
+              onPositiveClick={() => handleDelete(typedRow.id as string)}
             />
           );
         };
@@ -187,7 +190,7 @@ function viewDetail(id: string) {
 
 async function handleBatchDelete() {
   try {
-    await fetchBatchDeleteNotifyMessage(checkedRowKeys.value as string[]);
+    await fetchNotifyMessageRemoveBatch((checkedRowKeys.value as string[]).join(','));
     onBatchDeleted();
   } catch {
     // error handled by request interceptor
@@ -196,7 +199,7 @@ async function handleBatchDelete() {
 
 async function handleDelete(id: string) {
   try {
-    await fetchBatchDeleteNotifyMessage([id]);
+    await fetchNotifyMessageRemoveBatch(id);
     onDeleted();
   } catch {
     // error handled by request interceptor

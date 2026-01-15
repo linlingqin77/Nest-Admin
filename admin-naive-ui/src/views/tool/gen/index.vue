@@ -4,12 +4,11 @@ import { NButton, NDivider } from 'naive-ui';
 import { useBoolean } from '@sa/hooks';
 import { jsonClone } from '@sa/utils';
 import {
-  fetchBatchDeleteGenTable,
-  fetchGenCode,
-  fetchGetGenDataNames,
-  fetchGetGenTableList,
-  fetchSynchGenDbList,
-} from '@/service/api/tool';
+  fetchToolFindAll,
+  fetchToolRemove,
+  fetchToolSynchDb,
+  fetchToolGetDataNames,
+} from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
 import { useDownload } from '@/hooks/business/download';
@@ -40,7 +39,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetGenTableList,
+  apiFn: fetchToolFindAll as any,
   showTotal: true,
   apiParams: {
     pageNum: 1,
@@ -105,7 +104,7 @@ const {
       title: $t('common.operate'),
       align: 'center',
       width: 300,
-      render: (row) => {
+      render: (row: any) => {
         const previewBtn = () => {
           return (
             <ButtonIcon
@@ -149,7 +148,7 @@ const {
               text
               icon="material-symbols:download-rounded"
               tooltipContent="生成代码"
-              onClick={() => handleGenCode(row)}
+              onClick={() => handleGenCode(row as Api.Tool.GenTable)}
             />
           );
         };
@@ -197,12 +196,13 @@ const {
   onBatchDeleted,
   onDeleted,
   // closeDrawer
-} = useTableOperate(data, getData);
+} = useTableOperate(data as any, getData);
 
 async function handleBatchDelete() {
   // request
   try {
-    await fetchBatchDeleteGenTable(checkedRowKeys.value);
+    const ids = checkedRowKeys.value.join(',');
+    await fetchToolRemove(ids);
     onBatchDeleted();
   } catch {
     // error handled by request interceptor
@@ -212,7 +212,7 @@ async function handleBatchDelete() {
 async function handleDelete(id: CommonType.IdType) {
   // request
   try {
-    await fetchBatchDeleteGenTable([id]);
+    await fetchToolRemove(id);
     onDeleted();
   } catch {
     // error handled by request interceptor
@@ -220,13 +220,13 @@ async function handleDelete(id: CommonType.IdType) {
 }
 
 function edit(id: CommonType.IdType) {
-  handleEdit('tableId', id);
+  handleEdit('tableId' as any, id);
 }
 
 async function refresh(id: CommonType.IdType) {
   // request
   try {
-    await fetchSynchGenDbList(id);
+    await fetchToolSynchDb(id);
     window.$message?.success('同步成功');
   } catch {
     // error handled by request interceptor
@@ -238,7 +238,7 @@ function handleImport() {
 }
 
 function handlePreview(id: CommonType.IdType) {
-  const findItem = data.value.find((item) => item.tableId === id) || null;
+  const findItem = (data.value as any[]).find((item) => item.tableId === id) || null;
   editingData.value = jsonClone(findItem);
   openPreviewVisible();
 }
@@ -249,25 +249,16 @@ async function handleGenCode(row?: Api.Tool.GenTable) {
     window.$message?.error('请选择要生成的数据');
     return;
   }
-  // request
-  if (row?.genType === '1') {
-    try {
-      await fetchGenCode(row.tableId!);
-      window.$message?.success('生成成功');
-    } catch {
-      // error handled by request interceptor
-    }
-  } else {
-    zip(`/tool/gen/batchGenCode?tableIdStr=${tableIds}`, `RuoYi-${row?.tableId ? `${row.className}` : Date.now()}.zip`);
-  }
+  // request - use zip download for all cases
+  zip(`/tool/gen/batchGenCode/zip?tableIdStr=${tableIds}`, `RuoYi-${row?.tableId ? `${row.className}` : Date.now()}.zip`);
 }
 
 const dataNameOptions = ref<CommonType.Option[]>([]);
 
 async function getDataNames() {
   try {
-    const { data: dataNames } = await fetchGetGenDataNames();
-    dataNameOptions.value = dataNames.map((item) => ({ label: item, value: item }));
+    const { data: dataNames } = await fetchToolGetDataNames() as { data: string[] };
+    dataNameOptions.value = dataNames?.map((item) => ({ label: item, value: item })) || [];
   } catch {
     // error handled by request interceptor
   }
@@ -331,11 +322,11 @@ getDataNames();
         class="sm:h-full"
       />
       <GenTableImportDrawer v-model:visible="importVisible" :options="dataNameOptions" @submitted="getData" />
-      <GenTableOperateDrawer v-model:visible="drawerVisible" :row-data="editingData" @submitted="getData" />
+      <GenTableOperateDrawer v-model:visible="drawerVisible" :row-data="(editingData as Api.Tool.GenTable)" @submitted="getData" />
       <GenTablePreviewDrawer
         v-model:visible="previewVisible"
-        :row-data="editingData"
-        @submitted="() => handleGenCode(editingData!)"
+        :row-data="(editingData as Api.Tool.GenTable)"
+        @submitted="() => handleGenCode((editingData as Api.Tool.GenTable)!)"
       />
     </NCard>
   </div>

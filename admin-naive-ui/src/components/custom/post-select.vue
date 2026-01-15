@@ -2,7 +2,8 @@
 import { ref, useAttrs, watch } from 'vue';
 import type { SelectProps } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { fetchGetPostSelect } from '@/service/api/system';
+import { fetchPostOptionselect } from '@/service/api-gen';
+import type { PostResponseDto } from '@/service/api-gen/types';
 
 defineOptions({
   name: 'PostSelect',
@@ -39,11 +40,12 @@ watch(
 async function getPostOptions() {
   startPostLoading();
   try {
-    const { data } = await fetchGetPostSelect(props.deptId!);
+    const { data } = await fetchPostOptionselect({ deptId: props.deptId });
     if (data) {
-      postOptions.value = data.map((item) => ({
-        label: item.postName,
-        value: item.postId,
+      const posts = data as PostResponseDto[];
+      postOptions.value = posts.map((item) => ({
+        label: item.postName!,
+        value: item.postId!,
       }));
     }
   } catch {

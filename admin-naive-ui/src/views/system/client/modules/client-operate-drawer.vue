@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue';
-import { fetchCreateClient, fetchUpdateClient } from '@/service/api/system/client';
+import { fetchClientCreate, fetchClientUpdate } from '@/service/api-gen';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -92,28 +92,27 @@ async function handleSubmit() {
   // request
   try {
     if (props.operateType === 'add') {
-      await fetchCreateClient({
-        clientKey,
-        clientSecret,
-        grantTypeList,
-        deviceType,
-        activeTimeout,
-        timeout,
-        status,
+      await fetchClientCreate({
+        clientKey: clientKey!,
+        clientSecret: clientSecret!,
+        grantTypeList: grantTypeList as string[] | undefined,
+        deviceType: deviceType as any,
+        activeTimeout: activeTimeout ?? undefined,
+        timeout: timeout ?? undefined,
+        status: status ?? undefined,
       });
     }
 
     if (props.operateType === 'edit') {
-      await fetchUpdateClient({
-        id,
-        clientId,
-        clientKey,
-        clientSecret,
-        grantTypeList,
-        deviceType,
-        activeTimeout,
-        timeout,
-        status,
+      await fetchClientUpdate({
+        id: id as number,
+        clientKey: clientKey ?? undefined,
+        clientSecret: clientSecret ?? undefined,
+        grantTypeList: grantTypeList as string[] | undefined,
+        deviceType: deviceType as any,
+        activeTimeout: activeTimeout ?? undefined,
+        timeout: timeout ?? undefined,
+        status: status ?? undefined,
       });
     }
 

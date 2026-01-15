@@ -2,7 +2,7 @@
 import { ref, useAttrs } from 'vue';
 import type { SelectProps } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { fetchGetUserSelect } from '@/service/api/system';
+import { fetchUserOptionselect } from '@/service/api-gen';
 
 defineOptions({
   name: 'UserSelect',
@@ -26,8 +26,9 @@ const userOptions = ref<CommonType.Option<CommonType.IdType>[]>([]);
 async function getUserOptions() {
   startUserLoading();
   try {
-    const { data } = await fetchGetUserSelect();
-    userOptions.value = data.map((item) => ({
+    const { data } = await fetchUserOptionselect();
+    const users = data as unknown as Api.System.User[];
+    userOptions.value = users.map((item) => ({
       label: `${item.nickName} ( ${item.userName} )`,
       value: item.userId,
     }));

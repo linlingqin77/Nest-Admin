@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import { useLoading } from '@sa/hooks';
-import { fetchCreateUser, fetchGetUserInfo, fetchUpdateUser } from '@/service/api/system';
+import { fetchUserCreate, fetchUserFindOne, fetchUserFindPostAndRoleAll, fetchUserUpdate } from '@/service/api-gen';
+import type { CreateUserDto, DeptTreeNodeVo, UpdateUserDto, UserResponseDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -13,11 +14,11 @@ interface Props {
   /** the type of operation */
   operateType: NaiveUI.TableOperateType;
   /** the edit row data */
-  rowData?: Api.System.User | null;
+  rowData?: UserResponseDto | null;
   /** the dept tree data */
-  deptData?: Api.Common.CommonTreeRecord;
+  deptData?: DeptTreeNodeVo[];
   /** the dept id */
-  deptId?: CommonType.IdType | null;
+  deptId?: number | null | undefined;
 }
 
 const props = defineProps<Props>();
@@ -45,7 +46,7 @@ const title = computed(() => {
   return titles[props.operateType];
 });
 
-type Model = Api.System.UserOperateParams;
+type Model = Partial<CreateUserDto & UpdateUserDto> & { userId?: number };
 
 const model: Model = reactive(createDefaultModel());
 
@@ -53,14 +54,14 @@ const roleOptions = ref<CommonType.Option<CommonType.IdType>[]>([]);
 
 function createDefaultModel(): Model {
   return {
-    deptId: null,
+    deptId: undefined,
     userName: '',
     nickName: '',
     email: '',
     phonenumber: '',
-    sex: '0',
+    sex: '0' as any,
     password: '',
-    status: '0',
+    status: '0' as any,
     roleIds: [],
     postIds: [],
     remark: '',
@@ -78,10 +79,11 @@ const rules: Record<RuleKey, App.Global.FormRule[]> = {
   roleIds: [{ ...createRequiredRule('请选择角色'), type: 'array' }],
 };
 
-async function getUserInfo(id: CommonType.IdType = '') {
+async function getUserInfo(id?: CommonType.IdType) {
   startLoading();
   try {
-    const { data } = await fetchGetUserInfo(id);
+    // 如果有id，获取用户详情；否则获取角色和岗位列表
+    const { data } = id ? await fetchUserFindOne(id) : await fetchUserFindPostAndRoleAll();
     if (!data) {
       return;
     }
@@ -102,7 +104,7 @@ function handleUpdateModelWhenEdit() {
   if (props.operateType === 'add') {
     getUserInfo();
     Object.assign(model, createDefaultModel());
-    model.deptId = props.deptId;
+    model.deptId = props.deptId ?? undefined;
     return;
   }
 
@@ -128,11 +130,11 @@ async function handleSubmit() {
   // request
   try {
     if (props.operateType === 'add') {
-      await fetchCreateUser({
+      await fetchUserCreate({
         deptId,
-        userName,
-        password,
-        nickName,
+        userName: userName!,
+        password: password!,
+        nickName: nickName!,
         email,
         phonenumber,
         sex,
@@ -142,8 +144,8 @@ async function handleSubmit() {
         remark,
       });
     } else if (props.operateType === 'edit') {
-      await fetchUpdateUser({
-        userId,
+      await fetchUserUpdate({
+        userId: userId!,
         deptId,
         userName,
         nickName,

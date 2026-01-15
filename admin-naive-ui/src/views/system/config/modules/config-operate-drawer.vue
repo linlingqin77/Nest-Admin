@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue';
-import { fetchCreateConfig, fetchUpdateConfig } from '@/service/api/system/config';
+import { fetchConfigCreate, fetchConfigUpdate } from '@/service/api-gen';
+import type { ConfigResponseDto, CreateConfigRequestDto, UpdateConfigRequestDto, ConfigTypeEnum } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -12,7 +13,7 @@ interface Props {
   /** the type of operation */
   operateType: NaiveUI.TableOperateType;
   /** the edit row data */
-  rowData?: Api.System.Config | null;
+  rowData?: ConfigResponseDto | null;
 }
 
 const props = defineProps<Props>();
@@ -38,7 +39,14 @@ const title = computed(() => {
   return titles[props.operateType];
 });
 
-type Model = Api.System.ConfigOperateParams;
+type Model = {
+  configId?: number;
+  configName: string;
+  configKey: string;
+  configValue: string;
+  configType: ConfigTypeEnum;
+  remark: string;
+};
 
 const model: Model = reactive(createDefaultModel());
 
@@ -84,10 +92,12 @@ async function handleSubmit() {
   try {
     if (props.operateType === 'add') {
       const { configName, configKey, configValue, configType, remark } = model;
-      await fetchCreateConfig({ configName, configKey, configValue, configType, remark });
+      const createData: CreateConfigRequestDto = { configName, configKey, configValue, configType, remark };
+      await fetchConfigCreate(createData);
     } else if (props.operateType === 'edit') {
       const { configId, configName, configKey, configValue, configType, remark } = model;
-      await fetchUpdateConfig({ configId, configName, configKey, configValue, configType, remark });
+      const updateData: UpdateConfigRequestDto = { configId: configId!, configName, configKey, configValue, configType, remark };
+      await fetchConfigUpdate(updateData);
     }
 
     window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));

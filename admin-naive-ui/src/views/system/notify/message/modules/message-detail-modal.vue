@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { fetchGetNotifyMessageDetail } from '@/service/api/system/notify';
+import { fetchNotifyMessageFindOne } from '@/service/api-gen';
 
 defineOptions({
   name: 'NotifyMessageDetailModal',
@@ -24,7 +24,7 @@ async function loadDetail() {
 
   loading.value = true;
   try {
-    const { data } = await fetchGetNotifyMessageDetail(props.messageId);
+    const { data } = await fetchNotifyMessageFindOne(props.messageId) as any;
     messageDetail.value = data;
   } catch {
     // error handled by request interceptor

@@ -2,7 +2,8 @@
 import { ref, reactive } from 'vue';
 import { NModal, NCard, NForm, NFormItem, NTree, NButton, NSpace, useMessage } from 'naive-ui';
 import type { TreeOption } from 'naive-ui';
-import { fetchGetFolderTree, fetchMoveFiles } from '@/service/api';
+import { fetchFileManagerGetFolderTree, fetchFileManagerMoveFiles } from '@/service/api-gen';
+import type { FolderTreeNodeResponseDto } from '@/service/api-gen/types';
 import { $t } from '@/locales';
 
 const message = useMessage();
@@ -18,7 +19,7 @@ const treeData = ref<TreeOption[]>([]);
 
 const formRef = ref();
 
-function buildTreeData(folders: any[]): TreeOption[] {
+function buildTreeData(folders: FolderTreeNodeResponseDto[]): TreeOption[] {
   const rootFolders = folders.filter((f) => f.parentId === 0);
 
   function buildChildren(parentId: number): TreeOption[] {
@@ -50,7 +51,7 @@ async function openModal(fileIds: string[]) {
 
   // 加载文件夹树
   try {
-    const { data } = await fetchGetFolderTree();
+    const { data } = await fetchFileManagerGetFolderTree();
     treeData.value = buildTreeData(data || []);
   } catch (error) {
     message.error($t('page.fileManager.loadFoldersFailed'));
@@ -65,7 +66,7 @@ async function handleMove() {
 
   loading.value = true;
   try {
-    await fetchMoveFiles({
+    await fetchFileManagerMoveFiles({
       uploadIds: uploadIds.value,
       targetFolderId: selectedFolderId.value,
     });

@@ -21,7 +21,7 @@
               {{ version.fileName }}
             </n-text>
             <n-text depth="3" class="text-sm">
-              大小: {{ formatFileSize(version.size) }} | 创建时间: {{ formatDateTime(version.createTime) }} | 创建人:
+              大小: {{ formatFileSize(version.size) }} | 创建时间: {{ formatDateTime((version as any).createTime) }} | 创建人:
               {{ version.createBy }}
             </n-text>
 
@@ -47,7 +47,13 @@
 import { ref } from 'vue';
 import { useMessage, useDialog } from 'naive-ui';
 import { useThemeStore } from '@/store/modules/theme';
-import { fetchGetFileVersions, fetchRestoreVersion, fetchGetFileAccessToken, downloadFile } from '@/service/api';
+import {
+  fetchFileManagerGetFileVersions,
+  fetchFileManagerRestoreVersion,
+  fetchFileManagerGetAccessToken,
+  fetchFileManagerDownloadFile,
+} from '@/service/api-gen';
+import type { FileVersionResponseDto } from '@/service/api-gen/types';
 import { formatFileSize, formatDateTime } from '@/utils/common';
 import { $t } from '@/locales';
 
@@ -72,7 +78,7 @@ const themeStore = useThemeStore();
 const modalVisible = ref(false);
 const loading = ref(false);
 const title = ref('版本历史');
-const versions = ref<Api.System.FileManager.FileVersion[]>([]);
+const versions = ref<FileVersionResponseDto[]>([]);
 const currentVersion = ref(0);
 
 /** 打开弹窗 */
@@ -82,7 +88,7 @@ async function open(fileId: string, fileName: string) {
   loading.value = true;
 
   try {
-    const { data } = await fetchGetFileVersions(fileId);
+    const { data } = await fetchFileManagerGetFileVersions(fileId);
     if (data) {
       versions.value = data.versions;
       currentVersion.value = data.currentVersion;
@@ -95,7 +101,7 @@ async function open(fileId: string, fileName: string) {
 }
 
 /** 恢复版本 */
-function handleRestore(version: Api.System.FileManager.FileVersion) {
+function handleRestore(version: FileVersionResponseDto) {
   dialog.warning({
     title: $t('page.fileManager.restoreVersion'),
     content: $t('page.fileManager.restoreVersionConfirm', { version: version.version }),
@@ -103,10 +109,7 @@ function handleRestore(version: Api.System.FileManager.FileVersion) {
     negativeText: $t('common.cancel'),
     onPositiveClick: async () => {
       try {
-        const { data } = await fetchRestoreVersion({
-          fileId: props.fileId!,
-          targetVersionId: version.uploadId,
-        });
+        const { data } = await fetchFileManagerRestoreVersion();
 
         if (data) {
           message.success(
@@ -127,11 +130,13 @@ function handleRestore(version: Api.System.FileManager.FileVersion) {
 }
 
 /** 下载版本 */
-async function handleDownload(version: Api.System.FileManager.FileVersion) {
+async function handleDownload(version: FileVersionResponseDto) {
   try {
-    const { data } = await fetchGetFileAccessToken(version.uploadId);
+    const { data } = await fetchFileManagerGetAccessToken(version.uploadId);
     if (data) {
-      downloadFile(version.uploadId, data.token);
+      // 使用 token 下载文件
+      const downloadUrl = `${import.meta.env.VITE_SERVICE_BASE_URL}/system/file-manager/file/${version.uploadId}/download?token=${data.token}`;
+      window.open(downloadUrl, '_blank');
       message.success($t('page.fileManager.downloadStarted'));
     }
   } catch (error) {

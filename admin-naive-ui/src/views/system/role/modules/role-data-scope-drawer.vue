@@ -2,7 +2,8 @@
 import { computed, reactive, ref, watch } from 'vue';
 import { useLoading } from '@sa/hooks';
 import { dataScopeOptions } from '@/constants/business';
-import { fetchGetRoleDeptTreeSelect, fetchUpdateRoleDataScope } from '@/service/api/system/role';
+import { fetchRoleDeptTree, fetchRoleDataScope } from '@/service/api-gen';
+import type { RoleResponseDto, UpdateRoleRequestDto, DeptTreeNodeVo } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 import DeptTree from '@/components/custom/dept-tree.vue';
@@ -13,7 +14,7 @@ defineOptions({
 
 interface Props {
   /** the edit row data */
-  rowData?: Api.System.Role | null;
+  rowData?: RoleResponseDto | null;
 }
 
 const props = defineProps<Props>();
@@ -30,7 +31,7 @@ const visible = defineModel<boolean>('visible', {
   default: false,
 });
 
-const deptOptions = ref<Api.System.Dept[]>([]);
+const deptOptions = ref<DeptTreeNodeVo[]>([]);
 
 const { loading: deptLoading, startLoading: startDeptLoading, endLoading: endDeptLoading } = useLoading();
 
@@ -39,7 +40,7 @@ const { createRequiredRule } = useFormRules();
 
 const title = computed(() => '分配数据权限');
 
-type Model = Api.System.RoleOperateParams;
+type Model = Partial<UpdateRoleRequestDto> & { roleId?: number };
 
 const model: Model = reactive(createDefaultModel());
 
@@ -70,7 +71,7 @@ async function handleUpdateModelWhenEdit() {
   if (props.rowData) {
     Object.assign(model, props.rowData);
     try {
-      const { data } = await fetchGetRoleDeptTreeSelect(props.rowData.roleId!);
+      const { data } = await fetchRoleDeptTree(props.rowData.roleId!);
       if (!data) {
         endDeptLoading();
         return;
@@ -94,11 +95,11 @@ async function handleSubmit() {
   const { roleId, roleName, roleKey, roleSort, dataScope, deptIds, menuIds } = model;
 
   try {
-    await fetchUpdateRoleDataScope({
-      roleId,
-      roleName,
-      roleKey,
-      roleSort,
+    await fetchRoleDataScope({
+      roleId: roleId!,
+      roleName: roleName!,
+      roleKey: roleKey!,
+      roleSort: roleSort!,
       dataScope,
       deptIds: dataScope === '2' ? deptIds : [],
       menuIds,

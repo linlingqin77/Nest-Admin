@@ -14,8 +14,8 @@ const emit = defineEmits<Emits>();
 
 const model = defineModel<Api.System.TenantQuotaSearchParams>('model', { required: true });
 
-const statusOptions = [
-  { label: '全部', value: null },
+const statusOptions: any[] = [
+  { label: '全部', value: null as string | null },
   { label: '正常', value: 'normal' },
   { label: '警告', value: 'warning' },
   { label: '超限', value: 'danger' },
@@ -47,13 +47,13 @@ function search() {
           <NSpace class="w-full" justify="end">
             <NButton @click="reset">
               <template #icon>
-                <icon-ic-round-refresh class="text-icon" />
+                <SvgIcon icon="ic:round-refresh" class="text-icon" />
               </template>
               {{ $t('common.reset') }}
             </NButton>
             <NButton type="primary" ghost @click="search">
               <template #icon>
-                <icon-ic-round-search class="text-icon" />
+                <SvgIcon icon="ic:round-search" class="text-icon" />
               </template>
               {{ $t('common.search') }}
             </NButton>

@@ -1,6 +1,7 @@
 <script setup lang="tsx">
 import { NDivider } from 'naive-ui';
-import { fetchBatchDeleteClient, fetchGetClientList, fetchUpdateClientStatus } from '@/service/api/system/client';
+import type { ClientResponseDto } from '@/service/api-gen';
+import { fetchClientFindAll, fetchClientRemove, fetchClientChangeStatus } from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useDownload } from '@/hooks/business/download';
@@ -38,7 +39,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetClientList,
+  apiFn: fetchClientFindAll,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -194,7 +195,7 @@ const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedR
 async function handleBatchDelete() {
   // request
   try {
-    await fetchBatchDeleteClient(checkedRowKeys.value);
+    await fetchClientRemove(checkedRowKeys.value.join(','));
     onBatchDeleted();
   } catch {
     // 错误消息已在请求工具中显示
@@ -204,7 +205,7 @@ async function handleBatchDelete() {
 async function handleDelete(id: CommonType.IdType) {
   // request
   try {
-    await fetchBatchDeleteClient([id]);
+    await fetchClientRemove(id);
     onDeleted();
   } catch {
     // 错误消息已在请求工具中显示
@@ -221,13 +222,13 @@ async function handleExport() {
 
 /** 处理状态切换 */
 async function handleStatusChange(
-  row: Api.System.Client,
+  row: ClientResponseDto,
   value: Api.Common.EnableStatus,
   callback: (flag: boolean) => void,
 ) {
   try {
-    await fetchUpdateClientStatus({
-      clientId: row.clientId,
+    await fetchClientChangeStatus({
+      id: row.id!,
       status: value,
     });
     callback(true);
@@ -273,7 +274,7 @@ async function handleStatusChange(
       <ClientOperateDrawer
         v-model:visible="drawerVisible"
         :operate-type="operateType"
-        :row-data="editingData"
+        :row-data="(editingData as unknown as Api.System.Client)"
         @submitted="getData"
       />
     </NCard>

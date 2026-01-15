@@ -1,10 +1,11 @@
 <script setup lang="tsx">
 import { NDivider, NTag } from 'naive-ui';
+import type { OssConfigResponseDto } from '@/service/api-gen';
 import {
-  fetchBatchDeleteOssConfig,
-  fetchGetOssConfigList,
-  fetchUpdateOssConfigStatus,
-} from '@/service/api/system/oss-config';
+  fetchOssConfigFindAll,
+  fetchOssConfigRemove,
+  fetchOssConfigChangeStatus,
+} from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
@@ -23,6 +24,7 @@ useDict('sys_yes_no');
 
 const appStore = useAppStore();
 const { hasAuth } = useAuth();
+const tableProps = useTableProps();
 const {
   columns,
   columnChecks,
@@ -34,7 +36,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetOssConfigList,
+  apiFn: fetchOssConfigFindAll,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -182,7 +184,7 @@ const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedR
 async function handleBatchDelete() {
   // request
   try {
-    await fetchBatchDeleteOssConfig(checkedRowKeys.value);
+    await fetchOssConfigRemove(checkedRowKeys.value.join(','));
     onBatchDeleted();
   } catch (error) {
     // 错误消息已在请求工具中显示
@@ -192,7 +194,7 @@ async function handleBatchDelete() {
 async function handleDelete(ossConfigId: CommonType.IdType) {
   // request
   try {
-    await fetchBatchDeleteOssConfig([ossConfigId]);
+    await fetchOssConfigRemove(ossConfigId);
     onDeleted();
   } catch (error) {
     // 错误消息已在请求工具中显示
@@ -200,19 +202,18 @@ async function handleDelete(ossConfigId: CommonType.IdType) {
 }
 
 async function edit(ossConfigId: CommonType.IdType) {
-  handleEdit('ossConfigId', ossConfigId);
+  handleEdit('ossConfigId' as any, ossConfigId);
 }
 
 /** 处理状态切换 */
 async function handleStatusChange(
-  row: Api.System.OssConfig,
+  row: OssConfigResponseDto,
   value: Api.Common.EnableStatus,
   callback: (flag: boolean) => void,
 ) {
   try {
-    await fetchUpdateOssConfigStatus({
-      configKey: row.configKey,
-      ossConfigId: row.ossConfigId,
+    await fetchOssConfigChangeStatus({
+      ossConfigId: row.ossConfigId!,
       status: value,
     });
     callback(true);
@@ -258,7 +259,7 @@ async function handleStatusChange(
       <OssConfigOperateDrawer
         v-model:visible="drawerVisible"
         :operate-type="operateType"
-        :row-data="editingData"
+        :row-data="editingData as Api.System.OssConfig"
         @submitted="getData"
       />
     </NCard>

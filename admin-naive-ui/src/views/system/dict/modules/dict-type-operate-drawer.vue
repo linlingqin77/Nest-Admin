@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue';
-import { fetchCreateDictType, fetchUpdateDictType } from '@/service/api/system/dict';
+import { fetchDictCreateType, fetchDictUpdateType } from '@/service/api-gen';
+import type { DictTypeResponseDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -12,7 +13,7 @@ interface Props {
   /** the type of operation */
   operateType: NaiveUI.TableOperateType;
   /** the edit row data */
-  rowData?: Api.System.DictType | null;
+  rowData?: DictTypeResponseDto | null;
 }
 
 const props = defineProps<Props>();
@@ -38,7 +39,12 @@ const title = computed(() => {
   return titles[props.operateType];
 });
 
-type Model = Api.System.DictTypeOperateParams;
+type Model = {
+  dictId?: number;
+  dictName: string;
+  dictType: string;
+  remark: string;
+};
 
 const model: Model = reactive(createDefaultModel());
 
@@ -80,12 +86,12 @@ async function handleSubmit() {
   try {
     if (props.operateType === 'add') {
       const { dictName, dictType, remark } = model;
-      await fetchCreateDictType({ dictName, dictType, remark });
+      await fetchDictCreateType({ dictName, dictType, remark });
     }
 
     if (props.operateType === 'edit') {
       const { dictId, dictName, dictType, remark } = model;
-      await fetchUpdateDictType({ dictId, dictName, dictType, remark });
+      await fetchDictUpdateType({ dictId: dictId!, dictName, dictType, remark });
     }
 
     window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));

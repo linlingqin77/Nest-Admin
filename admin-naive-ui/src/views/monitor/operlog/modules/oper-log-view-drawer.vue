@@ -1,5 +1,6 @@
 <script setup lang="tsx">
 import { NDescriptions, NDescriptionsItem, NTag } from 'naive-ui';
+import type { OperLogResponseDto } from '@/service/api-gen/types';
 import { getRequestMethodTagType } from '@/utils/icon-tag-format';
 import { $t } from '@/locales';
 import DictTag from '@/components/custom/dict-tag.vue';
@@ -10,7 +11,7 @@ defineOptions({
 
 interface Props {
   /** the edit row data */
-  rowData: Api.Monitor.OperLog | null;
+  rowData: OperLogResponseDto | null;
 }
 
 const props = defineProps<Props>();

@@ -15,8 +15,8 @@ const emit = defineEmits<Emits>();
 
 const model = defineModel<Api.System.TenantAuditLogSearchParams>('model', { required: true });
 
-const actionTypeOptions = [
-  { label: '全部', value: null },
+const actionTypeOptions: any[] = [
+  { label: '全部', value: null as string | null },
   { label: '登录', value: 'login' },
   { label: '登出', value: 'logout' },
   { label: '创建', value: 'create' },
@@ -82,13 +82,13 @@ function search() {
           <NSpace class="w-full" justify="end">
             <NButton @click="reset">
               <template #icon>
-                <icon-ic-round-refresh class="text-icon" />
+                <SvgIcon icon="ic:round-refresh" class="text-icon" />
               </template>
               {{ $t('common.reset') }}
             </NButton>
             <NButton type="primary" ghost @click="search">
               <template #icon>
-                <icon-ic-round-search class="text-icon" />
+                <SvgIcon icon="ic:round-search" class="text-icon" />
               </template>
               {{ $t('common.search') }}
             </NButton>

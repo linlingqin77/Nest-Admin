@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
 import { useLoading } from '@sa/hooks';
-import { fetchCascadeDeleteMenu } from '@/service/api/system';
+import { fetchMenuCascadeRemove } from '@/service/api-gen';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 import MenuTree from '@/components/custom/menu-tree.vue';
@@ -66,7 +66,7 @@ async function handleSubmit() {
     negativeText: $t('common.cancel'),
     onPositiveClick: async () => {
       try {
-        await fetchCascadeDeleteMenu(model.menuIds);
+        await fetchMenuCascadeRemove(model.menuIds.join(','));
         window.$message?.success($t('common.deleteSuccess'));
         closeDrawer();
         emit('submitted');

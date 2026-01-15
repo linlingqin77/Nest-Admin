@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue';
-import { fetchCreateSmsChannel, fetchUpdateSmsChannel } from '@/service/api/system/sms';
+import { fetchSmsChannelCreate, fetchSmsChannelUpdate } from '@/service/api-gen';
+import type { CreateSmsChannelDto, UpdateSmsChannelDto } from '@/typings/api-gen';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -96,9 +97,9 @@ async function handleSubmit() {
   try {
     if (props.operateType === 'add') {
       const { code, name, signature, apiKey, apiSecret, callbackUrl, status, remark } = model;
-      await fetchCreateSmsChannel({ code, name, signature, apiKey, apiSecret, callbackUrl, status, remark });
+      await fetchSmsChannelCreate({ code, name, signature, apiKey, apiSecret, callbackUrl, status, remark } as CreateSmsChannelDto);
     } else if (props.operateType === 'edit') {
-      await fetchUpdateSmsChannel(model);
+      await fetchSmsChannelUpdate(model as UpdateSmsChannelDto);
     }
 
     window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));

@@ -87,7 +87,7 @@ describe('Dept E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/dept/list`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -103,7 +103,7 @@ describe('Dept E2E Tests', () => {
         .get(`${apiPrefix}/system/dept/list`)
         .query({ deptName: uniqueName })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -116,7 +116,7 @@ describe('Dept E2E Tests', () => {
         .get(`${apiPrefix}/system/dept/list`)
         .query({ status: '0' })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -144,7 +144,7 @@ describe('Dept E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .post(`${apiPrefix}/system/dept`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(deptData);
 
       expect([200, 201]).toContain(response.status);
@@ -176,7 +176,7 @@ describe('Dept E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .post(`${apiPrefix}/system/dept`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(childData);
 
       expect([200, 201]).toContain(response.status);
@@ -205,7 +205,7 @@ describe('Dept E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .post(`${apiPrefix}/system/dept`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(deptData);
 
       expect([200, 201]).toContain(response.status);
@@ -230,7 +230,7 @@ describe('Dept E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/dept/${testDeptId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -243,7 +243,7 @@ describe('Dept E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/dept/999999`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -266,7 +266,7 @@ describe('Dept E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .put(`${apiPrefix}/system/dept`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({
           deptId: updateDeptId,
           deptName: '更新后部门名称',
@@ -300,7 +300,7 @@ describe('Dept E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .put(`${apiPrefix}/system/dept`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({
           deptId: updateDeptId,
           deptName: '更新后部门名称',
@@ -330,7 +330,7 @@ describe('Dept E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .delete(`${apiPrefix}/system/dept/${dept.deptId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -354,7 +354,7 @@ describe('Dept E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/dept/optionselect`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -377,7 +377,7 @@ describe('Dept E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/dept/optionselect`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -418,7 +418,7 @@ describe('Dept E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/dept/list/exclude/${parentDeptId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -444,7 +444,7 @@ describe('Dept E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/dept/list/exclude/${parentDeptId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -478,7 +478,7 @@ describe('Dept E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/dept/list`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -498,7 +498,7 @@ describe('Dept E2E Tests', () => {
     it('should reject request without token', async () => {
       const response = await helper.getRequest()
         .get(`${apiPrefix}/system/dept/list`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       // Should return 401 or 403 for unauthorized access
       expect([401, 403]).toContain(response.status);
@@ -508,7 +508,7 @@ describe('Dept E2E Tests', () => {
       const response = await helper.getRequest()
         .get(`${apiPrefix}/system/dept/list`)
         .set('Authorization', 'Bearer invalid_token')
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       expect([401, 403]).toContain(response.status);
     });

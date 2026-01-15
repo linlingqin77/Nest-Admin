@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useNaiveForm } from '@/hooks/common/form';
-import { fetchGetEnabledSmsChannels } from '@/service/api/system/sms';
+import { fetchSmsChannelGetEnabledChannels } from '@/service/api-gen';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -29,11 +29,13 @@ const templateTypeOptions = [
 
 async function loadChannelOptions() {
   try {
-    const { data } = await fetchGetEnabledSmsChannels();
-    channelOptions.value = data.map((item) => ({
-      label: item.name,
-      value: item.id as number,
-    }));
+    const { data } = await fetchSmsChannelGetEnabledChannels();
+    if (data && Array.isArray(data)) {
+      channelOptions.value = data.map((item: any) => ({
+        label: item.name,
+        value: item.id as number,
+      }));
+    }
   } catch {
     // error handled by request interceptor
   }
@@ -89,13 +91,13 @@ async function search() {
               <NSpace class="w-full" justify="end">
                 <NButton @click="reset">
                   <template #icon>
-                    <icon-ic-round-refresh class="text-icon" />
+                    <SvgIcon icon="ic:round-refresh" class="text-icon" />
                   </template>
                   {{ $t('common.reset') }}
                 </NButton>
                 <NButton type="primary" ghost @click="search">
                   <template #icon>
-                    <icon-ic-round-search class="text-icon" />
+                    <SvgIcon icon="ic:round-search" class="text-icon" />
                   </template>
                   {{ $t('common.search') }}
                 </NButton>

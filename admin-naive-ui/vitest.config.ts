@@ -64,9 +64,11 @@ export default defineConfig({
     // 测试超时时间
     testTimeout: 10000,
 
-    // 依赖优化
-    deps: {
-      inline: ['naive-ui', '@vueuse/core'],
+    // 服务器配置
+    server: {
+      deps: {
+        inline: ['naive-ui', '@vueuse/core'],
+      },
     },
   },
   resolve: {

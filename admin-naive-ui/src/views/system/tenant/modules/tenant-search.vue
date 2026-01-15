@@ -15,7 +15,14 @@ const emit = defineEmits<Emits>();
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
 
-const model = defineModel<Api.System.TenantSearchParams>('model', { required: true });
+interface TenantSearchParams {
+  tenantId?: string | null;
+  contactUserName?: string | null;
+  contactPhone?: string | null;
+  companyName?: string | null;
+}
+
+const model = defineModel<TenantSearchParams>('model', { required: true });
 
 async function reset() {
   await restoreValidation();
@@ -50,13 +57,13 @@ async function search() {
               <NSpace class="w-full" justify="end">
                 <NButton @click="reset">
                   <template #icon>
-                    <icon-ic-round-refresh class="text-icon" />
+                    <SvgIcon icon="ic:round-refresh" class="text-icon" />
                   </template>
                   {{ $t('common.reset') }}
                 </NButton>
                 <NButton type="primary" ghost @click="search">
                   <template #icon>
-                    <icon-ic-round-search class="text-icon" />
+                    <SvgIcon icon="ic:round-search" class="text-icon" />
                   </template>
                   {{ $t('common.search') }}
                 </NButton>

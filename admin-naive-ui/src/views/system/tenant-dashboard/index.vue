@@ -29,7 +29,7 @@ async function loadDashboardData() {
       params.beginTime = new Date(timeRange.value[0]).toISOString().split('T')[0];
       params.endTime = new Date(timeRange.value[1]).toISOString().split('T')[0];
     }
-    const { data } = await fetchGetDashboardData(params);
+    const { data } = await (fetchGetDashboardData as any)(params);
     if (data) {
       dashboardData.value = data;
     }

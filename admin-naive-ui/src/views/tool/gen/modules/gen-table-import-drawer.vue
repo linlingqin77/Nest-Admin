@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { ref, watch } from 'vue';
-import { fetchGetGenDataNames, fetchGetGenDbList, fetchImportGenTable } from '@/service/api/tool';
+import { fetchToolGetDataNames, fetchToolGenDbList, fetchToolGenImportTable, type TableName } from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
 import { $t } from '@/locales';
@@ -25,7 +25,7 @@ const appStore = useAppStore();
 const tableProps = useTableProps();
 
 const { columns, data, getData, getDataByPage, loading, mobilePagination, searchParams } = useTable({
-  apiFn: fetchGetGenDbList,
+  apiFn: fetchToolGenDbList as any,
   immediate: false,
   showTotal: true,
   apiParams: {
@@ -36,7 +36,7 @@ const { columns, data, getData, getDataByPage, loading, mobilePagination, search
     dataName: null,
     tableName: null,
     tableComment: null,
-  },
+  } as any,
   columns: () => [
     {
       type: 'selection',
@@ -74,7 +74,10 @@ async function handleSubmit() {
   if (checkedRowKeys.value.length > 0) {
     // request
     try {
-      await fetchImportGenTable(checkedRowKeys.value as string[], searchParams.dataName!);
+      const tableData: TableName = {
+        tableNames: checkedRowKeys.value.join(','),
+      };
+      await fetchToolGenImportTable(tableData);
       window.$message?.success('导入成功');
       emit('submitted');
     } catch {
@@ -87,9 +90,9 @@ async function handleSubmit() {
 const dataNameOptions = ref<CommonType.Option[]>([]);
 
 async function handleResetSearchParams() {
-  searchParams.dataName = dataNameOptions.value.length ? dataNameOptions.value[0].value : null;
-  searchParams.tableName = null;
-  searchParams.tableComment = null;
+  (searchParams as any).dataName = dataNameOptions.value.length ? dataNameOptions.value[0].value : null;
+  (searchParams as any).tableName = null;
+  (searchParams as any).tableComment = null;
   data.value = [];
   checkedRowKeys.value = [];
   await getDataByPage();
@@ -97,8 +100,8 @@ async function handleResetSearchParams() {
 
 async function getDataNames() {
   try {
-    const { data: dataNames } = await fetchGetGenDataNames();
-    dataNameOptions.value = dataNames.map((item) => ({ label: item, value: item }));
+    const { data: dataNames } = await fetchToolGetDataNames() as { data: string[] };
+    dataNameOptions.value = dataNames?.map((item) => ({ label: item, value: item })) || [];
   } catch {
     // error handled by request interceptor
   }

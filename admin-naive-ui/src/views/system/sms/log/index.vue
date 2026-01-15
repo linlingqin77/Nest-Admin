@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { ref } from 'vue';
 import { NTag } from 'naive-ui';
-import { fetchGetSmsLogList, fetchResendSms } from '@/service/api/system/sms';
+import { fetchSmsLogFindAll, fetchSmsSendResend } from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useTable, useTableProps } from '@/hooks/common/table';
@@ -43,7 +43,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetSmsLogList,
+  apiFn: fetchSmsLogFindAll as any,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -95,7 +95,8 @@ const {
       align: 'center',
       minWidth: 100,
       render(row) {
-        const statusInfo = sendStatusMap[row.sendStatus] || { label: '未知', type: 'default' };
+        const typedRow = row as unknown as Api.System.SmsLog;
+        const statusInfo = sendStatusMap[typedRow.sendStatus] || { label: '未知', type: 'default' };
         return <NTag size="small" type={statusInfo.type}>{statusInfo.label}</NTag>;
       },
     },
@@ -105,10 +106,11 @@ const {
       align: 'center',
       minWidth: 100,
       render(row) {
-        if (row.receiveStatus === undefined || row.receiveStatus === null) {
+        const typedRow = row as unknown as Api.System.SmsLog;
+        if (typedRow.receiveStatus === undefined || typedRow.receiveStatus === null) {
           return '-';
         }
-        const statusInfo = receiveStatusMap[row.receiveStatus] || { label: '未知', type: 'default' };
+        const statusInfo = receiveStatusMap[typedRow.receiveStatus] || { label: '未知', type: 'default' };
         return <NTag size="small" type={statusInfo.type}>{statusInfo.label}</NTag>;
       },
     },
@@ -124,6 +126,7 @@ const {
       align: 'center',
       width: 130,
       render: (row) => {
+        const typedRow = row as unknown as Api.System.SmsLog;
         const viewBtn = () => {
           if (!hasAuth('system:sms:log:query')) {
             return null;
@@ -134,13 +137,13 @@ const {
               type="primary"
               icon="material-symbols:visibility-outline"
               tooltipContent="查看详情"
-              onClick={() => handleViewDetail(row)}
+              onClick={() => handleViewDetail(typedRow)}
             />
           );
         };
 
         const resendBtn = () => {
-          if (!hasAuth('system:sms:send') || row.sendStatus !== 2) {
+          if (!hasAuth('system:sms:send') || typedRow.sendStatus !== 2) {
             return null;
           }
           return (
@@ -150,7 +153,7 @@ const {
               icon="material-symbols:refresh-rounded"
               tooltipContent="重新发送"
               popconfirmContent="确定要重新发送这条短信吗？"
-              onPositiveClick={() => handleResend(row.id!)}
+              onPositiveClick={() => handleResend(typedRow.id!)}
             />
           );
         };
@@ -173,7 +176,7 @@ function handleViewDetail(row: Api.System.SmsLog) {
 
 async function handleResend(logId: CommonType.IdType) {
   try {
-    await fetchResendSms(logId);
+    await fetchSmsSendResend(logId);
     window.$message?.success('重发请求已提交');
     getData();
   } catch {

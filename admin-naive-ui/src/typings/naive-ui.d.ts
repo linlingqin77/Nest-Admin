@@ -10,25 +10,26 @@ declare namespace NaiveUI {
   type TableColumnCheck = import('@sa/hooks').TableColumnCheck;
   type TableDataWithIndex<T> = import('@sa/hooks').TableDataWithIndex<T>;
   type FlatResponseData<T> = import('@sa/axios').FlatResponseData<T>;
+  type ColumnKey = import('naive-ui/es/data-table/src/interface').ColumnKey;
 
   /**
    * the custom column key
    *
    * if you want to add a custom column, you should add a key to this type
    */
-  type CustomColumnKey = 'operate';
+  type CustomColumnKey = 'operate' | 'index' | string;
 
-  type SetTableColumnKey<C, T> = Omit<C, 'key'> & { key: keyof T | CustomColumnKey };
+  type SetTableColumnKey<C, T> = Omit<C, 'key'> & { key: ColumnKey };
 
-  type TableData = Api.Common.CommonRecord<object>;
+  type TableData = Record<string, any>;
 
   type TableColumnWithKey<T> = SetTableColumnKey<DataTableBaseColumn<T>, T> | SetTableColumnKey<TableColumnGroup<T>, T>;
 
-  type TableColumn<T> = TableColumnWithKey<T> | DataTableSelectionColumn<T> | DataTableExpandColumn<T>;
+  type TableColumn<T> = DataTableBaseColumn<T> | DataTableSelectionColumn<T> | DataTableExpandColumn<T> | TableColumnGroup<T>;
 
   type TableApiFn<T = any, R = Api.Common.CommonSearchParams> = (
     params: R,
-  ) => Promise<FlatResponseData<Api.Common.PaginatingQueryRecord<T>>>;
+  ) => Promise<FlatResponseData<{ rows: T[]; total: number } | Api.Common.PaginatingQueryRecord<T>>>;
 
   type TreeTableApiFn<T = any, R = Record<string, any>> = (params: R) => Promise<FlatResponseData<T[]>>;
 

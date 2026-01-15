@@ -57,8 +57,8 @@ async function handleSwitchTenant(tenantId: string) {
   switchLoading.value = true;
   try {
     const { data, error } = await fetchSwitchTenant(tenantId);
-    if (!error && data?.success) {
-      window.$message?.success(`已切换到租户: ${data.companyName}`);
+    if (!error && data) {
+      window.$message?.success(`已切换到租户`);
       await loadSwitchStatus();
       show.value = false;
       // Reload page to refresh data
@@ -75,7 +75,7 @@ async function handleRestoreTenant() {
   switchLoading.value = true;
   try {
     const { data, error } = await fetchRestoreTenant();
-    if (!error && data?.success) {
+    if (!error && data) {
       window.$message?.success('已恢复到原租户');
       await loadSwitchStatus();
       // Reload page to refresh data

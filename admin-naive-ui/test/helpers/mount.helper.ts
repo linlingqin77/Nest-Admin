@@ -138,7 +138,7 @@ export const mountComponent = async <T extends Component>(
         ...stubs,
       },
     },
-  });
+  } as any);
 
   return wrapper;
 };
@@ -183,7 +183,7 @@ export const shallowMountComponent = async <T extends Component>(
       ...global,
       plugins,
     },
-  });
+  } as any);
 };
 
 /**

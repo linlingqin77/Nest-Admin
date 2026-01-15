@@ -2,12 +2,13 @@
 import { computed } from 'vue';
 import { NButton, NDivider } from 'naive-ui';
 import {
-  fetchBatchDeleteTenant,
-  fetchGetTenantList,
-  fetchSyncTenantConfig,
-  fetchSyncTenantDict,
-  fetchSyncTenantPackage,
-} from '@/service/api/system/tenant';
+  fetchTenantFindAll,
+  fetchTenantRemove,
+  fetchTenantSyncTenantConfig,
+  fetchTenantSyncTenantDict,
+  fetchTenantSyncTenantPackage,
+} from '@/service/api-gen';
+import type { TenantResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuthStore } from '@/store/modules/auth';
 import { useAuth } from '@/hooks/business/auth';
@@ -27,10 +28,10 @@ defineOptions({
 useDict('sys_normal_disable');
 
 const appStore = useAppStore();
+const tableProps = useTableProps();
 const { download } = useDownload();
 const { hasAuth } = useAuth();
 
-const tableProps = useTableProps();
 const { userInfo } = useAuthStore();
 
 const isSuperAdmin = computed(() => {
@@ -47,7 +48,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetTenantList,
+  apiFn: fetchTenantFindAll as any,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -106,7 +107,8 @@ const {
       align: 'center',
       minWidth: 120,
       render(row) {
-        return <DictTag size="small" value={row.status} dictCode="sys_normal_disable" />;
+        const typedRow = row as unknown as TenantResponseDto;
+        return <DictTag size="small" value={typedRow.status} dictCode="sys_normal_disable" />;
       },
     },
     {
@@ -115,7 +117,8 @@ const {
       align: 'center',
       width: 180,
       render: (row) => {
-        if (row.tenantId === '000000') return null;
+        const typedRow = row as unknown as TenantResponseDto;
+        if (typedRow.tenantId === '000000') return null;
 
         const editBtn = () => {
           return (
@@ -124,7 +127,7 @@ const {
               text
               icon="material-symbols:drive-file-rename-outline-outline"
               tooltipContent={$t('common.edit')}
-              onClick={() => edit(row.id!)}
+              onClick={() => edit(typedRow.id!)}
             />
           );
         };
@@ -136,8 +139,8 @@ const {
               type="primary"
               icon="material-symbols:sync-outline"
               tooltipContent="同步套餐"
-              popconfirmContent={`确认同步[${row.companyName}]的套餐吗?`}
-              onPositiveClick={() => handleSyncTenantPackage(row)}
+              popconfirmContent={`确认同步[${typedRow.companyName}]的套餐吗?`}
+              onPositiveClick={() => handleSyncTenantPackage(typedRow)}
             />
           );
         };
@@ -150,7 +153,7 @@ const {
               icon="material-symbols:delete-outline"
               tooltipContent={$t('common.delete')}
               popconfirmContent={$t('common.confirmDelete')}
-              onPositiveClick={() => handleDelete(row.id!)}
+              onPositiveClick={() => handleDelete(typedRow.id!)}
             />
           );
         };
@@ -182,7 +185,7 @@ const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedR
 async function handleBatchDelete() {
   // request
   try {
-    await fetchBatchDeleteTenant(checkedRowKeys.value);
+    await fetchTenantRemove(checkedRowKeys.value.join(','));
     onBatchDeleted();
   } catch {
     // error handled by request interceptor
@@ -192,7 +195,7 @@ async function handleBatchDelete() {
 async function handleDelete(id: CommonType.IdType) {
   // request
   try {
-    await fetchBatchDeleteTenant([id]);
+    await fetchTenantRemove(String(id));
     onDeleted();
   } catch {
     // error handled by request interceptor
@@ -200,7 +203,7 @@ async function handleDelete(id: CommonType.IdType) {
 }
 
 async function edit(id: CommonType.IdType) {
-  handleEdit('id', id);
+  handleEdit('id' as any, id);
 }
 
 async function handleSyncTenantDict() {
@@ -211,7 +214,7 @@ async function handleSyncTenantDict() {
     negativeText: '取消',
     onPositiveClick: async () => {
       try {
-        await fetchSyncTenantDict();
+        await fetchTenantSyncTenantDict();
         window.$message?.success('同步租户字典成功');
         await getData();
       } catch {
@@ -229,7 +232,7 @@ async function handleSyncTenantConfig() {
     negativeText: '取消',
     onPositiveClick: async () => {
       try {
-        await fetchSyncTenantConfig();
+        await fetchTenantSyncTenantConfig();
         window.$message?.success('同步租户参数配置成功');
         await getData();
       } catch {
@@ -239,13 +242,13 @@ async function handleSyncTenantConfig() {
   });
 }
 
-async function handleSyncTenantPackage(row: Api.System.Tenant) {
-  const params: Api.System.TenantPackageSyncParams = {
+async function handleSyncTenantPackage(row: TenantResponseDto) {
+  const params = {
     tenantId: row.tenantId,
     packageId: row.packageId,
   };
   try {
-    await fetchSyncTenantPackage(params);
+    await fetchTenantSyncTenantPackage(params);
     window.$message?.success('同步租户套餐成功');
     await getData();
   } catch {
@@ -295,7 +298,7 @@ async function handleExport() {
         v-model:checked-row-keys="checkedRowKeys"
         :columns="columns"
         :data="data"
-        v-bind="tableProps"
+        v-bind="(tableProps as any)"
         :flex-height="!appStore.isMobile"
         :scroll-x="962"
         :loading="loading"
@@ -307,7 +310,7 @@ async function handleExport() {
       <TenantOperateDrawer
         v-model:visible="drawerVisible"
         :operate-type="operateType"
-        :row-data="editingData"
+        :row-data="(editingData as any)"
         @submitted="getData"
       />
     </NCard>

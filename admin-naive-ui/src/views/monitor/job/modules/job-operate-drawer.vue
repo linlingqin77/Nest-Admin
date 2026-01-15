@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue';
 import { useLoading } from '@sa/hooks';
-import { fetchCreateJob, fetchGetJobDetail, fetchUpdateJob } from '@/service/api/monitor/job';
+import { fetchJobAdd } from '@/service/api-gen';
+import { fetchUpdateJob } from '@/service/api/monitor/job';
+import type { JobResponseDto, CreateJobDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -13,7 +15,7 @@ interface Props {
   /** the type of operation */
   operateType: NaiveUI.TableOperateType;
   /** the edit row data */
-  rowData?: Api.Monitor.Job | null;
+  rowData?: JobResponseDto | null;
 }
 
 const props = defineProps<Props>();
@@ -41,7 +43,16 @@ const title = computed(() => {
   return titles[props.operateType];
 });
 
-type Model = Api.Monitor.JobOperateParams;
+interface Model {
+  jobId: number | null;
+  jobName: string;
+  jobGroup: string;
+  invokeTarget: string;
+  cronExpression: string;
+  misfirePolicy: Api.Monitor.MisfirePolicy | null;
+  concurrent: Api.Monitor.Concurrent | null;
+  status: Api.Common.EnableStatus | null;
+}
 
 const model: Model = reactive(createDefaultModel());
 
@@ -52,9 +63,9 @@ function createDefaultModel(): Model {
     jobGroup: 'DEFAULT',
     invokeTarget: '',
     cronExpression: '',
-    misfirePolicy: '1',
-    concurrent: '1',
-    status: '0',
+    misfirePolicy: '1' as Api.Monitor.MisfirePolicy,
+    concurrent: '1' as Api.Monitor.Concurrent,
+    status: '0' as Api.Common.EnableStatus,
   };
 }
 
@@ -95,9 +106,27 @@ async function handleSubmit() {
   startLoading();
   try {
     if (props.operateType === 'add') {
-      await fetchCreateJob(model);
+      const createData: CreateJobDto = {
+        jobName: model.jobName,
+        jobGroup: model.jobGroup,
+        invokeTarget: model.invokeTarget,
+        cronExpression: model.cronExpression,
+        misfirePolicy: model.misfirePolicy as string | undefined,
+        concurrent: model.concurrent as string | undefined,
+        status: model.status || '0',
+      };
+      await fetchJobAdd(createData);
     } else if (props.operateType === 'edit') {
-      await fetchUpdateJob(model);
+      await fetchUpdateJob({
+        jobId: model.jobId,
+        jobName: model.jobName,
+        jobGroup: model.jobGroup,
+        invokeTarget: model.invokeTarget,
+        cronExpression: model.cronExpression,
+        misfirePolicy: model.misfirePolicy,
+        concurrent: model.concurrent,
+        status: model.status,
+      });
     }
 
     window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));

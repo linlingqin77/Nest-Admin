@@ -2,7 +2,8 @@
 import { NButton, NDivider } from 'naive-ui';
 import { jsonClone } from '@sa/utils';
 import { type TableDataWithIndex } from '@sa/hooks';
-import { fetchBatchDeleteDept, fetchGetDeptList } from '@/service/api/system/dept';
+import { fetchDeptRemove, fetchDeptFindAll } from '@/service/api-gen';
+import type { DeptResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useTreeTable, useTreeTableOperate } from '@/hooks/common/tree-table';
@@ -38,7 +39,7 @@ const {
   expandAll,
   collapseAll,
 } = useTreeTable({
-  apiFn: fetchGetDeptList,
+  apiFn: fetchDeptFindAll,
   apiParams: {
     deptName: null,
     status: null,
@@ -149,18 +150,18 @@ const { drawerVisible, operateType, editingData, handleAdd, handleEdit, onDelete
 async function handleDelete(deptId: CommonType.IdType) {
   // request
   try {
-    await fetchBatchDeleteDept([deptId]);
+    await fetchDeptRemove(deptId);
     onDeleted();
   } catch {
     // 错误消息已在请求工具中显示
   }
 }
 
-async function edit(row: TableDataWithIndex<Api.System.Dept>) {
+async function edit(row: TableDataWithIndex<DeptResponseDto>) {
   handleEdit(row);
 }
 
-async function addInRow(row: TableDataWithIndex<Api.System.Dept>) {
+async function addInRow(row: TableDataWithIndex<DeptResponseDto>) {
   editingData.value = jsonClone(row);
   handleAdd();
 }

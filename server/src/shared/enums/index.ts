@@ -25,3 +25,6 @@ export { ConfigTypeEnum, ConfigTypeEnumSchema } from './config.enum';
 
 // 排序相关
 export { SortRuleEnum, SortRuleEnumSchema, CharEnum, CharEnumSchema } from './sort.enum';
+
+// 设备类型
+export { DeviceTypeEnum, DeviceTypeEnumSchema } from './device.enum';

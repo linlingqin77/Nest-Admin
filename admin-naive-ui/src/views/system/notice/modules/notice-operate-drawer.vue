@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import type { UmoEditor } from '@umoteam/editor';
-import { fetchCreateNotice, fetchUpdateNotice } from '@/service/api/system/notice';
+import { fetchNoticeCreate, fetchNoticeUpdate } from '@/service/api-gen';
+import type { NoticeResponseDto, CreateNoticeRequestDto, UpdateNoticeRequestDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -13,7 +14,7 @@ interface Props {
   /** the type of operation */
   operateType: NaiveUI.TableOperateType;
   /** the edit row data */
-  rowData?: Api.System.Notice | null;
+  rowData?: NoticeResponseDto | null;
 }
 
 const props = defineProps<Props>();
@@ -40,7 +41,7 @@ const title = computed(() => {
   return titles[props.operateType];
 });
 
-type Model = Api.System.NoticeOperateParams;
+type Model = Partial<UpdateNoticeRequestDto>;
 
 const model: Model = reactive(createDefaultModel());
 
@@ -50,6 +51,7 @@ function createDefaultModel(): Model {
     noticeType: '1',
     noticeContent: '',
     status: '0',
+    remark: '',
   };
 }
 
@@ -85,11 +87,24 @@ async function handleSubmit() {
   // request
   try {
     if (props.operateType === 'add') {
-      const { noticeTitle, noticeType, noticeContent, status } = model;
-      await fetchCreateNotice({ noticeTitle, noticeType, noticeContent, status });
+      const { noticeTitle, noticeType, noticeContent, status, remark } = model;
+      await fetchNoticeCreate({
+        noticeTitle: noticeTitle!,
+        noticeType: noticeType!,
+        noticeContent,
+        status,
+        remark: remark || '',
+      } as CreateNoticeRequestDto);
     } else if (props.operateType === 'edit') {
-      const { noticeId, noticeTitle, noticeType, noticeContent, status } = model;
-      await fetchUpdateNotice({ noticeId, noticeTitle, noticeType, noticeContent, status });
+      const { noticeId, noticeTitle, noticeType, noticeContent, status, remark } = model;
+      await fetchNoticeUpdate({
+        noticeId: noticeId!,
+        noticeTitle: noticeTitle!,
+        noticeType: noticeType!,
+        noticeContent,
+        status,
+        remark: remark || '',
+      } as UpdateNoticeRequestDto);
     }
 
     window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));

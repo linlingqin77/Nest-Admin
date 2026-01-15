@@ -2,7 +2,7 @@
 import { ref, useAttrs, watch } from 'vue';
 import type { UploadFileInfo } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { fetchGetOssListByIds } from '@/service/api/system/oss';
+import { fetchOssFindByIds } from '@/service/api-gen';
 import { isNotNull } from '@/utils/common';
 import FileUpload from '@/components/custom/file-upload.vue';
 
@@ -21,11 +21,12 @@ const fileList = ref<UploadFileInfo[]>([]);
 async function handleFetchOssList(ossIds: string[]) {
   startLoading();
   try {
-    const { data } = await fetchGetOssListByIds(ossIds);
+    const response = await fetchOssFindByIds(ossIds.join(','));
+    const data = (response.data as any)?.rows || response.data;
     if (!data) {
       return;
     }
-    fileList.value = data.map((item) => ({
+    fileList.value = (data as Api.System.Oss[]).map((item) => ({
       id: String(item.ossId),
       url: item.url,
       name: item.originalName,

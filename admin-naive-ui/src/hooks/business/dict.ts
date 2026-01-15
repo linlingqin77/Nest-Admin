@@ -1,6 +1,7 @@
 import { ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { fetchGetDictDataByType } from '@/service/api/system';
+import { fetchDictFindOneDataType } from '@/service/api-gen';
+import type { DictDataResponseDto } from '@/service/api-gen/types';
 import { useDictStore } from '@/store/modules/dict';
 import { isNull } from '@/utils/common';
 import { $t } from '@/locales';
@@ -9,28 +10,29 @@ export function useDict(dictType: string, immediate: boolean = true) {
   const dictStore = useDictStore();
   const { dictData: dictList } = storeToRefs(dictStore);
 
-  const data = ref<Api.System.DictData[]>([]);
+  const data = ref<DictDataResponseDto[]>([]);
   const record = ref<Record<string, string>>({});
   const options = ref<CommonType.Option[]>([]);
 
   async function getData() {
     const dicts = dictStore.getDict(dictType);
     if (dicts) {
-      data.value = dicts;
+      data.value = dicts as DictDataResponseDto[];
       return;
     }
     try {
-      const { data: dictData } = await fetchGetDictDataByType(dictType);
+      const { data: dictData } = await fetchDictFindOneDataType(dictType);
       if (!dictData) {
         return;
       }
-      dictData.forEach((dict) => {
+      const dictDataList = dictData as DictDataResponseDto[];
+      dictDataList.forEach((dict) => {
         if (dict.dictLabel?.startsWith(`dict.${dictType}.`)) {
           dict.dictLabel = $t(dict.dictLabel as App.I18n.I18nKey);
         }
       });
-      dictStore.setDict(dictType, dictData);
-      data.value = dictData;
+      dictStore.setDict(dictType, dictDataList as unknown as Api.System.DictData[]);
+      data.value = dictDataList;
     } catch {
       // error handled by request interceptor
     }

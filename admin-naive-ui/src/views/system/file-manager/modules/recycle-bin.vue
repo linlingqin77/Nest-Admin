@@ -68,7 +68,12 @@ import { ref, reactive, onMounted } from 'vue';
 import type { DataTableColumns, PaginationProps } from 'naive-ui';
 import { useMessage, useDialog, NButton, NSpace, NTag, NTime } from 'naive-ui';
 import { useThemeStore } from '@/store/modules/theme';
-import { fetchGetRecycleList, fetchRestoreFiles, fetchClearRecycle } from '@/service/api';
+import {
+  fetchFileManagerGetRecycleList,
+  fetchFileManagerRestoreFiles,
+  fetchFileManagerClearRecycle,
+} from '@/service/api-gen';
+import type { FileResponseDto } from '@/service/api-gen/types';
 import { formatFileSize, formatDateTime } from '@/utils/common';
 import { $t } from '@/locales';
 
@@ -77,8 +82,8 @@ const dialog = useDialog();
 const themeStore = useThemeStore();
 
 const loading = ref(false);
-const dataSource = ref<Api.System.FileManager.RecycleFile[]>([]);
-const selectedRows = ref<Api.System.FileManager.RecycleFile[]>([]);
+const dataSource = ref<FileResponseDto[]>([]);
+const selectedRows = ref<FileResponseDto[]>([]);
 const checkedRowKeys = ref<string[]>([]);
 
 const searchParams = reactive({
@@ -103,7 +108,7 @@ const pagination = reactive<PaginationProps>({
   },
 });
 
-const columns: DataTableColumns<Api.System.FileManager.RecycleFile> = [
+const columns: DataTableColumns<FileResponseDto> = [
   {
     type: 'selection',
   },
@@ -113,7 +118,7 @@ const columns: DataTableColumns<Api.System.FileManager.RecycleFile> = [
     ellipsis: {
       tooltip: true,
     },
-    render: (row) => (
+    render: (row: FileResponseDto) => (
       <NSpace align="center">
         <div class="i-carbon-document" />
         <span>{row.fileName}</span>
@@ -122,21 +127,21 @@ const columns: DataTableColumns<Api.System.FileManager.RecycleFile> = [
   },
   {
     title: '大小',
-    key: 'fileSize',
+    key: 'size',
     width: 120,
-    render: (row) => formatFileSize(row.fileSize),
+    render: (row: FileResponseDto) => formatFileSize(row.size),
   },
   {
     title: '类型',
     key: 'ext',
     width: 100,
-    render: (row) => <NTag size="small">{row.ext.toUpperCase()}</NTag>,
+    render: (row: FileResponseDto) => <NTag size="small">{row.ext.toUpperCase()}</NTag>,
   },
   {
     title: '删除时间',
     key: 'updateTime',
     width: 180,
-    render: (row) => <NTime time={new Date(row.updateTime)} format="yyyy-MM-dd HH:mm:ss" />,
+    render: (row: FileResponseDto) => <NTime time={new Date(row.updateTime || '')} format="yyyy-MM-dd HH:mm:ss" />,
   },
   {
     title: '删除人',
@@ -148,7 +153,7 @@ const columns: DataTableColumns<Api.System.FileManager.RecycleFile> = [
     key: 'actions',
     width: 180,
     fixed: 'right',
-    render: (row) => (
+    render: (row: FileResponseDto) => (
       <NSpace>
         <NButton size={themeStore.componentSize} type="primary" onClick={() => handleRestore([row.uploadId])}>
           恢复
@@ -165,7 +170,7 @@ const columns: DataTableColumns<Api.System.FileManager.RecycleFile> = [
 async function getRecycleList() {
   loading.value = true;
   try {
-    const { data } = await fetchGetRecycleList({
+    const { data } = await fetchFileManagerGetRecycleList({
       ...searchParams,
       pageNum: pagination.page || 1,
       pageSize: pagination.pageSize || 20,
@@ -224,7 +229,7 @@ function handleRestore(uploadIds: string[]) {
     negativeText: $t('common.cancel'),
     onPositiveClick: async () => {
       try {
-        await fetchRestoreFiles(uploadIds);
+        await fetchFileManagerRestoreFiles();
         message.success($t('page.fileManager.restoreFileSuccess'));
         checkedRowKeys.value = [];
         selectedRows.value = [];
@@ -254,7 +259,7 @@ function handleDelete(uploadIds: string[]) {
     negativeText: $t('common.cancel'),
     onPositiveClick: async () => {
       try {
-        await fetchClearRecycle(uploadIds);
+        await fetchFileManagerClearRecycle();
         message.success($t('common.deleteSuccess'));
         checkedRowKeys.value = [];
         selectedRows.value = [];

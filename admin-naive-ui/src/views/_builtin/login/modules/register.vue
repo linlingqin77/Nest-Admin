@@ -2,7 +2,7 @@
 import { computed, reactive, ref } from 'vue';
 import type { SelectOption } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { fetchCaptchaCode, fetchRegister, fetchTenantList } from '@/service/api';
+import { fetchAuthGetCaptchaCode, fetchAuthGetTenantList, fetchAuthRegister } from '@/service/api-gen';
 import { useRouterPush } from '@/hooks/common/router';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
@@ -48,15 +48,14 @@ async function handleSubmit() {
   try {
     await validate();
     startRegisterLoading();
-    await fetchRegister({
-      tenantId: model.tenantId,
-      username: model.username,
-      password: model.password,
-      code: model.code,
-      uuid: model.uuid,
-      grantType: 'password',
+    await fetchAuthRegister({
+      tenantId: model.tenantId || '000000',
+      username: model.username || '',
+      password: model.password || '',
+      confirmPassword: model.confirmPassword || '',
+      code: model.code || '',
+      uuid: model.uuid || '',
       userType: model.userType,
-      clientId: import.meta.env.VITE_APP_CLIENT_ID,
     });
     window.$message?.success('注册成功');
     // 注册成功后跳转到登录页
@@ -70,7 +69,7 @@ async function handleSubmit() {
 
 async function handleFetchTenantList() {
   try {
-    const { data } = await fetchTenantList();
+    const { data } = await fetchAuthGetTenantList();
     if (!data) {
       return;
     }
@@ -91,14 +90,21 @@ handleFetchTenantList();
 async function handleFetchCaptchaCode() {
   startCodeLoading();
   try {
-    const { data } = await fetchCaptchaCode();
+    const { data } = await fetchAuthGetCaptchaCode();
     if (!data) {
       return;
     }
     captchaEnabled.value = data.captchaEnabled;
-    if (data.captchaEnabled) {
+    if (data.captchaEnabled && data.img) {
       model.uuid = data.uuid;
-      codeUrl.value = `data:image/gif;base64,${data.img}`;
+      // 支持 SVG 和 base64 两种格式
+      if (data.img.startsWith('<svg')) {
+        // SVG 格式：转换为 data URL
+        codeUrl.value = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(data.img)))}`;
+      } else {
+        // base64 格式
+        codeUrl.value = `data:image/gif;base64,${data.img}`;
+      }
     }
   } catch (error) {
     // error handled by request interceptor

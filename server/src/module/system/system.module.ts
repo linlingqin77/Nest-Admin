@@ -1,5 +1,6 @@
 import { Module, Global } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
+import { ClientModule } from './client/client.module';
 import { DeptModule } from './dept/dept.module';
 import { SysConfigModule } from './config/config.module';
 import { DictModule } from './dict/dict.module';
@@ -21,6 +22,7 @@ import { NotifyModule } from './notify/notify.module';
 @Module({
   imports: [
     AuthModule,
+    ClientModule, // 客户端管理
     SysConfigModule, // 系统配置
     DeptModule,
     DictModule,

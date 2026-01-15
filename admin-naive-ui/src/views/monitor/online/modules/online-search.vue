@@ -6,6 +6,14 @@ defineOptions({
   name: 'LoginInforSearch',
 });
 
+/** 在线用户搜索参数接口 */
+interface OnlineUserSearchParams {
+  pageNum: number;
+  pageSize: number;
+  userName: string | null;
+  ipaddr: string | null;
+}
+
 interface Emits {
   (e: 'reset'): void;
   (e: 'search'): void;
@@ -15,7 +23,7 @@ const emit = defineEmits<Emits>();
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
 
-const model = defineModel<Api.Monitor.OnlineUserSearchParams>('model', { required: true });
+const model = defineModel<OnlineUserSearchParams>('model', { required: true });
 
 async function reset() {
   await restoreValidation();
@@ -44,13 +52,13 @@ async function search() {
               <NSpace class="w-full" justify="end">
                 <NButton @click="reset">
                   <template #icon>
-                    <icon-ic-round-refresh class="text-icon" />
+                    <SvgIcon icon="ic:round-refresh" class="text-icon" />
                   </template>
                   {{ $t('common.reset') }}
                 </NButton>
                 <NButton type="primary" ghost @click="search">
                   <template #icon>
-                    <icon-ic-round-search class="text-icon" />
+                    <SvgIcon icon="ic:round-search" class="text-icon" />
                   </template>
                   {{ $t('common.search') }}
                 </NButton>

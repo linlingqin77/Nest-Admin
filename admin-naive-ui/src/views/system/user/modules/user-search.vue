@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { NDatePicker } from 'naive-ui';
+import type { ListUserDto } from '@/service/api-gen/types';
 import { useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -21,7 +22,7 @@ const dateRangeCreateTime = ref<[string, string] | null>(null);
 
 const datePickerRef = ref<InstanceType<typeof NDatePicker>>();
 
-const model = defineModel<Api.System.UserSearchParams>('model', { required: true });
+const model = defineModel<ListUserDto>('model', { required: true });
 
 function onDateRangeCreateTimeUpdate(value: [string, string] | null) {
   const params = model.value.params!;
@@ -95,13 +96,13 @@ async function search() {
               <NSpace class="w-full" justify="end">
                 <NButton @click="reset">
                   <template #icon>
-                    <icon-ic-round-refresh class="text-icon" />
+                    <SvgIcon icon="ic:round-refresh" class="text-icon" />
                   </template>
                   {{ $t('common.reset') }}
                 </NButton>
                 <NButton type="primary" ghost @click="search">
                   <template #icon>
-                    <icon-ic-round-search class="text-icon" />
+                    <SvgIcon icon="ic:round-search" class="text-icon" />
                   </template>
                   {{ $t('common.search') }}
                 </NButton>

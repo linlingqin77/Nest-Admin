@@ -2,7 +2,8 @@
 import { ref, useAttrs } from 'vue';
 import type { SelectProps } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { fetchGetRoleSelect } from '@/service/api/system';
+import { fetchRoleOptionselect } from '@/service/api-gen';
+import type { RoleResponseDto } from '@/service/api-gen/types';
 
 defineOptions({
   name: 'RoleSelect',
@@ -26,10 +27,11 @@ const roleOptions = ref<CommonType.Option<CommonType.IdType>[]>([]);
 async function getRoleOptions() {
   startRoleLoading();
   try {
-    const { data } = await fetchGetRoleSelect();
-    roleOptions.value = data.map((item) => ({
-      label: item.roleName,
-      value: item.roleId,
+    const { data } = await fetchRoleOptionselect();
+    const roles = data as RoleResponseDto[];
+    roleOptions.value = roles.map((item) => ({
+      label: item.roleName!,
+      value: item.roleId!,
     }));
   } catch {
     // error handled by request interceptor

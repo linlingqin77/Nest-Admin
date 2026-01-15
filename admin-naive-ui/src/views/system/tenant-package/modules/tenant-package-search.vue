@@ -16,7 +16,16 @@ const emit = defineEmits<Emits>();
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
 
-const model = defineModel<Api.System.TenantPackageSearchParams>('model', { required: true });
+/** 本地搜索参数接口 */
+interface TenantPackageSearchParams {
+  pageNum?: number;
+  pageSize?: number;
+  packageName?: string | null;
+  status?: string | null;
+  params?: Record<string, unknown>;
+}
+
+const model = defineModel<TenantPackageSearchParams>('model', { required: true });
 
 const { options: sysNormalDisableOptions } = useDict('sys_normal_disable', false);
 
@@ -65,13 +74,13 @@ async function search() {
               <NSpace class="w-full" justify="end">
                 <NButton @click="reset">
                   <template #icon>
-                    <icon-ic-round-refresh class="text-icon" />
+                    <SvgIcon icon="ic:round-refresh" class="text-icon" />
                   </template>
                   {{ $t('common.reset') }}
                 </NButton>
                 <NButton type="primary" ghost @click="search">
                   <template #icon>
-                    <icon-ic-round-search class="text-icon" />
+                    <SvgIcon icon="ic:round-search" class="text-icon" />
                   </template>
                   {{ $t('common.search') }}
                 </NButton>

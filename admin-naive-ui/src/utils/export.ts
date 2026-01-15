@@ -6,8 +6,8 @@ export interface ExportExcelProps<T> {
   columns: NaiveUI.TableColumn<NaiveUI.TableDataWithIndex<T>>[];
   data: NaiveUI.TableDataWithIndex<T>[];
   filename: string;
-  ignoreKeys?: (keyof NaiveUI.TableDataWithIndex<T> | NaiveUI.CustomColumnKey)[];
-  dicts?: Record<keyof NaiveUI.TableDataWithIndex<T>, string>;
+  ignoreKeys?: (string | NaiveUI.CustomColumnKey)[];
+  dicts?: Record<string, string>;
 }
 
 export function exportExcel<T>({
@@ -17,7 +17,7 @@ export function exportExcel<T>({
   dicts,
   ignoreKeys = ['index', 'operate'],
 }: ExportExcelProps<T>) {
-  const exportColumns = columns.filter((col) => isTableColumnHasKey(col) && !ignoreKeys?.includes(col.key));
+  const exportColumns = columns.filter((col) => isTableColumnHasKey(col) && !ignoreKeys?.includes(String(col.key)));
 
   const excelList = data.map((item) => exportColumns.map((col) => getTableValue(col, item, dicts)));
 
@@ -41,31 +41,34 @@ export function exportExcel<T>({
 function getTableValue<T>(
   col: NaiveUI.TableColumn<NaiveUI.TableDataWithIndex<T>>,
   item: NaiveUI.TableDataWithIndex<T>,
-  dicts?: Record<keyof NaiveUI.TableDataWithIndex<T>, string>,
+  dicts?: Record<string, string>,
 ) {
   if (!isTableColumnHasKey(col)) {
     return null;
   }
 
   const { key } = col;
+  const keyStr = String(key);
 
-  if (key === 'operate') {
+  if (keyStr === 'operate') {
     return null;
   }
 
-  if (isNotNull(dicts?.[key]) && isNotNull(item[key])) {
-    return $t(item[key] as App.I18n.I18nKey);
+  const itemValue = (item as Record<string, any>)[keyStr];
+
+  if (isNotNull(dicts?.[keyStr]) && isNotNull(itemValue)) {
+    return $t(itemValue as App.I18n.I18nKey);
   }
 
-  return item[key];
+  return itemValue;
 }
 
-function isTableColumnHasKey<T>(column: NaiveUI.TableColumn<T>): column is NaiveUI.TableColumnWithKey<T> {
-  return Boolean((column as NaiveUI.TableColumnWithKey<T>).key);
+function isTableColumnHasKey<T>(column: NaiveUI.TableColumn<T>): column is NaiveUI.DataTableBaseColumn<T> {
+  return Boolean((column as NaiveUI.DataTableBaseColumn<T>).key);
 }
 
-function isTableColumnHasTitle<T>(column: NaiveUI.TableColumn<T>): column is NaiveUI.TableColumnWithKey<T> & {
+function isTableColumnHasTitle<T>(column: NaiveUI.TableColumn<T>): column is NaiveUI.DataTableBaseColumn<T> & {
   title: string;
 } {
-  return Boolean((column as NaiveUI.TableColumnWithKey<T>).title);
+  return Boolean((column as NaiveUI.DataTableBaseColumn<T>).title);
 }

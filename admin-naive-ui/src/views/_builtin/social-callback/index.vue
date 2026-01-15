@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { getRgb } from '@sa/color';
 import { DARK_CLASS } from '@/constants/app';
-import { fetchSocialLoginCallback } from '@/service/api';
+import { fetchAuthSocialCallback } from '@/service/api-gen';
 import { useAuthStore } from '@/store/modules/auth';
 import { useRouterPush } from '@/hooks/common/router';
 import { localStg } from '@/utils/storage';
@@ -49,8 +49,10 @@ const handleError = () => {
 
 const callbackByCode = async (data: Api.Auth.SocialLoginForm) => {
   try {
-    await fetchSocialLoginCallback({
+    await fetchAuthSocialCallback({
       ...data,
+      source: data.source || '',
+      socialCode: data.socialCode || '',
       clientId: import.meta.env.VITE_APP_CLIENT_ID,
       grantType: 'social',
     });
@@ -63,7 +65,14 @@ const callbackByCode = async (data: Api.Auth.SocialLoginForm) => {
 const loginByCode = async (data: Api.Auth.SocialLoginForm) => {
   try {
     await authStore.logout();
-    await authStore.login(data);
+    // 社交登录使用 callback 接口而不是普通登录
+    await fetchAuthSocialCallback({
+      ...data,
+      source: data.source || '',
+      socialCode: data.socialCode || '',
+      clientId: import.meta.env.VITE_APP_CLIENT_ID,
+      grantType: 'social',
+    });
     await processResponse();
   } catch (error) {
     handleError();

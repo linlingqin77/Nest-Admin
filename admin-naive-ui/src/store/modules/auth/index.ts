@@ -2,7 +2,8 @@ import { computed, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { defineStore } from 'pinia';
 import { useLoading } from '@sa/hooks';
-import { fetchGetUserInfo, fetchLogin, fetchLogout } from '@/service/api';
+import { fetchAuthLogin, fetchAuthLogout, fetchUserGetInfo } from '@/service/api-gen';
+import type { AuthLoginRequestDto, CurrentUserInfoResponseDto, LoginTokenResponseDto } from '@/service/api-gen/types';
 import { useRouterPush } from '@/hooks/common/router';
 import { localStg } from '@/utils/storage';
 import { SetupStoreId } from '@/enum';
@@ -56,7 +57,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   }
 
   async function logout() {
-    await fetchLogout();
+    await fetchAuthLogout();
     resetStore();
   }
 
@@ -100,12 +101,12 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
    *
    * @param [redirect=true] Whether to redirect after login. Default is `true`
    */
-  async function login(loginForm: Api.Auth.PwdLoginForm | Api.Auth.SocialLoginForm, redirect = true) {
+  async function login(loginForm: AuthLoginRequestDto, redirect = true) {
     startLoading();
 
     const { VITE_APP_CLIENT_ID } = import.meta.env;
 
-    const loginData: Api.Auth.PwdLoginForm = {
+    const loginData: AuthLoginRequestDto = {
       ...loginForm,
       tenantId: loginForm.tenantId ?? '000000',
       clientId: VITE_APP_CLIENT_ID!,
@@ -113,14 +114,14 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     };
 
     try {
-      const { data: loginToken } = await fetchLogin(loginData);
+      const { data: loginToken } = await fetchAuthLogin(loginData);
 
       if (!loginToken) {
         window.$message?.error('登录失败，请重试');
         return;
       }
 
-      const pass = await loginByToken(loginToken);
+      const pass = await loginByToken(loginToken as LoginTokenResponseDto);
 
       if (pass) {
         // Check if the tab needs to be cleared
@@ -148,7 +149,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     return Promise.resolve();
   }
 
-  async function loginByToken(loginToken: Api.Auth.LoginToken) {
+  async function loginByToken(loginToken: LoginTokenResponseDto) {
     // 1. stored in the localStorage, the later requests need it in headers
     localStg.set('token', loginToken.access_token!);
     localStg.set('refreshToken', loginToken.refresh_token!);
@@ -167,12 +168,17 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
 
   async function getUserInfo() {
     try {
-      const { data: info } = await fetchGetUserInfo();
+      const { data: info } = await fetchUserGetInfo();
       if (!info) {
         return false;
       }
-      // update store
-      Object.assign(userInfo, info);
+      // update store - 转换类型以兼容现有代码
+      const userInfoData = info as CurrentUserInfoResponseDto;
+      Object.assign(userInfo, {
+        user: userInfoData.user,
+        roles: userInfoData.roles,
+        permissions: userInfoData.permissions,
+      });
       return true;
     } catch (error) {
       return false;

@@ -165,9 +165,9 @@ describe('Property 1: Response Structure Consistency', () => {
             .getRequest()
             .get(fullPath)
             .set('Authorization', `Bearer ${token}`)
-            .set('tenant-id', '000000');
+            .set('x-tenant-id', '000000');
         } else {
-          response = await helper.getRequest().get(fullPath).set('tenant-id', '000000');
+          response = await helper.getRequest().get(fullPath).set('x-tenant-id', '000000');
         }
 
         // Property: Response must have code (number), msg (string), and data field
@@ -218,13 +218,13 @@ describe('Property 1: Response Structure Consistency', () => {
               .getRequest()
               .get(fullPath)
               .set('Authorization', `Bearer ${token}`)
-              .set('tenant-id', '000000');
+              .set('x-tenant-id', '000000');
             break;
           case 'POST':
             response = await helper
               .getRequest()
               .post(fullPath)
-              .set('tenant-id', '000000')
+              .set('x-tenant-id', '000000')
               .send(scenario.body || {});
             break;
           case 'PUT':
@@ -232,7 +232,7 @@ describe('Property 1: Response Structure Consistency', () => {
               .getRequest()
               .put(fullPath)
               .set('Authorization', `Bearer ${token}`)
-              .set('tenant-id', '000000')
+              .set('x-tenant-id', '000000')
               .send(scenario.body || {});
             break;
           case 'DELETE':
@@ -240,7 +240,7 @@ describe('Property 1: Response Structure Consistency', () => {
               .getRequest()
               .delete(fullPath)
               .set('Authorization', `Bearer ${token}`)
-              .set('tenant-id', '000000');
+              .set('x-tenant-id', '000000');
             break;
         }
 
@@ -297,7 +297,7 @@ describe('Property 1: Response Structure Consistency', () => {
           response = await helper
             .getRequest()
             .post(fullPath)
-            .set('tenant-id', '000000')
+            .set('x-tenant-id', '000000')
             .send((endpoint as (typeof errorScenarios)[0]).body || {});
         } else {
           if (endpoint.needsAuth) {
@@ -305,9 +305,9 @@ describe('Property 1: Response Structure Consistency', () => {
               .getRequest()
               .get(fullPath)
               .set('Authorization', `Bearer ${token}`)
-              .set('tenant-id', '000000');
+              .set('x-tenant-id', '000000');
           } else {
-            response = await helper.getRequest().get(fullPath).set('tenant-id', '000000');
+            response = await helper.getRequest().get(fullPath).set('x-tenant-id', '000000');
           }
         }
 

@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { NButton, NDivider } from 'naive-ui';
+import { NButton, NDivider, NTag } from 'naive-ui';
 import { fetchGetTenantQuotaList } from '@/service/api/system/tenant';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';

@@ -2326,6 +2326,799 @@
         ]
       }
     },
+    "/api/v1/system/client": {
+      "post": {
+        "description": "创建客户端",
+        "operationId": "ClientController_create_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClientRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "响应数据"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "客户端管理-创建",
+        "tags": [
+          "客户端管理"
+        ]
+      },
+      "put": {
+        "description": "修改客户端",
+        "operationId": "ClientController_update_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateClientRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "响应数据"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "客户端管理-更新",
+        "tags": [
+          "客户端管理"
+        ]
+      }
+    },
+    "/api/v1/system/client/list": {
+      "get": {
+        "description": "分页查询客户端列表",
+        "operationId": "ClientController_findAll_v1",
+        "parameters": [
+          {
+            "name": "pageNum",
+            "required": false,
+            "in": "query",
+            "description": "页码（从1开始）",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "每页条数",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "orderByColumn",
+            "required": false,
+            "in": "query",
+            "description": "排序字段",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isAsc",
+            "required": false,
+            "in": "query",
+            "description": "排序方向",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "params",
+            "required": false,
+            "in": "query",
+            "description": "时间范围",
+            "schema": {
+              "$ref": "#/components/schemas/DateRangeDto"
+            }
+          },
+          {
+            "name": "clientKey",
+            "required": false,
+            "in": "query",
+            "description": "客户端key",
+            "schema": {
+              "minLength": 0,
+              "maxLength": 64,
+              "type": "string"
+            }
+          },
+          {
+            "name": "clientSecret",
+            "required": false,
+            "in": "query",
+            "description": "客户端秘钥",
+            "schema": {
+              "minLength": 0,
+              "maxLength": 255,
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "状态",
+            "schema": {
+              "$ref": "#/components/schemas/StatusEnum"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/ClientListResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "客户端管理-列表",
+        "tags": [
+          "客户端管理"
+        ]
+      }
+    },
+    "/api/v1/system/client/{id}": {
+      "get": {
+        "description": "根据ID获取客户端详情",
+        "operationId": "ClientController_findOne_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "客户端ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/ClientResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "客户端管理-详情",
+        "tags": [
+          "客户端管理"
+        ]
+      }
+    },
+    "/api/v1/system/client/changeStatus": {
+      "put": {
+        "description": "修改客户端状态",
+        "operationId": "ClientController_changeStatus_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeClientStatusRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "响应数据"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "客户端管理-修改状态",
+        "tags": [
+          "客户端管理"
+        ]
+      }
+    },
+    "/api/v1/system/client/{ids}": {
+      "delete": {
+        "description": "批量删除客户端，多个ID用逗号分隔",
+        "operationId": "ClientController_remove_v1",
+        "parameters": [
+          {
+            "name": "ids",
+            "required": true,
+            "in": "path",
+            "description": "客户端ID，多个用逗号分隔",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "响应数据"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "客户端管理-删除",
+        "tags": [
+          "客户端管理"
+        ]
+      }
+    },
     "/api/v1/system/config": {
       "post": {
         "description": "创建系统参数配置",
@@ -34430,6 +35223,1501 @@
           "SSE消息推送"
         ]
       }
+    },
+    "/api/v1/resource/oss/config": {
+      "post": {
+        "description": "创建OSS配置",
+        "operationId": "OssConfigController_create_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOssConfigRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "响应数据"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "OSS配置管理-创建",
+        "tags": [
+          "OSS配置管理"
+        ]
+      },
+      "put": {
+        "description": "修改OSS配置",
+        "operationId": "OssConfigController_update_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOssConfigRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "响应数据"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "OSS配置管理-更新",
+        "tags": [
+          "OSS配置管理"
+        ]
+      }
+    },
+    "/api/v1/resource/oss/config/list": {
+      "get": {
+        "description": "分页查询OSS配置列表",
+        "operationId": "OssConfigController_findAll_v1",
+        "parameters": [
+          {
+            "name": "pageNum",
+            "required": false,
+            "in": "query",
+            "description": "页码（从1开始）",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "每页条数",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "orderByColumn",
+            "required": false,
+            "in": "query",
+            "description": "排序字段",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isAsc",
+            "required": false,
+            "in": "query",
+            "description": "排序方向",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "params",
+            "required": false,
+            "in": "query",
+            "description": "时间范围",
+            "schema": {
+              "$ref": "#/components/schemas/DateRangeDto"
+            }
+          },
+          {
+            "name": "configKey",
+            "required": false,
+            "in": "query",
+            "description": "配置名称",
+            "schema": {
+              "minLength": 0,
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "bucketName",
+            "required": false,
+            "in": "query",
+            "description": "桶名称",
+            "schema": {
+              "minLength": 0,
+              "maxLength": 255,
+              "type": "string"
+            }
+          },
+          {
+            "name": "region",
+            "required": false,
+            "in": "query",
+            "description": "域",
+            "schema": {
+              "minLength": 0,
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "状态（0=是默认,1=否）",
+            "schema": {
+              "$ref": "#/components/schemas/StatusEnum"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/OssConfigListResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "OSS配置管理-列表",
+        "tags": [
+          "OSS配置管理"
+        ]
+      }
+    },
+    "/api/v1/resource/oss/config/{id}": {
+      "get": {
+        "description": "根据ID获取OSS配置详情",
+        "operationId": "OssConfigController_findOne_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "OSS配置ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/OssConfigResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "OSS配置管理-详情",
+        "tags": [
+          "OSS配置管理"
+        ]
+      }
+    },
+    "/api/v1/resource/oss/config/changeStatus": {
+      "put": {
+        "description": "修改OSS配置状态",
+        "operationId": "OssConfigController_changeStatus_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeOssConfigStatusRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "响应数据"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "OSS配置管理-修改状态",
+        "tags": [
+          "OSS配置管理"
+        ]
+      }
+    },
+    "/api/v1/resource/oss/config/{ids}": {
+      "delete": {
+        "description": "批量删除OSS配置，多个ID用逗号分隔",
+        "operationId": "OssConfigController_remove_v1",
+        "parameters": [
+          {
+            "name": "ids",
+            "required": true,
+            "in": "path",
+            "description": "OSS配置ID，多个用逗号分隔",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "响应数据"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "OSS配置管理-删除",
+        "tags": [
+          "OSS配置管理"
+        ]
+      }
+    },
+    "/api/v1/resource/oss/list": {
+      "get": {
+        "description": "分页查询OSS文件列表",
+        "operationId": "OssController_findAll_v1",
+        "parameters": [
+          {
+            "name": "pageNum",
+            "required": false,
+            "in": "query",
+            "description": "页码（从1开始）",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "每页条数",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "orderByColumn",
+            "required": false,
+            "in": "query",
+            "description": "排序字段",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isAsc",
+            "required": false,
+            "in": "query",
+            "description": "排序方向",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "params",
+            "required": false,
+            "in": "query",
+            "description": "时间范围",
+            "schema": {
+              "$ref": "#/components/schemas/DateRangeDto"
+            }
+          },
+          {
+            "name": "fileName",
+            "required": false,
+            "in": "query",
+            "description": "文件名",
+            "schema": {
+              "minLength": 0,
+              "maxLength": 255,
+              "type": "string"
+            }
+          },
+          {
+            "name": "originalName",
+            "required": false,
+            "in": "query",
+            "description": "原名",
+            "schema": {
+              "minLength": 0,
+              "maxLength": 255,
+              "type": "string"
+            }
+          },
+          {
+            "name": "fileSuffix",
+            "required": false,
+            "in": "query",
+            "description": "文件后缀名",
+            "schema": {
+              "minLength": 0,
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "service",
+            "required": false,
+            "in": "query",
+            "description": "服务商",
+            "schema": {
+              "minLength": 0,
+              "maxLength": 50,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/OssListResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "OSS文件管理-列表",
+        "tags": [
+          "OSS文件管理"
+        ]
+      }
+    },
+    "/api/v1/resource/oss/listByIds/{ids}": {
+      "get": {
+        "description": "根据ID列表获取OSS文件",
+        "operationId": "OssController_findByIds_v1",
+        "parameters": [
+          {
+            "name": "ids",
+            "required": true,
+            "in": "path",
+            "description": "OSS文件ID，多个用逗号分隔",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/OssListResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "OSS文件管理-根据ID列表查询",
+        "tags": [
+          "OSS文件管理"
+        ]
+      }
+    },
+    "/api/v1/resource/oss/{id}": {
+      "get": {
+        "description": "根据ID获取OSS文件详情",
+        "operationId": "OssController_findOne_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "OSS文件ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/OssResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "OSS文件管理-详情",
+        "tags": [
+          "OSS文件管理"
+        ]
+      }
+    },
+    "/api/v1/resource/oss/upload": {
+      "post": {
+        "description": "上传文件到OSS",
+        "operationId": "OssController_upload_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "上传的文件"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/OssResponseDto"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "OSS文件管理-上传",
+        "tags": [
+          "OSS文件管理"
+        ]
+      }
+    },
+    "/api/v1/resource/oss/{ids}": {
+      "delete": {
+        "description": "批量删除OSS文件，多个ID用逗号分隔",
+        "operationId": "OssController_remove_v1",
+        "parameters": [
+          {
+            "name": "ids",
+            "required": true,
+            "in": "path",
+            "description": "OSS文件ID，多个用逗号分隔",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "响应数据"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "OSS文件管理-删除",
+        "tags": [
+          "OSS文件管理"
+        ]
+      }
     }
   },
   "info": {
@@ -35249,6 +37537,287 @@
           "fileName"
         ]
       },
+      "DeviceTypeEnum": {
+        "type": "string",
+        "description": "设备类型枚举\n- PC (pc): PC端\n- APP (app): 移动端\n- MINI (mini): 小程序\n- SOCIAL (social): 社交登录",
+        "enum": [
+          "pc",
+          "app",
+          "mini",
+          "social"
+        ]
+      },
+      "CreateClientRequestDto": {
+        "type": "object",
+        "properties": {
+          "clientKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "客户端key"
+          },
+          "clientSecret": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "客户端秘钥"
+          },
+          "grantTypeList": {
+            "description": "授权类型列表",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "deviceType": {
+            "description": "设备类型",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DeviceTypeEnum"
+              }
+            ]
+          },
+          "activeTimeout": {
+            "type": "number",
+            "minimum": 0,
+            "description": "token活跃超时时间（秒）",
+            "default": 1800
+          },
+          "timeout": {
+            "type": "number",
+            "minimum": 0,
+            "description": "token固定超时时间（秒）",
+            "default": 86400
+          },
+          "status": {
+            "description": "状态",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatusEnum"
+              }
+            ]
+          }
+        },
+        "required": [
+          "clientKey",
+          "clientSecret"
+        ]
+      },
+      "ClientResponseDto": {
+        "type": "object",
+        "properties": {
+          "createBy": {
+            "type": "string",
+            "description": "创建者"
+          },
+          "createTime": {
+            "type": "string",
+            "description": "创建时间",
+            "example": "2025-01-01 00:00:00"
+          },
+          "updateBy": {
+            "type": "string",
+            "description": "更新者"
+          },
+          "updateTime": {
+            "type": "string",
+            "description": "更新时间",
+            "example": "2025-01-01 00:00:00"
+          },
+          "remark": {
+            "type": "string",
+            "description": "备注"
+          },
+          "id": {
+            "type": "number",
+            "description": "客户端ID"
+          },
+          "clientId": {
+            "type": "string",
+            "description": "客户端唯一标识"
+          },
+          "clientKey": {
+            "type": "string",
+            "description": "客户端key"
+          },
+          "clientSecret": {
+            "type": "string",
+            "description": "客户端秘钥"
+          },
+          "grantTypeList": {
+            "type": "string",
+            "description": "授权类型列表（逗号分隔）"
+          },
+          "grantTypeArray": {
+            "description": "授权类型数组",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "deviceType": {
+            "description": "设备类型",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DeviceTypeEnum"
+              }
+            ]
+          },
+          "activeTimeout": {
+            "type": "number",
+            "description": "token活跃超时时间（秒）"
+          },
+          "timeout": {
+            "type": "number",
+            "description": "token固定超时时间（秒）"
+          },
+          "status": {
+            "description": "状态",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatusEnum"
+              }
+            ]
+          },
+          "delFlag": {
+            "type": "string",
+            "description": "删除标记 - 不返回给前端"
+          },
+          "tenantId": {
+            "type": "number",
+            "description": "租户ID - 不返回给前端"
+          },
+          "password": {
+            "type": "string",
+            "description": "密码 - 不返回给前端"
+          }
+        },
+        "required": [
+          "id",
+          "clientId",
+          "clientKey",
+          "clientSecret",
+          "grantTypeList",
+          "grantTypeArray",
+          "deviceType",
+          "activeTimeout",
+          "timeout",
+          "status"
+        ]
+      },
+      "ClientListResponseDto": {
+        "type": "object",
+        "properties": {
+          "rows": {
+            "description": "客户端列表",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClientResponseDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "总数量"
+          }
+        },
+        "required": [
+          "rows",
+          "total"
+        ]
+      },
+      "DateRangeDto": {
+        "type": "object",
+        "properties": {
+          "beginTime": {
+            "type": "string",
+            "description": "开始时间",
+            "example": "2024-01-01"
+          },
+          "endTime": {
+            "type": "string",
+            "description": "结束时间",
+            "example": "2024-12-31"
+          }
+        }
+      },
+      "UpdateClientRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "客户端ID"
+          },
+          "clientKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "客户端key"
+          },
+          "clientSecret": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "客户端秘钥"
+          },
+          "grantTypeList": {
+            "description": "授权类型列表",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "deviceType": {
+            "description": "设备类型",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DeviceTypeEnum"
+              }
+            ]
+          },
+          "activeTimeout": {
+            "type": "number",
+            "minimum": 0,
+            "description": "token活跃超时时间（秒）"
+          },
+          "timeout": {
+            "type": "number",
+            "minimum": 0,
+            "description": "token固定超时时间（秒）"
+          },
+          "status": {
+            "description": "状态",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatusEnum"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "ChangeClientStatusRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "客户端ID"
+          },
+          "status": {
+            "description": "状态",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatusEnum"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "status"
+        ]
+      },
       "ConfigTypeEnum": {
         "type": "string",
         "description": "系统参数类型枚举\n- YES (Y): 是（系统内置）\n- NO (N): 否",
@@ -35396,21 +37965,6 @@
           "rows",
           "total"
         ]
-      },
-      "DateRangeDto": {
-        "type": "object",
-        "properties": {
-          "beginTime": {
-            "type": "string",
-            "description": "开始时间",
-            "example": "2024-01-01"
-          },
-          "endTime": {
-            "type": "string",
-            "description": "结束时间",
-            "example": "2024-12-31"
-          }
-        }
       },
       "ConfigValueResponseDto": {
         "type": "object",
@@ -43829,6 +46383,421 @@
             ]
           }
         }
+      },
+      "CreateOssConfigRequestDto": {
+        "type": "object",
+        "properties": {
+          "configKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "配置名称"
+          },
+          "accessKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "accessKey"
+          },
+          "secretKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "秘钥secretKey"
+          },
+          "bucketName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "桶名称"
+          },
+          "prefix": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "description": "前缀"
+          },
+          "endpoint": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "访问站点"
+          },
+          "domain": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "description": "自定义域名"
+          },
+          "isHttps": {
+            "type": "string",
+            "description": "是否https（Y=是,N=否）",
+            "default": "N"
+          },
+          "region": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 100,
+            "description": "域"
+          },
+          "accessPolicy": {
+            "type": "string",
+            "description": "桶权限类型（0=private,1=public,2=custom）",
+            "default": "1"
+          },
+          "status": {
+            "description": "状态（0=是默认,1=否）",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatusEnum"
+              }
+            ]
+          },
+          "remark": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 500,
+            "description": "备注"
+          }
+        },
+        "required": [
+          "configKey",
+          "accessKey",
+          "secretKey",
+          "bucketName",
+          "endpoint"
+        ]
+      },
+      "OssConfigResponseDto": {
+        "type": "object",
+        "properties": {
+          "createBy": {
+            "type": "string",
+            "description": "创建者"
+          },
+          "createTime": {
+            "type": "string",
+            "description": "创建时间",
+            "example": "2025-01-01 00:00:00"
+          },
+          "updateBy": {
+            "type": "string",
+            "description": "更新者"
+          },
+          "updateTime": {
+            "type": "string",
+            "description": "更新时间",
+            "example": "2025-01-01 00:00:00"
+          },
+          "remark": {
+            "type": "string",
+            "description": "备注"
+          },
+          "ossConfigId": {
+            "type": "number",
+            "description": "OSS配置ID"
+          },
+          "configKey": {
+            "type": "string",
+            "description": "配置名称"
+          },
+          "accessKey": {
+            "type": "string",
+            "description": "accessKey"
+          },
+          "secretKey": {
+            "type": "string",
+            "description": "秘钥secretKey"
+          },
+          "bucketName": {
+            "type": "string",
+            "description": "桶名称"
+          },
+          "prefix": {
+            "type": "string",
+            "description": "前缀"
+          },
+          "endpoint": {
+            "type": "string",
+            "description": "访问站点"
+          },
+          "domain": {
+            "type": "string",
+            "description": "自定义域名"
+          },
+          "isHttps": {
+            "type": "string",
+            "description": "是否https（Y=是,N=否）"
+          },
+          "region": {
+            "type": "string",
+            "description": "域"
+          },
+          "accessPolicy": {
+            "type": "string",
+            "description": "桶权限类型"
+          },
+          "status": {
+            "description": "状态（0=是默认,1=否）",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatusEnum"
+              }
+            ]
+          },
+          "ext1": {
+            "type": "string",
+            "description": "扩展字段"
+          },
+          "delFlag": {
+            "type": "string",
+            "description": "删除标记 - 不返回给前端"
+          },
+          "tenantId": {
+            "type": "number",
+            "description": "租户ID - 不返回给前端"
+          },
+          "password": {
+            "type": "string",
+            "description": "密码 - 不返回给前端"
+          }
+        },
+        "required": [
+          "ossConfigId",
+          "configKey",
+          "accessKey",
+          "secretKey",
+          "bucketName",
+          "prefix",
+          "endpoint",
+          "domain",
+          "isHttps",
+          "region",
+          "accessPolicy",
+          "status",
+          "ext1"
+        ]
+      },
+      "OssConfigListResponseDto": {
+        "type": "object",
+        "properties": {
+          "rows": {
+            "description": "OSS配置列表",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OssConfigResponseDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "总数量"
+          }
+        },
+        "required": [
+          "rows",
+          "total"
+        ]
+      },
+      "UpdateOssConfigRequestDto": {
+        "type": "object",
+        "properties": {
+          "ossConfigId": {
+            "type": "number",
+            "description": "OSS配置ID"
+          },
+          "configKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "配置名称"
+          },
+          "accessKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "accessKey"
+          },
+          "secretKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "秘钥secretKey"
+          },
+          "bucketName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "桶名称"
+          },
+          "prefix": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "description": "前缀"
+          },
+          "endpoint": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "访问站点"
+          },
+          "domain": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 255,
+            "description": "自定义域名"
+          },
+          "isHttps": {
+            "type": "string",
+            "description": "是否https（Y=是,N=否）"
+          },
+          "region": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 100,
+            "description": "域"
+          },
+          "accessPolicy": {
+            "type": "string",
+            "description": "桶权限类型（0=private,1=public,2=custom）"
+          },
+          "status": {
+            "description": "状态（0=是默认,1=否）",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatusEnum"
+              }
+            ]
+          },
+          "remark": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 500,
+            "description": "备注"
+          }
+        },
+        "required": [
+          "ossConfigId"
+        ]
+      },
+      "ChangeOssConfigStatusRequestDto": {
+        "type": "object",
+        "properties": {
+          "ossConfigId": {
+            "type": "number",
+            "description": "OSS配置ID"
+          },
+          "status": {
+            "description": "状态（0=是默认,1=否）",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StatusEnum"
+              }
+            ]
+          }
+        },
+        "required": [
+          "ossConfigId",
+          "status"
+        ]
+      },
+      "OssResponseDto": {
+        "type": "object",
+        "properties": {
+          "createBy": {
+            "type": "string",
+            "description": "创建者"
+          },
+          "createTime": {
+            "type": "string",
+            "description": "创建时间",
+            "example": "2025-01-01 00:00:00"
+          },
+          "updateBy": {
+            "type": "string",
+            "description": "更新者"
+          },
+          "updateTime": {
+            "type": "string",
+            "description": "更新时间",
+            "example": "2025-01-01 00:00:00"
+          },
+          "remark": {
+            "type": "string",
+            "description": "备注"
+          },
+          "ossId": {
+            "format": "int64",
+            "type": "integer",
+            "description": "对象存储主键"
+          },
+          "fileName": {
+            "type": "string",
+            "description": "文件名"
+          },
+          "originalName": {
+            "type": "string",
+            "description": "原名"
+          },
+          "fileSuffix": {
+            "type": "string",
+            "description": "文件后缀名"
+          },
+          "url": {
+            "type": "string",
+            "description": "URL地址"
+          },
+          "size": {
+            "format": "int64",
+            "type": "integer",
+            "description": "文件大小（字节）"
+          },
+          "service": {
+            "type": "string",
+            "description": "服务商"
+          },
+          "delFlag": {
+            "type": "string",
+            "description": "删除标记 - 不返回给前端"
+          },
+          "tenantId": {
+            "type": "number",
+            "description": "租户ID - 不返回给前端"
+          },
+          "password": {
+            "type": "string",
+            "description": "密码 - 不返回给前端"
+          }
+        },
+        "required": [
+          "ossId",
+          "fileName",
+          "originalName",
+          "fileSuffix",
+          "url",
+          "size",
+          "service"
+        ]
+      },
+      "OssListResponseDto": {
+        "type": "object",
+        "properties": {
+          "rows": {
+            "description": "OSS文件列表",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OssResponseDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "总数量"
+          }
+        },
+        "required": [
+          "rows",
+          "total"
+        ]
       }
     }
   }

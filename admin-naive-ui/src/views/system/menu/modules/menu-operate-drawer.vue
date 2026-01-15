@@ -2,7 +2,7 @@
 import { computed, reactive, ref, watch } from 'vue';
 import type { SelectOption } from 'naive-ui';
 import { menuIconTypeOptions, menuIsFrameOptions, menuTypeOptions } from '@/constants/business';
-import { fetchCreateMenu, fetchUpdateMenu } from '@/service/api/system';
+import { fetchMenuCreate, fetchMenuUpdate } from '@/service/api-gen';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { getLocalMenuIcons } from '@/utils/icon';
 import { isNotNull } from '@/utils/common';
@@ -140,7 +140,9 @@ function handleInitModel() {
       if (model.isFrame === '2') {
         model.queryParam = JSON.parse(model.queryParam || '{}')?.url || '';
       }
-    } catch {}
+    } catch {
+      // ignore parse error
+    }
   }
 }
 
@@ -207,27 +209,27 @@ async function handleSubmit() {
   } = model;
 
   const payload = {
-    menuName,
+    menuName: menuName || '',
     path: processPath(model.path),
-    parentId,
-    orderNum,
+    parentId: (parentId as number) || 0,
+    orderNum: orderNum ?? undefined,
     queryParam: processQueryParam(queryParam),
-    isFrame,
-    isCache,
-    menuType,
-    visible: menuVisible,
-    status,
-    perms,
+    isFrame: isFrame || '1',
+    isCache: isCache ?? undefined,
+    menuType: menuType ?? undefined,
+    visible: menuVisible ?? undefined,
+    status: status ?? undefined,
+    perms: perms ?? undefined,
     icon: icon || defaultIcon,
     component: processComponent(component),
-    remark,
+    remark: remark ?? undefined,
   };
 
   try {
     if (props.operateType === 'add') {
-      await fetchCreateMenu(payload);
+      await fetchMenuCreate(payload);
     } else {
-      await fetchUpdateMenu({ ...payload, menuId });
+      await fetchMenuUpdate({ ...payload, menuId: (menuId as number) || 0 });
     }
 
     window.$message?.success($t(props.operateType === 'add' ? 'common.addSuccess' : 'common.updateSuccess'));

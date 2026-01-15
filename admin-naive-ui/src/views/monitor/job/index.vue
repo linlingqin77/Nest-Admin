@@ -3,9 +3,11 @@ import { ref } from 'vue';
 import { NButton, NDivider } from 'naive-ui';
 import { useBoolean } from '@sa/hooks';
 import { jsonClone } from '@sa/utils';
-import { fetchChangeJobStatus, fetchDeleteJob, fetchGetJobList, fetchRunJob } from '@/service/api/monitor/job';
+import { fetchJobList, fetchJobRemove } from '@/service/api-gen';
+import { fetchChangeJobStatus, fetchRunJob } from '@/service/api/monitor/job';
+import type { JobResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
-import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
+import { useTable, useTableOperate } from '@/hooks/common/table';
 import { useDict } from '@/hooks/business/dict';
 import { useAuth } from '@/hooks/business/auth';
 import { useDownload } from '@/hooks/business/download';
@@ -22,6 +24,15 @@ defineOptions({
   name: 'JobList',
 });
 
+/** 搜索参数接口 */
+interface SearchParams {
+  pageNum: number;
+  pageSize: number;
+  jobName: string | null;
+  jobGroup: string | null;
+  status: string | null;
+}
+
 useDict('sys_job_group');
 useDict('sys_job_status');
 
@@ -32,7 +43,7 @@ const { download } = useDownload();
 const { bool: detailVisible, setTrue: openDetailDrawer } = useBoolean();
 const { bool: cronVisible, setTrue: openCronModal, setFalse: closeCronModal } = useBoolean();
 
-const detailData = ref<Api.Monitor.Job | null>(null);
+const detailData = ref<JobResponseDto | null>(null);
 const cronExpression = ref('');
 const operateDrawerRef = ref<InstanceType<typeof JobOperateDrawer>>();
 
@@ -47,14 +58,14 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetJobList,
+  apiFn: fetchJobList as any,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
     jobName: null,
     jobGroup: null,
     status: null,
-  },
+  } as SearchParams,
   columns: () => [
     {
       type: 'selection',
@@ -80,7 +91,7 @@ const {
       align: 'center',
       width: 100,
       render(row) {
-        return <DictTag value={row.jobGroup} dictCode="sys_job_group" />;
+        return <DictTag value={(row as unknown as JobResponseDto).jobGroup} dictCode="sys_job_group" />;
       },
     },
     {
@@ -103,11 +114,12 @@ const {
       align: 'center',
       width: 80,
       render(row) {
+        const typedRow = row as unknown as JobResponseDto;
         return (
           <StatusSwitch
-            v-model:value={row.status}
-            info={row.jobName}
-            onSubmitted={(value, callback) => handleStatusChange(row, value, callback)}
+            v-model:value={typedRow.status}
+            info={typedRow.jobName}
+            onSubmitted={(value: Api.Common.EnableStatus, callback: (flag: boolean) => void) => handleStatusChange(typedRow, value, callback)}
           />
         );
       },
@@ -118,13 +130,14 @@ const {
       align: 'center',
       width: 220,
       render: (row) => {
+        const typedRow = row as unknown as JobResponseDto;
         const editBtn = () => (
           <ButtonIcon
             text
             type="primary"
             icon="material-symbols:drive-file-rename-outline-outline"
             tooltipContent={$t('common.edit')}
-            onClick={() => edit(row.jobId!)}
+            onClick={() => edit(typedRow.jobId!)}
           />
         );
 
@@ -135,7 +148,7 @@ const {
             icon="material-symbols:delete-outline"
             tooltipContent={$t('common.delete')}
             popconfirmContent={$t('common.confirmDelete')}
-            onPositiveClick={() => handleDelete(row.jobId!)}
+            onPositiveClick={() => handleDelete(typedRow.jobId!)}
           />
         );
 
@@ -145,8 +158,8 @@ const {
             type="primary"
             icon="material-symbols:play-arrow-outline"
             tooltipContent="执行一次"
-            popconfirmContent={`确认要立即执行一次"${row.jobName}"任务吗?`}
-            onPositiveClick={() => handleRun(row)}
+            popconfirmContent={`确认要立即执行一次"${typedRow.jobName}"任务吗?`}
+            onPositiveClick={() => handleRun(typedRow)}
           />
         );
 
@@ -156,7 +169,7 @@ const {
             type="primary"
             icon="material-symbols:visibility-outline"
             tooltipContent="任务详情"
-            onClick={() => handleView(row)}
+            onClick={() => handleView(typedRow)}
           />
         );
 
@@ -166,7 +179,7 @@ const {
             type="primary"
             icon="material-symbols:list-alt-outline"
             tooltipContent="调度日志"
-            onClick={() => handleJobLog(row)}
+            onClick={() => handleJobLog(typedRow)}
           />
         );
 
@@ -193,11 +206,11 @@ const {
 });
 
 const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedRowKeys, onBatchDeleted, onDeleted } =
-  useTableOperate(data, getData);
+  useTableOperate(data as any, getData);
 
 async function handleBatchDelete() {
   try {
-    await fetchDeleteJob(checkedRowKeys.value);
+    await fetchJobRemove(checkedRowKeys.value.join(','));
     onBatchDeleted();
   } catch {
     // error handled by request interceptor
@@ -206,7 +219,7 @@ async function handleBatchDelete() {
 
 async function handleDelete(jobId: CommonType.IdType) {
   try {
-    await fetchDeleteJob(jobId);
+    await fetchJobRemove(String(jobId));
     onDeleted();
   } catch {
     // error handled by request interceptor
@@ -214,11 +227,11 @@ async function handleDelete(jobId: CommonType.IdType) {
 }
 
 async function edit(jobId: CommonType.IdType) {
-  handleEdit('jobId', jobId);
+  handleEdit('jobId' as any, jobId);
 }
 
 async function handleStatusChange(
-  row: Api.Monitor.Job,
+  row: JobResponseDto,
   value: Api.Common.EnableStatus,
   callback: (flag: boolean) => void,
 ) {
@@ -232,7 +245,7 @@ async function handleStatusChange(
   }
 }
 
-async function handleRun(row: Api.Monitor.Job) {
+async function handleRun(row: JobResponseDto) {
   try {
     await fetchRunJob(row.jobId, row.jobGroup);
     window.$message?.success('执行成功');
@@ -241,12 +254,12 @@ async function handleRun(row: Api.Monitor.Job) {
   }
 }
 
-function handleView(row: Api.Monitor.Job) {
+function handleView(row: JobResponseDto) {
   detailData.value = jsonClone(row);
   openDetailDrawer();
 }
 
-function handleJobLog(row?: Api.Monitor.Job) {
+function handleJobLog(row?: JobResponseDto) {
   // 跳转到调度日志页面
   const query = row ? { jobName: row.jobName, jobGroup: row.jobGroup } : {};
   window.open(`#/monitor/job-log?${new URLSearchParams(query as Record<string, string>).toString()}`, '_blank');
@@ -298,7 +311,6 @@ function handleCronConfirm(cron: string) {
         v-model:checked-row-keys="checkedRowKeys"
         :columns="columns"
         :data="data"
-        v-bind="tableProps"
         :flex-height="!appStore.isMobile"
         :scroll-x="1000"
         :loading="loading"
@@ -311,7 +323,7 @@ function handleCronConfirm(cron: string) {
         ref="operateDrawerRef"
         v-model:visible="drawerVisible"
         :operate-type="operateType"
-        :row-data="editingData"
+        :row-data="(editingData as JobResponseDto | null)"
         @submitted="getDataByPage"
         @show-cron="handleShowCron"
       />

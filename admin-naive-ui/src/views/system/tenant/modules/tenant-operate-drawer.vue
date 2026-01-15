@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import { useLoading } from '@sa/hooks';
-import { fetchCreateTenant, fetchUpdateTenant } from '@/service/api/system/tenant';
-import { fetchGetTenantPackageSelectList } from '@/service/api/system/tenant-package';
+import { fetchTenantCreate, fetchTenantUpdate } from '@/service/api-gen';
+import { fetchTenantPackageSelectList } from '@/service/api-gen';
+import type { TenantResponseDto, CreateTenantRequestDto, UpdateTenantRequestDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -14,7 +15,7 @@ interface Props {
   /** the type of operation */
   operateType: NaiveUI.TableOperateType;
   /** the edit row data */
-  rowData?: Api.System.Tenant | null;
+  rowData?: TenantResponseDto | null;
 }
 
 const props = defineProps<Props>();
@@ -40,7 +41,10 @@ const title = computed(() => {
   return titles[props.operateType];
 });
 
-type Model = Api.System.TenantOperateParams;
+type Model = Partial<UpdateTenantRequestDto> & {
+  username?: string;
+  password?: string;
+};
 
 const model: Model = reactive(createDefaultModel());
 
@@ -55,9 +59,9 @@ function createDefaultModel(): Model {
     intro: '',
     domain: '',
     remark: '',
-    packageId: null,
-    expireTime: null,
-    accountCount: null,
+    packageId: undefined,
+    expireTime: undefined,
+    accountCount: undefined,
     status: '0',
     username: '',
     password: '',
@@ -100,7 +104,7 @@ const packageOptions = ref<CommonType.Option<CommonType.IdType>[]>([]);
 async function getPackageOptions() {
   startPackageLoading();
   try {
-    const { data } = await fetchGetTenantPackageSelectList();
+    const { data } = await fetchTenantPackageSelectList();
     if (!data) {
       return;
     }
@@ -151,12 +155,12 @@ async function handleSubmit() {
         username,
         password,
       } = model;
-      await fetchCreateTenant({
+      await fetchTenantCreate({
         contactUserName,
         contactPhone,
-        companyName,
-        username,
-        password,
+        companyName: companyName!,
+        username: username!,
+        password: password!,
         licenseNumber,
         address,
         intro,
@@ -166,7 +170,7 @@ async function handleSubmit() {
         expireTime,
         accountCount,
         status,
-      });
+      } as CreateTenantRequestDto);
     } else if (props.operateType === 'edit') {
       const {
         id,
@@ -184,9 +188,9 @@ async function handleSubmit() {
         accountCount,
         status,
       } = model;
-      await fetchUpdateTenant({
-        id,
-        tenantId,
+      await fetchTenantUpdate({
+        id: id!,
+        tenantId: tenantId!,
         contactUserName,
         contactPhone,
         companyName,
@@ -199,7 +203,7 @@ async function handleSubmit() {
         expireTime,
         accountCount,
         status,
-      });
+      } as UpdateTenantRequestDto);
     }
 
     window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));

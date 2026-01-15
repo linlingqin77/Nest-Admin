@@ -8,6 +8,19 @@ defineOptions({
   name: 'JobLogSearch',
 });
 
+/** 搜索参数接口 */
+interface JobLogSearchParams {
+  pageNum: number;
+  pageSize: number;
+  jobName: string | null;
+  jobGroup: string | null;
+  status: string | null;
+  params: {
+    beginTime?: string;
+    endTime?: string;
+  };
+}
+
 interface Emits {
   (e: 'reset'): void;
   (e: 'search'): void;
@@ -17,7 +30,7 @@ const emit = defineEmits<Emits>();
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
 
-const model = defineModel<Api.Monitor.JobLogSearchParams>('model', { required: true });
+const model = defineModel<JobLogSearchParams>('model', { required: true });
 
 const dateRange = ref<[string, string] | null>(null);
 
@@ -82,13 +95,13 @@ async function search() {
               <NSpace class="w-full" justify="end">
                 <NButton @click="reset">
                   <template #icon>
-                    <icon-ic-round-refresh class="text-icon" />
+                    <SvgIcon icon="ic:round-refresh" class="text-icon" />
                   </template>
                   {{ $t('common.reset') }}
                 </NButton>
                 <NButton type="primary" ghost @click="search">
                   <template #icon>
-                    <icon-ic-round-search class="text-icon" />
+                    <SvgIcon icon="ic:round-search" class="text-icon" />
                   </template>
                   {{ $t('common.search') }}
                 </NButton>

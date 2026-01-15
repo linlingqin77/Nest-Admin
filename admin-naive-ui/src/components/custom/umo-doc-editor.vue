@@ -2,7 +2,8 @@
 import { nextTick, ref, useAttrs, watch } from 'vue';
 import type { UmoEditorOptions } from '@umoteam/editor';
 import { UmoEditor } from '@umoteam/editor';
-import { fetchBatchDeleteOss, fetchUploadFile } from '@/service/api/system/oss';
+import { fetchUploadFile } from '@/service/api/system/oss';
+import { fetchOssRemove } from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useThemeStore } from '@/store/modules/theme';
 
@@ -49,10 +50,12 @@ async function handleSave(content: { html: string }) {
 
 async function handleFileUpload(file: File) {
   try {
-    const { data } = await fetchUploadFile(file);
+    const formData = new FormData();
+    formData.append('file', file);
+    const { data } = await fetchUploadFile(formData);
     return {
-      id: data.ossId,
-      url: data.url,
+      id: data?.ossId,
+      url: data?.url,
     };
   } catch (error: any) {
     throw new Error(error.message || '上传失败');
@@ -67,7 +70,7 @@ function handleFileDelete(id: CommonType.IdType) {
     negativeText: '取消',
     onPositiveClick: async () => {
       try {
-        await fetchBatchDeleteOss([id]);
+        await fetchOssRemove(id);
       } catch (error: any) {
         throw new Error(error.message || '文件删除失败');
       }

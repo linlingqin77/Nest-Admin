@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
 import { NModal, NCard, NForm, NFormItem, NInput, NInputNumber, NButton, NSpace, useMessage } from 'naive-ui';
-import { fetchCreateFolder, fetchUpdateFolder } from '@/service/api';
+import { fetchFileManagerCreateFolder, fetchFileManagerUpdateFolder } from '@/service/api-gen';
+import type { CreateFolderRequestDto, UpdateFolderRequestDto } from '@/service/api-gen/types';
 import { $t } from '@/locales';
 
 const message = useMessage();
@@ -63,11 +64,22 @@ async function handleSubmit() {
   try {
     if (modalType.value === 'add') {
       // 创建时不发送 folderId
-      const { folderId, ...createData } = formModel;
-      await fetchCreateFolder(createData);
+      const createData: CreateFolderRequestDto = {
+        parentId: formModel.parentId,
+        folderName: formModel.folderName,
+        orderNum: formModel.orderNum,
+        remark: formModel.remark,
+      };
+      await fetchFileManagerCreateFolder(createData);
       message.success($t('common.addSuccess'));
     } else {
-      await fetchUpdateFolder(formModel);
+      const updateData: UpdateFolderRequestDto = {
+        folderId: formModel.folderId,
+        folderName: formModel.folderName,
+        orderNum: formModel.orderNum,
+        remark: formModel.remark,
+      };
+      await fetchFileManagerUpdateFolder(updateData);
       message.success($t('common.updateSuccess'));
     }
 

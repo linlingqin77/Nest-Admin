@@ -25,7 +25,7 @@ const visible = defineModel<boolean>('visible', {
 
 const loading = ref(false);
 const detailLoading = ref(false);
-const quotaDetail = ref<Api.System.TenantQuotaDetail | null>(null);
+const quotaDetail = ref<Api.System.TenantQuotaDetail | Record<string, any> | null>(null);
 
 type Model = Api.System.UpdateTenantQuotaParams;
 
@@ -144,10 +144,10 @@ watch(visible, (newVal) => {
             <NText>{{ quotaDetail.apiUsed }} 次 ({{ Math.round(quotaDetail.apiUsageRate) }}%)</NText>
           </NFormItem>
 
-          <NDivider v-if="quotaDetail?.quotaHistory?.length">变更历史</NDivider>
-          <NTimeline v-if="quotaDetail?.quotaHistory?.length">
+          <NDivider v-if="(quotaDetail as any)?.quotaHistory?.length">变更历史</NDivider>
+          <NTimeline v-if="(quotaDetail as any)?.quotaHistory?.length">
             <NTimelineItem
-              v-for="record in quotaDetail.quotaHistory.slice(0, 5)"
+              v-for="record in (quotaDetail as any).quotaHistory.slice(0, 5)"
               :key="record.id"
               :time="record.changeTime"
               :title="`${record.quotaType === 'user' ? '用户配额' : record.quotaType === 'storage' ? '存储配额' : 'API配额'}`"

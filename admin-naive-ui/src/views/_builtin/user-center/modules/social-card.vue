@@ -32,7 +32,9 @@ async function getSsoUserList() {
 async function bindSsoAccount(type: Api.System.SocialSource) {
   try {
     const { data } = await fetchSocialAuthBinding(type, userInfo.user?.tenantId);
-    window.location.href = data;
+    if (data) {
+      window.location.href = data;
+    }
   } catch {
     // error handled by request interceptor
   }

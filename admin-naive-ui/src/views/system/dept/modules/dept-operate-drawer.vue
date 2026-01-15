@@ -2,8 +2,9 @@
 import { computed, reactive, ref, watch } from 'vue';
 import { NInputNumber } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { fetchCreateDept, fetchGetDeptList, fetchGetExcludeDeptList, fetchUpdateDept } from '@/service/api/system/dept';
-import { fetchGetDeptUserList } from '@/service/api/system/user';
+import { fetchDeptCreate, fetchDeptFindAll, fetchDeptFindListExclude, fetchDeptUpdate } from '@/service/api-gen';
+import { fetchUserFindByDeptId } from '@/service/api-gen';
+import type { DeptResponseDto, CreateDeptRequestDto, UpdateDeptRequestDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { handleTree } from '@/utils/common';
 import { $t } from '@/locales';
@@ -16,7 +17,7 @@ interface Props {
   /** the type of operation */
   operateType: NaiveUI.TableOperateType;
   /** the edit row data */
-  rowData?: Api.System.Dept | null;
+  rowData?: DeptResponseDto | null;
 }
 
 const props = defineProps<Props>();
@@ -36,7 +37,7 @@ const { createRequiredRule, patternRules } = useFormRules();
 
 const { loading: deptLoading, startLoading: startDeptLoading, endLoading: endDeptLoading } = useLoading();
 const { loading: userLoading, startLoading: startUserLoading, endLoading: endUserLoading } = useLoading();
-const deptData = ref<Api.System.Dept[]>([]);
+const deptData = ref<DeptResponseDto[]>([]);
 const userOptions = ref<CommonType.Option<CommonType.IdType>[]>([]);
 const placeholder = ref<string>($t('page.system.dept.placeholder.defaultLeaderPlaceHolder'));
 const disabled = ref<boolean>(false);
@@ -50,20 +51,20 @@ const title = computed(() => {
   return titles[props.operateType];
 });
 
-type Model = Api.System.DeptOperateParams;
+type Model = Partial<CreateDeptRequestDto & UpdateDeptRequestDto> & { deptId?: number; deptCategory?: string };
 
 const model: Model = reactive(createDefaultModel());
 
 function createDefaultModel(): Model {
   return {
-    parentId: props.rowData?.deptId || '',
+    parentId: props.rowData?.deptId || undefined,
     deptName: '',
     deptCategory: '',
-    orderNum: null,
-    leader: null,
+    orderNum: undefined,
+    leader: undefined,
     phone: '',
     email: '',
-    status: '0',
+    status: '0' as any,
   };
 }
 
@@ -99,16 +100,15 @@ async function handleSubmit() {
   if (props.operateType === 'add') {
     const { parentId, deptName, deptCategory, orderNum, leader, phone, email, status } = model;
     try {
-      await fetchCreateDept({
-        parentId,
-        deptName,
-        deptCategory,
-        orderNum,
+      await fetchDeptCreate({
+        parentId: parentId!,
+        deptName: deptName!,
+        orderNum: orderNum!,
         leader,
         phone,
         email,
         status,
-      });
+      } as any);
     } catch {
       return;
     }
@@ -117,17 +117,16 @@ async function handleSubmit() {
   if (props.operateType === 'edit') {
     const { deptId, parentId, deptName, deptCategory, orderNum, leader, phone, email, status } = model;
     try {
-      await fetchUpdateDept({
-        deptId,
+      await fetchDeptUpdate({
+        deptId: deptId!,
         parentId,
         deptName,
-        deptCategory,
         orderNum,
         leader,
         phone,
         email,
         status,
-      });
+      } as any);
     } catch {
       return;
     }
@@ -142,7 +141,7 @@ async function getDeptData() {
   startDeptLoading();
   try {
     const { data } =
-      props.operateType === 'add' ? await fetchGetDeptList() : await fetchGetExcludeDeptList(props.rowData?.deptId);
+      props.operateType === 'add' ? await fetchDeptFindAll() : await fetchDeptFindListExclude(props.rowData?.deptId!);
 
     if (data) {
       deptData.value = handleTree(data, { idField: 'deptId' });
@@ -163,15 +162,15 @@ async function getUserData() {
   }
   startUserLoading();
   try {
-    const { data } = await fetchGetDeptUserList(props.rowData.deptId);
+    const { data } = await fetchUserFindByDeptId(props.rowData.deptId);
     if (!data) {
       return;
     }
-    if (data.length === 0) {
+    if (data.rows.length === 0) {
       placeholder.value = $t('page.system.dept.placeholder.deptUserIsEmptyLeaderPlaceHolder');
       disabled.value = true;
     }
-    userOptions.value = data.map((item) => ({
+    userOptions.value = data.rows.map((item) => ({
       label: `${item.userName} | ${item.nickName}`,
       value: item.userId,
     }));

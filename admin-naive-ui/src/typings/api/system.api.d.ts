@@ -347,23 +347,23 @@ declare namespace Api {
     /** 字典数据 */
     type DictData = Common.CommonRecord<{
       /** 样式属性（其他样式扩展） */
-      cssClass: string;
+      cssClass?: string;
       /** 字典编码 */
       dictCode: CommonType.IdType;
       /** 字典标签 */
       dictLabel: string;
       /** 字典排序 */
-      dictSort: number;
+      dictSort?: number;
       /** 字典类型 */
       dictType: string;
       /** 字典键值 */
       dictValue: string;
       /** 是否默认（Y是 N否） */
-      isDefault: Common.YesOrNoStatus;
+      isDefault?: Common.YesOrNoStatus;
       /** 表格回显样式 */
-      listClass: NaiveUI.ThemeColor;
+      listClass?: NaiveUI.ThemeColor;
       /** 备注 */
-      remark: string;
+      remark?: string;
     }>;
 
     /** dict data search params */

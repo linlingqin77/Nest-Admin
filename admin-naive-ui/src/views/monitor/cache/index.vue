@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { nextTick, onMounted, onUnmounted, ref } from 'vue';
 import { useLoading } from '@sa/hooks';
-import { fetchGetMonitorCacheInfo } from '@/service/api/monitor/cache';
+import { fetchCacheGetInfo } from '@/service/api-gen/cache';
+import type { CacheInfoResponseDto } from '@/service/api-gen/types';
 import { useEcharts } from '@/hooks/common/echarts';
 
 const { loading, startLoading, endLoading } = useLoading();
-const cacheInfo = ref<Api.Monitor.CacheInfo>();
+const cacheInfo = ref<CacheInfoResponseDto>();
 const fetchError = ref<string | null>(null);
 
 // 自动刷新相关状态
@@ -19,7 +20,7 @@ async function getCacheInfo() {
   fetchError.value = null;
 
   try {
-    const { data } = await fetchGetMonitorCacheInfo();
+    const { data } = await fetchCacheGetInfo();
     cacheInfo.value = data;
 
     // 确保在数据更新后调用图表更新
@@ -606,8 +607,8 @@ onUnmounted(() => {
             <NDescriptionsItem label="使用内存">{{ cacheInfo?.info?.used_memory_human }}</NDescriptionsItem>
             <NDescriptionsItem label="使用CPU">
               {{
-                cacheInfo?.info?.used_cpu_user_children
-                  ? parseFloat(cacheInfo?.info?.used_cpu_user_children).toFixed(2)
+                (cacheInfo?.info as any)?.used_cpu_user_children
+                  ? parseFloat((cacheInfo?.info as any)?.used_cpu_user_children).toFixed(2)
                   : ''
               }}
             </NDescriptionsItem>

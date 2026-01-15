@@ -1,6 +1,7 @@
 <script setup lang="tsx">
 import { NDivider } from 'naive-ui';
-import { fetchBatchDeleteNotice, fetchGetNoticeList } from '@/service/api/system/notice';
+import { fetchNoticeFindAll, fetchNoticeRemove } from '@/service/api-gen';
+import type { NoticeResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
@@ -19,6 +20,7 @@ useDict('sys_notice_type');
 useDict('sys_normal_disable');
 const appStore = useAppStore();
 const { hasAuth } = useAuth();
+const tableProps = useTableProps();
 
 const {
   columns,
@@ -31,7 +33,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetNoticeList,
+  apiFn: fetchNoticeFindAll as any,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -58,7 +60,7 @@ const {
       align: 'center',
       minWidth: 120,
       render(row) {
-        return <DictTag size="small" value={row.noticeType} dictCode="sys_notice_type" />;
+        return <DictTag size="small" value={(row as unknown as NoticeResponseDto).noticeType} dictCode="sys_notice_type" />;
       },
     },
     {
@@ -67,11 +69,11 @@ const {
       align: 'center',
       minWidth: 120,
       render(row) {
-        return <DictTag size="small" value={row.status} dictCode="sys_normal_disable" />;
+        return <DictTag size="small" value={(row as unknown as NoticeResponseDto).status} dictCode="sys_normal_disable" />;
       },
     },
     {
-      key: 'createByName',
+      key: 'createBy',
       title: '创建者',
       align: 'center',
       minWidth: 120,
@@ -88,6 +90,7 @@ const {
       align: 'center',
       width: 130,
       render: (row) => {
+        const typedRow = row as unknown as NoticeResponseDto;
         const divider = () => {
           if (!hasAuth('system:notice:edit') || !hasAuth('system:notice:remove')) {
             return null;
@@ -105,7 +108,7 @@ const {
               type="primary"
               icon="material-symbols:drive-file-rename-outline-outline"
               tooltipContent={$t('common.edit')}
-              onClick={() => edit(row.noticeId!)}
+              onClick={() => edit(typedRow.noticeId!)}
             />
           );
         };
@@ -121,7 +124,7 @@ const {
               icon="material-symbols:delete-outline"
               tooltipContent={$t('common.delete')}
               popconfirmContent={$t('common.confirmDelete')}
-              onPositiveClick={() => handleDelete(row.noticeId!)}
+              onPositiveClick={() => handleDelete(typedRow.noticeId!)}
             />
           );
         };
@@ -144,7 +147,7 @@ const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedR
 async function handleBatchDelete() {
   // request
   try {
-    await fetchBatchDeleteNotice(checkedRowKeys.value);
+    await fetchNoticeRemove(checkedRowKeys.value.join(','));
     onBatchDeleted();
   } catch {
     // error handled by request interceptor
@@ -154,7 +157,7 @@ async function handleBatchDelete() {
 async function handleDelete(noticeId: CommonType.IdType) {
   // request
   try {
-    await fetchBatchDeleteNotice([noticeId]);
+    await fetchNoticeRemove(String(noticeId));
     onDeleted();
   } catch {
     // error handled by request interceptor
@@ -162,7 +165,7 @@ async function handleDelete(noticeId: CommonType.IdType) {
 }
 
 async function edit(noticeId: CommonType.IdType) {
-  handleEdit('noticeId', noticeId);
+  handleEdit('noticeId' as any, noticeId);
 }
 </script>
 
@@ -187,7 +190,7 @@ async function edit(noticeId: CommonType.IdType) {
         v-model:checked-row-keys="checkedRowKeys"
         :columns="columns"
         :data="data"
-        v-bind="tableProps"
+        v-bind="(tableProps as any)"
         :flex-height="!appStore.isMobile"
         :scroll-x="962"
         :loading="loading"
@@ -199,7 +202,7 @@ async function edit(noticeId: CommonType.IdType) {
       <NoticeOperateDrawer
         v-model:visible="drawerVisible"
         :operate-type="operateType"
-        :row-data="editingData"
+        :row-data="(editingData as any)"
         @submitted="getData"
       />
     </NCard>

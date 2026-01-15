@@ -68,7 +68,7 @@ describe('Tenant E2E Tests', () => {
         .get(`${apiPrefix}/system/tenant/list`)
         .query({ pageNum: 1, pageSize: 10 })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -83,7 +83,7 @@ describe('Tenant E2E Tests', () => {
         .get(`${apiPrefix}/system/tenant/list`)
         .query({ pageNum: 1, pageSize: 10, companyName: '测试' })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -114,7 +114,7 @@ describe('Tenant E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/tenant`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(tenantData)
         .expect(201);
 
@@ -164,7 +164,7 @@ describe('Tenant E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/tenant/${tenant.id}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -208,7 +208,7 @@ describe('Tenant E2E Tests', () => {
         .getAuthRequest()
         .put(`${apiPrefix}/system/tenant`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({
           id: testTenantId,
           tenantId: testTenantTenantId,
@@ -263,7 +263,7 @@ describe('Tenant E2E Tests', () => {
         .getAuthRequest()
         .delete(`${apiPrefix}/system/tenant/${deleteTenantId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -318,7 +318,7 @@ describe('Tenant E2E Tests', () => {
         .get(`${apiPrefix}/system/tenant/syncTenantPackage`)
         .query({ tenantId: tenant.tenantId, packageId: pkg.packageId })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -341,7 +341,7 @@ describe('Tenant E2E Tests', () => {
         .get(`${apiPrefix}/system/tenant/package/list`)
         .query({ pageNum: 1, pageSize: 10 })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -372,7 +372,7 @@ describe('Tenant E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/tenant/package`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(packageData)
         .expect(201);
 
@@ -423,7 +423,7 @@ describe('Tenant E2E Tests', () => {
         .getAuthRequest()
         .put(`${apiPrefix}/system/tenant/package`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({
           packageId: testPackageId,
           menuIds: [1, 2, 3, 4, 5],
@@ -466,7 +466,7 @@ describe('Tenant E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/tenant/package/${pkg.packageId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -480,7 +480,7 @@ describe('Tenant E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/tenant/package/selectList`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);

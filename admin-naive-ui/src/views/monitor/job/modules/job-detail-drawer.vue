@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import type { JobResponseDto } from '@/service/api-gen/types';
 
 defineOptions({
   name: 'JobDetailDrawer',
 });
 
+/** 扩展 JobResponseDto 以包含 nextValidTime */
+interface JobDetailData extends JobResponseDto {
+  nextValidTime?: string;
+}
+
 interface Props {
   /** the row data */
-  rowData?: Api.Monitor.Job | null;
+  rowData?: JobDetailData | null;
 }
 
 const props = defineProps<Props>();

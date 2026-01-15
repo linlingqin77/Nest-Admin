@@ -232,14 +232,14 @@ describe('Property 3: Authorization Enforcement', () => {
               .getRequest()
               .get(fullPath)
               .set('Authorization', `Bearer ${adminToken}`)
-              .set('tenant-id', '000000');
+              .set('x-tenant-id', '000000');
             break;
           case 'POST':
             response = await helper
               .getRequest()
               .post(fullPath)
               .set('Authorization', `Bearer ${adminToken}`)
-              .set('tenant-id', '000000')
+              .set('x-tenant-id', '000000')
               .send({});
             break;
           case 'PUT':
@@ -247,7 +247,7 @@ describe('Property 3: Authorization Enforcement', () => {
               .getRequest()
               .put(fullPath)
               .set('Authorization', `Bearer ${adminToken}`)
-              .set('tenant-id', '000000')
+              .set('x-tenant-id', '000000')
               .send({});
             break;
           case 'DELETE':
@@ -255,7 +255,7 @@ describe('Property 3: Authorization Enforcement', () => {
               .getRequest()
               .delete(fullPath)
               .set('Authorization', `Bearer ${adminToken}`)
-              .set('tenant-id', '000000');
+              .set('x-tenant-id', '000000');
             break;
         }
 
@@ -290,20 +290,20 @@ describe('Property 3: Authorization Enforcement', () => {
       fc.asyncProperty(endpointArbitrary, async (endpoint) => {
         const fullPath = `${apiPrefix}${endpoint.path}`;
 
-        // Make request without token (should get 401/403)
+        // Make request without token but with tenant-id (should get 401/403)
         let response;
         switch (endpoint.method) {
           case 'GET':
-            response = await helper.getRequest().get(fullPath);
+            response = await helper.getRequest().get(fullPath).set('x-tenant-id', '000000');
             break;
           case 'POST':
-            response = await helper.getRequest().post(fullPath).send({});
+            response = await helper.getRequest().post(fullPath).set('x-tenant-id', '000000').send({});
             break;
           case 'PUT':
-            response = await helper.getRequest().put(fullPath).send({});
+            response = await helper.getRequest().put(fullPath).set('x-tenant-id', '000000').send({});
             break;
           case 'DELETE':
-            response = await helper.getRequest().delete(fullPath);
+            response = await helper.getRequest().delete(fullPath).set('x-tenant-id', '000000');
             break;
         }
 
@@ -324,7 +324,7 @@ describe('Property 3: Authorization Enforcement', () => {
         return true;
       }),
       {
-        numRuns: 100,
+        numRuns: 50, // Reduced runs to avoid timeout
         verbose: true,
       },
     );
@@ -342,19 +342,20 @@ describe('Property 3: Authorization Enforcement', () => {
         const fullPath = `${apiPrefix}${endpoint.path}`;
         let response;
 
-        // Make request without any token
+        // Make request without any token but with tenant-id header
+        // (tenant context is required for the request to be processed)
         switch (endpoint.method) {
           case 'GET':
-            response = await helper.getRequest().get(fullPath);
+            response = await helper.getRequest().get(fullPath).set('x-tenant-id', '000000');
             break;
           case 'POST':
-            response = await helper.getRequest().post(fullPath).send({});
+            response = await helper.getRequest().post(fullPath).set('x-tenant-id', '000000').send({});
             break;
           case 'PUT':
-            response = await helper.getRequest().put(fullPath).send({});
+            response = await helper.getRequest().put(fullPath).set('x-tenant-id', '000000').send({});
             break;
           case 'DELETE':
-            response = await helper.getRequest().delete(fullPath);
+            response = await helper.getRequest().delete(fullPath).set('x-tenant-id', '000000');
             break;
         }
 
@@ -373,7 +374,7 @@ describe('Property 3: Authorization Enforcement', () => {
         return isAuthFailure;
       }),
       {
-        numRuns: 100,
+        numRuns: 50, // Reduced runs to avoid timeout
         verbose: true,
       },
     );

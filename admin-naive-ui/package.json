@@ -38,6 +38,7 @@
     "dev:test": "vite --mode test",
     "format": "prettier --write .",
     "gen-route": "sa gen-route",
+    "gen:api": "tsx scripts/post-gen-api.ts",
     "lint": "eslint . --fix",
     "prepare": "simple-git-hooks",
     "preview": "vite preview",
@@ -90,6 +91,7 @@
   },
   "devDependencies": {
     "@elegant-router/vue": "0.3.8",
+    "@hey-api/openapi-ts": "^0.90.2",
     "@iconify/json": "2.2.407",
     "@iconify/utils": "^2.1.33",
     "@sa/scripts": "workspace:*",

@@ -103,7 +103,7 @@ describe('Auth E2E Tests', () => {
       const response = await helper
         .getRequest()
         .post(`${apiPrefix}/auth/login`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({
           username: 'admin',
           password: 'admin123',
@@ -119,7 +119,7 @@ describe('Auth E2E Tests', () => {
       const response = await helper
         .getRequest()
         .post(`${apiPrefix}/auth/login`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({
           username: 'admin',
           password: 'wrongpassword',
@@ -133,7 +133,7 @@ describe('Auth E2E Tests', () => {
       const response = await helper
         .getRequest()
         .post(`${apiPrefix}/auth/login`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({
           username: 'nonexistent_user_xyz',
           password: 'somepassword',
@@ -147,7 +147,7 @@ describe('Auth E2E Tests', () => {
       const response = await helper
         .getRequest()
         .post(`${apiPrefix}/auth/login`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({
           username: 'admin',
           password: 'admin123',
@@ -173,7 +173,7 @@ describe('Auth E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/auth/logout`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -201,7 +201,7 @@ describe('Auth E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/getInfo`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -215,7 +215,7 @@ describe('Auth E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/getInfo`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       if (response.body.code === 200) {
@@ -231,7 +231,7 @@ describe('Auth E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/getInfo`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(Array.isArray(response.body.roles)).toBe(true);
@@ -242,7 +242,7 @@ describe('Auth E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/getInfo`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(Array.isArray(response.body.permissions)).toBe(true);
@@ -271,7 +271,7 @@ describe('Auth E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/getRouters`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -289,7 +289,7 @@ describe('Auth E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/getRouters`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       if (response.body.code === 200 && Array.isArray(response.body.data) && response.body.data.length > 0) {

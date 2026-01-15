@@ -2,7 +2,8 @@
 import { reactive } from 'vue';
 import { NButton } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { fetchUpdateUserPassword, fetchUpdateUserProfile } from '@/service/api/system';
+import { fetchUserUpdatePwd, fetchUserUpdateProfile } from '@/service/api-gen';
+import type { UpdateProfileDto, UpdatePwdDto } from '@/service/api-gen/types';
 import { useAuthStore } from '@/store/modules/auth';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import OnlineTable from './modules/online-table.vue';
@@ -29,8 +30,8 @@ const {
 } = useNaiveForm();
 const { createRequiredRule, patternRules } = useFormRules();
 
-type ProfileModel = Api.System.UserProfileOperateParams;
-type PasswordModel = Api.System.UserPasswordOperateParams & { confirmPassword: string };
+type ProfileModel = UpdateProfileDto;
+type PasswordModel = UpdatePwdDto & { confirmPassword: string };
 
 const profileModel: ProfileModel = reactive(createDefaultProfileModel());
 const passwordModel: PasswordModel = reactive(createDefaultPasswordModel());
@@ -40,7 +41,7 @@ function createDefaultProfileModel(): ProfileModel {
     nickName: userInfo.user?.nickName || '',
     email: userInfo.user?.email || '',
     phonenumber: userInfo.user?.phonenumber || '',
-    sex: userInfo.user?.sex || '0',
+    sex: (userInfo.user?.sex as ProfileModel['sex']) || '0',
   };
 }
 
@@ -72,7 +73,7 @@ async function updateProfile() {
   await profileValidate();
   startBtnLoading();
   try {
-    await fetchUpdateUserProfile(profileModel);
+    await fetchUserUpdateProfile(profileModel);
     window.$message?.success('更新成功');
     // 更新本地用户信息
     if (userInfo.user) {
@@ -95,7 +96,7 @@ async function updatePassword() {
   startBtnLoading();
   const { oldPassword, newPassword } = passwordModel;
   try {
-    await fetchUpdateUserPassword({ oldPassword, newPassword });
+    await fetchUserUpdatePwd({ oldPassword, newPassword });
     window.$message?.success('密码修改成功');
     // 清空表单
     Object.assign(passwordModel, createDefaultPasswordModel());

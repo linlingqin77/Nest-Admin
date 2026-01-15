@@ -70,13 +70,16 @@ describe('Property 6: Login Token Validity', () => {
    * Property 6a: A valid login should return a usable token
    */
   it('should return a valid token on successful login', async () => {
+    // Unlock account before testing to avoid lockout from previous test runs
+    await helper.unlockAccount('admin');
+    
     await fc.assert(
       fc.asyncProperty(fc.constant(null), async () => {
         // Perform login
         const loginResponse = await helper
           .getRequest()
           .post(`${apiPrefix}/auth/login`)
-          .set('tenant-id', '000000')
+          .set('x-tenant-id', '000000')
           .send({
             username: 'admin',
             password: 'admin123',
@@ -96,7 +99,7 @@ describe('Property 6: Login Token Validity', () => {
         return loginSuccess;
       }),
       {
-        numRuns: 100,
+        numRuns: 10, // Reduce runs to avoid account lockout
         verbose: true,
       },
     );
@@ -114,7 +117,7 @@ describe('Property 6: Login Token Validity', () => {
         const loginResponse = await helper
           .getRequest()
           .post(`${apiPrefix}/auth/login`)
-          .set('tenant-id', '000000')
+          .set('x-tenant-id', '000000')
           .send({
             username: 'admin',
             password: 'admin123',
@@ -132,7 +135,7 @@ describe('Property 6: Login Token Validity', () => {
           .getRequest()
           .get(fullPath)
           .set('Authorization', `Bearer ${token}`)
-          .set('tenant-id', '000000');
+          .set('x-tenant-id', '000000');
 
         // Property: Token should allow access (not 401 Unauthorized)
         const isAuthorized = response.status !== 401 && response.body.code !== 401;
@@ -164,7 +167,7 @@ describe('Property 6: Login Token Validity', () => {
         const loginResponse = await helper
           .getRequest()
           .post(`${apiPrefix}/auth/login`)
-          .set('tenant-id', '000000')
+          .set('x-tenant-id', '000000')
           .send({
             username: 'admin',
             password: 'admin123',
@@ -186,7 +189,7 @@ describe('Property 6: Login Token Validity', () => {
             .getRequest()
             .get(fullPath)
             .set('Authorization', `Bearer ${token}`)
-            .set('tenant-id', '000000');
+            .set('x-tenant-id', '000000');
 
           // Check if request was authorized
           if (response.status === 401 || response.body.code === 401) {
@@ -226,7 +229,7 @@ describe('Property 6: Login Token Validity', () => {
           .getRequest()
           .get(fullPath)
           .set('Authorization', `Bearer ${invalidToken}`)
-          .set('tenant-id', '000000');
+          .set('x-tenant-id', '000000');
 
         // Property: Invalid token should result in 401 Unauthorized
         const isRejected = response.status === 401 || response.body.code === 401;
@@ -256,7 +259,7 @@ describe('Property 6: Login Token Validity', () => {
         const loginResponse = await helper
           .getRequest()
           .post(`${apiPrefix}/auth/login`)
-          .set('tenant-id', '000000')
+          .set('x-tenant-id', '000000')
           .send({
             username: 'admin',
             password: 'admin123',
@@ -273,7 +276,7 @@ describe('Property 6: Login Token Validity', () => {
           .getRequest()
           .get(`${apiPrefix}/getInfo`)
           .set('Authorization', `Bearer ${token}`)
-          .set('tenant-id', '000000');
+          .set('x-tenant-id', '000000');
 
         if (beforeLogout.status === 401 || beforeLogout.body.code === 401) {
           return true; // Skip if token doesn't work initially
@@ -284,7 +287,7 @@ describe('Property 6: Login Token Validity', () => {
           .getRequest()
           .post(`${apiPrefix}/auth/logout`)
           .set('Authorization', `Bearer ${token}`)
-          .set('tenant-id', '000000');
+          .set('x-tenant-id', '000000');
 
         // Property: After logout, token should be invalidated
         // Note: Some systems may still accept the token briefly due to caching

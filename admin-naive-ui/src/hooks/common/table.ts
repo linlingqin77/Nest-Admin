@@ -225,7 +225,7 @@ export function useTable<A extends NaiveUI.TableApiFn>(config: NaiveUI.NaiveTabl
   };
 }
 
-export function useTableOperate<T extends TableData = TableData>(data: Ref<T[]>, getData: () => Promise<void>) {
+export function useTableOperate<T extends Record<string, any> = TableData>(data: Ref<T[]>, getData: () => Promise<void>) {
   const { bool: drawerVisible, setTrue: openDrawer, setFalse: closeDrawer } = useBoolean();
 
   const operateType = ref<NaiveUI.TableOperateType>('add');
@@ -279,8 +279,8 @@ export function useTableOperate<T extends TableData = TableData>(data: Ref<T[]>,
   };
 }
 
-function isTableColumnHasKey<T>(column: TableColumn<T>): column is NaiveUI.TableColumnWithKey<T> {
-  return Boolean((column as NaiveUI.TableColumnWithKey<T>).key);
+function isTableColumnHasKey<T>(column: TableColumn<T>): column is NaiveUI.DataTableBaseColumn<T> {
+  return Boolean((column as NaiveUI.DataTableBaseColumn<T>).key);
 }
 
 /**

@@ -1,6 +1,7 @@
 <script setup lang="tsx">
 import { NButton } from 'naive-ui';
-import { fetchBatchDeleteOperLog, fetchCleanOperLog, fetchGetOperLogList } from '@/service/api/monitor/oper-log';
+import { fetchOperlogFindAll, fetchOperlogRemove, fetchOperlogRemoveAll } from '@/service/api-gen';
+import type { OperLogResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useDownload } from '@/hooks/business/download';
@@ -15,6 +16,18 @@ import OperLogSearch from './modules/oper-log-search.vue';
 defineOptions({
   name: 'OperLogList',
 });
+
+/** 搜索参数接口 */
+interface SearchParams {
+  pageNum: number;
+  pageSize: number;
+  title: string | null;
+  businessType: number | null;
+  operName: string | null;
+  operIp: string | null;
+  status: string | null;
+  params: { beginTime?: string; endTime?: string };
+}
 
 useDict('sys_common_status');
 useDict('sys_oper_type');
@@ -36,7 +49,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetOperLogList,
+  apiFn: fetchOperlogFindAll as any,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -48,8 +61,8 @@ const {
     operIp: null,
     status: null,
     params: {},
-  },
-  columns: () => [
+  } as SearchParams,
+  columns: (() => [
     {
       type: 'selection',
       align: 'center',
@@ -72,7 +85,7 @@ const {
       title: '操作类型',
       align: 'center',
       minWidth: 120,
-      render(row) {
+      render: (row: OperLogResponseDto) => {
         return <DictTag size="small" value={row.businessType} dictCode="sys_oper_type" />;
       },
     },
@@ -99,7 +112,7 @@ const {
       title: '操作状态',
       align: 'center',
       minWidth: 120,
-      render(row) {
+      render: (row: OperLogResponseDto) => {
         return <DictTag size="small" value={row.status} dictCode="sys_common_status" />;
       },
     },
@@ -114,7 +127,7 @@ const {
       title: '消耗时间',
       align: 'center',
       minWidth: 120,
-      render(row) {
+      render: (row: OperLogResponseDto) => {
         return `${row.costTime} ms`;
       },
     },
@@ -123,7 +136,7 @@ const {
       title: $t('common.operate'),
       align: 'center',
       width: 130,
-      render: (row) => {
+      render: (row: OperLogResponseDto) => {
         const viewBtn = () => {
           return (
             <ButtonIcon
@@ -138,22 +151,23 @@ const {
         return <div class="flex-center gap-8px">{viewBtn()}</div>;
       },
     },
-  ],
+  ]) as any,
 });
 
-const { drawerVisible, editingData, handleEdit, checkedRowKeys, onBatchDeleted } = useTableOperate(data, getData);
+const { drawerVisible, editingData, handleEdit, checkedRowKeys, onBatchDeleted } = useTableOperate(data as any, getData);
 
 async function handleBatchDelete() {
   // request
   try {
-    await fetchBatchDeleteOperLog(checkedRowKeys.value);
+    await fetchOperlogRemove(checkedRowKeys.value.join(','));
     onBatchDeleted();
   } catch {
     // error handled by request interceptor
   }
 }
+
 async function view(operId: CommonType.IdType) {
-  handleEdit('operId', operId);
+  handleEdit('operId' as any, operId);
 }
 
 async function handleExport() {
@@ -168,7 +182,7 @@ async function handleCleanOperLog() {
     negativeText: '取消',
     onPositiveClick: async () => {
       try {
-        await fetchCleanOperLog();
+        await fetchOperlogRemoveAll();
         window.$message?.success('清空成功');
         await getData();
       } catch {
@@ -215,7 +229,7 @@ async function handleCleanOperLog() {
         v-model:checked-row-keys="checkedRowKeys"
         :columns="columns"
         :data="data"
-        size="small"
+        v-bind="tableProps"
         :flex-height="!appStore.isMobile"
         :scroll-x="962"
         :loading="loading"
@@ -224,7 +238,7 @@ async function handleCleanOperLog() {
         :pagination="mobilePagination"
         class="sm:h-full"
       />
-      <OperLogViewDrawer v-model:visible="drawerVisible" :row-data="editingData" />
+      <OperLogViewDrawer v-model:visible="drawerVisible" :row-data="editingData as OperLogResponseDto" />
     </NCard>
   </div>
 </template>

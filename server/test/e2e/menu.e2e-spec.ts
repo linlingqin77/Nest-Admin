@@ -51,7 +51,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/menu/list`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -63,7 +63,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/menu/list`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       if (response.body.data.length > 0) {
@@ -82,7 +82,7 @@ describe('Menu E2E Tests', () => {
         .get(`${apiPrefix}/system/menu/list`)
         .query({ status: '0' })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -97,7 +97,7 @@ describe('Menu E2E Tests', () => {
         .get(`${apiPrefix}/system/menu/list`)
         .query({ menuName: '系统' })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -130,7 +130,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/menu`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(menuData)
         .expect(201);
 
@@ -158,7 +158,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/menu`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(menuData)
         .expect(201);
 
@@ -185,7 +185,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/menu`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(parentData)
         .expect(201);
 
@@ -209,7 +209,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/menu`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(buttonData)
         .expect(201);
 
@@ -257,7 +257,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/menu`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(menuData);
 
       testMenuId = response.body.data.menuId;
@@ -272,7 +272,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/menu/${testMenuId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       // Currently returns 500 due to repository bug
       // When fixed, should return 200 with menu details
@@ -309,7 +309,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/menu`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(menuData);
 
       testMenuId = response.body.data.menuId;
@@ -336,7 +336,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .put(`${apiPrefix}/system/menu`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(updateData);
 
       // Currently returns 500 due to repository bug
@@ -380,7 +380,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/menu`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(menuData);
 
       const menuId = createResponse.body.data.menuId;
@@ -391,7 +391,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .delete(`${apiPrefix}/system/menu/${menuId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       // Currently returns 500 due to repository bug
       // When fixed, should return 200
@@ -413,7 +413,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/menu/treeselect`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -425,7 +425,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/menu/treeselect`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       if (response.body.data.length > 0) {
@@ -451,7 +451,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/menu/roleMenuTreeselect/1`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -466,7 +466,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/menu/roleMenuTreeselect/99999`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -488,7 +488,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/menu/getRouters`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -500,7 +500,7 @@ describe('Menu E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/menu/getRouters`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       if (response.body.data.length > 0) {

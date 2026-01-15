@@ -235,7 +235,7 @@ export class TestHelper {
 
     const response = await request(this.app.getHttpServer())
       .post(`${this.config.apiPrefix}/auth/login`)
-      .set('tenant-id', tenantId)
+      .set('x-tenant-id', tenantId)
       .send({
         username,
         password,
@@ -298,7 +298,7 @@ export class TestHelper {
     return this.getAuthRequest()
       .get(url)
       .set('Authorization', `Bearer ${this.token}`)
-      .set('tenant-id', this.config.tenantId);
+      .set('x-tenant-id', this.config.tenantId);
   }
 
   /**
@@ -311,7 +311,7 @@ export class TestHelper {
     return this.getAuthRequest()
       .post(url)
       .set('Authorization', `Bearer ${this.token}`)
-      .set('tenant-id', this.config.tenantId);
+      .set('x-tenant-id', this.config.tenantId);
   }
 
   /**
@@ -324,7 +324,7 @@ export class TestHelper {
     return this.getAuthRequest()
       .put(url)
       .set('Authorization', `Bearer ${this.token}`)
-      .set('tenant-id', this.config.tenantId);
+      .set('x-tenant-id', this.config.tenantId);
   }
 
   /**
@@ -337,7 +337,7 @@ export class TestHelper {
     return this.getAuthRequest()
       .delete(url)
       .set('Authorization', `Bearer ${this.token}`)
-      .set('tenant-id', this.config.tenantId);
+      .set('x-tenant-id', this.config.tenantId);
   }
 
   /**

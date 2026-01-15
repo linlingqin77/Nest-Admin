@@ -291,5 +291,170 @@ describe('MenuService', () => {
       expect(result.data.menus).toBeDefined();
       expect(result.data.checkedKeys).toEqual([1]);
     });
+
+    it('should return empty checked keys when role has no menus', async () => {
+      (menuRepo.findAllMenus as jest.Mock).mockResolvedValue([mockMenu]);
+      (menuRepo.findRoleMenus as jest.Mock).mockResolvedValue([]);
+
+      const result = await service.roleMenuTreeselect(999);
+
+      expect(result.code).toBe(ResponseCode.SUCCESS);
+      expect(result.data.checkedKeys).toEqual([]);
+    });
+  });
+
+  describe('cascadeRemove', () => {
+    it('should cascade delete multiple menus', async () => {
+      // Mock findMany to return empty array (no children)
+      (prisma.sysMenu.findMany as jest.Mock).mockResolvedValue([]);
+      (prisma.sysMenu.updateMany as jest.Mock).mockResolvedValue({ count: 3 });
+
+      const result = await service.cascadeRemove([1, 2, 3]);
+
+      expect(result.code).toBe(ResponseCode.SUCCESS);
+      expect(result.data).toBe(3);
+      expect(prisma.sysMenu.updateMany).toHaveBeenCalledWith({
+        where: { menuId: { in: [1, 2, 3] } },
+        data: { delFlag: '1' },
+      });
+    });
+
+    it('should cascade delete menus with children', async () => {
+      // First call returns children, second call returns no more children
+      (prisma.sysMenu.findMany as jest.Mock)
+        .mockResolvedValueOnce([{ menuId: 4 }, { menuId: 5 }]) // children of [1]
+        .mockResolvedValueOnce([]); // no more children
+      (prisma.sysMenu.updateMany as jest.Mock).mockResolvedValue({ count: 3 });
+
+      const result = await service.cascadeRemove([1]);
+
+      expect(result.code).toBe(ResponseCode.SUCCESS);
+      // Should include parent and children
+      expect(prisma.sysMenu.updateMany).toHaveBeenCalledWith({
+        where: { menuId: { in: expect.arrayContaining([1, 4, 5]) } },
+        data: { delFlag: '1' },
+      });
+    });
+  });
+
+  describe('getMenuListByUserId', () => {
+    it('should return menu list for user', async () => {
+      const mockMenus = [mockMenu];
+      (userService.getRoleIds as jest.Mock).mockResolvedValue([2]);
+      (prisma.sysRoleMenu.findMany as jest.Mock).mockResolvedValue([{ menuId: 1 }]);
+      (prisma.sysMenu.findMany as jest.Mock).mockResolvedValue(mockMenus);
+
+      const result = await service.getMenuListByUserId(1);
+
+      expect(result.code).toBe(ResponseCode.SUCCESS);
+      expect(result.data).toBeDefined();
+    });
+
+    it('should return all menus for super admin (roleId=1)', async () => {
+      (userService.getRoleIds as jest.Mock).mockResolvedValue([1]);
+      (prisma.sysMenu.findMany as jest.Mock).mockResolvedValue([mockMenu]);
+
+      const result = await service.getMenuListByUserId(1);
+
+      expect(result.code).toBe(ResponseCode.SUCCESS);
+      // 超级管理员应该获取所有菜单
+      expect(prisma.sysMenu.findMany).toHaveBeenCalled();
+    });
+
+    it('should return empty array when user has no menus', async () => {
+      (userService.getRoleIds as jest.Mock).mockResolvedValue([2]);
+      (prisma.sysRoleMenu.findMany as jest.Mock).mockResolvedValue([]);
+
+      const result = await service.getMenuListByUserId(999);
+
+      expect(result.code).toBe(ResponseCode.SUCCESS);
+      expect(result.data).toEqual([]);
+    });
+  });
+
+  describe('create - edge cases', () => {
+    it('should create menu with default path and icon when not provided', async () => {
+      const createDto = {
+        menuName: '新菜单',
+        parentId: 0,
+        orderNum: 1,
+        menuType: 'M',
+      };
+
+      (menuRepo.create as jest.Mock).mockResolvedValue({ menuId: 2, ...createDto });
+
+      const result = await service.create(createDto as any);
+
+      expect(result.code).toBe(ResponseCode.SUCCESS);
+      expect(menuRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: '',
+          icon: '',
+        }),
+      );
+    });
+
+    it('should create menu with provided path and icon', async () => {
+      const createDto = {
+        menuName: '新菜单',
+        parentId: 0,
+        orderNum: 1,
+        menuType: 'M',
+        path: '/custom',
+        icon: 'custom-icon',
+      };
+
+      (menuRepo.create as jest.Mock).mockResolvedValue({ menuId: 2, ...createDto });
+
+      const result = await service.create(createDto as any);
+
+      expect(result.code).toBe(ResponseCode.SUCCESS);
+      expect(menuRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: '/custom',
+          icon: 'custom-icon',
+        }),
+      );
+    });
+  });
+
+  describe('treeSelect', () => {
+    it('should return menu tree structure', async () => {
+      (menuRepo.findAllMenus as jest.Mock).mockResolvedValue([mockMenu]);
+
+      const result = await service.treeSelect();
+
+      expect(result.code).toBe(ResponseCode.SUCCESS);
+      expect(result.data).toBeDefined();
+    });
+
+    it('should return empty tree when no menus', async () => {
+      (menuRepo.findAllMenus as jest.Mock).mockResolvedValue([]);
+
+      const result = await service.treeSelect();
+
+      expect(result.code).toBe(ResponseCode.SUCCESS);
+      expect(result.data).toEqual([]);
+    });
+  });
+
+  describe('tenantPackageMenuTreeselect - edge cases', () => {
+    it('should return empty checked keys', async () => {
+      (prisma.sysMenu.findMany as jest.Mock).mockResolvedValue([mockMenu]);
+
+      const result = await service.tenantPackageMenuTreeselect(1);
+
+      expect(result.code).toBe(ResponseCode.SUCCESS);
+      expect(result.data.checkedKeys).toEqual([]);
+    });
+
+    it('should return empty menus when no menus exist', async () => {
+      (prisma.sysMenu.findMany as jest.Mock).mockResolvedValue([]);
+
+      const result = await service.tenantPackageMenuTreeselect(1);
+
+      expect(result.code).toBe(ResponseCode.SUCCESS);
+      expect(result.data.menus).toEqual([]);
+    });
   });
 });

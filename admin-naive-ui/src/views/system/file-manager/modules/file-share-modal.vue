@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
 import { NModal, NCard, NForm, NFormItem, NInput, NInputNumber, NSwitch, NButton, NSpace, useMessage } from 'naive-ui';
-import { fetchCreateShare } from '@/service/api';
+import { fetchFileManagerCreateShare } from '@/service/api-gen';
+import type { CreateShareRequestDto } from '@/service/api-gen/types';
 import { $t } from '@/locales';
 
 const message = useMessage();
@@ -54,7 +55,7 @@ async function handleCreate() {
   loading.value = true;
 
   try {
-    const params: any = {
+    const params: CreateShareRequestDto = {
       uploadId: formModel.uploadId,
     };
 
@@ -70,7 +71,7 @@ async function handleCreate() {
       params.maxDownload = formModel.maxDownload;
     }
 
-    const { data } = await fetchCreateShare(params);
+    const { data } = await fetchFileManagerCreateShare(params);
 
     shareResult.value = data;
     message.success($t('page.fileManager.createShareSuccess'));

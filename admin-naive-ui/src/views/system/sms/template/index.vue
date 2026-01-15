@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { NDivider, NTag } from 'naive-ui';
-import { fetchBatchDeleteSmsTemplate, fetchGetSmsTemplateList } from '@/service/api/system/sms';
+import { fetchSmsTemplateRemove, fetchSmsTemplateFindAll } from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
@@ -37,7 +37,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetSmsTemplateList,
+  apiFn: fetchSmsTemplateFindAll as any,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -89,7 +89,8 @@ const {
       align: 'center',
       minWidth: 100,
       render(row) {
-        const typeInfo = templateTypeMap[row.type] || { label: '未知', type: 'default' };
+        const typedRow = row as unknown as Api.System.SmsTemplate;
+        const typeInfo = templateTypeMap[typedRow.type] || { label: '未知', type: 'default' };
         return <NTag size="small" type={typeInfo.type}>{typeInfo.label}</NTag>;
       },
     },
@@ -117,7 +118,8 @@ const {
       align: 'center',
       minWidth: 80,
       render(row) {
-        return <DictTag size="small" value={row.status} dictCode="sys_normal_disable" />;
+        const typedRow = row as unknown as Api.System.SmsTemplate;
+        return <DictTag size="small" value={typedRow.status} dictCode="sys_normal_disable" />;
       },
     },
     {
@@ -132,6 +134,7 @@ const {
       align: 'center',
       width: 130,
       render: (row) => {
+        const typedRow = row as unknown as Api.System.SmsTemplate;
         const divider = () => {
           if (!hasAuth('system:sms:template:edit') || !hasAuth('system:sms:template:remove')) {
             return null;
@@ -149,7 +152,7 @@ const {
               type="primary"
               icon="material-symbols:drive-file-rename-outline-outline"
               tooltipContent={$t('common.edit')}
-              onClick={() => edit(row.id!)}
+              onClick={() => edit(typedRow.id!)}
             />
           );
         };
@@ -165,7 +168,7 @@ const {
               icon="material-symbols:delete-outline"
               tooltipContent={$t('common.delete')}
               popconfirmContent={$t('common.confirmDelete')}
-              onPositiveClick={() => handleDelete(row.id!)}
+              onPositiveClick={() => handleDelete(typedRow.id!)}
             />
           );
         };
@@ -187,7 +190,7 @@ const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedR
 
 async function handleBatchDelete() {
   try {
-    await fetchBatchDeleteSmsTemplate(checkedRowKeys.value);
+    await fetchSmsTemplateRemove(checkedRowKeys.value.join(','));
     onBatchDeleted();
   } catch {
     // error handled by request interceptor
@@ -196,7 +199,7 @@ async function handleBatchDelete() {
 
 async function handleDelete(id: CommonType.IdType) {
   try {
-    await fetchBatchDeleteSmsTemplate([id]);
+    await fetchSmsTemplateRemove(id);
     onDeleted();
   } catch {
     // error handled by request interceptor
@@ -204,7 +207,7 @@ async function handleDelete(id: CommonType.IdType) {
 }
 
 async function edit(id: CommonType.IdType) {
-  handleEdit('id', id);
+  handleEdit('id' as any, id);
 }
 </script>
 
@@ -241,7 +244,7 @@ async function edit(id: CommonType.IdType) {
       <TemplateOperateDrawer
         v-model:visible="drawerVisible"
         :operate-type="operateType"
-        :row-data="editingData"
+        :row-data="(editingData as any)"
         @submitted="getData"
       />
     </NCard>

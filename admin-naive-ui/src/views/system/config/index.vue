@@ -1,6 +1,7 @@
 <script setup lang="tsx">
 import { NDivider } from 'naive-ui';
-import { fetchBatchDeleteConfig, fetchGetConfigList, fetchRefreshCache } from '@/service/api/system/config';
+import { fetchConfigFindAll, fetchConfigRemove, fetchConfigRefreshCache } from '@/service/api-gen';
+import type { ConfigResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useDownload } from '@/hooks/business/download';
@@ -35,7 +36,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetConfigList,
+  apiFn: fetchConfigFindAll,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -165,7 +166,7 @@ const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedR
 async function handleBatchDelete() {
   // request
   try {
-    await fetchBatchDeleteConfig(checkedRowKeys.value);
+    await fetchConfigRemove(checkedRowKeys.value.join(','));
     onBatchDeleted();
   } catch {
     // error handled by request interceptor
@@ -175,7 +176,7 @@ async function handleBatchDelete() {
 async function handleDelete(configId: CommonType.IdType) {
   // request
   try {
-    await fetchBatchDeleteConfig([configId]);
+    await fetchConfigRemove(configId);
     onDeleted();
   } catch {
     // error handled by request interceptor
@@ -192,7 +193,7 @@ async function handleExport() {
 
 async function handleRefreshCache() {
   try {
-    await fetchRefreshCache();
+    await fetchConfigRefreshCache();
     window.$message?.success($t('page.system.config.refreshCacheSuccess'));
     await getData();
   } catch {

@@ -24,7 +24,7 @@ let pollingTimer: ReturnType<typeof setInterval> | null = null;
 async function loadUnreadCount() {
   try {
     const { data } = await fetchGetUnreadCount();
-    unreadCount.value = data?.count ?? 0;
+    unreadCount.value = data ?? 0;
   } catch {
     // error handled by request interceptor
   }
@@ -33,7 +33,7 @@ async function loadUnreadCount() {
 async function loadRecentMessages() {
   loading.value = true;
   try {
-    const { data } = await fetchGetRecentMessages(10);
+    const { data } = await fetchGetRecentMessages();
     recentMessages.value = data ?? [];
   } catch {
     // error handled by request interceptor
@@ -46,7 +46,7 @@ async function handleMarkAsRead(message: Api.System.NotifyMessage) {
   if (message.readStatus) return;
 
   try {
-    await fetchMarkAsRead(message.id);
+    await fetchMarkAsRead([message.id]);
     message.readStatus = true;
     unreadCount.value = Math.max(0, unreadCount.value - 1);
   } catch {
@@ -72,7 +72,7 @@ function goToMessageList() {
   router.push('/system/notify/message');
 }
 
-function formatTime(time: string) {
+function formatTime(time: string | undefined) {
   if (!time) return '';
   const date = new Date(time);
   const now = new Date();

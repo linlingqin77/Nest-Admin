@@ -18,16 +18,17 @@ const { formRef, validate, restoreValidation } = useNaiveForm();
 
 const dateRangeCreateTime = ref<[string, string] | null>(null);
 
-const model = defineModel<Api.System.ConfigSearchParams>('model', { required: true });
+const model = defineModel<Record<string, any>>('model', { required: true });
 
 function onDateRangeCreateTimeUpdate(value: [string, string] | null) {
-  const params = model.value.params!;
+  const params = (model.value.params || {}) as { beginTime?: string; endTime?: string };
   if (value && value.length === 2) {
     [params.beginTime, params.endTime] = value;
   } else {
     params.beginTime = undefined;
     params.endTime = undefined;
   }
+  model.value.params = params;
 }
 
 async function reset() {
@@ -93,13 +94,13 @@ async function search() {
               <NSpace class="w-full" justify="end">
                 <NButton @click="reset">
                   <template #icon>
-                    <icon-ic-round-refresh class="text-icon" />
+                    <SvgIcon icon="ic:round-refresh" class="text-icon" />
                   </template>
                   {{ $t('common.reset') }}
                 </NButton>
                 <NButton type="primary" ghost @click="search">
                   <template #icon>
-                    <icon-ic-round-search class="text-icon" />
+                    <SvgIcon icon="ic:round-search" class="text-icon" />
                   </template>
                   {{ $t('common.search') }}
                 </NButton>

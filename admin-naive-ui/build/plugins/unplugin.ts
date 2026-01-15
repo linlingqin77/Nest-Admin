@@ -31,6 +31,8 @@ export function setupUnplugin(viteEnv: Env.ImportMeta) {
     Components({
       dts: 'src/typings/components.d.ts',
       types: [{ from: 'vue-router', names: ['RouterLink', 'RouterView'] }],
+      // 禁用全局类型声明，避免生成无效的 TSX 支持代码
+      globs: ['src/components/**/*.vue'],
       resolvers: [
         NaiveUiResolver(),
         IconsResolver({

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue';
-import { fetchResetUserPassword } from '@/service/api/system';
+import { fetchUserResetPwd } from '@/service/api-gen';
+import type { ResetPwdDto, UserResponseDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -10,7 +11,7 @@ defineOptions({
 
 interface Props {
   /** the edit row data */
-  rowData?: Api.System.User | null;
+  rowData?: UserResponseDto | null;
 }
 
 const props = defineProps<Props>();
@@ -28,13 +29,13 @@ const visible = defineModel<boolean>('visible', {
 const { formRef, validate, restoreValidation } = useNaiveForm();
 const { patternRules } = useFormRules();
 
-type Model = Api.System.UserOperateParams & { deptName: string };
+type Model = Partial<ResetPwdDto> & { userName?: string; nickName?: string; deptName?: string };
 
 const model: Model = reactive(createDefaultModel());
 
 function createDefaultModel(): Model {
   return {
-    deptId: null,
+    userId: undefined,
     userName: '',
     nickName: '',
     deptName: '',
@@ -64,7 +65,7 @@ async function handleSubmit() {
 
   // request
   try {
-    await fetchResetUserPassword(userId!, password!);
+    await fetchUserResetPwd({ userId: userId!, password: password! });
     window.$message?.success($t('common.updateSuccess'));
     closeDrawer();
     emit('submitted');

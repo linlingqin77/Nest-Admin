@@ -232,6 +232,6 @@ export function useTreeTableOperate<T extends TableData = TableData>(_: Ref<T[]>
   };
 }
 
-function isTableColumnHasKey<T>(column: TableColumn<T>): column is NaiveUI.TableColumnWithKey<T> {
-  return Boolean((column as NaiveUI.TableColumnWithKey<T>).key);
+function isTableColumnHasKey<T>(column: TableColumn<T>): column is NaiveUI.DataTableBaseColumn<T> {
+  return Boolean((column as NaiveUI.DataTableBaseColumn<T>).key);
 }

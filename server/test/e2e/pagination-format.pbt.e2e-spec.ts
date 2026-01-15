@@ -106,7 +106,7 @@ describe('Property 4: Pagination Structure Consistency', () => {
             .getRequest()
             .get(fullPath)
             .set('Authorization', `Bearer ${token}`)
-            .set('tenant-id', '000000');
+            .set('x-tenant-id', '000000');
 
           // Skip if endpoint returns error (e.g., permission denied)
           if (response.body.code !== 200) {
@@ -166,7 +166,7 @@ describe('Property 4: Pagination Structure Consistency', () => {
             .getRequest()
             .get(fullPath)
             .set('Authorization', `Bearer ${token}`)
-            .set('tenant-id', '000000');
+            .set('x-tenant-id', '000000');
 
           // Skip if endpoint returns error
           if (response.body.code !== 200) {
@@ -237,7 +237,7 @@ describe('Property 4: Pagination Structure Consistency', () => {
             .getRequest()
             .get(fullPath)
             .set('Authorization', `Bearer ${token}`)
-            .set('tenant-id', '000000');
+            .set('x-tenant-id', '000000');
 
           // Skip if endpoint returns error
           if (response.body.code !== 200) {
@@ -291,7 +291,7 @@ describe('Property 4: Pagination Structure Consistency', () => {
             .getRequest()
             .get(fullPath)
             .set('Authorization', `Bearer ${token}`)
-            .set('tenant-id', '000000');
+            .set('x-tenant-id', '000000');
 
           // Skip if endpoint returns error
           if (response.body.code !== 200) {

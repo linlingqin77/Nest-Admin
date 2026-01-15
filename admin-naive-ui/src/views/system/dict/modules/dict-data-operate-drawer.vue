@@ -1,7 +1,8 @@
 <script setup lang="tsx">
 import { computed, reactive, watch } from 'vue';
 import { NTag } from 'naive-ui';
-import { fetchCreateDictData, fetchUpdateDictData } from '@/service/api/system/dict-data';
+import { fetchDictCreateDictData, fetchDictUpdateDictData } from '@/service/api-gen';
+import type { DictDataResponseDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { useDict } from '@/hooks/business/dict';
 import { $t } from '@/locales';
@@ -14,7 +15,7 @@ interface Props {
   /** the type of operation */
   operateType: NaiveUI.TableOperateType;
   /** the edit row data */
-  rowData?: Api.System.DictData | null;
+  rowData?: DictDataResponseDto | null;
   dictType: string;
 }
 
@@ -41,7 +42,17 @@ const title = computed(() => {
   return titles[props.operateType];
 });
 
-type Model = Api.System.DictDataOperateParams;
+type Model = {
+  dictCode?: number;
+  dictSort?: number;
+  dictLabel: string;
+  dictValue: string;
+  dictType: string;
+  cssClass?: string;
+  listClass: string | null;
+  remark?: string;
+  isDefault?: string;
+};
 
 const model: Model = reactive(createDefaultModel());
 
@@ -98,30 +109,28 @@ async function handleSubmit() {
   // request
   try {
     if (props.operateType === 'add') {
-      const { dictSort, dictLabel, dictValue, dictType, cssClass, listClass, isDefault, remark } = model;
-      await fetchCreateDictData({
+      const { dictSort, dictLabel, dictValue, dictType, cssClass, listClass, remark } = model;
+      await fetchDictCreateDictData({
         dictSort,
         dictLabel,
         dictValue,
         dictType,
         cssClass,
-        listClass,
-        isDefault,
+        listClass: listClass || '',
         remark,
       });
     }
 
     if (props.operateType === 'edit') {
-      const { dictCode, dictSort, dictLabel, dictValue, dictType, cssClass, listClass, isDefault, remark } = model;
-      await fetchUpdateDictData({
-        dictCode,
+      const { dictCode, dictSort, dictLabel, dictValue, dictType, cssClass, listClass, remark } = model;
+      await fetchDictUpdateDictData({
+        dictCode: dictCode!,
         dictSort,
         dictLabel,
         dictValue,
         dictType,
         cssClass,
-        listClass,
-        isDefault,
+        listClass: listClass || '',
         remark,
       });
     }

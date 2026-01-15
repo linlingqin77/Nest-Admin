@@ -4,7 +4,9 @@ import { useRoute, useRouter } from 'vue-router';
 import { NButton, NDivider } from 'naive-ui';
 import { useBoolean } from '@sa/hooks';
 import { jsonClone } from '@sa/utils';
-import { fetchCleanJobLog, fetchDeleteJobLog, fetchGetJobLogList } from '@/service/api/monitor/job-log';
+import { fetchJobLogList, fetchJobLogClean } from '@/service/api-gen';
+import { fetchDeleteJobLog } from '@/service/api/monitor/job-log';
+import type { JobLogResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
 import { useDict } from '@/hooks/business/dict';
@@ -20,6 +22,19 @@ defineOptions({
   name: 'JobLogList',
 });
 
+/** 搜索参数接口 */
+interface SearchParams {
+  pageNum: number;
+  pageSize: number;
+  jobName: string | null;
+  jobGroup: string | null;
+  status: string | null;
+  params: {
+    beginTime?: string;
+    endTime?: string;
+  };
+}
+
 useDict('sys_job_group');
 useDict('sys_common_status');
 
@@ -32,7 +47,7 @@ const router = useRouter();
 const tableProps = useTableProps();
 
 const { bool: detailVisible, setTrue: openDetailDrawer } = useBoolean();
-const detailData = ref<Api.Monitor.JobLog | null>(null);
+const detailData = ref<JobLogResponseDto | null>(null);
 
 // 从路由参数获取初始搜索条件
 const initialJobName = (route.query.jobName as string) || null;
@@ -49,7 +64,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetJobLogList,
+  apiFn: fetchJobLogList as any,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -57,7 +72,7 @@ const {
     jobGroup: initialJobGroup,
     status: null,
     params: {},
-  },
+  } as SearchParams,
   columns: () => [
     {
       type: 'selection',
@@ -83,7 +98,7 @@ const {
       align: 'center',
       width: 100,
       render(row) {
-        return <DictTag value={row.jobGroup} dictCode="sys_job_group" />;
+        return <DictTag value={(row as unknown as JobLogResponseDto).jobGroup} dictCode="sys_job_group" />;
       },
     },
     {
@@ -106,7 +121,7 @@ const {
       align: 'center',
       width: 100,
       render(row) {
-        return <DictTag value={row.status} dictCode="sys_common_status" />;
+        return <DictTag value={(row as unknown as JobLogResponseDto).status} dictCode="sys_common_status" />;
       },
     },
     {
@@ -121,13 +136,14 @@ const {
       align: 'center',
       width: 100,
       render: (row) => {
+        const typedRow = row as unknown as JobLogResponseDto;
         const viewBtn = () => (
           <ButtonIcon
             text
             type="primary"
             icon="material-symbols:visibility-outline"
             tooltipContent="详情"
-            onClick={() => handleView(row)}
+            onClick={() => handleView(typedRow)}
           />
         );
 
@@ -138,7 +154,7 @@ const {
             icon="material-symbols:delete-outline"
             tooltipContent={$t('common.delete')}
             popconfirmContent={$t('common.confirmDelete')}
-            onPositiveClick={() => handleDelete(row.jobLogId!)}
+            onPositiveClick={() => handleDelete(typedRow.jobLogId!)}
           />
         );
 
@@ -161,7 +177,7 @@ const {
   ],
 });
 
-const { checkedRowKeys, onBatchDeleted, onDeleted } = useTableOperate(data, getData);
+const { checkedRowKeys, onBatchDeleted, onDeleted } = useTableOperate(data as any, getData);
 
 async function handleBatchDelete() {
   try {
@@ -189,7 +205,7 @@ async function handleClean() {
     negativeText: '取消',
     onPositiveClick: async () => {
       try {
-        await fetchCleanJobLog();
+        await fetchJobLogClean();
         window.$message?.success('清空成功');
         getData();
       } catch {
@@ -199,13 +215,13 @@ async function handleClean() {
   });
 }
 
-function handleView(row: Api.Monitor.JobLog) {
+function handleView(row: JobLogResponseDto) {
   detailData.value = jsonClone(row);
   openDetailDrawer();
 }
 
 function handleExport() {
-  download('/monitor/jobLog/export', searchParams, `调度日志_${new Date().getTime()}.xlsx`);
+  download('/monitor/jobLog/export', searchParams as SearchParams, `调度日志_${new Date().getTime()}.xlsx`);
 }
 
 function handleClose() {
@@ -222,7 +238,7 @@ onMounted(() => {
 
 <template>
   <div class="min-h-500px flex-col-stretch gap-12px overflow-hidden lt-sm:overflow-auto">
-    <JobLogSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getDataByPage" />
+    <JobLogSearch v-model:model="(searchParams as any)" @reset="resetSearchParams" @search="getDataByPage" />
     <NCard title="调度日志" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
       <template #header-extra>
         <TableHeaderOperation

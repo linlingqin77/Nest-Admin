@@ -4,7 +4,7 @@ import type { DataTableColumns, TreeInst, TreeOption } from 'naive-ui';
 import { NButton, NDivider, NIcon, NInput, NPopconfirm } from 'naive-ui';
 import { useBoolean, useLoading } from '@sa/hooks';
 import { menuIsFrameRecord, menuTypeRecord } from '@/constants/business';
-import { fetchDeleteMenu, fetchGetMenuList } from '@/service/api/system';
+import { fetchMenuFindAll, fetchMenuRemove } from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useDict } from '@/hooks/business/dict';
 import { useAuth } from '@/hooks/business/auth';
@@ -58,13 +58,13 @@ const btnData = ref<Api.System.MenuList>([]);
 const getMeunTree = async () => {
   startLoading();
   try {
-    const { data } = await fetchGetMenuList();
+    const { data } = await fetchMenuFindAll();
     treeData.value = [
       {
         menuId: 0,
         menuName: $t('page.system.menu.rootName'),
         icon: 'material-symbols:home-outline-rounded',
-        children: handleTree(data, { idField: 'menuId', filterFn: (item) => item.menuType !== 'F' }),
+        children: handleTree(data as unknown as Api.System.MenuList, { idField: 'menuId', filterFn: (item) => item.menuType !== 'F' }),
       },
     ] as Api.System.Menu[];
   } catch {
@@ -102,7 +102,7 @@ function handleUpdateMenu() {
 
 async function handleDeleteMenu(id?: CommonType.IdType) {
   try {
-    await fetchDeleteMenu(id || checkedKeys.value[0]);
+    await fetchMenuRemove(id || checkedKeys.value[0]);
     window.$message?.success($t('common.deleteSuccess'));
     if (id) {
       getBtnMenuList();
@@ -193,19 +193,15 @@ const tagMap: Record<'0' | '1' | '2', NaiveUI.ThemeColor> = {
   '2': 'primary',
 };
 
-let controller = new AbortController();
-
 async function getBtnMenuList() {
   if (!currentMenu.value?.menuId) {
     return;
   }
-  controller.abort();
-  controller = new AbortController();
   startBtnLoading();
   btnData.value = [];
   try {
-    const { data } = await fetchGetMenuList({ parentId: currentMenu.value?.menuId, menuType: 'F' }, controller.signal);
-    btnData.value = data || [];
+    const { data } = await fetchMenuFindAll({ parentId: currentMenu.value?.menuId, menuType: 'F' });
+    btnData.value = (data || []) as unknown as Api.System.MenuList;
   } catch {
     // error handled by request interceptor
   } finally {

@@ -2,7 +2,7 @@
 import { computed, reactive, ref } from 'vue';
 import type { SelectOption } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { fetchCaptchaCode, fetchTenantList } from '@/service/api';
+import { fetchAuthGetCaptchaCode, fetchAuthGetTenantList } from '@/service/api-gen';
 import { fetchSocialAuthBinding } from '@/service/api/system';
 import { useAuthStore } from '@/store/modules/auth';
 import { useRouterPush } from '@/hooks/common/router';
@@ -28,7 +28,15 @@ const tenantEnabled = ref<boolean>(false);
 
 const tenantOption = ref<SelectOption[]>([]);
 
-const model: Api.Auth.PwdLoginForm = reactive({
+interface PwdLoginForm {
+  tenantId: string;
+  username: string;
+  password: string;
+  code?: string;
+  uuid?: string;
+}
+
+const model: PwdLoginForm = reactive({
   tenantId: '000000',
   username: '',
   password: '',
@@ -44,7 +52,7 @@ function handleDemoLogin() {
   }
 }
 
-type RuleKey = Extract<keyof Api.Auth.PwdLoginForm, 'username' | 'password' | 'code' | 'tenantId'>;
+type RuleKey = Extract<keyof PwdLoginForm, 'username' | 'password' | 'code' | 'tenantId'>;
 
 const rules = computed<Record<RuleKey, App.Global.FormRule[]>>(() => {
   // inside computed to make locale reactive, if not apply i18n, you can define it without computed
@@ -62,7 +70,7 @@ const rules = computed<Record<RuleKey, App.Global.FormRule[]>>(() => {
 async function handleFetchTenantList() {
   startTenantLoading();
   try {
-    const { data } = await fetchTenantList();
+    const { data } = await fetchAuthGetTenantList();
     if (!data) {
       return;
     }
@@ -95,7 +103,13 @@ async function handleSubmit() {
     localStg.remove('loginRember');
   }
   try {
-    await authStore.login(model);
+    await authStore.login({
+      tenantId: model.tenantId,
+      username: model.username,
+      password: model.password,
+      code: model.code,
+      uuid: model.uuid,
+    });
   } catch (error) {
     handleFetchCaptchaCode();
   }
@@ -104,7 +118,7 @@ async function handleSubmit() {
 async function handleFetchCaptchaCode() {
   startCodeLoading();
   try {
-    const { data } = await fetchCaptchaCode();
+    const { data } = await fetchAuthGetCaptchaCode();
     if (!data) {
       return;
     }
@@ -149,7 +163,9 @@ handleLoginRember();
 async function handleSocialLogin(type: Api.System.SocialSource) {
   try {
     const { data } = await fetchSocialAuthBinding(type, model.tenantId);
-    window.location.href = data;
+    if (data) {
+      window.location.href = data;
+    }
   } catch (error) {
     // error handled by request interceptor
   }

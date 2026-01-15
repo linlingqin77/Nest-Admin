@@ -15,11 +15,11 @@ const emit = defineEmits<Emits>();
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
 
-const model = defineModel<Api.System.NotifyMessageSearchParams>('model', { required: true });
+const model = defineModel<Record<string, any>>('model', { required: true });
 
 const readStatusOptions = [
-  { label: '未读', value: false },
-  { label: '已读', value: true },
+  { label: '未读', value: 'false' },
+  { label: '已读', value: 'true' },
 ];
 
 async function reset() {
@@ -57,13 +57,13 @@ async function search() {
               <NSpace class="w-full" justify="end">
                 <NButton @click="reset">
                   <template #icon>
-                    <icon-ic-round-refresh class="text-icon" />
+                    <SvgIcon icon="ic:round-refresh" class="text-icon" />
                   </template>
                   {{ $t('common.reset') }}
                 </NButton>
                 <NButton type="primary" ghost @click="search">
                   <template #icon>
-                    <icon-ic-round-search class="text-icon" />
+                    <SvgIcon icon="ic:round-search" class="text-icon" />
                   </template>
                   {{ $t('common.search') }}
                 </NButton>

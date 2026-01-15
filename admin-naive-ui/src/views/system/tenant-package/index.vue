@@ -1,15 +1,12 @@
 <script setup lang="tsx">
-import { defineOptions } from 'vue';
 import { NDivider } from 'naive-ui';
-import {
-  fetchBatchDeleteTenantPackage,
-  fetchGetTenantPackageList,
-  fetchUpdateTenantPackageStatus,
-} from '@/service/api/system/tenant-package';
+import { fetchTenantPackageFindAll, fetchTenantPackageRemove } from '@/service/api-gen';
+import { fetchUpdateTenantPackageStatus } from '@/service/api/system/tenant-package';
+import type { TenantPackageResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useDownload } from '@/hooks/business/download';
-import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
+import { useTable, useTableOperate } from '@/hooks/common/table';
 import { useDict } from '@/hooks/business/dict';
 import { $t } from '@/locales';
 import ButtonIcon from '@/components/custom/button-icon.vue';
@@ -22,11 +19,18 @@ defineOptions({
   name: 'TenantPackageList',
 });
 
+/** 本地搜索参数接口 */
+interface TenantPackageSearchParams {
+  pageNum?: number;
+  pageSize?: number;
+  packageName?: string | null;
+  status?: string | null;
+  params?: Record<string, unknown>;
+}
+
 const appStore = useAppStore();
 const { download } = useDownload();
 const { hasAuth } = useAuth();
-
-const tableProps = useTableProps();
 
 useDict('sys_normal_disable', false);
 
@@ -41,7 +45,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetTenantPackageList,
+  apiFn: fetchTenantPackageFindAll as any,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -50,7 +54,7 @@ const {
     packageName: null,
     status: null,
     params: {},
-  },
+  } as TenantPackageSearchParams,
   columns: () => [
     {
       type: 'selection',
@@ -75,11 +79,12 @@ const {
       align: 'center',
       minWidth: 120,
       render: (row) => {
+        const typedRow = row as unknown as TenantPackageResponseDto;
         return (
           <StatusSwitch
-            v-model:value={row.status}
-            info={row.packageName}
-            onSubmitted={(value, callback) => handleStatusChange(row, value, callback)}
+            v-model:value={typedRow.status}
+            info={typedRow.packageName}
+            onSubmitted={(value, callback) => handleStatusChange(typedRow, value, callback)}
           />
         );
       },
@@ -96,6 +101,7 @@ const {
       align: 'center',
       width: 130,
       render: (row) => {
+        const typedRow = row as unknown as TenantPackageResponseDto;
         const divider = () => {
           if (!hasAuth('system:tenantPackage:edit') || !hasAuth('system:tenantPackage:remove')) {
             return null;
@@ -113,7 +119,7 @@ const {
               type="primary"
               icon="material-symbols:drive-file-rename-outline-outline"
               tooltipContent={$t('common.edit')}
-              onClick={() => edit(row.packageId!)}
+              onClick={() => edit(typedRow.packageId!)}
             />
           );
         };
@@ -129,7 +135,7 @@ const {
               icon="material-symbols:delete-outline"
               tooltipContent={$t('common.delete')}
               popconfirmContent={$t('common.confirmDelete')}
-              onPositiveClick={() => handleDelete(row.packageId!)}
+              onPositiveClick={() => handleDelete(typedRow.packageId!)}
             />
           );
         };
@@ -147,12 +153,12 @@ const {
 });
 
 const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedRowKeys, onBatchDeleted, onDeleted } =
-  useTableOperate(data, getData);
+  useTableOperate(data as any, getData);
 
 async function handleBatchDelete() {
   // request
   try {
-    await fetchBatchDeleteTenantPackage(checkedRowKeys.value);
+    await fetchTenantPackageRemove(checkedRowKeys.value.join(','));
     onBatchDeleted();
   } catch {
     // error handled by request interceptor
@@ -162,7 +168,7 @@ async function handleBatchDelete() {
 async function handleDelete(packageId: CommonType.IdType) {
   // request
   try {
-    await fetchBatchDeleteTenantPackage([packageId]);
+    await fetchTenantPackageRemove(packageId);
     onDeleted();
   } catch {
     // error handled by request interceptor
@@ -170,7 +176,7 @@ async function handleDelete(packageId: CommonType.IdType) {
 }
 
 function edit(packageId: CommonType.IdType) {
-  handleEdit('packageId', packageId);
+  handleEdit('packageId' as any, packageId);
 }
 
 function handleExport() {
@@ -183,14 +189,14 @@ function handleExport() {
 
 /** 处理状态切换 */
 async function handleStatusChange(
-  row: Api.System.TenantPackage,
-  value: Api.Common.EnableStatus,
+  row: TenantPackageResponseDto,
+  value: string,
   callback: (flag: boolean) => void,
 ) {
   try {
     await fetchUpdateTenantPackageStatus({
       packageId: row.packageId,
-      status: value,
+      status: value as '0' | '1',
     });
     callback(true);
     window.$message?.success($t('page.system.tenantPackage.statusChangeSuccess'));
@@ -228,7 +234,6 @@ async function handleStatusChange(
         v-model:checked-row-keys="checkedRowKeys"
         :columns="columns"
         :data="data"
-        v-bind="tableProps"
         :flex-height="!appStore.isMobile"
         :scroll-x="962"
         :loading="loading"
@@ -240,7 +245,7 @@ async function handleStatusChange(
       <TenantPackageOperateDrawer
         v-model:visible="drawerVisible"
         :operate-type="operateType"
-        :row-data="editingData"
+        :row-data="editingData as any"
         @submitted="getData"
       />
     </NCard>

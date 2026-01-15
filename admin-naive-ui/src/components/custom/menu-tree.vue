@@ -2,7 +2,7 @@
 import { onMounted, ref, useAttrs, watch } from 'vue';
 import type { TreeOption, TreeSelectInst, TreeSelectProps } from 'naive-ui';
 import { useBoolean } from '@sa/hooks';
-import { fetchGetMenuTreeSelect } from '@/service/api/system';
+import { fetchMenuTreeSelect } from '@/service/api-gen';
 import SvgIcon from '@/components/custom/svg-icon.vue';
 import { $t } from '@/locales';
 
@@ -33,13 +33,13 @@ const attrs: TreeSelectProps = useAttrs();
 async function getMenuList() {
   loading.value = true;
   try {
-    const { data } = await fetchGetMenuTreeSelect();
+    const { data } = await fetchMenuTreeSelect();
     options.value = [
       {
         id: 0,
         label: '根目录',
         icon: 'material-symbols:home-outline-rounded',
-        children: data,
+        children: data as any,
       },
     ] as Api.System.MenuList;
   } catch {

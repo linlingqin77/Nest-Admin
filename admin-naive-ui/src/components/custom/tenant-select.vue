@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import type { SelectOption } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { fetchTenantList } from '@/service/api';
+import { fetchAuthGetTenantList } from '@/service/api-gen';
 import { fetchChangeTenant, fetchClearTenant } from '@/service/api/system/tenant';
 import { useAppStore } from '@/store/modules/app';
 import { useTabStore } from '@/store/modules/tab';
@@ -57,7 +57,7 @@ async function handleChangeTenant(_tenantId: CommonType.IdType) {
   if (lastSelected.value === _tenantId) {
     return;
   }
-  await fetchChangeTenant(_tenantId);
+  await fetchChangeTenant(String(_tenantId));
   closeAndRefresh('切换租户成功', _tenantId);
 }
 
@@ -69,7 +69,7 @@ async function handleClearTenant() {
 async function handleFetchTenantList() {
   startLoading();
   try {
-    const { data } = await fetchTenantList();
+    const { data } = await fetchAuthGetTenantList();
     if (!data) {
       return;
     }

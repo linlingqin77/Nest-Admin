@@ -1,11 +1,7 @@
 <script setup lang="tsx">
 import { NDivider } from 'naive-ui';
-import {
-  fetchBatchDeleteLoginInfor,
-  fetchCleanLoginInfor,
-  fetchGetLoginInforList,
-  fetchUnlockLoginInfor,
-} from '@/service/api/monitor/login-infor';
+import { fetchLoginlogFindAll, fetchLoginlogRemove, fetchLoginlogRemoveAll, fetchLoginlogUnlock } from '@/service/api-gen';
+import type { LoginLogResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useDownload } from '@/hooks/business/download';
@@ -22,6 +18,16 @@ import LoginInforViewDrawer from './modules/login-infor-view-drawer.vue';
 defineOptions({
   name: 'LoginInforList',
 });
+
+/** 搜索参数接口 */
+interface SearchParams {
+  pageNum: number;
+  pageSize: number;
+  userName: string | null;
+  ipaddr: string | null;
+  status: string | null;
+  params: { beginTime?: string; endTime?: string };
+}
 
 const appStore = useAppStore();
 const { download } = useDownload();
@@ -43,7 +49,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetLoginInforList,
+  apiFn: fetchLoginlogFindAll as any,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -53,8 +59,8 @@ const {
     ipaddr: null,
     status: null,
     params: {},
-  },
-  columns: () => [
+  } as SearchParams,
+  columns: (() => [
     {
       type: 'selection',
       align: 'center',
@@ -77,8 +83,8 @@ const {
       title: '设备类型',
       align: 'center',
       minWidth: 120,
-      render: (row) => {
-        return <DictTag size="small" value={row.deviceType} dict-code="sys_device_type" />;
+      render: (row: LoginLogResponseDto) => {
+        return <DictTag size="small" value={(row as any).deviceType} dict-code="sys_device_type" />;
       },
     },
     {
@@ -98,7 +104,7 @@ const {
       title: '浏览器类型',
       align: 'center',
       minWidth: 120,
-      render: (row) => {
+      render: (row: LoginLogResponseDto) => {
         return (
           <div class="flex items-center justify-center gap-2">
             <SvgIcon icon={getBrowserIcon(row.browser)} />
@@ -115,7 +121,7 @@ const {
         tooltip: true,
       },
       minWidth: 120,
-      render: (row) => {
+      render: (row: LoginLogResponseDto) => {
         const osName = row.os?.split(' or ')[0] ?? '';
         return (
           <div class="flex items-center justify-center gap-2">
@@ -130,7 +136,7 @@ const {
       title: '登录状态',
       align: 'center',
       minWidth: 120,
-      render: (row) => {
+      render: (row: LoginLogResponseDto) => {
         return <DictTag size="small" value={row.status} dict-code="sys_common_status" />;
       },
     },
@@ -148,7 +154,7 @@ const {
       title: $t('common.operate'),
       align: 'center',
       width: 130,
-      render: (row) => {
+      render: (row: LoginLogResponseDto) => {
         const viewBtn = () => {
           return (
             <ButtonIcon
@@ -184,15 +190,15 @@ const {
         );
       },
     },
-  ],
+  ]) as any,
 });
 
-const { drawerVisible, editingData, handleEdit, checkedRowKeys, onBatchDeleted } = useTableOperate(data, getData);
+const { drawerVisible, editingData, handleEdit, checkedRowKeys, onBatchDeleted } = useTableOperate(data as any, getData);
 
 async function handleBatchDelete() {
   // request
   try {
-    await fetchBatchDeleteLoginInfor(checkedRowKeys.value);
+    await fetchLoginlogRemove(checkedRowKeys.value.join(','));
     onBatchDeleted();
   } catch {
     // error handled by request interceptor
@@ -200,7 +206,7 @@ async function handleBatchDelete() {
 }
 
 async function view(infoId: CommonType.IdType) {
-  handleEdit('infoId', infoId);
+  handleEdit('infoId' as any, infoId);
 }
 
 async function handleExport() {
@@ -215,7 +221,7 @@ async function handleCleanLoginInfor() {
     negativeText: '取消',
     onPositiveClick: async () => {
       try {
-        await fetchCleanLoginInfor();
+        await fetchLoginlogRemoveAll();
         window.$message?.success('清空成功');
         await getData();
       } catch {
@@ -227,7 +233,7 @@ async function handleCleanLoginInfor() {
 
 async function handleUnlockLoginInfor(username: string) {
   try {
-    await fetchUnlockLoginInfor(username);
+    await fetchLoginlogUnlock(username);
     window.$message?.success('解锁成功');
     await getDataByPage();
   } catch {
@@ -281,7 +287,7 @@ async function handleUnlockLoginInfor(username: string) {
         :pagination="mobilePagination"
         class="sm:h-full"
       />
-      <LoginInforViewDrawer v-model:visible="drawerVisible" :row-data="editingData" />
+      <LoginInforViewDrawer v-model:visible="drawerVisible" :row-data="editingData as LoginLogResponseDto" />
     </NCard>
   </div>
 </template>

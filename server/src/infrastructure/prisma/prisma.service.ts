@@ -3,61 +3,262 @@ import { PrismaClient } from '@prisma/client';
 import { AppConfigService } from 'src/config/app-config.service';
 import { PostgresqlConfig } from 'src/config/types';
 import {
-  createSlowQueryLoggerMiddleware,
+  createSlowQueryExtension,
   DEFAULT_SLOW_QUERY_THRESHOLD,
   SlowQueryLog,
-} from './slow-query-logger.middleware';
-import { createTenantMiddleware } from 'src/tenant/middleware/tenant.middleware';
+} from './slow-query.extension';
+import { createTenantExtension } from 'src/tenant/extensions/tenant.extension';
 
-@Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
-  private readonly logger = new Logger(PrismaService.name);
-  private readonly slowQueryLogs: SlowQueryLog[] = [];
+/**
+ * 扩展后的 Prisma 客户端类型
+ */
+type ExtendedPrismaClient = ReturnType<typeof createExtendedPrismaClient>;
 
-  constructor(private readonly config: AppConfigService) {
-    const pgConfig = config.db.postgresql;
-    if (!pgConfig) {
-      throw new Error('PostgreSQL configuration (db.postgresql) is missing.');
-    }
-
-    super({
-      datasources: {
-        db: {
-          url: PrismaService.buildConnectionString(pgConfig),
-        },
+/**
+ * 创建扩展后的 Prisma 客户端
+ */
+function createExtendedPrismaClient(
+  connectionString: string,
+  slowQueryLogs: SlowQueryLog[],
+) {
+  const baseClient = new PrismaClient({
+    datasources: {
+      db: {
+        url: connectionString,
       },
-      log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
-      // 优化连接池配置
-      // @ts-ignore - Prisma内部配置，提升并发性能
-      __internal: {
-        engine: {
-          connection_limit: 10, // 最大连接数
-          pool_timeout: 30, // 连接池超时(秒)
-          connect_timeout: 10, // 连接超时(秒)
-        },
-      },
-    });
+    },
+    log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
+  });
 
-    // 注册租户中间件 - 自动添加租户过滤和设置租户ID
-    this.$use(createTenantMiddleware());
-
-    // 注册慢查询日志中间件 (阈值: 500ms，符合需求 2.10)
-    this.$use(
-      createSlowQueryLoggerMiddleware(
+  // 使用 $extends 链式扩展替代已弃用的 $use 中间件
+  return baseClient
+    .$extends(createTenantExtension())
+    .$extends(
+      createSlowQueryExtension(
         {
           threshold: DEFAULT_SLOW_QUERY_THRESHOLD,
           enabled: true,
         },
         (log) => {
           // 存储慢查询日志用于监控和分析
-          this.slowQueryLogs.push(log);
+          slowQueryLogs.push(log);
           // 保持最近 100 条慢查询记录
-          if (this.slowQueryLogs.length > 100) {
-            this.slowQueryLogs.shift();
+          if (slowQueryLogs.length > 100) {
+            slowQueryLogs.shift();
           }
         },
       ),
     );
+}
+
+@Injectable()
+export class PrismaService implements OnModuleInit, OnModuleDestroy {
+  private readonly logger = new Logger(PrismaService.name);
+  private readonly slowQueryLogs: SlowQueryLog[] = [];
+  private readonly _client: ExtendedPrismaClient;
+
+  constructor(config: AppConfigService) {
+    const pgConfig = config.db.postgresql;
+    if (!pgConfig) {
+      throw new Error('PostgreSQL configuration (db.postgresql) is missing.');
+    }
+
+    const connectionString = PrismaService.buildConnectionString(pgConfig);
+    this._client = createExtendedPrismaClient(connectionString, this.slowQueryLogs);
+  }
+
+  /**
+   * 获取扩展后的 Prisma 客户端
+   * 用于直接访问所有 Prisma 模型和方法
+   */
+  get client(): ExtendedPrismaClient {
+    return this._client;
+  }
+
+  // ============ 代理所有 Prisma 模型访问 ============
+  get sysUser() {
+    return this._client.sysUser;
+  }
+  get sysRole() {
+    return this._client.sysRole;
+  }
+  get sysDept() {
+    return this._client.sysDept;
+  }
+  get sysMenu() {
+    return this._client.sysMenu;
+  }
+  get sysPost() {
+    return this._client.sysPost;
+  }
+  get sysConfig() {
+    return this._client.sysConfig;
+  }
+  get sysDictType() {
+    return this._client.sysDictType;
+  }
+  get sysDictData() {
+    return this._client.sysDictData;
+  }
+  get sysNotice() {
+    return this._client.sysNotice;
+  }
+  get sysOperLog() {
+    return this._client.sysOperLog;
+  }
+  get sysLogininfor() {
+    return this._client.sysLogininfor;
+  }
+  get sysJob() {
+    return this._client.sysJob;
+  }
+  get sysJobLog() {
+    return this._client.sysJobLog;
+  }
+  get sysUpload() {
+    return this._client.sysUpload;
+  }
+  get sysFileFolder() {
+    return this._client.sysFileFolder;
+  }
+  get sysFileShare() {
+    return this._client.sysFileShare;
+  }
+  get sysTenant() {
+    return this._client.sysTenant;
+  }
+  get sysTenantPackage() {
+    return this._client.sysTenantPackage;
+  }
+  get sysTenantFeature() {
+    return this._client.sysTenantFeature;
+  }
+  get sysTenantUsage() {
+    return this._client.sysTenantUsage;
+  }
+  get sysUserRole() {
+    return this._client.sysUserRole;
+  }
+  get sysUserPost() {
+    return this._client.sysUserPost;
+  }
+  get sysRoleMenu() {
+    return this._client.sysRoleMenu;
+  }
+  get sysRoleDept() {
+    return this._client.sysRoleDept;
+  }
+  get sysAuditLog() {
+    return this._client.sysAuditLog;
+  }
+  get sysClient() {
+    return this._client.sysClient;
+  }
+  get sysOss() {
+    return this._client.sysOss;
+  }
+  get sysOssConfig() {
+    return this._client.sysOssConfig;
+  }
+  get genTable() {
+    return this._client.genTable;
+  }
+  get genTableColumn() {
+    return this._client.genTableColumn;
+  }
+  get sysMailAccount() {
+    return this._client.sysMailAccount;
+  }
+  get sysMailTemplate() {
+    return this._client.sysMailTemplate;
+  }
+  get sysMailLog() {
+    return this._client.sysMailLog;
+  }
+  get sysSmsChannel() {
+    return this._client.sysSmsChannel;
+  }
+  get sysSmsTemplate() {
+    return this._client.sysSmsTemplate;
+  }
+  get sysSmsLog() {
+    return this._client.sysSmsLog;
+  }
+  get sysNotifyTemplate() {
+    return this._client.sysNotifyTemplate;
+  }
+  get sysNotifyMessage() {
+    return this._client.sysNotifyMessage;
+  }
+  get sysTenantAuditLog() {
+    return this._client.sysTenantAuditLog;
+  }
+  get sysTenantQuotaLog() {
+    return this._client.sysTenantQuotaLog;
+  }
+
+  // ============ 代理 Prisma 核心方法 ============
+  /**
+   * 连接数据库
+   */
+  $connect() {
+    return this._client.$connect();
+  }
+
+  /**
+   * 断开数据库连接
+   */
+  $disconnect() {
+    return this._client.$disconnect();
+  }
+
+  /**
+   * 执行事务
+   */
+  $transaction<T>(
+    fn: (prisma: ExtendedPrismaClient) => Promise<T>,
+    options?: { maxWait?: number; timeout?: number; isolationLevel?: any },
+  ): Promise<T>;
+  $transaction<T>(
+    queries: any[],
+    options?: { isolationLevel?: any },
+  ): Promise<any[]>;
+  $transaction<T>(
+    fnOrQueries: ((prisma: ExtendedPrismaClient) => Promise<T>) | any[],
+    options?: any,
+  ): Promise<T | any[]> {
+    if (typeof fnOrQueries === 'function') {
+      return this._client.$transaction(fnOrQueries as any, options);
+    }
+    return this._client.$transaction(fnOrQueries, options);
+  }
+
+  /**
+   * 执行原始 SQL 查询
+   */
+  $queryRaw<T = unknown>(query: TemplateStringsArray | any, ...values: any[]): Promise<T> {
+    return this._client.$queryRaw(query, ...values) as Promise<T>;
+  }
+
+  /**
+   * 执行原始 SQL 命令
+   */
+  $executeRaw(query: TemplateStringsArray | any, ...values: any[]): Promise<number> {
+    return this._client.$executeRaw(query, ...values);
+  }
+
+  /**
+   * 执行原始 SQL 命令（不安全版本）
+   */
+  $executeRawUnsafe(query: string, ...values: any[]): Promise<number> {
+    return this._client.$executeRawUnsafe(query, ...values);
+  }
+
+  /**
+   * 执行原始 SQL 查询（不安全版本）
+   */
+  $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): Promise<T> {
+    return this._client.$queryRawUnsafe(query, ...values) as Promise<T>;
   }
 
   /**

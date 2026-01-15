@@ -3,7 +3,8 @@ import { computed, ref } from 'vue';
 import { NAvatar, NButton, NDivider, NEllipsis } from 'naive-ui';
 import { useBoolean, useLoading } from '@sa/hooks';
 import { jsonClone } from '@sa/utils';
-import { fetchBatchDeleteUser, fetchGetDeptTree, fetchGetUserList, fetchUpdateUserStatus } from '@/service/api/system';
+import { fetchUserFindAll, fetchUserRemove, fetchUserDeptTree, fetchUserChangeStatus } from '@/service/api-gen';
+import type { UserResponseDto, DeptTreeNodeVo, ChangeUserStatusDto, ListUserDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
 import { useDict } from '@/hooks/business/dict';
@@ -45,7 +46,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetUserList,
+  apiFn: fetchUserFindAll,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -214,7 +215,7 @@ const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedR
 async function handleBatchDelete() {
   // request
   try {
-    await fetchBatchDeleteUser(checkedRowKeys.value);
+    await fetchUserRemove(checkedRowKeys.value.join(','));
     onBatchDeleted();
   } catch (error) {
     // 错误消息已在请求工具中显示
@@ -224,7 +225,7 @@ async function handleBatchDelete() {
 async function handleDelete(userId: CommonType.IdType) {
   // request
   try {
-    await fetchBatchDeleteUser([userId]);
+    await fetchUserRemove(userId);
     onDeleted();
   } catch (error) {
     // 错误消息已在请求工具中显示
@@ -243,14 +244,14 @@ async function handleResetPwd(userId: CommonType.IdType) {
 
 const { loading: treeLoading, startLoading: startTreeLoading, endLoading: endTreeLoading } = useLoading();
 const deptPattern = ref<string>();
-const deptData = ref<Api.Common.CommonTreeRecord>([]);
+const deptData = ref<DeptTreeNodeVo[]>([]);
 const selectedKeys = ref<string[]>([]);
 
 async function getTreeData() {
   startTreeLoading();
   try {
-    const { data: tree } = await fetchGetDeptTree();
-    deptData.value = tree;
+    const { data: tree } = await fetchUserDeptTree();
+    deptData.value = tree || [];
   } catch (error) {
     // 错误消息已在请求工具中显示
   } finally {
@@ -277,15 +278,16 @@ function handleImport() {
 
 /** 处理状态切换 */
 async function handleStatusChange(
-  row: Api.System.User,
-  value: Api.Common.EnableStatus,
+  row: UserResponseDto,
+  value: string,
   callback: (flag: boolean) => void,
 ) {
   try {
-    await fetchUpdateUserStatus({
+    const data: ChangeUserStatusDto = {
       userId: row.userId,
-      status: value,
-    });
+      status: value as '0' | '1',
+    };
+    await fetchUserChangeStatus(data);
     callback(true);
     window.$message?.success($t('page.system.user.statusChangeSuccess'));
     getData();
@@ -390,7 +392,7 @@ function handleResetSearch() {
           :operate-type="operateType"
           :row-data="editingData"
           :dept-data="deptData"
-          :dept-id="searchParams.deptId"
+          :dept-id="searchParams.deptId as any"
           @submitted="getDataByPage"
         />
         <UserPasswordDrawer v-model:visible="passwordVisible" :row-data="editingData" />

@@ -35,12 +35,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useMessage } from 'naive-ui';
-import { fetchGetStorageStats } from '@/service/api';
+import { fetchFileManagerGetStorageStats } from '@/service/api-gen';
+import type { StorageStatsResponseDto } from '@/service/api-gen/types';
 
 const message = useMessage();
 const loading = ref(false);
 
-const stats = ref<Api.System.FileManager.StorageStats>({
+const stats = ref<StorageStatsResponseDto>({
   used: 0,
   quota: 0,
   percentage: 0,
@@ -67,7 +68,7 @@ function getProgressStatus(percentage: number): 'success' | 'warning' | 'error' 
 async function getStats() {
   loading.value = true;
   try {
-    const { data } = await fetchGetStorageStats();
+    const { data } = await fetchFileManagerGetStorageStats();
     if (data) {
       stats.value = data;
     }

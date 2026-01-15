@@ -49,7 +49,7 @@ describe('Notice E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/notice/list`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -64,7 +64,7 @@ describe('Notice E2E Tests', () => {
         .get(`${apiPrefix}/system/notice/list`)
         .query({ pageNum: 1, pageSize: 5 })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -78,7 +78,7 @@ describe('Notice E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/notice`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({
           noticeTitle,
           noticeType: '1',
@@ -94,7 +94,7 @@ describe('Notice E2E Tests', () => {
           .get(`${apiPrefix}/system/notice/list`)
           .query({ noticeTitle })
           .set('Authorization', `Bearer ${token}`)
-          .set('tenant-id', '000000');
+          .set('x-tenant-id', '000000');
 
         if (listResponse.body.data?.rows?.length > 0) {
           createdNoticeIds.push(listResponse.body.data.rows[0].noticeId);
@@ -106,7 +106,7 @@ describe('Notice E2E Tests', () => {
         .get(`${apiPrefix}/system/notice/list`)
         .query({ noticeTitle: 'E2E搜索测试' })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -118,7 +118,7 @@ describe('Notice E2E Tests', () => {
         .get(`${apiPrefix}/system/notice/list`)
         .query({ noticeType: '1' })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -149,7 +149,7 @@ describe('Notice E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/notice`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(noticeData);
 
       // Accept both 201 (success) and 500 (database constraint issue)
@@ -164,7 +164,7 @@ describe('Notice E2E Tests', () => {
           .get(`${apiPrefix}/system/notice/list`)
           .query({ noticeTitle: noticeData.noticeTitle })
           .set('Authorization', `Bearer ${token}`)
-          .set('tenant-id', '000000');
+          .set('x-tenant-id', '000000');
 
         if (listResponse.body.data?.rows?.length > 0) {
           createdNoticeIds.push(listResponse.body.data.rows[0].noticeId);
@@ -184,7 +184,7 @@ describe('Notice E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/notice`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(noticeData)
         .expect(201);
 
@@ -196,7 +196,7 @@ describe('Notice E2E Tests', () => {
         .get(`${apiPrefix}/system/notice/list`)
         .query({ noticeTitle: noticeData.noticeTitle })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       if (listResponse.body.data?.rows?.length > 0) {
         createdNoticeIds.push(listResponse.body.data.rows[0].noticeId);
@@ -213,7 +213,7 @@ describe('Notice E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/notice`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(noticeData)
         .expect(201);
 
@@ -225,7 +225,7 @@ describe('Notice E2E Tests', () => {
         .get(`${apiPrefix}/system/notice/list`)
         .query({ noticeTitle: noticeData.noticeTitle })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       if (listResponse.body.data?.rows?.length > 0) {
         createdNoticeIds.push(listResponse.body.data.rows[0].noticeId);
@@ -256,7 +256,7 @@ describe('Notice E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/notice`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(noticeData);
 
       expect([400, 500]).toContain(response.status);
@@ -279,7 +279,7 @@ describe('Notice E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/notice`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(noticeData);
 
       // Find the created notice
@@ -288,7 +288,7 @@ describe('Notice E2E Tests', () => {
         .get(`${apiPrefix}/system/notice/list`)
         .query({ noticeTitle: noticeData.noticeTitle })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       if (listResponse.body.data?.rows?.length > 0) {
         testNoticeId = listResponse.body.data.rows[0].noticeId;
@@ -306,7 +306,7 @@ describe('Notice E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/notice/${testNoticeId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -320,7 +320,7 @@ describe('Notice E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/notice/99999999`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
 
       expect(response.body.code).toBe(200);
@@ -352,7 +352,7 @@ describe('Notice E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/notice`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(noticeData);
 
       // Find the created notice
@@ -361,7 +361,7 @@ describe('Notice E2E Tests', () => {
         .get(`${apiPrefix}/system/notice/list`)
         .query({ noticeTitle: noticeData.noticeTitle })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       if (listResponse.body.data?.rows?.length > 0) {
         testNoticeId = listResponse.body.data.rows[0].noticeId;
@@ -387,7 +387,7 @@ describe('Notice E2E Tests', () => {
         .getAuthRequest()
         .put(`${apiPrefix}/system/notice`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(updateData)
         .expect(200);
 
@@ -398,7 +398,7 @@ describe('Notice E2E Tests', () => {
         .getAuthRequest()
         .get(`${apiPrefix}/system/notice/${testNoticeId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       expect(getResponse.body.data.noticeType).toBe('2');
     });
@@ -433,7 +433,7 @@ describe('Notice E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/notice`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(noticeData);
 
       // Find the created notice
@@ -442,7 +442,7 @@ describe('Notice E2E Tests', () => {
         .get(`${apiPrefix}/system/notice/list`)
         .query({ noticeTitle: noticeData.noticeTitle })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       if (listResponse.body.data?.rows?.length > 0) {
         const noticeId = listResponse.body.data.rows[0].noticeId;
@@ -452,7 +452,7 @@ describe('Notice E2E Tests', () => {
           .getAuthRequest()
           .delete(`${apiPrefix}/system/notice/${noticeId}`)
           .set('Authorization', `Bearer ${token}`)
-          .set('tenant-id', '000000')
+          .set('x-tenant-id', '000000')
           .expect(200);
 
         expect(response.body.code).toBe(200);
@@ -476,14 +476,14 @@ describe('Notice E2E Tests', () => {
         .getAuthRequest()
         .post(`${apiPrefix}/system/notice`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(notice1Data);
 
       await helper
         .getAuthRequest()
         .post(`${apiPrefix}/system/notice`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(notice2Data);
 
       // Find the created notices
@@ -492,14 +492,14 @@ describe('Notice E2E Tests', () => {
         .get(`${apiPrefix}/system/notice/list`)
         .query({ noticeTitle: notice1Data.noticeTitle })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       const list2Response = await helper
         .getAuthRequest()
         .get(`${apiPrefix}/system/notice/list`)
         .query({ noticeTitle: notice2Data.noticeTitle })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000');
+        .set('x-tenant-id', '000000');
 
       const ids: number[] = [];
       if (list1Response.body.data?.rows?.length > 0) {
@@ -515,7 +515,7 @@ describe('Notice E2E Tests', () => {
           .getAuthRequest()
           .delete(`${apiPrefix}/system/notice/${ids.join(',')}`)
           .set('Authorization', `Bearer ${token}`)
-          .set('tenant-id', '000000')
+          .set('x-tenant-id', '000000')
           .expect(200);
 
         expect(response.body.code).toBe(200);

@@ -2,7 +2,8 @@
 import { onMounted, useAttrs } from 'vue';
 import type { TreeOption, TreeSelectProps } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { fetchGetMenuList } from '@/service/api/system';
+import { fetchMenuFindAll } from '@/service/api-gen';
+import type { MenuResponseDto } from '@/service/api-gen/types';
 import { handleTree } from '@/utils/common';
 import SvgIcon from '@/components/custom/svg-icon.vue';
 import { $t } from '@/locales';
@@ -27,16 +28,17 @@ const { loading, startLoading, endLoading } = useLoading();
 async function getMenuList() {
   startLoading();
   try {
-    const { data } = await fetchGetMenuList();
+    const { data } = await fetchMenuFindAll();
     if (!data) {
       return;
     }
+    const menus = data as unknown as MenuResponseDto[];
     options.value = [
       {
         menuId: 0,
         menuName: '根目录',
         icon: 'material-symbols:home-outline-rounded',
-        children: handleTree(data, { idField: 'menuId', filterFn: (item) => item.menuType !== 'F' }),
+        children: handleTree(menus as any, { idField: 'menuId', filterFn: (item) => item.menuType !== 'F' }),
       },
     ] as Api.System.MenuList;
   } catch {

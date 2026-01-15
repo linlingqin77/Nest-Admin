@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { NButton, NDivider, NEllipsis, NImage, NTag, NTooltip } from 'naive-ui';
 import { useBoolean, useLoading } from '@sa/hooks';
-import { fetchBatchDeleteOss, fetchGetOssList } from '@/service/api/system/oss';
+import { fetchOssFindAll, fetchOssRemove } from '@/service/api-gen';
 import { fetchGetConfigByKey, fetchUpdateConfigByKey } from '@/service/api/system/config';
 import { useAppStore } from '@/store/modules/app';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
@@ -23,6 +23,7 @@ const { routerPushByKey } = useRouterPush();
 const { hasAuth } = useAuth();
 const { oss } = useDownload();
 const appStore = useAppStore();
+const tableProps = useTableProps();
 
 const fileUploadType = ref<'file' | 'image'>('file');
 const { bool: preview, setBool: setPreview } = useBoolean(true);
@@ -39,7 +40,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetOssList,
+  apiFn: fetchOssFindAll,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -206,7 +207,7 @@ const { handleAdd, checkedRowKeys, onBatchDeleted, onDeleted } = useTableOperate
 async function handleBatchDelete() {
   // request
   try {
-    await fetchBatchDeleteOss(checkedRowKeys.value);
+    await fetchOssRemove(checkedRowKeys.value.join(','));
     onBatchDeleted();
   } catch {
     // 错误消息已在请求工具中显示
@@ -216,7 +217,7 @@ async function handleBatchDelete() {
 async function handleDelete(ossId: CommonType.IdType) {
   // request
   try {
-    await fetchBatchDeleteOss([ossId]);
+    await fetchOssRemove(ossId);
     onDeleted();
   } catch {
     // 错误消息已在请求工具中显示
@@ -255,10 +256,7 @@ async function handleUpdatePreview(checked: boolean) {
     onPositiveClick: async () => {
       startPreviewLoading();
       try {
-        await fetchUpdateConfigByKey({
-          configKey: 'sys.oss.previewListResource',
-          configValue: String(checked),
-        });
+        await fetchUpdateConfigByKey('sys.oss.previewListResource', String(checked));
         setPreview(checked);
         window.$message?.success('更新成功');
       } catch {

@@ -233,8 +233,8 @@ describe('Monitor Integration Tests', () => {
   describe('Online User Management Integration', () => {
     it('should return online user list from Redis', async () => {
       const result = await onlineService.findAll({
-        pageNum: 1,
-        pageSize: 10,
+        pageNum: '1',
+        pageSize: '10',
       });
 
       expect(result.code).toBe(200);
@@ -246,8 +246,8 @@ describe('Monitor Integration Tests', () => {
     it('should handle empty online user list', async () => {
       // This test verifies the service handles the case when no users are online
       const result = await onlineService.findAll({
-        pageNum: 1,
-        pageSize: 10,
+        pageNum: '1',
+        pageSize: '10',
       });
 
       expect(result.code).toBe(200);

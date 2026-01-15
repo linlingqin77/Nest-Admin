@@ -74,7 +74,7 @@ describe('Role E2E Tests', () => {
         .get(`${apiPrefix}/system/role/list`)
         .query({ pageNum: 1, pageSize: 10 })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       expect(response.body.data).toHaveProperty('rows');
@@ -87,7 +87,7 @@ describe('Role E2E Tests', () => {
         .get(`${apiPrefix}/system/role/list`)
         .query({ pageNum: 1, pageSize: 10, roleName: '管理' })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
     });
@@ -97,7 +97,7 @@ describe('Role E2E Tests', () => {
         .get(`${apiPrefix}/system/role/list`)
         .query({ pageNum: 1, pageSize: 10, roleKey: 'admin' })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
     });
@@ -107,7 +107,7 @@ describe('Role E2E Tests', () => {
         .get(`${apiPrefix}/system/role/list`)
         .query({ pageNum: 1, pageSize: 10, status: '0' })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
     });
@@ -127,7 +127,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .post(`${apiPrefix}/system/role`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(roleData);
       expect([200, 201]).toContain(response.status);
       expect(response.body.code).toBe(200);
@@ -156,7 +156,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .post(`${apiPrefix}/system/role`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(roleData);
       expect([200, 201]).toContain(response.status);
       expect(response.body.code).toBe(200);
@@ -198,7 +198,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/role/${testRoleId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       expect(response.body.data).toBeDefined();
@@ -209,7 +209,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/role/999999`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       expect(response.body.data == null).toBe(true);
@@ -244,7 +244,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .put(`${apiPrefix}/system/role`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({
           roleId: updateRoleId,
           roleName: '更新后角色名',
@@ -269,7 +269,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .put(`${apiPrefix}/system/role`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({
           roleId: updateRoleId,
           roleName: '更新后角色名',
@@ -312,7 +312,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .delete(`${apiPrefix}/system/role/${deleteRoleId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       const role = await prisma.sysRole.findUnique({ where: { roleId: deleteRoleId } });
@@ -355,7 +355,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .delete(`${apiPrefix}/system/role/${role1.roleId},${role2.roleId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
     });
@@ -389,7 +389,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .put(`${apiPrefix}/system/role/changeStatus`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({ roleId: statusRoleId, status: '1' })
         .expect(200);
       expect(response.body.code).toBe(200);
@@ -401,7 +401,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .put(`${apiPrefix}/system/role/changeStatus`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({ roleId: statusRoleId, status: '0' })
         .expect(200);
       expect(response.body.code).toBe(200);
@@ -444,7 +444,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .put(`${apiPrefix}/system/role/dataScope`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({
           roleId: dataScopeRoleId,
           roleName: '数据权限角色',
@@ -462,7 +462,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .put(`${apiPrefix}/system/role/dataScope`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({
           roleId: dataScopeRoleId,
           roleName: '数据权限角色',
@@ -515,7 +515,7 @@ describe('Role E2E Tests', () => {
         .get(`${apiPrefix}/system/role/authUser/allocatedList`)
         .query({ roleId: allocRoleId, pageNum: 1, pageSize: 10 })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       expect(response.body.data).toHaveProperty('rows');
@@ -530,7 +530,7 @@ describe('Role E2E Tests', () => {
         .get(`${apiPrefix}/system/role/authUser/allocatedList`)
         .query({ roleId: allocRoleId, pageNum: 1, pageSize: 10, userName: 'alloc' })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
     });
@@ -570,7 +570,7 @@ describe('Role E2E Tests', () => {
         .get(`${apiPrefix}/system/role/authUser/unallocatedList`)
         .query({ roleId: unallocRoleId, pageNum: 1, pageSize: 100 })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       expect(response.body.data).toHaveProperty('rows');
@@ -615,7 +615,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .put(`${apiPrefix}/system/role/authUser/selectAll`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({
           roleId: batchAuthRoleId,
           userIds: `${batchUser1Id},${batchUser2Id}`,
@@ -671,7 +671,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .put(`${apiPrefix}/system/role/authUser/cancel`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({
           roleId: cancelRoleId,
           userId: cancelUserId,
@@ -730,7 +730,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .put(`${apiPrefix}/system/role/authUser/cancelAll`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({
           roleId: cancelAllRoleId,
           userIds: `${cancelAllUser1Id},${cancelAllUser2Id}`,
@@ -754,7 +754,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/role/optionselect`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       expect(Array.isArray(response.body.data)).toBe(true);
@@ -772,7 +772,7 @@ describe('Role E2E Tests', () => {
         .get(`${apiPrefix}/system/role/optionselect`)
         .query({ roleIds })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       expect(Array.isArray(response.body.data)).toBe(true);
@@ -818,7 +818,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/role/deptTree/${deptTreeRoleId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       expect(response.body.data).toHaveProperty('depts');
@@ -833,7 +833,7 @@ describe('Role E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .post(`${apiPrefix}/system/role/export`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({});
       expect([200, 201]).toContain(response.status);
       expect(response.headers['content-type']).toContain(

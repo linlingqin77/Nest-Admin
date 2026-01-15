@@ -1,32 +1,6 @@
 import { request } from '@/service/request';
 
-/** 获取定时任务列表 */
-export function fetchGetJobList(params?: Api.Monitor.JobSearchParams) {
-  return request<Api.Monitor.JobList>({
-    url: '/monitor/job/list',
-    method: 'get',
-    params,
-  });
-}
-
-/** 获取定时任务详情 */
-export function fetchGetJobDetail(jobId: CommonType.IdType) {
-  return request<Api.Monitor.Job>({
-    url: `/monitor/job/${jobId}`,
-    method: 'get',
-  });
-}
-
-/** 新增定时任务 */
-export function fetchCreateJob(data: Api.Monitor.JobOperateParams) {
-  return request<boolean>({
-    url: '/monitor/job',
-    method: 'post',
-    data,
-  });
-}
-
-/** 修改定时任务 */
+/** 修改定时任务 - 生成的 API 缺少 data 参数 */
 export function fetchUpdateJob(data: Api.Monitor.JobOperateParams) {
   return request<boolean>({
     url: '/monitor/job',
@@ -35,15 +9,7 @@ export function fetchUpdateJob(data: Api.Monitor.JobOperateParams) {
   });
 }
 
-/** 删除定时任务 */
-export function fetchDeleteJob(jobId: CommonType.IdType | CommonType.IdType[]) {
-  return request<boolean>({
-    url: `/monitor/job/${Array.isArray(jobId) ? jobId.join(',') : jobId}`,
-    method: 'delete',
-  });
-}
-
-/** 修改定时任务状态 */
+/** 修改定时任务状态 - 生成的 API 缺少 data 参数 */
 export function fetchChangeJobStatus(jobId: CommonType.IdType, status: Api.Common.EnableStatus) {
   return request<boolean>({
     url: '/monitor/job/changeStatus',
@@ -52,7 +18,7 @@ export function fetchChangeJobStatus(jobId: CommonType.IdType, status: Api.Commo
   });
 }
 
-/** 立即执行一次定时任务 */
+/** 立即执行一次定时任务 - 生成的 API 缺少 data 参数 */
 export function fetchRunJob(jobId: CommonType.IdType, jobGroup: string) {
   return request<boolean>({
     url: '/monitor/job/run',

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch, onMounted } from 'vue';
-import { fetchCreateSmsTemplate, fetchUpdateSmsTemplate, fetchGetEnabledSmsChannels } from '@/service/api/system/sms';
+import { fetchSmsTemplateCreate, fetchSmsTemplateUpdate, fetchSmsChannelGetEnabledChannels } from '@/service/api-gen';
+import type { CreateSmsTemplateDto, UpdateSmsTemplateDto } from '@/typings/api-gen';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -40,11 +41,13 @@ const templateTypeOptions = [
 
 async function loadChannelOptions() {
   try {
-    const { data } = await fetchGetEnabledSmsChannels();
-    channelOptions.value = data.map((item) => ({
-      label: item.name,
-      value: item.id as number,
-    }));
+    const { data } = await fetchSmsChannelGetEnabledChannels();
+    if (data && Array.isArray(data)) {
+      channelOptions.value = data.map((item: any) => ({
+        label: item.name,
+        value: item.id as number,
+      }));
+    }
   } catch {
     // error handled by request interceptor
   }
@@ -137,9 +140,10 @@ async function handleSubmit() {
   try {
     if (props.operateType === 'add') {
       const { channelId, code, name, content, params, apiTemplateId, type, status, remark } = model;
-      await fetchCreateSmsTemplate({ channelId, code, name, content, params, apiTemplateId, type, status, remark });
+      await fetchSmsTemplateCreate({ channelId, code, name, content, params: params ? JSON.stringify(params) : undefined, apiTemplateId, type, status, remark } as CreateSmsTemplateDto);
     } else if (props.operateType === 'edit') {
-      await fetchUpdateSmsTemplate(model);
+      const updateData = { ...model, params: model.params ? JSON.stringify(model.params) : undefined };
+      await fetchSmsTemplateUpdate(updateData as UpdateSmsTemplateDto);
     }
 
     window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));

@@ -3,22 +3,36 @@ import { h, onMounted, ref } from 'vue';
 import { NCard, NDataTable, NDescriptions, NDescriptionsItem, NGrid, NGridItem, NProgress, NSpin } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
 import { useTableProps } from '@/hooks/common/table';
-import { fetchGetServerInfo } from '@/service/api/monitor/server';
+import { fetchServerGetInfo } from '@/service/api-gen/server';
+import type { DiskInfoDto, ServerInfoResponseDto } from '@/service/api-gen/types';
 
 defineOptions({
   name: 'ServerMonitor',
 });
 
+// 扩展类型以支持可选的 Node.js 信息
+interface NodeInfoDto {
+  name?: string;
+  version?: string;
+  startTime?: string;
+  runTime?: string;
+  home?: string;
+}
+
+interface ExtendedServerInfoResponseDto extends ServerInfoResponseDto {
+  node?: NodeInfoDto;
+}
+
 const { loading, startLoading, endLoading } = useLoading();
-const serverInfo = ref<Api.Monitor.ServerInfo>();
+const serverInfo = ref<ExtendedServerInfoResponseDto>();
 
 const tableProps = useTableProps();
 
 async function getServerInfo() {
   startLoading();
   try {
-    const { data } = await fetchGetServerInfo();
-    serverInfo.value = data;
+    const { data } = await fetchServerGetInfo();
+    serverInfo.value = data as ExtendedServerInfoResponseDto;
   } catch {
     // error handled by request interceptor
   } finally {
@@ -38,11 +52,12 @@ const diskColumns = [
     title: '已用百分比',
     key: 'usage',
     align: 'center' as const,
-    render: (row: Api.Monitor.SysFile) => {
-      const status = row.usage > 80 ? 'error' : row.usage > 60 ? 'warning' : 'success';
+    render: (row: DiskInfoDto) => {
+      const usage = Number.parseFloat(row.usage) || 0;
+      const status = usage > 80 ? 'error' : usage > 60 ? 'warning' : 'success';
       return h(NProgress, {
         type: 'line',
-        percentage: row.usage,
+        percentage: usage,
         status,
         indicatorPlacement: 'inside',
         style: { width: '100px' },
@@ -51,10 +66,18 @@ const diskColumns = [
   },
 ];
 
-function getProgressStatus(value: number) {
-  if (value > 80) return 'error';
-  if (value > 60) return 'warning';
+function getProgressStatus(value: number | string) {
+  const numValue = typeof value === 'string' ? Number.parseFloat(value) : value;
+  if (numValue > 80) return 'error';
+  if (numValue > 60) return 'warning';
   return 'success';
+}
+
+// 将字符串转换为数字用于进度条
+function toNumber(value: string | number | undefined): number {
+  if (value === undefined) return 0;
+  if (typeof value === 'number') return value;
+  return Number.parseFloat(value) || 0;
 }
 
 onMounted(() => {
@@ -80,7 +103,7 @@ onMounted(() => {
               <NDescriptionsItem label="用户使用率">
                 <NProgress
                   type="line"
-                  :percentage="serverInfo?.cpu?.used ?? 0"
+                  :percentage="toNumber(serverInfo?.cpu?.used)"
                   :status="getProgressStatus(serverInfo?.cpu?.used ?? 0)"
                   indicator-placement="inside"
                   style="width: 200px"
@@ -89,7 +112,7 @@ onMounted(() => {
               <NDescriptionsItem label="系统使用率">
                 <NProgress
                   type="line"
-                  :percentage="serverInfo?.cpu?.sys ?? 0"
+                  :percentage="toNumber(serverInfo?.cpu?.sys)"
                   :status="getProgressStatus(serverInfo?.cpu?.sys ?? 0)"
                   indicator-placement="inside"
                   style="width: 200px"
@@ -98,7 +121,7 @@ onMounted(() => {
               <NDescriptionsItem label="当前空闲率">
                 <NProgress
                   type="line"
-                  :percentage="serverInfo?.cpu?.free ?? 0"
+                  :percentage="toNumber(serverInfo?.cpu?.free)"
                   status="success"
                   indicator-placement="inside"
                   style="width: 200px"
@@ -121,7 +144,7 @@ onMounted(() => {
               <NDescriptionsItem label="使用率">
                 <NProgress
                   type="line"
-                  :percentage="serverInfo?.mem?.usage ?? 0"
+                  :percentage="toNumber(serverInfo?.mem?.usage)"
                   :status="getProgressStatus(serverInfo?.mem?.usage ?? 0)"
                   indicator-placement="inside"
                   style="width: 200px"

@@ -1,12 +1,20 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { NDatePicker, NSpace } from 'naive-ui';
+import { NSpace } from 'naive-ui';
 import { useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 defineOptions({
   name: 'JobSearch',
 });
+
+/** 搜索参数接口 */
+interface SearchParams {
+  pageNum?: number;
+  pageSize?: number;
+  jobName?: string | null;
+  jobGroup?: string | null;
+  status?: string | null;
+}
 
 interface Emits {
   (e: 'reset'): void;
@@ -17,7 +25,7 @@ const emit = defineEmits<Emits>();
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
 
-const model = defineModel<Api.Monitor.JobSearchParams>('model', { required: true });
+const model = defineModel<SearchParams>('model', { required: true });
 
 async function reset() {
   await restoreValidation();
@@ -59,13 +67,13 @@ async function search() {
               <NSpace class="w-full" justify="end">
                 <NButton @click="reset">
                   <template #icon>
-                    <icon-ic-round-refresh class="text-icon" />
+                    <SvgIcon icon="ic:round-refresh" class="text-icon" />
                   </template>
                   {{ $t('common.reset') }}
                 </NButton>
                 <NButton type="primary" ghost @click="search">
                   <template #icon>
-                    <icon-ic-round-search class="text-icon" />
+                    <SvgIcon icon="ic:round-search" class="text-icon" />
                   </template>
                   {{ $t('common.search') }}
                 </NButton>

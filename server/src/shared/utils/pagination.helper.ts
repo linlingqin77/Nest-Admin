@@ -1,6 +1,12 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { CursorPaginationDto, CursorPaginationMeta, CursorPageResponseDto, PageQueryDto, PageResponseDto, SortOrder } from '../dto/base.dto';
 
+/**
+ * Prisma 客户端类型（支持 PrismaClient 和 PrismaService）
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type PrismaLike = any;
+
 export interface PaginatedResult<T> {
   rows: T[];
   total: number;
@@ -77,7 +83,7 @@ export class PaginationHelper {
    * @returns 分页结果
    */
   static async paginateWithTransaction<T>(
-    prisma: PrismaClient,
+    prisma: PrismaLike,
     model: string,
     findManyArgs: Prisma.Args<any, 'findMany'>,
     countArgs?: Prisma.Args<any, 'count'>,
@@ -174,7 +180,7 @@ export class PaginationHelper {
    * @returns 游标分页结果
    */
   static async cursorPaginateWithTransaction<T extends Record<string, any>>(
-    prisma: PrismaClient,
+    prisma: PrismaLike,
     model: string,
     findManyArgs: Omit<Prisma.Args<any, 'findMany'>, 'take' | 'cursor' | 'skip'>,
     query: CursorPaginationDto,

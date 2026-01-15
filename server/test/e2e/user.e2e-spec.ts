@@ -40,7 +40,7 @@ describe('User E2E Tests', () => {
         .get(`${apiPrefix}/system/user/list`)
         .query({ pageNum: 1, pageSize: 10 })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       expect(response.body.data).toHaveProperty('rows');
@@ -52,7 +52,7 @@ describe('User E2E Tests', () => {
         .get(`${apiPrefix}/system/user/list`)
         .query({ pageNum: 1, pageSize: 10, userName: 'admin' })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
     });
@@ -76,7 +76,7 @@ describe('User E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .post(`${apiPrefix}/system/user`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(userData);
       expect([200, 201]).toContain(response.status);
       expect(response.body.code).toBe(200);
@@ -102,7 +102,7 @@ describe('User E2E Tests', () => {
       const firstResponse = await helper.getAuthRequest()
         .post(`${apiPrefix}/system/user`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(userData);
       expect([200, 201]).toContain(firstResponse.status);
       const user = await prisma.sysUser.findFirst({ where: { userName: userData.userName } });
@@ -113,7 +113,7 @@ describe('User E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .post(`${apiPrefix}/system/user`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send(duplicateData);
       // API should respond with some status
       expect(response.status).toBeDefined();
@@ -134,7 +134,7 @@ describe('User E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/user/${adminUser.userId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       expect(response.body.data).toHaveProperty('data');
@@ -144,7 +144,7 @@ describe('User E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/user/999999`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       expect(response.body.data == null || response.body.data.data == null).toBe(true);
@@ -171,7 +171,7 @@ describe('User E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .put(`${apiPrefix}/system/user`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({ userId: testUserId, nickName: '更新后昵称', roleIds: [], postIds: [] })
         .expect(200);
       expect(response.body.code).toBe(200);
@@ -199,7 +199,7 @@ describe('User E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .delete(`${apiPrefix}/system/user/${deleteUserId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       const user = await prisma.sysUser.findUnique({ where: { userId: deleteUserId } });
@@ -227,7 +227,7 @@ describe('User E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .put(`${apiPrefix}/system/user/resetPwd`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({ userId: resetUserId, password: 'NewPwd123' })
         .expect(200);
       expect(response.body.code).toBe(200);
@@ -254,7 +254,7 @@ describe('User E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .put(`${apiPrefix}/system/user/changeStatus`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({ userId: statusUserId, status: '1' })
         .expect(200);
       expect(response.body.code).toBe(200);
@@ -266,7 +266,7 @@ describe('User E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .put(`${apiPrefix}/system/user/changeStatus`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({ userId: statusUserId, status: '0' })
         .expect(200);
       expect(response.body.code).toBe(200);
@@ -300,7 +300,7 @@ describe('User E2E Tests', () => {
         .put(`${apiPrefix}/system/user/authRole`)
         .query({ userId: authUserId.toString(), roleIds: testRoleId.toString() })
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
     });
@@ -309,7 +309,7 @@ describe('User E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/user/authRole/${authUserId}`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       expect(response.body.data).toHaveProperty('user');
@@ -322,7 +322,7 @@ describe('User E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .post(`${apiPrefix}/system/user/export`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .send({});
       expect([200, 201]).toContain(response.status);
       expect(response.headers['content-type']).toContain(
@@ -336,7 +336,7 @@ describe('User E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/user/deptTree`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       expect(Array.isArray(response.body.data)).toBe(true);
@@ -348,7 +348,7 @@ describe('User E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/user`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       expect(response.body.data).toHaveProperty('posts');
@@ -361,7 +361,7 @@ describe('User E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/user/optionselect`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       expect(Array.isArray(response.body.data)).toBe(true);
@@ -373,7 +373,7 @@ describe('User E2E Tests', () => {
       const response = await helper.getAuthRequest()
         .get(`${apiPrefix}/system/user/list/dept/100`)
         .set('Authorization', `Bearer ${token}`)
-        .set('tenant-id', '000000')
+        .set('x-tenant-id', '000000')
         .expect(200);
       expect(response.body.code).toBe(200);
       expect(Array.isArray(response.body.data)).toBe(true);

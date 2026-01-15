@@ -1,6 +1,29 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
-import { fetchCreateNotifyTemplate, fetchUpdateNotifyTemplate } from '@/service/api/system/notify';
+import { fetchNotifyTemplateCreate, fetchNotifyTemplateUpdate } from '@/service/api-gen';
+
+interface CreateNotifyTemplateDto {
+  name: string;
+  code: string;
+  nickname: string;
+  content: string;
+  params?: string;
+  type?: number;
+  status?: string;
+  remark?: string;
+}
+
+interface UpdateNotifyTemplateDto {
+  id: number;
+  name?: string;
+  code?: string;
+  nickname?: string;
+  content?: string;
+  params?: string;
+  type?: number;
+  status?: string;
+  remark?: string;
+}
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -120,10 +143,30 @@ async function handleSubmit() {
 
   try {
     if (props.operateType === 'add') {
-      const { name, code, nickname, content, params, type, status, remark } = model;
-      await fetchCreateNotifyTemplate({ name, code, nickname, content, params, type, status, remark });
+      const createData: CreateNotifyTemplateDto = {
+        name: model.name!,
+        code: model.code!,
+        nickname: model.nickname!,
+        content: model.content!,
+        params: model.params || undefined,
+        type: model.type || undefined,
+        status: model.status as any,
+        remark: model.remark || undefined,
+      };
+      await fetchNotifyTemplateCreate(createData as any);
     } else if (props.operateType === 'edit') {
-      await fetchUpdateNotifyTemplate(model);
+      const updateData: UpdateNotifyTemplateDto = {
+        id: model.id as number,
+        name: model.name || undefined,
+        code: model.code || undefined,
+        nickname: model.nickname || undefined,
+        content: model.content || undefined,
+        params: model.params || undefined,
+        type: model.type || undefined,
+        status: model.status as any,
+        remark: model.remark || undefined,
+      };
+      await fetchNotifyTemplateUpdate(updateData as any);
     }
 
     window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));

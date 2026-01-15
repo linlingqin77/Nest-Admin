@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import type { JobLogResponseDto } from '@/service/api-gen/types';
 
 defineOptions({
   name: 'JobLogDetailDrawer',
@@ -7,7 +8,7 @@ defineOptions({
 
 interface Props {
   /** the row data */
-  rowData?: Api.Monitor.JobLog | null;
+  rowData?: JobLogResponseDto | null;
 }
 
 const props = defineProps<Props>();

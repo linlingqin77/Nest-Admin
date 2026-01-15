@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue';
 import { useClipboard } from '@vueuse/core';
 import { useLoading } from '@sa/hooks';
-import { fetchGetGenPreview } from '@/service/api/tool';
+import { fetchToolPreview } from '@/service/api-gen';
 import MonacoEditor from '@/components/common/monaco-editor.vue';
 
 defineOptions({
@@ -27,15 +27,15 @@ const visible = defineModel<boolean>('visible', {
 });
 
 const tab = ref('vm/java/domain.java.vm');
-const previewData = ref<Api.Tool.GenTablePreview>({});
+const previewData = ref<Api.Tool.GenTablePreview | Record<string, any>>({});
 const { loading, startLoading, endLoading } = useLoading();
 
 async function getGenPreview() {
   if (!props.rowData?.tableId) return;
   startLoading();
   try {
-    const { data } = await fetchGetGenPreview(props.rowData?.tableId);
-    previewData.value = data;
+    const { data } = await fetchToolPreview(props.rowData?.tableId) as { data: Api.Tool.GenTablePreview };
+    previewData.value = data || {};
   } catch {
     closeDrawer();
   } finally {

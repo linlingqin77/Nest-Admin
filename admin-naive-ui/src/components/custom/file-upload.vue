@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, useAttrs } from 'vue';
 import type { UploadFileInfo, UploadProps } from 'naive-ui';
-import { fetchBatchDeleteOss } from '@/service/api/system/oss';
+import { fetchOssRemove } from '@/service/api-gen';
 import { getToken } from '@/store/modules/auth/shared';
 import { getServiceBaseURL } from '@/utils/service';
 import { AcceptType } from '@/enum/business';
@@ -120,7 +120,7 @@ async function handleRemove(file: UploadFileInfo) {
     return false;
   }
   try {
-    await fetchBatchDeleteOss([file.id]);
+    await fetchOssRemove(file.id!);
     window.$message?.success('删除成功');
     return true;
   } catch {

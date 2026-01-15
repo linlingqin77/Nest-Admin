@@ -5,13 +5,13 @@ import type { DataTableColumns } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
 import { useTableProps } from '@/hooks/common/table';
 import {
-  fetchClearCacheAll,
-  fetchClearCacheKey,
-  fetchClearCacheName,
-  fetchGetCacheKeys,
-  fetchGetCacheNames,
-  fetchGetCacheValue,
-} from '@/service/api/monitor/cache';
+  fetchCacheClearCacheAll,
+  fetchCacheClearCacheKey,
+  fetchCacheClearCacheName,
+  fetchCacheGetKeys,
+  fetchCacheGetNames,
+  fetchCacheGetValue,
+} from '@/service/api-gen';
 
 defineOptions({
   name: 'CacheList',
@@ -39,8 +39,8 @@ const cacheForm = ref({
 async function getCacheNames() {
   startNamesLoading();
   try {
-    const { data } = await fetchGetCacheNames();
-    cacheNames.value = data || [];
+    const { data } = await fetchCacheGetNames();
+    cacheNames.value = ((data as any)?.cacheNames as Api.Monitor.CacheName[]) || [];
   } catch {
     // error handled by request interceptor
   } finally {
@@ -61,8 +61,8 @@ async function getCacheKeys(cacheName: string) {
   currentCacheName.value = cacheName;
   startKeysLoading();
   try {
-    const { data } = await fetchGetCacheKeys(cacheName);
-    cacheKeys.value = (data || []).map((key) => ({ key }));
+    const { data } = await fetchCacheGetKeys(cacheName);
+    cacheKeys.value = (data?.keys || []).map((key: string) => ({ key }));
   } catch {
     // error handled by request interceptor
   } finally {
@@ -83,9 +83,13 @@ async function handleCacheValue(cacheKey: string) {
   if (!currentCacheName.value || !cacheKey) return;
 
   try {
-    const { data } = await fetchGetCacheValue(currentCacheName.value, cacheKey);
+    const { data } = await fetchCacheGetValue(currentCacheName.value, cacheKey);
     if (data) {
-      cacheForm.value = data;
+      cacheForm.value = {
+        cacheName: data.cacheName || '',
+        cacheKey: data.cacheKey || '',
+        cacheValue: data.cacheValue || '',
+      };
     }
   } catch {
     // error handled by request interceptor
@@ -95,7 +99,7 @@ async function handleCacheValue(cacheKey: string) {
 /** 清理指定名称缓存 */
 async function handleClearCacheName(cacheName: string) {
   try {
-    await fetchClearCacheName(cacheName);
+    await fetchCacheClearCacheName(cacheName);
     window.$message?.success(`清理缓存名称[${cacheName}]成功`);
     await getCacheKeys(currentCacheName.value);
   } catch {
@@ -106,7 +110,7 @@ async function handleClearCacheName(cacheName: string) {
 /** 清理指定键名缓存 */
 async function handleClearCacheKey(cacheKey: string) {
   try {
-    await fetchClearCacheKey(cacheKey);
+    await fetchCacheClearCacheKey(cacheKey);
     window.$message?.success(`清理缓存键名[${cacheKey}]成功`);
     await getCacheKeys(currentCacheName.value);
   } catch {
@@ -117,7 +121,7 @@ async function handleClearCacheKey(cacheKey: string) {
 /** 清理全部缓存 */
 async function handleClearCacheAll() {
   try {
-    await fetchClearCacheAll();
+    await fetchCacheClearCacheAll();
     window.$message?.success('清理全部缓存成功');
     cacheForm.value = {
       cacheName: '',

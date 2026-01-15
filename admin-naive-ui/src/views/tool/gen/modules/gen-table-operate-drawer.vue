@@ -11,8 +11,7 @@ import {
   genTplCategoryOptions,
   genTypeOptions,
 } from '@/constants/business';
-import { fetchGetDictTypeOption } from '@/service/api/system';
-import { fetchGetGenTableInfo, fetchUpdateGenTable } from '@/service/api/tool';
+import { fetchDictFindOptionselect, fetchToolGen, fetchToolGenUpdate, type GenTableUpdate } from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useFormRules } from '@/hooks/common/form';
 import { useTableProps } from '@/hooks/common/table';
@@ -24,7 +23,7 @@ defineOptions({
 
 interface Props {
   /** the edit row data */
-  rowData?: Api.Tool.GenTable | null;
+  rowData?: Api.Tool.GenTable | null | undefined;
 }
 
 const props = defineProps<Props>();
@@ -44,7 +43,7 @@ const emit = defineEmits<Emits>();
 const appStore = useAppStore();
 const { defaultRequiredRule } = useFormRules();
 const { loading, startLoading, endLoading } = useLoading();
-const genTableInfo = ref<Api.Tool.GenTableInfo>();
+const genTableInfo = ref<Api.Tool.GenTableInfo | undefined>();
 
 const tab = ref<'basic' | 'dragTable' | 'genInfo'>('dragTable');
 const basicFormRef = ref<FormInst | null>(null);
@@ -91,8 +90,8 @@ async function getGenTableInfo() {
   if (!props.rowData?.tableId) return;
   startLoading();
   try {
-    const { data } = await fetchGetGenTableInfo(props.rowData.tableId);
-    genTableInfo.value = data;
+    const { data } = await fetchToolGen(props.rowData.tableId) as { data: Api.Tool.GenTableInfo };
+    genTableInfo.value = data ?? undefined;
   } catch {
     // error handled by request interceptor
   } finally {
@@ -133,7 +132,13 @@ async function handleSubmit() {
 
   // request
   try {
-    await fetchUpdateGenTable(genTable);
+    // Use the generated API with the required tableId
+    const { tableId, ...restGenTable } = genTable;
+    const updateData: GenTableUpdate & Record<string, unknown> = {
+      ...restGenTable,
+      tableId: Number(tableId!),
+    };
+    await fetchToolGenUpdate(updateData as GenTableUpdate);
     window.$message?.success('修改成功');
     closeDrawer();
     emit('submitted');
@@ -157,7 +162,7 @@ const { loading: dictLoading, startLoading: startDictLoading, endLoading: endDic
 async function getDictOptions() {
   startDictLoading();
   try {
-    const { data } = await fetchGetDictTypeOption();
+    const { data } = await fetchDictFindOptionselect();
     if (!data) {
       return;
     }

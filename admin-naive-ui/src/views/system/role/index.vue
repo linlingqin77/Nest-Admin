@@ -3,7 +3,8 @@ import { NDivider, NTag } from 'naive-ui';
 import { jsonClone } from '@sa/utils';
 import { useBoolean } from '@sa/hooks';
 import { dataScopeRecord } from '@/constants/business';
-import { fetchBatchDeleteRole, fetchGetRoleList, fetchUpdateRoleStatus } from '@/service/api/system/role';
+import { fetchRoleFindAll, fetchRoleRemove, fetchRoleChangeStatus } from '@/service/api-gen';
+import type { RoleResponseDto, ChangeRoleStatusRequestDto, ListRoleRequestDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useDownload } from '@/hooks/business/download';
@@ -42,7 +43,7 @@ const {
   searchParams,
   resetSearchParams,
 } = useTable({
-  apiFn: fetchGetRoleList,
+  apiFn: fetchRoleFindAll,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -200,7 +201,7 @@ const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedR
 async function handleBatchDelete() {
   // request
   try {
-    await fetchBatchDeleteRole(checkedRowKeys.value);
+    await fetchRoleRemove(checkedRowKeys.value.join(','));
     onBatchDeleted();
   } catch {
     // 错误消息已在请求工具中显示
@@ -210,7 +211,7 @@ async function handleBatchDelete() {
 async function handleDelete(roleId: CommonType.IdType) {
   // request
   try {
-    await fetchBatchDeleteRole([roleId]);
+    await fetchRoleRemove(roleId);
     onDeleted();
   } catch {
     // 错误消息已在请求工具中显示
@@ -227,15 +228,16 @@ async function handleExport() {
 
 /** 处理状态切换 */
 async function handleStatusChange(
-  row: Api.System.Role,
-  value: Api.Common.EnableStatus,
+  row: RoleResponseDto,
+  value: string,
   callback: (flag: boolean) => void,
 ) {
   try {
-    await fetchUpdateRoleStatus({
+    const data: ChangeRoleStatusRequestDto = {
       roleId: row.roleId,
-      status: value,
-    });
+      status: value as '0' | '1',
+    };
+    await fetchRoleChangeStatus(data);
     callback(true);
     window.$message?.success('状态修改成功');
     getData();
@@ -245,13 +247,13 @@ async function handleStatusChange(
   }
 }
 
-function handleDataScope(row: Api.System.Role) {
+function handleDataScope(row: RoleResponseDto) {
   const findItem = data.value.find((item) => item.roleId === row.roleId) || null;
   editingData.value = jsonClone(findItem);
   openDataScopeDrawer();
 }
 
-function handleAuthUser(row: Api.System.Role) {
+function handleAuthUser(row: RoleResponseDto) {
   const findItem = data.value.find((item) => item.roleId === row.roleId) || null;
   editingData.value = jsonClone(findItem);
   openAuthUserDrawer();
