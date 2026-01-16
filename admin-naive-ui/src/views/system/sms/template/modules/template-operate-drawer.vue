@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch, onMounted } from 'vue';
-import { fetchSmsTemplateCreate, fetchSmsTemplateUpdate, fetchSmsChannelGetEnabledChannels } from '@/service/api-gen';
-import type { CreateSmsTemplateDto, UpdateSmsTemplateDto } from '@/typings/api-gen';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { fetchSmsChannelGetEnabledChannels, fetchSmsTemplateCreate, fetchSmsTemplateUpdate } from '@/service/api-gen';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
+import type { CreateSmsTemplateDto, UpdateSmsTemplateDto } from '@/typings/api-gen';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'SmsTemplateOperateDrawer',
+  name: 'SmsTemplateOperateDrawer'
 });
 
 interface Props {
@@ -25,7 +25,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
@@ -36,7 +36,7 @@ const channelOptions = ref<{ label: string; value: number }[]>([]);
 const templateTypeOptions = [
   { label: '验证码', value: 1 },
   { label: '通知', value: 2 },
-  { label: '营销', value: 3 },
+  { label: '营销', value: 3 }
 ];
 
 async function loadChannelOptions() {
@@ -45,7 +45,7 @@ async function loadChannelOptions() {
     if (data && Array.isArray(data)) {
       channelOptions.value = data.map((item: any) => ({
         label: item.name,
-        value: item.id as number,
+        value: item.id as number
       }));
     }
   } catch {
@@ -60,7 +60,7 @@ onMounted(() => {
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
     add: '新增短信模板',
-    edit: '编辑短信模板',
+    edit: '编辑短信模板'
   };
   return titles[props.operateType];
 });
@@ -80,7 +80,7 @@ function createDefaultModel(): Model {
     apiTemplateId: '',
     type: 1,
     status: '0',
-    remark: '',
+    remark: ''
   };
 }
 
@@ -93,7 +93,7 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
   content: createRequiredRule('模板内容不能为空'),
   apiTemplateId: createRequiredRule('第三方模板ID不能为空'),
   type: createRequiredRule('模板类型不能为空'),
-  status: createRequiredRule('状态不能为空'),
+  status: createRequiredRule('状态不能为空')
 };
 
 // 动态标签输入
@@ -125,7 +125,7 @@ function handleUpdateModelWhenEdit() {
   if (props.operateType === 'edit' && props.rowData) {
     Object.assign(model, {
       ...props.rowData,
-      params: props.rowData.params ? [...props.rowData.params] : [],
+      params: props.rowData.params ? [...props.rowData.params] : []
     });
   }
 }
@@ -140,7 +140,17 @@ async function handleSubmit() {
   try {
     if (props.operateType === 'add') {
       const { channelId, code, name, content, params, apiTemplateId, type, status, remark } = model;
-      await fetchSmsTemplateCreate({ channelId, code, name, content, params: params ? JSON.stringify(params) : undefined, apiTemplateId, type, status, remark } as CreateSmsTemplateDto);
+      await fetchSmsTemplateCreate({
+        channelId,
+        code,
+        name,
+        content,
+        params: params ? JSON.stringify(params) : undefined,
+        apiTemplateId,
+        type,
+        status,
+        remark
+      } as CreateSmsTemplateDto);
     } else if (props.operateType === 'edit') {
       const updateData = { ...model, params: model.params ? JSON.stringify(model.params) : undefined };
       await fetchSmsTemplateUpdate(updateData as UpdateSmsTemplateDto);
@@ -196,12 +206,7 @@ watch(visible, () => {
         </NFormItem>
         <NFormItem label="参数列表" path="params">
           <div class="flex flex-wrap gap-8px">
-            <NTag
-              v-for="(param, index) in model.params"
-              :key="param"
-              closable
-              @close="handleParamsClose(index)"
-            >
+            <NTag v-for="(param, index) in model.params" :key="param" closable @close="handleParamsClose(index)">
               {{ param }}
             </NTag>
             <NInput

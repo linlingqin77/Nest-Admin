@@ -10,9 +10,7 @@ const { shouldApplyFilter, addTenantFilter, setTenantId, setTenantIdForMany, val
 const PBT_CONFIG = { numRuns: 100 };
 
 // 生成有效的租户ID（6位数字字符串，>= 100001）
-const validTenantIdArb = fc
-  .integer({ min: 100001, max: 999999 })
-  .map((n) => n.toString().padStart(6, '0'));
+const validTenantIdArb = fc.integer({ min: 100001, max: 999999 }).map((n) => n.toString().padStart(6, '0'));
 
 // 生成需要租户隔离的模型名称
 const tenantModelArb = fc.constantFrom(...Array.from(TENANT_MODELS));
@@ -211,18 +209,13 @@ describe('TenantExtension - Property Tests', () => {
      */
     it('validateTenantOwnership 应该允许访问当前租户的记录', () => {
       fc.assert(
-        fc.property(
-          validTenantIdArb,
-          tenantModelArb,
-          fc.integer({ min: 1, max: 10000 }),
-          (tenantId, model, userId) => {
-            return TenantContext.run({ tenantId }, () => {
-              const record = { userId, userName: 'test', tenantId };
-              const result = validateTenantOwnership(model, record);
-              return result !== null && result.tenantId === tenantId;
-            });
-          },
-        ),
+        fc.property(validTenantIdArb, tenantModelArb, fc.integer({ min: 1, max: 10000 }), (tenantId, model, userId) => {
+          return TenantContext.run({ tenantId }, () => {
+            const record = { userId, userName: 'test', tenantId };
+            const result = validateTenantOwnership(model, record);
+            return result !== null && result.tenantId === tenantId;
+          });
+        }),
         PBT_CONFIG,
       );
     });

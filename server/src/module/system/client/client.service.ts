@@ -7,13 +7,7 @@ import { toDto, toDtoPage } from 'src/shared/utils/index';
 import { DelFlagEnum } from 'src/shared/enums/index';
 import { PrismaService } from 'src/infrastructure/prisma';
 import { ClientRepository } from './client.repository';
-import {
-  CreateClientDto,
-  UpdateClientDto,
-  ChangeClientStatusDto,
-  ListClientDto,
-  ClientResponseDto,
-} from './dto/index';
+import { CreateClientDto, UpdateClientDto, ChangeClientStatusDto, ListClientDto, ClientResponseDto } from './dto/index';
 import { Transactional } from 'src/core/decorators/transactional.decorator';
 
 @Injectable()

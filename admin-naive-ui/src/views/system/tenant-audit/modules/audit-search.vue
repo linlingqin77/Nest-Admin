@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'AuditSearch',
+  name: 'AuditSearch'
 });
 
 interface Emits {
@@ -25,14 +25,14 @@ const actionTypeOptions: any[] = [
   { label: '权限变更', value: 'permission_change' },
   { label: '配置修改', value: 'config_change' },
   { label: '导出', value: 'export' },
-  { label: '其他', value: 'other' },
+  { label: '其他', value: 'other' }
 ];
 
 const timeRange = ref<[number, number] | null>(null);
 
 const timeRangeValue = computed({
   get: () => timeRange.value,
-  set: (val) => {
+  set: val => {
     timeRange.value = val;
     if (val) {
       model.value.beginTime = new Date(val[0]).toISOString().split('T')[0];
@@ -41,7 +41,7 @@ const timeRangeValue = computed({
       model.value.beginTime = null;
       model.value.endTime = null;
     }
-  },
+  }
 });
 
 function reset() {
@@ -65,18 +65,18 @@ function search() {
           <NInput v-model:value="model.operatorName" placeholder="请输入操作人" clearable />
         </NFormItemGi>
         <NFormItemGi span="24 s:12 m:6" label="操作类型" path="actionType">
-          <NSelect v-model:value="model.actionType" :options="actionTypeOptions" placeholder="请选择操作类型" clearable />
+          <NSelect
+            v-model:value="model.actionType"
+            :options="actionTypeOptions"
+            placeholder="请选择操作类型"
+            clearable
+          />
         </NFormItemGi>
         <NFormItemGi span="24 s:12 m:6" label="操作模块" path="module">
           <NInput v-model:value="model.module" placeholder="请输入操作模块" clearable />
         </NFormItemGi>
         <NFormItemGi span="24 s:12 m:6" label="操作时间">
-          <NDatePicker
-            v-model:value="timeRangeValue"
-            type="daterange"
-            clearable
-            class="w-full"
-          />
+          <NDatePicker v-model:value="timeRangeValue" type="daterange" clearable class="w-full" />
         </NFormItemGi>
         <NFormItemGi span="24 s:12 m:6">
           <NSpace class="w-full" justify="end">

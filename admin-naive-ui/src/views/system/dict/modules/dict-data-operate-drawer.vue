@@ -8,7 +8,7 @@ import { useDict } from '@/hooks/business/dict';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'DictDataOperateDrawer',
+  name: 'DictDataOperateDrawer'
 });
 useDict('sys_yes_no');
 interface Props {
@@ -28,7 +28,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
@@ -37,7 +37,7 @@ const { createRequiredRule } = useFormRules();
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
     add: $t('page.system.dict.addDictData'),
-    edit: $t('page.system.dict.editDictData'),
+    edit: $t('page.system.dict.editDictData')
   };
   return titles[props.operateType];
 });
@@ -64,7 +64,7 @@ const listClassOptions: Record<string, string>[] = [
   { label: 'Info', value: 'info' },
   { label: 'Success', value: 'success' },
   { label: 'Warning', value: 'warning' },
-  { label: 'Error', value: 'error' },
+  { label: 'Error', value: 'error' }
 ];
 
 function createDefaultModel(): Model {
@@ -76,7 +76,7 @@ function createDefaultModel(): Model {
     cssClass: '',
     listClass: null,
     remark: '',
-    isDefault: 'N',
+    isDefault: 'N'
   };
 }
 
@@ -85,7 +85,7 @@ type RuleKey = Extract<keyof Model, 'dictCode' | 'dictLabel' | 'dictValue'>;
 const rules: Record<RuleKey, App.Global.FormRule> = {
   dictCode: createRequiredRule($t('page.system.dict.form.dictCode.invalid')),
   dictLabel: createRequiredRule($t('page.system.dict.form.dictLabel.invalid')),
-  dictValue: createRequiredRule($t('page.system.dict.form.dictValue.invalid')),
+  dictValue: createRequiredRule($t('page.system.dict.form.dictValue.invalid'))
 };
 
 function handleUpdateModelWhenEdit() {
@@ -117,7 +117,7 @@ async function handleSubmit() {
         dictType,
         cssClass,
         listClass: listClass || '',
-        remark,
+        remark
       });
     }
 
@@ -131,7 +131,7 @@ async function handleSubmit() {
         dictType,
         cssClass,
         listClass: listClass || '',
-        remark,
+        remark
       });
     }
 

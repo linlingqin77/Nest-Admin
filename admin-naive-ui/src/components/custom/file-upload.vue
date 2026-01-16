@@ -7,7 +7,7 @@ import { getServiceBaseURL } from '@/utils/service';
 import { AcceptType } from '@/enum/business';
 
 defineOptions({
-  name: 'FileUpload',
+  name: 'FileUpload'
 });
 
 interface Props {
@@ -29,7 +29,7 @@ const props = withDefaults(defineProps<Props>(), {
   max: 5,
   accept: undefined,
   fileSize: 5,
-  uploadType: 'file',
+  uploadType: 'file'
 });
 
 const accept = computed(() => {
@@ -43,7 +43,7 @@ const attrs: UploadProps = useAttrs();
 
 let fileNum = 0;
 const fileList = defineModel<UploadFileInfo[]>('fileList', {
-  default: () => [],
+  default: () => []
 });
 
 const isHttpProxy = import.meta.env.DEV && import.meta.env.VITE_HTTP_PROXY === 'Y';
@@ -51,7 +51,7 @@ const { baseURL } = getServiceBaseURL(import.meta.env, isHttpProxy);
 
 const headers: Record<string, string> = {
   Authorization: `Bearer ${getToken()}`,
-  clientid: import.meta.env.VITE_APP_CLIENT_ID!,
+  clientid: import.meta.env.VITE_APP_CLIENT_ID!
 };
 
 function beforeUpload(options: { file: UploadFileInfo; fileList: UploadFileInfo[] }) {
@@ -97,7 +97,7 @@ function handleFinish(options: { file: UploadFileInfo; event?: ProgressEvent }) 
   const responseText = event?.target?.responseText;
   const response = JSON.parse(responseText);
   const oss: Api.System.Oss = response.data;
-  fileList.value.find((item) => item.id === file.id)!.id = String(oss.ossId);
+  fileList.value.find(item => item.id === file.id)!.id = String(oss.ossId);
   file.id = String(oss.ossId);
   file.url = oss.url;
   file.name = oss.fileName;

@@ -6,13 +6,13 @@ import { $t } from '@/locales';
 import SettingItem from '../../../components/setting-item.vue';
 
 defineOptions({
-  name: 'WatermarkSettings',
+  name: 'WatermarkSettings'
 });
 
 const themeStore = useThemeStore();
 
 const isWatermarkTextVisible = computed(
-  () => themeStore.watermark.visible && !themeStore.watermark.enableUserName && !themeStore.watermark.enableTime,
+  () => themeStore.watermark.visible && !themeStore.watermark.enableUserName && !themeStore.watermark.enableTime
 );
 </script>
 

@@ -1,39 +1,5 @@
-<template>
-  <div class="storage-stats-card">
-    <n-spin :show="loading">
-      <n-space vertical :size="16">
-        <n-space justify="space-between" align="center">
-          <n-text strong>存储空间</n-text>
-          <n-button text @click="refresh">
-            <template #icon>
-              <icon-carbon-renew />
-            </template>
-          </n-button>
-        </n-space>
-
-        <n-progress
-          type="line"
-          :percentage="stats.percentage"
-          :status="getProgressStatus(stats.percentage)"
-          :show-indicator="false"
-        />
-
-        <n-space justify="space-between">
-          <n-text depth="3" class="text-sm"> 已用 {{ formatSize(stats.used) }} / {{ formatSize(stats.quota) }} </n-text>
-          <n-text depth="3" class="text-sm"> {{ stats.percentage.toFixed(1) }}% </n-text>
-        </n-space>
-
-        <n-text v-if="stats.remaining < 1024" type="warning" class="text-sm">
-          <icon-carbon-warning class="inline-block mr-1" />
-          存储空间即将用尽
-        </n-text>
-      </n-space>
-    </n-spin>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useMessage } from 'naive-ui';
 import { fetchFileManagerGetStorageStats } from '@/service/api-gen';
 import type { StorageStatsResponseDto } from '@/service/api-gen/types';
@@ -46,7 +12,7 @@ const stats = ref<StorageStatsResponseDto>({
   quota: 0,
   percentage: 0,
   remaining: 0,
-  companyName: '',
+  companyName: ''
 });
 
 /** 格式化文件大小 */
@@ -89,9 +55,43 @@ onMounted(() => {
 });
 
 defineExpose({
-  refresh,
+  refresh
 });
 </script>
+
+<template>
+  <div class="storage-stats-card">
+    <NSpin :show="loading">
+      <NSpace vertical :size="16">
+        <NSpace justify="space-between" align="center">
+          <NText strong>存储空间</NText>
+          <NButton text @click="refresh">
+            <template #icon>
+              <icon-carbon-renew />
+            </template>
+          </NButton>
+        </NSpace>
+
+        <NProgress
+          type="line"
+          :percentage="stats.percentage"
+          :status="getProgressStatus(stats.percentage)"
+          :show-indicator="false"
+        />
+
+        <NSpace justify="space-between">
+          <NText depth="3" class="text-sm">已用 {{ formatSize(stats.used) }} / {{ formatSize(stats.quota) }}</NText>
+          <NText depth="3" class="text-sm">{{ stats.percentage.toFixed(1) }}%</NText>
+        </NSpace>
+
+        <NText v-if="stats.remaining < 1024" type="warning" class="text-sm">
+          <icon-carbon-warning class="mr-1 inline-block" />
+          存储空间即将用尽
+        </NText>
+      </NSpace>
+    </NSpin>
+  </div>
+</template>
 
 <style scoped>
 .storage-stats-card {

@@ -31,7 +31,6 @@ export class ConfigResponseDto extends BaseResponseDto {
     enumSchema: ConfigTypeEnumSchema,
   })
   configType: string;
-
 }
 
 /**

@@ -77,33 +77,137 @@ model SysClient {
 
 // ==================== 业务表 ====================
 
+// ==================== 代码生成器相关表 ====================
+
+/// 数据源配置表
+model GenDataSource {
+  id          Int       @id @default(autoincrement())
+  tenantId    String    @map("tenant_id") @db.VarChar(20)
+  name        String    @db.VarChar(100)
+  type        String    @db.VarChar(20) // postgresql, mysql, sqlite
+  host        String    @db.VarChar(255)
+  port        Int
+  database    String    @db.VarChar(100)
+  username    String    @db.VarChar(100)
+  password    String    @db.VarChar(500) // 加密存储
+  status      String    @default("0") @db.Char(1)
+  delFlag     String    @default("0") @map("del_flag") @db.Char(1)
+  createBy    String    @default("") @map("create_by") @db.VarChar(64)
+  createTime  DateTime? @map("create_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
+  updateBy    String    @default("") @map("update_by") @db.VarChar(64)
+  updateTime  DateTime? @map("update_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
+  remark      String?   @db.VarChar(500)
+
+  tables      GenTable[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId, status])
+  @@map("gen_data_source")
+}
+
+/// 模板组表
+model GenTemplateGroup {
+  id          Int       @id @default(autoincrement())
+  tenantId    String?   @map("tenant_id") @db.VarChar(20) // null 表示系统级
+  name        String    @db.VarChar(100)
+  description String?   @db.VarChar(500)
+  isDefault   Boolean   @default(false) @map("is_default")
+  status      String    @default("0") @db.Char(1)
+  delFlag     String    @default("0") @map("del_flag") @db.Char(1)
+  createBy    String    @default("") @map("create_by") @db.VarChar(64)
+  createTime  DateTime? @map("create_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
+  updateBy    String    @default("") @map("update_by") @db.VarChar(64)
+  updateTime  DateTime? @map("update_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
+
+  templates   GenTemplate[]
+  tables      GenTable[]
+  histories   GenHistory[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId, status])
+  @@map("gen_template_group")
+}
+
+/// 模板表
+model GenTemplate {
+  id          Int       @id @default(autoincrement())
+  groupId     Int       @map("group_id")
+  name        String    @db.VarChar(100)
+  fileName    String    @map("file_name") @db.VarChar(200) // 输出文件名模板
+  filePath    String    @map("file_path") @db.VarChar(500) // 输出路径模板
+  content     String    @db.Text
+  language    String    @db.VarChar(20) // typescript, vue, sql
+  sort        Int       @default(0)
+  status      String    @default("0") @db.Char(1)
+  delFlag     String    @default("0") @map("del_flag") @db.Char(1)
+  createBy    String    @default("") @map("create_by") @db.VarChar(64)
+  createTime  DateTime? @map("create_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
+  updateBy    String    @default("") @map("update_by") @db.VarChar(64)
+  updateTime  DateTime? @map("update_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
+
+  group       GenTemplateGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId])
+  @@index([status])
+  @@map("gen_template")
+}
+
+/// 生成历史表
+model GenHistory {
+  id              Int       @id @default(autoincrement())
+  tenantId        String    @map("tenant_id") @db.VarChar(20)
+  tableId         Int       @map("table_id")
+  tableName       String    @map("table_name") @db.VarChar(200)
+  templateGroupId Int       @map("template_group_id")
+  snapshot        String    @db.Text // JSON 存储
+  generatedBy     String    @map("generated_by") @db.VarChar(64)
+  generatedAt     DateTime  @map("generated_at") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
+
+  table           GenTable         @relation(fields: [tableId], references: [tableId], onDelete: Cascade)
+  templateGroup   GenTemplateGroup @relation(fields: [templateGroupId], references: [id])
+
+  @@index([tenantId, tableId])
+  @@index([generatedAt])
+  @@map("gen_history")
+}
+
+/// 代码生成表配置
 model GenTable {
-  tableId        Int       @id @default(autoincrement()) @map("table_id")
-  tableName      String    @map("table_name") @db.VarChar(200)
-  tableComment   String    @map("table_comment") @db.VarChar(500)
-  subTableName   String?   @map("sub_table_name") @db.VarChar(64)
-  subTableFkName String?   @map("sub_table_fk_name") @db.VarChar(64)
-  className      String    @map("class_name") @db.VarChar(100)
-  tplCategory    String    @map("tpl_category") @db.VarChar(200)
-  tplWebType     String    @map("tpl_web_type") @db.VarChar(30)
-  packageName    String    @map("package_name") @db.VarChar(100)
-  moduleName     String    @map("module_name") @db.VarChar(30)
-  businessName   String    @map("business_name") @db.VarChar(30)
-  functionName   String    @map("function_name") @db.VarChar(50)
-  functionAuthor String    @map("function_author") @db.VarChar(50)
-  genType        String    @map("gen_type") @db.Char(1)
-  genPath        String    @map("gen_path") @db.VarChar(200)
-  options        String    @db.VarChar(1000)
-  status         String    @db.Char(1)
-  delFlag        String    @map("del_flag") @db.Char(1)
-  createBy       String    @map("create_by") @db.VarChar(64)
-  createTime     DateTime? @map("create_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
-  updateBy       String    @map("update_by") @db.VarChar(64)
-  updateTime     DateTime? @map("update_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
-  remark         String?   @db.VarChar(500)
+  tableId         Int       @id @default(autoincrement()) @map("table_id")
+  tenantId        String    @default("000000") @map("tenant_id") @db.VarChar(20)
+  dataSourceId    Int?      @map("data_source_id")
+  templateGroupId Int?      @map("template_group_id")
+  tableName       String    @map("table_name") @db.VarChar(200)
+  tableComment    String    @map("table_comment") @db.VarChar(500)
+  subTableName    String?   @map("sub_table_name") @db.VarChar(64)
+  subTableFkName  String?   @map("sub_table_fk_name") @db.VarChar(64)
+  className       String    @map("class_name") @db.VarChar(100)
+  tplCategory     String    @map("tpl_category") @db.VarChar(200)
+  tplWebType      String    @map("tpl_web_type") @db.VarChar(30)
+  packageName     String    @map("package_name") @db.VarChar(100)
+  moduleName      String    @map("module_name") @db.VarChar(30)
+  businessName    String    @map("business_name") @db.VarChar(30)
+  functionName    String    @map("function_name") @db.VarChar(50)
+  functionAuthor  String    @map("function_author") @db.VarChar(50)
+  genType         String    @map("gen_type") @db.Char(1)
+  genPath         String    @map("gen_path") @db.VarChar(200)
+  options         String    @db.VarChar(1000)
+  status          String    @db.Char(1)
+  delFlag         String    @map("del_flag") @db.Char(1)
+  createBy        String    @map("create_by") @db.VarChar(64)
+  createTime      DateTime? @map("create_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
+  updateBy        String    @map("update_by") @db.VarChar(64)
+  updateTime      DateTime? @map("update_time") @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp(6)
+  remark          String?   @db.VarChar(500)
 
-  columns GenTableColumn[]
+  columns         GenTableColumn[]
+  dataSource      GenDataSource?   @relation(fields: [dataSourceId], references: [id])
+  templateGroup   GenTemplateGroup? @relation(fields: [templateGroupId], references: [id])
+  histories       GenHistory[]
 
+  @@index([tenantId, delFlag])
+  @@index([dataSourceId])
+  @@index([templateGroupId])
   @@map("gen_table")
 }
 

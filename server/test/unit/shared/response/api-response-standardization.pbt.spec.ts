@@ -135,14 +135,10 @@ describe('API Response Standardization Property Tests', () => {
 
     it('For total=0, pages SHALL be 0', () => {
       fc.assert(
-        fc.property(
-          fc.integer({ min: 1, max: 100 }),
-          fc.integer({ min: 1, max: 100 }),
-          (pageNum, pageSize) => {
-            const result = Result.page([], 0, pageNum, pageSize);
-            return result.data!.pages === 0;
-          },
-        ),
+        fc.property(fc.integer({ min: 1, max: 100 }), fc.integer({ min: 1, max: 100 }), (pageNum, pageSize) => {
+          const result = Result.page([], 0, pageNum, pageSize);
+          return result.data!.pages === 0;
+        }),
         { numRuns: 100 },
       );
     });
@@ -263,12 +259,7 @@ describe('API Response Standardization Property Tests', () => {
 
           // 验证每个 DTO 都不包含敏感字段（password, delFlag, tenantId）
           // createBy 和 updateBy 在 BaseResponseDto 中是 @Expose，所以会被保留
-          return dtoList.every(
-            (dto) =>
-              !('password' in dto) &&
-              !('delFlag' in dto) &&
-              !('tenantId' in dto),
-          );
+          return dtoList.every((dto) => !('password' in dto) && !('delFlag' in dto) && !('tenantId' in dto));
         }),
         { numRuns: 100 },
       );
@@ -284,12 +275,7 @@ describe('API Response Standardization Property Tests', () => {
 
             // 验证每个 DTO 都不包含敏感字段（password, delFlag, tenantId）
             // createBy 和 updateBy 在 BaseResponseDto 中是 @Expose，所以会被保留
-            return pageData.rows.every(
-              (dto) =>
-                !('password' in dto) &&
-                !('delFlag' in dto) &&
-                !('tenantId' in dto),
-            );
+            return pageData.rows.every((dto) => !('password' in dto) && !('delFlag' in dto) && !('tenantId' in dto));
           },
         ),
         { numRuns: 100 },

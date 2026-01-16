@@ -5,9 +5,27 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CurrentUserInfoResponseDto, UserResponseDto, UpdateProfileDto, UserAvatarResponseDto, UpdatePwdDto, CreateUserDto, UserDetailResponseDto, UpdateUserDto, BatchCreateUserDto, BatchResultDto, BatchDeleteUserDto, UserListResponseDto, DeptTreeNodeVo, AuthRoleResponseDto, UserOptionSelectResponseDto, ChangeUserStatusDto, ResetPwdDto, ListUserDto } from './types';
+import type {
+  AuthRoleResponseDto,
+  BatchCreateUserDto,
+  BatchDeleteUserDto,
+  BatchResultDto,
+  ChangeUserStatusDto,
+  CreateUserDto,
+  CurrentUserInfoResponseDto,
+  DeptTreeNodeVo,
+  ListUserDto,
+  ResetPwdDto,
+  UpdateProfileDto,
+  UpdatePwdDto,
+  UpdateUserDto,
+  UserAvatarResponseDto,
+  UserDetailResponseDto,
+  UserListResponseDto,
+  UserOptionSelectResponseDto,
+  UserResponseDto
+} from './types';
 
 /**
  * 获取当前登录用户信息 - 供 Soybean 前端调用
@@ -18,7 +36,7 @@ export function fetchUserGetInfo() {
   return apiRequest<CurrentUserInfoResponseDto>({
     method: 'GET',
     url: '/system/user/getInfo',
-    operationId: 'UserController_getInfo_v1',
+    operationId: 'UserController_getInfo_v1'
   });
 }
 
@@ -30,7 +48,7 @@ export function fetchUserProfile() {
   return apiRequest<UserResponseDto>({
     method: 'GET',
     url: '/system/user/profile',
-    operationId: 'UserController_profile_v1',
+    operationId: 'UserController_profile_v1'
   });
 }
 
@@ -43,7 +61,7 @@ export function fetchUserUpdateProfile(data: UpdateProfileDto) {
     method: 'PUT',
     url: '/system/user/profile',
     data,
-    operationId: 'UserController_updateProfile_v1',
+    operationId: 'UserController_updateProfile_v1'
   });
 }
 
@@ -55,7 +73,7 @@ export function fetchUserAvatar() {
   return apiRequest<UserAvatarResponseDto>({
     method: 'POST',
     url: '/system/user/profile/avatar',
-    operationId: 'UserController_avatar_v1',
+    operationId: 'UserController_avatar_v1'
   });
 }
 
@@ -68,7 +86,7 @@ export function fetchUserUpdatePwd(data: UpdatePwdDto) {
     method: 'PUT',
     url: '/system/user/profile/updatePwd',
     data,
-    operationId: 'UserController_updatePwd_v1',
+    operationId: 'UserController_updatePwd_v1'
   });
 }
 
@@ -81,7 +99,7 @@ export function fetchUserCreate(data: CreateUserDto) {
     method: 'POST',
     url: '/system/user',
     data,
-    operationId: 'UserController_create_v1',
+    operationId: 'UserController_create_v1'
   });
 }
 
@@ -93,7 +111,7 @@ export function fetchUserFindPostAndRoleAll() {
   return apiRequest<UserDetailResponseDto>({
     method: 'GET',
     url: '/system/user',
-    operationId: 'UserController_findPostAndRoleAll_v1',
+    operationId: 'UserController_findPostAndRoleAll_v1'
   });
 }
 
@@ -106,7 +124,7 @@ export function fetchUserUpdate(data: UpdateUserDto) {
     method: 'PUT',
     url: '/system/user',
     data,
-    operationId: 'UserController_update_v1',
+    operationId: 'UserController_update_v1'
   });
 }
 
@@ -119,7 +137,7 @@ export function fetchUserBatchCreate(data: BatchCreateUserDto) {
     method: 'POST',
     url: '/system/user/batch',
     data,
-    operationId: 'UserController_batchCreate_v1',
+    operationId: 'UserController_batchCreate_v1'
   });
 }
 
@@ -132,7 +150,7 @@ export function fetchUserBatchDelete(data: BatchDeleteUserDto) {
     method: 'DELETE',
     url: '/system/user/batch',
     data,
-    operationId: 'UserController_batchDelete_v1',
+    operationId: 'UserController_batchDelete_v1'
   });
 }
 
@@ -145,7 +163,7 @@ export function fetchUserFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/user/list',
     params,
-    operationId: 'UserController_findAll_v1',
+    operationId: 'UserController_findAll_v1'
   });
 }
 
@@ -157,7 +175,7 @@ export function fetchUserDeptTree() {
   return apiRequest<DeptTreeNodeVo[]>({
     method: 'GET',
     url: '/system/user/deptTree',
-    operationId: 'UserController_deptTree_v1',
+    operationId: 'UserController_deptTree_v1'
   });
 }
 
@@ -169,7 +187,7 @@ export function fetchUserAuthRole(id: string | number) {
   return apiRequest<AuthRoleResponseDto>({
     method: 'GET',
     url: buildUrl('/system/user/authRole/{id}', { id }),
-    operationId: 'UserController_authRole_v1',
+    operationId: 'UserController_authRole_v1'
   });
 }
 
@@ -182,7 +200,7 @@ export function fetchUserUpdateAuthRole(params?: Record<string, unknown>) {
     method: 'PUT',
     url: '/system/user/authRole',
     params,
-    operationId: 'UserController_updateAuthRole_v1',
+    operationId: 'UserController_updateAuthRole_v1'
   });
 }
 
@@ -194,7 +212,7 @@ export function fetchUserOptionselect() {
   return apiRequest<UserOptionSelectResponseDto>({
     method: 'GET',
     url: '/system/user/optionselect',
-    operationId: 'UserController_optionselect_v1',
+    operationId: 'UserController_optionselect_v1'
   });
 }
 
@@ -206,7 +224,7 @@ export function fetchUserFindByDeptId(deptId: string | number) {
   return apiRequest<UserListResponseDto>({
     method: 'GET',
     url: buildUrl('/system/user/list/dept/{deptId}', { deptId }),
-    operationId: 'UserController_findByDeptId_v1',
+    operationId: 'UserController_findByDeptId_v1'
   });
 }
 
@@ -218,7 +236,7 @@ export function fetchUserFindOne(userId: string | number) {
   return apiRequest<UserDetailResponseDto>({
     method: 'GET',
     url: buildUrl('/system/user/{userId}', { userId }),
-    operationId: 'UserController_findOne_v1',
+    operationId: 'UserController_findOne_v1'
   });
 }
 
@@ -231,7 +249,7 @@ export function fetchUserChangeStatus(data: ChangeUserStatusDto) {
     method: 'PUT',
     url: '/system/user/changeStatus',
     data,
-    operationId: 'UserController_changeStatus_v1',
+    operationId: 'UserController_changeStatus_v1'
   });
 }
 
@@ -244,7 +262,7 @@ export function fetchUserResetPwd(data: ResetPwdDto) {
     method: 'PUT',
     url: '/system/user/resetPwd',
     data,
-    operationId: 'UserController_resetPwd_v1',
+    operationId: 'UserController_resetPwd_v1'
   });
 }
 
@@ -256,7 +274,7 @@ export function fetchUserRemove(id: string | number) {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: buildUrl('/system/user/{id}', { id }),
-    operationId: 'UserController_remove_v1',
+    operationId: 'UserController_remove_v1'
   });
 }
 
@@ -269,6 +287,6 @@ export function fetchUserExport(data: ListUserDto) {
     method: 'POST',
     url: '/system/user/export',
     data,
-    operationId: 'UserController_export_v1',
+    operationId: 'UserController_export_v1'
   });
 }

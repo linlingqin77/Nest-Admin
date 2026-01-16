@@ -47,7 +47,14 @@ export class ListUserDto extends PageQueryDto {
   @IsString()
   phonenumber?: string;
 
-  @ApiProperty({ enum: StatusEnum, enumName: 'StatusEnum', enumSchema: StatusEnumSchema, required: false, description: '用户状态（0正常 1停用）', example: '0' })
+  @ApiProperty({
+    enum: StatusEnum,
+    enumName: 'StatusEnum',
+    enumSchema: StatusEnumSchema,
+    required: false,
+    description: '用户状态（0正常 1停用）',
+    example: '0',
+  })
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)

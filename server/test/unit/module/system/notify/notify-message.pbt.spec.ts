@@ -205,15 +205,9 @@ describe('NotifyMessage Property-Based Tests', () => {
           // Generate random user ID
           fc.integer({ min: 1, max: 1000 }),
           // Generate random tenant IDs
-          fc.tuple(
-            fc.stringMatching(/^[0-9]{6}$/),
-            fc.stringMatching(/^[0-9]{6}$/),
-          ),
+          fc.tuple(fc.stringMatching(/^[0-9]{6}$/), fc.stringMatching(/^[0-9]{6}$/)),
           // Generate random message counts per tenant
-          fc.tuple(
-            fc.integer({ min: 1, max: 5 }),
-            fc.integer({ min: 1, max: 5 }),
-          ),
+          fc.tuple(fc.integer({ min: 1, max: 5 }), fc.integer({ min: 1, max: 5 })),
           async (userId, [tenantId1, tenantId2], [count1, count2]) => {
             // Reset state
             messages.clear();
@@ -432,8 +426,7 @@ describe('NotifyMessage Property-Based Tests', () => {
 
             // Property: Original data should be preserved
             const dataPreserved =
-              includeDeletedResult?.userId === userId &&
-              includeDeletedResult?.templateContent === content;
+              includeDeletedResult?.userId === userId && includeDeletedResult?.templateContent === content;
 
             return notFoundInNormalQuery && foundInIncludeDeletedQuery && delFlagIsOne && dataPreserved;
           },

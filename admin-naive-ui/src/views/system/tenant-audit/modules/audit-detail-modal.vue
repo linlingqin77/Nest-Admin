@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import { fetchGetTenantAuditLogDetail } from '@/service/api/system/tenant';
 
 defineOptions({
-  name: 'AuditDetailModal',
+  name: 'AuditDetailModal'
 });
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const loading = ref(false);
@@ -28,7 +28,7 @@ const actionTypeMap: Record<string, string> = {
   permission_change: '权限变更',
   config_change: '配置修改',
   export: '导出',
-  other: '其他',
+  other: '其他'
 };
 
 async function loadDetail(id: number | string) {
@@ -52,7 +52,7 @@ function formatJson(jsonStr?: string): string {
   }
 }
 
-watch(visible, (newVal) => {
+watch(visible, newVal => {
   if (newVal && props.rowData?.id) {
     loadDetail(props.rowData.id);
   } else {

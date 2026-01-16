@@ -2,12 +2,12 @@
 import { computed, reactive, ref, watch } from 'vue';
 import type { UmoEditor } from '@umoteam/editor';
 import { fetchNoticeCreate, fetchNoticeUpdate } from '@/service/api-gen';
-import type { NoticeResponseDto, CreateNoticeRequestDto, UpdateNoticeRequestDto } from '@/service/api-gen/types';
+import type { CreateNoticeRequestDto, NoticeResponseDto, UpdateNoticeRequestDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'NoticeOperateDrawer',
+  name: 'NoticeOperateDrawer'
 });
 
 interface Props {
@@ -26,7 +26,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const umoEditorRef = ref<InstanceType<typeof UmoEditor>>();
@@ -36,7 +36,7 @@ const { createRequiredRule } = useFormRules();
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
     add: '新增通知公告',
-    edit: '编辑通知公告',
+    edit: '编辑通知公告'
   };
   return titles[props.operateType];
 });
@@ -51,7 +51,7 @@ function createDefaultModel(): Model {
     noticeType: '1',
     noticeContent: '',
     status: '0',
-    remark: '',
+    remark: ''
   };
 }
 
@@ -62,7 +62,7 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
   noticeTitle: createRequiredRule('公告标题不能为空'),
   noticeType: createRequiredRule('公告类型不能为空'),
   noticeContent: createRequiredRule('公告内容不能为空'),
-  status: createRequiredRule('公告状态不能为空'),
+  status: createRequiredRule('公告状态不能为空')
 };
 
 function handleUpdateModelWhenEdit() {
@@ -93,7 +93,7 @@ async function handleSubmit() {
         noticeType: noticeType!,
         noticeContent,
         status,
-        remark: remark || '',
+        remark: remark || ''
       } as CreateNoticeRequestDto);
     } else if (props.operateType === 'edit') {
       const { noticeId, noticeTitle, noticeType, noticeContent, status, remark } = model;
@@ -103,7 +103,7 @@ async function handleSubmit() {
         noticeType: noticeType!,
         noticeContent,
         status,
-        remark: remark || '',
+        remark: remark || ''
       } as UpdateNoticeRequestDto);
     }
 

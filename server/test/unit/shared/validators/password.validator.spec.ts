@@ -37,13 +37,23 @@ describe('PasswordValidator', () => {
       });
 
       it('应该接受自定义最小长度', () => {
-        const config: PasswordValidationConfig = { minLength: 4, requireUppercase: false, requireLowercase: false, requireNumber: false };
+        const config: PasswordValidationConfig = {
+          minLength: 4,
+          requireUppercase: false,
+          requireLowercase: false,
+          requireNumber: false,
+        };
         const result = PasswordValidator.validate('abcd', config);
         expect(result.valid).toBe(true);
       });
 
       it('应该接受自定义最大长度', () => {
-        const config: PasswordValidationConfig = { maxLength: 10, requireUppercase: false, requireLowercase: false, requireNumber: false };
+        const config: PasswordValidationConfig = {
+          maxLength: 10,
+          requireUppercase: false,
+          requireLowercase: false,
+          requireNumber: false,
+        };
         const result = PasswordValidator.validate('abcdefghijk', config);
         expect(result.valid).toBe(false);
         expect(result.errors).toContain('密码长度最多10位');
@@ -83,19 +93,31 @@ describe('PasswordValidator', () => {
       });
 
       it('应该可以禁用大写字母要求', () => {
-        const config: PasswordValidationConfig = { requireUppercase: false, requireLowercase: true, requireNumber: true };
+        const config: PasswordValidationConfig = {
+          requireUppercase: false,
+          requireLowercase: true,
+          requireNumber: true,
+        };
         const result = PasswordValidator.validate('abcdefgh1', config);
         expect(result.valid).toBe(true);
       });
 
       it('应该可以禁用小写字母要求', () => {
-        const config: PasswordValidationConfig = { requireLowercase: false, requireUppercase: true, requireNumber: true };
+        const config: PasswordValidationConfig = {
+          requireLowercase: false,
+          requireUppercase: true,
+          requireNumber: true,
+        };
         const result = PasswordValidator.validate('ABCDEFGH1', config);
         expect(result.valid).toBe(true);
       });
 
       it('应该可以禁用数字要求', () => {
-        const config: PasswordValidationConfig = { requireNumber: false, requireUppercase: true, requireLowercase: true };
+        const config: PasswordValidationConfig = {
+          requireNumber: false,
+          requireUppercase: true,
+          requireLowercase: true,
+        };
         const result = PasswordValidator.validate('Abcdefgh', config);
         expect(result.valid).toBe(true);
       });

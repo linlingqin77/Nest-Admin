@@ -14,11 +14,7 @@
 
 import * as fc from 'fast-check';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  CircuitBreakerService,
-  BreakerState,
-  CircuitBreakerOpenError,
-} from './circuit-breaker.service';
+import { CircuitBreakerService, BreakerState, CircuitBreakerOpenError } from './circuit-breaker.service';
 
 describe('CircuitBreakerService Property-Based Tests', () => {
   let service: CircuitBreakerService;
@@ -255,10 +251,7 @@ describe('CircuitBreakerService Property-Based Tests', () => {
 
           // Property: After successful request in HALF_OPEN, state should be CLOSED
           const finalState = service.getState(uniqueName);
-          return (
-            finalState === BreakerState.CLOSED &&
-            JSON.stringify(result) === JSON.stringify(successValue)
-          );
+          return finalState === BreakerState.CLOSED && JSON.stringify(result) === JSON.stringify(successValue);
         },
       ),
       { numRuns: 100 },

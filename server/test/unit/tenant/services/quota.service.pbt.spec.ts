@@ -177,31 +177,27 @@ describe('TenantQuotaService - Property Tests', () => {
      */
     it('使用量等于配额时应该返回 allowed=false', async () => {
       await fc.assert(
-        fc.asyncProperty(
-          tenantIdArb,
-          fc.integer({ min: 1, max: 10000 }),
-          async (tenantId, quota) => {
-            tenantQuotas.set(tenantId, {
-              accountCount: quota,
-              storageQuota: quota,
-              apiQuota: quota,
-            });
-            tenantUsage.set(tenantId, {
-              users: quota,
-              storage: quota,
-              apiCalls: quota,
-            });
+        fc.asyncProperty(tenantIdArb, fc.integer({ min: 1, max: 10000 }), async (tenantId, quota) => {
+          tenantQuotas.set(tenantId, {
+            accountCount: quota,
+            storageQuota: quota,
+            apiQuota: quota,
+          });
+          tenantUsage.set(tenantId, {
+            users: quota,
+            storage: quota,
+            apiCalls: quota,
+          });
 
-            const result = await service.checkQuota(tenantId, QuotaResource.USERS);
+          const result = await service.checkQuota(tenantId, QuotaResource.USERS);
 
-            return (
-              result.allowed === false &&
-              result.currentUsage === quota &&
-              result.quota === quota &&
-              result.remaining === 0
-            );
-          },
-        ),
+          return (
+            result.allowed === false &&
+            result.currentUsage === quota &&
+            result.quota === quota &&
+            result.remaining === 0
+          );
+        }),
         { numRuns: 100 },
       );
     });
@@ -346,12 +342,9 @@ describe('TenantQuotaService - Property Tests', () => {
             const apiResult = await service.checkQuota(tenantId, QuotaResource.API_CALLS);
 
             // 验证每个资源类型使用正确的配额和使用量
-            const userCorrect =
-              userResult.quota === userQuota && userResult.currentUsage === userUsage;
-            const storageCorrect =
-              storageResult.quota === storageQuota && storageResult.currentUsage === storageUsage;
-            const apiCorrect =
-              apiResult.quota === apiQuota && apiResult.currentUsage === apiUsage;
+            const userCorrect = userResult.quota === userQuota && userResult.currentUsage === userUsage;
+            const storageCorrect = storageResult.quota === storageQuota && storageResult.currentUsage === storageUsage;
+            const apiCorrect = apiResult.quota === apiQuota && apiResult.currentUsage === apiUsage;
 
             return userCorrect && storageCorrect && apiCorrect;
           },
@@ -403,10 +396,8 @@ describe('TenantQuotaService - Property Tests', () => {
             const result2 = await service.checkQuota(tenant2, QuotaResource.USERS);
 
             // 验证每个租户使用自己的配额和使用量
-            const tenant1Correct =
-              result1.quota === quota1 && result1.currentUsage === usage1;
-            const tenant2Correct =
-              result2.quota === quota2 && result2.currentUsage === usage2;
+            const tenant1Correct = result1.quota === quota1 && result1.currentUsage === usage1;
+            const tenant2Correct = result2.quota === quota2 && result2.currentUsage === usage2;
 
             return tenant1Correct && tenant2Correct;
           },

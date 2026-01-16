@@ -116,11 +116,7 @@ export class TenantExportService {
    * @param res Express Response 对象（可选，用于流式导出）
    * @returns 导出数据或直接写入响应
    */
-  async exportTenantData(
-    tenantId: string,
-    options: ExportOptions,
-    res?: Response,
-  ): Promise<TenantExportData | void> {
+  async exportTenantData(tenantId: string, options: ExportOptions, res?: Response): Promise<TenantExportData | void> {
     if (!tenantId) {
       throw new BusinessException(ResponseCode.BAD_REQUEST, '租户ID不能为空');
     }
@@ -152,13 +148,8 @@ export class TenantExportService {
   /**
    * 收集导出数据
    */
-  private async collectExportData(
-    tenantId: string,
-    options: ExportOptions,
-  ): Promise<TenantExportData> {
-    const delFlagFilter = options.includeDeleted
-      ? {}
-      : { delFlag: DelFlagEnum.NORMAL };
+  private async collectExportData(tenantId: string, options: ExportOptions): Promise<TenantExportData> {
+    const delFlagFilter = options.includeDeleted ? {} : { delFlag: DelFlagEnum.NORMAL };
 
     const exportData: TenantExportData = {
       exportTime: new Date().toISOString(),
@@ -299,10 +290,7 @@ export class TenantExportService {
   /**
    * 导出为 JSON 格式
    */
-  private exportAsJson(
-    data: TenantExportData,
-    res?: Response,
-  ): TenantExportData | void {
+  private exportAsJson(data: TenantExportData, res?: Response): TenantExportData | void {
     if (res) {
       const filename = `tenant_${data.tenantId}_${this.getDateString()}.json`;
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -316,11 +304,7 @@ export class TenantExportService {
   /**
    * 导出为 CSV 格式
    */
-  private exportAsCsv(
-    data: TenantExportData,
-    dataTypes: ExportDataType[],
-    res?: Response,
-  ): TenantExportData | void {
+  private exportAsCsv(data: TenantExportData, dataTypes: ExportDataType[], res?: Response): TenantExportData | void {
     if (!res) {
       return data;
     }
@@ -349,10 +333,10 @@ export class TenantExportService {
     }
 
     const filename = `tenant_${data.tenantId}_${exportedType}_${this.getDateString()}.csv`;
-    
+
     // 添加 BOM 以支持 Excel 正确识别 UTF-8
     const bom = '\uFEFF';
-    
+
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.send(bom + csvContent);
@@ -361,10 +345,7 @@ export class TenantExportService {
   /**
    * 根据类型获取数据
    */
-  private getDataByType(
-    data: TenantExportData,
-    type: ExportDataType,
-  ): Record<string, unknown>[] | undefined {
+  private getDataByType(data: TenantExportData, type: ExportDataType): Record<string, unknown>[] | undefined {
     switch (type) {
       case ExportDataType.USERS:
         return data.users;
@@ -392,19 +373,16 @@ export class TenantExportService {
   /**
    * 转换为 CSV 格式
    */
-  private convertToCsv(
-    records: Record<string, unknown>[],
-    type: ExportDataType,
-  ): string {
+  private convertToCsv(records: Record<string, unknown>[], type: ExportDataType): string {
     if (!records || records.length === 0) {
       return '';
     }
 
     const columns = this.getCsvColumns(type);
-    
+
     // 生成表头
     const header = columns.map((col) => this.escapeCsvValue(col.header)).join(',');
-    
+
     // 生成数据行
     const rows = records.map((record) => {
       return columns
@@ -512,7 +490,7 @@ export class TenantExportService {
    */
   private escapeCsvValue(value: string): string {
     if (!value) return '';
-    
+
     // 如果包含逗号、引号或换行符，需要用引号包裹
     if (value.includes(',') || value.includes('"') || value.includes('\n') || value.includes('\r')) {
       // 将引号替换为两个引号
@@ -569,17 +547,17 @@ export class TenantExportService {
    */
   private maskUserData(user: Record<string, unknown>): Record<string, unknown> {
     const masked = this.sanitizeRecord(user);
-    
+
     // 脱敏手机号
     if (masked.phonenumber && typeof masked.phonenumber === 'string') {
       masked.phonenumber = this.maskPhone(masked.phonenumber);
     }
-    
+
     // 脱敏邮箱
     if (masked.email && typeof masked.email === 'string') {
       masked.email = this.maskEmail(masked.email);
     }
-    
+
     return masked;
   }
 
@@ -597,9 +575,7 @@ export class TenantExportService {
   private maskEmail(email: string): string {
     if (!email || !email.includes('@')) return email;
     const [local, domain] = email.split('@');
-    const maskedLocal = local.length > 2 
-      ? local[0] + '**' + local.slice(-1) 
-      : '**';
+    const maskedLocal = local.length > 2 ? local[0] + '**' + local.slice(-1) : '**';
     return `${maskedLocal}@${domain}`;
   }
 
@@ -610,11 +586,7 @@ export class TenantExportService {
    * @param dataType 数据类型
    * @param res Express Response 对象
    */
-  async exportSingleTypeAsJson(
-    tenantId: string,
-    dataType: ExportDataType,
-    res: Response,
-  ): Promise<void> {
+  async exportSingleTypeAsJson(tenantId: string, dataType: ExportDataType, res: Response): Promise<void> {
     await this.exportTenantData(
       tenantId,
       {
@@ -634,11 +606,7 @@ export class TenantExportService {
    * @param dataType 数据类型
    * @param res Express Response 对象
    */
-  async exportSingleTypeAsCsv(
-    tenantId: string,
-    dataType: ExportDataType,
-    res: Response,
-  ): Promise<void> {
+  async exportSingleTypeAsCsv(tenantId: string, dataType: ExportDataType, res: Response): Promise<void> {
     await this.exportTenantData(
       tenantId,
       {
@@ -677,10 +645,7 @@ export class TenantExportService {
    * @param options 导出选项
    * @returns 导出数据
    */
-  async getExportData(
-    tenantId: string,
-    options: Partial<ExportOptions> = {},
-  ): Promise<TenantExportData> {
+  async getExportData(tenantId: string, options: Partial<ExportOptions> = {}): Promise<TenantExportData> {
     const fullOptions: ExportOptions = {
       format: options.format || ExportFormat.JSON,
       dataTypes: options.dataTypes || [ExportDataType.ALL],

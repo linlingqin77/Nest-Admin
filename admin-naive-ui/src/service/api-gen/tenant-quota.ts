@@ -5,9 +5,14 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { TenantQuotaListVo, TenantQuotaDetailVo, UpdateTenantQuotaDto, CheckQuotaDto, QuotaCheckResultVo } from './types';
+import type {
+  CheckQuotaDto,
+  QuotaCheckResultVo,
+  TenantQuotaDetailVo,
+  TenantQuotaListVo,
+  UpdateTenantQuotaDto
+} from './types';
 
 /**
  * 租户配额列表
@@ -18,7 +23,7 @@ export function fetchTenantQuotaFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/tenant/quota/list',
     params,
-    operationId: 'TenantQuotaController_findAll_v1',
+    operationId: 'TenantQuotaController_findAll_v1'
   });
 }
 
@@ -30,7 +35,7 @@ export function fetchTenantQuotaFindOne(tenantId: string | number) {
   return apiRequest<TenantQuotaDetailVo>({
     method: 'GET',
     url: buildUrl('/system/tenant/quota/{tenantId}', { tenantId }),
-    operationId: 'TenantQuotaController_findOne_v1',
+    operationId: 'TenantQuotaController_findOne_v1'
   });
 }
 
@@ -43,7 +48,7 @@ export function fetchTenantQuotaUpdate(data: UpdateTenantQuotaDto) {
     method: 'PUT',
     url: '/system/tenant/quota',
     data,
-    operationId: 'TenantQuotaController_update_v1',
+    operationId: 'TenantQuotaController_update_v1'
   });
 }
 
@@ -56,6 +61,6 @@ export function fetchTenantQuotaCheckQuota(data: CheckQuotaDto) {
     method: 'POST',
     url: '/system/tenant/quota/check',
     data,
-    operationId: 'TenantQuotaController_checkQuota_v1',
+    operationId: 'TenantQuotaController_checkQuota_v1'
   });
 }

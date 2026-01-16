@@ -47,9 +47,10 @@ Nest-Admin-Soybean 是一个基于 NestJS + Vue3 + Prisma 构建的企业级全�
 
 内置安全可靠的演示账户系统：
 
-- 52 个只读权限，可查看所有模块
+- 27 个只读权限，可查看所有模块
 - 自动拦截所有写操作
 - 适合产品演示和功能体验
+- 详细说明请查看 [测试账户文档](/TEST_ACCOUNTS)
 
 ## 技术架构
 
@@ -57,14 +58,17 @@ Nest-Admin-Soybean 是一个基于 NestJS + Vue3 + Prisma 构建的企业级全�
 
 | 技术 | 版本 | 说明 |
 |------|------|------|
-| NestJS | 10.4+ | 企业级 Node.js 框架 |
-| Prisma | 5.22+ | 类型安全的 ORM |
+| NestJS | 10.x | 企业级 Node.js 框架 |
+| Prisma | 5.17+ | 类型安全的 ORM |
 | PostgreSQL | 14+ | 关系型数据库 |
 | Redis | 7+ | 缓存和会话存储 |
 | JWT | - | 身份认证 |
 | Passport | - | 认证中间件 |
-| Pino | - | 高性能日志 |
+| Pino + Winston | - | 高性能日志 |
+| Bull | - | 任务队列 |
 | class-validator | - | 数据验证 |
+| fast-check | - | 属性测试 |
+| Jest | 29+ | 单元测试框架 |
 
 ### 前端技术栈
 
@@ -72,11 +76,15 @@ Nest-Admin-Soybean 是一个基于 NestJS + Vue3 + Prisma 构建的企业级全�
 |------|------|------|
 | Vue | 3.5+ | 渐进式前端框架 |
 | Vite | 7+ | 极速构建工具 |
-| Naive UI | 最新 | 现代化组件库 |
+| Naive UI | 2.43+ | 现代化组件库 |
 | UnoCSS | 最新 | 即时原子化 CSS |
-| Pinia | 最新 | 状态管理 |
-| VueRouter | 最新 | 路由管理 |
+| Pinia | 3+ | 状态管理 |
+| VueRouter | 4+ | 路由管理 |
 | Axios | 最新 | HTTP 客户端 |
+| TypeScript | 5+ | 类型安全 |
+| Vitest | 4+ | 单元测试框架 |
+| Cypress | 15+ | E2E 测试框架 |
+| fast-check | 4+ | 属性测试 |
 
 ## 核心功能
 

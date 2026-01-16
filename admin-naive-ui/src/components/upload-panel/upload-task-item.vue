@@ -1,99 +1,8 @@
-<template>
-  <div class="upload-task-item" :style="{ height: `${UPLOAD_ITEM_HEIGHT}px` }">
-    <div class="task-icon">
-      <div :class="fileIcon" class="file-icon" />
-    </div>
-
-    <div class="task-content">
-      <!-- 文件名 -->
-      <n-ellipsis :line-clamp="1" class="file-name">
-        {{ task.fileName }}
-      </n-ellipsis>
-
-      <!-- 进度条 -->
-      <n-progress
-        :percentage="task.progress"
-        :height="3"
-        :show-indicator="false"
-        :status="progressStatus"
-        :color="themeVars.primaryColor"
-      />
-
-      <!-- 状态信息 -->
-      <div class="task-meta">
-        <span v-if="task.status === 'uploading'" class="speed">
-          {{ formatSpeed(task.speed) }}
-        </span>
-        <span v-if="task.status === 'success'" class="success-text"> 上传完成 </span>
-        <span v-if="task.status === 'error'" class="error-text">
-          {{ task.error || '上传失败' }}
-        </span>
-        <span v-if="task.status === 'paused'" class="paused-text"> 已暂停 </span>
-        <span class="size-info"> {{ formatSize(task.uploaded) }} / {{ formatSize(task.fileSize) }} </span>
-      </div>
-    </div>
-
-    <!-- 操作按钮 -->
-    <div class="task-actions">
-      <!-- 上传中 - 暂停/取消 -->
-      <template v-if="task.status === 'uploading'">
-        <n-button text @click="$emit('pause')">
-          <template #icon>
-            <div class="i-carbon-pause" />
-          </template>
-        </n-button>
-        <n-button text @click="$emit('cancel')">
-          <template #icon>
-            <div class="i-carbon-close" />
-          </template>
-        </n-button>
-      </template>
-
-      <!-- 已暂停 - 继续/取消 -->
-      <template v-if="task.status === 'paused'">
-        <n-button text @click="$emit('resume')">
-          <template #icon>
-            <div class="i-carbon-play" />
-          </template>
-        </n-button>
-        <n-button text @click="$emit('cancel')">
-          <template #icon>
-            <div class="i-carbon-close" />
-          </template>
-        </n-button>
-      </template>
-
-      <!-- 成功 - 无操作或删除记录 -->
-      <template v-if="task.status === 'success'">
-        <n-button text @click="$emit('cancel')">
-          <template #icon>
-            <div class="i-carbon-checkmark" style="color: #67c23a" />
-          </template>
-        </n-button>
-      </template>
-
-      <!-- 失败 - 重试/取消 -->
-      <template v-if="task.status === 'error'">
-        <n-button text @click="$emit('retry')">
-          <template #icon>
-            <div class="i-carbon-renew" />
-          </template>
-        </n-button>
-        <n-button text @click="$emit('cancel')">
-          <template #icon>
-            <div class="i-carbon-close" />
-          </template>
-        </n-button>
-      </template>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue';
 import { NButton, NEllipsis, NProgress, useThemeVars } from 'naive-ui';
+import { UPLOAD_ITEM_HEIGHT, formatFileSize, getFileIcon } from '@/views/system/file-manager/constants';
 import type { UploadTask } from './index.vue';
-import { UPLOAD_ITEM_HEIGHT, getFileIcon, formatFileSize } from '@/views/system/file-manager/constants';
 
 interface Props {
   task: UploadTask;
@@ -150,6 +59,97 @@ function formatSize(bytes?: number): string {
   return formatFileSize(bytes);
 }
 </script>
+
+<template>
+  <div class="upload-task-item" :style="{ height: `${UPLOAD_ITEM_HEIGHT}px` }">
+    <div class="task-icon">
+      <div :class="fileIcon" class="file-icon" />
+    </div>
+
+    <div class="task-content">
+      <!-- 文件名 -->
+      <NEllipsis :line-clamp="1" class="file-name">
+        {{ task.fileName }}
+      </NEllipsis>
+
+      <!-- 进度条 -->
+      <NProgress
+        :percentage="task.progress"
+        :height="3"
+        :show-indicator="false"
+        :status="progressStatus"
+        :color="themeVars.primaryColor"
+      />
+
+      <!-- 状态信息 -->
+      <div class="task-meta">
+        <span v-if="task.status === 'uploading'" class="speed">
+          {{ formatSpeed(task.speed) }}
+        </span>
+        <span v-if="task.status === 'success'" class="success-text">上传完成</span>
+        <span v-if="task.status === 'error'" class="error-text">
+          {{ task.error || '上传失败' }}
+        </span>
+        <span v-if="task.status === 'paused'" class="paused-text">已暂停</span>
+        <span class="size-info">{{ formatSize(task.uploaded) }} / {{ formatSize(task.fileSize) }}</span>
+      </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="task-actions">
+      <!-- 上传中 - 暂停/取消 -->
+      <template v-if="task.status === 'uploading'">
+        <NButton text @click="$emit('pause')">
+          <template #icon>
+            <div class="i-carbon-pause" />
+          </template>
+        </NButton>
+        <NButton text @click="$emit('cancel')">
+          <template #icon>
+            <div class="i-carbon-close" />
+          </template>
+        </NButton>
+      </template>
+
+      <!-- 已暂停 - 继续/取消 -->
+      <template v-if="task.status === 'paused'">
+        <NButton text @click="$emit('resume')">
+          <template #icon>
+            <div class="i-carbon-play" />
+          </template>
+        </NButton>
+        <NButton text @click="$emit('cancel')">
+          <template #icon>
+            <div class="i-carbon-close" />
+          </template>
+        </NButton>
+      </template>
+
+      <!-- 成功 - 无操作或删除记录 -->
+      <template v-if="task.status === 'success'">
+        <NButton text @click="$emit('cancel')">
+          <template #icon>
+            <div class="i-carbon-checkmark" style="color: #67c23a" />
+          </template>
+        </NButton>
+      </template>
+
+      <!-- 失败 - 重试/取消 -->
+      <template v-if="task.status === 'error'">
+        <NButton text @click="$emit('retry')">
+          <template #icon>
+            <div class="i-carbon-renew" />
+          </template>
+        </NButton>
+        <NButton text @click="$emit('cancel')">
+          <template #icon>
+            <div class="i-carbon-close" />
+          </template>
+        </NButton>
+      </template>
+    </div>
+  </div>
+</template>
 
 <style scoped lang="scss">
 .upload-task-item {

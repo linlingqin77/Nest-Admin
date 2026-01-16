@@ -13,8 +13,8 @@ export class SendSmsDto {
   @Length(1, 100)
   templateCode: string;
 
-  @ApiPropertyOptional({ 
-    description: '模板参数', 
+  @ApiPropertyOptional({
+    description: '模板参数',
     example: { code: '123456', time: '5' },
   })
   @IsOptional()
@@ -23,10 +23,10 @@ export class SendSmsDto {
 }
 
 export class BatchSendSmsDto {
-  @ApiProperty({ 
-    description: '手机号列表', 
+  @ApiProperty({
+    description: '手机号列表',
     example: ['13800138000', '13800138001'],
-    type: [String]
+    type: [String],
   })
   @IsString({ each: true })
   mobiles: string[];
@@ -36,8 +36,8 @@ export class BatchSendSmsDto {
   @Length(1, 100)
   templateCode: string;
 
-  @ApiPropertyOptional({ 
-    description: '模板参数', 
+  @ApiPropertyOptional({
+    description: '模板参数',
     example: { code: '123456', time: '5' },
   })
   @IsOptional()

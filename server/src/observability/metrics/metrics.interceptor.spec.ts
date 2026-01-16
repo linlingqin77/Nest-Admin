@@ -65,12 +65,7 @@ describe('MetricsInterceptor', () => {
 
       interceptor.intercept(context, callHandler).subscribe({
         next: () => {
-          expect(metricsService.recordHttpRequest).toHaveBeenCalledWith(
-            'GET',
-            '/api/users',
-            200,
-            expect.any(Number),
-          );
+          expect(metricsService.recordHttpRequest).toHaveBeenCalledWith('GET', '/api/users', 200, expect.any(Number));
           done();
         },
       });
@@ -83,12 +78,7 @@ describe('MetricsInterceptor', () => {
 
       interceptor.intercept(context, callHandler).subscribe({
         error: () => {
-          expect(metricsService.recordHttpRequest).toHaveBeenCalledWith(
-            'POST',
-            '/api/users',
-            500,
-            expect.any(Number),
-          );
+          expect(metricsService.recordHttpRequest).toHaveBeenCalledWith('POST', '/api/users', 500, expect.any(Number));
           done();
         },
       });
@@ -128,12 +118,7 @@ describe('MetricsInterceptor', () => {
 
         interceptor.intercept(context, callHandler).subscribe({
           next: () => {
-            expect(metricsService.recordHttpRequest).toHaveBeenCalledWith(
-              method,
-              '/api/test',
-              200,
-              expect.any(Number),
-            );
+            expect(metricsService.recordHttpRequest).toHaveBeenCalledWith(method, '/api/test', 200, expect.any(Number));
             completed++;
             if (completed === methods.length) {
               done();
@@ -175,12 +160,7 @@ describe('MetricsInterceptor', () => {
 
       interceptor.intercept(context, callHandler).subscribe({
         error: () => {
-          expect(metricsService.recordHttpRequest).toHaveBeenCalledWith(
-            'GET',
-            '/api/users',
-            404,
-            expect.any(Number),
-          );
+          expect(metricsService.recordHttpRequest).toHaveBeenCalledWith('GET', '/api/users', 404, expect.any(Number));
           done();
         },
       });
@@ -193,12 +173,7 @@ describe('MetricsInterceptor', () => {
 
       interceptor.intercept(context, callHandler).subscribe({
         error: () => {
-          expect(metricsService.recordHttpRequest).toHaveBeenCalledWith(
-            'GET',
-            '/api/users',
-            500,
-            expect.any(Number),
-          );
+          expect(metricsService.recordHttpRequest).toHaveBeenCalledWith('GET', '/api/users', 500, expect.any(Number));
           done();
         },
       });

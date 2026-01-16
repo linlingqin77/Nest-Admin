@@ -1,14 +1,23 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import { useLoading } from '@sa/hooks';
-import { fetchTenantPackageCreate, fetchTenantPackageUpdate, fetchMenuTenantPackageMenuTreeselect } from '@/service/api-gen';
-import type { TenantPackageResponseDto, CreateTenantPackageRequestDto, UpdateTenantPackageRequestDto, MenuTreeResponseDto } from '@/service/api-gen/types';
+import {
+  fetchMenuTenantPackageMenuTreeselect,
+  fetchTenantPackageCreate,
+  fetchTenantPackageUpdate
+} from '@/service/api-gen';
+import type {
+  CreateTenantPackageRequestDto,
+  MenuTreeResponseDto,
+  TenantPackageResponseDto,
+  UpdateTenantPackageRequestDto
+} from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import MenuTree from '@/components/custom/menu-tree.vue';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'TenantPackageOperateDrawer',
+  name: 'TenantPackageOperateDrawer'
 });
 
 interface Props {
@@ -33,7 +42,7 @@ const menuOptions = ref<MenuTreeResponseDto[]>([]);
 const { loading: menuLoading, startLoading: startMenuLoading, endLoading: stopMenuLoading } = useLoading();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
@@ -42,7 +51,7 @@ const { createRequiredRule } = useFormRules();
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
     add: $t('page.system.tenantPackage.addTenantPackage'),
-    edit: $t('page.system.tenantPackage.editTenantPackage'),
+    edit: $t('page.system.tenantPackage.editTenantPackage')
   };
   return titles[props.operateType];
 });
@@ -62,7 +71,7 @@ function createDefaultModel(): Model {
     packageName: '',
     menuIds: [],
     remark: '',
-    menuCheckStrictly: true,
+    menuCheckStrictly: true
   };
 }
 
@@ -70,7 +79,7 @@ type RuleKey = Extract<keyof Model, 'packageId' | 'packageName'>;
 
 const rules: Record<RuleKey, App.Global.FormRule> = {
   packageId: createRequiredRule($t('page.system.tenantPackage.form.packageName.invalid')),
-  packageName: createRequiredRule($t('page.system.tenantPackage.form.packageName.required')),
+  packageName: createRequiredRule($t('page.system.tenantPackage.form.packageName.required'))
 };
 
 async function handleUpdateModelWhenEdit() {
@@ -126,7 +135,7 @@ async function handleSubmit() {
         packageName,
         menuIds,
         remark,
-        menuCheckStrictly,
+        menuCheckStrictly
       };
       await fetchTenantPackageCreate(createData);
     } else if (props.operateType === 'edit') {
@@ -135,7 +144,7 @@ async function handleSubmit() {
         packageName,
         menuIds,
         remark,
-        menuCheckStrictly,
+        menuCheckStrictly
       };
       await fetchTenantPackageUpdate(updateData);
     }

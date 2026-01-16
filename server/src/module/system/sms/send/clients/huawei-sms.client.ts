@@ -3,7 +3,7 @@ import { ISmsClient, SmsSendParams, SmsSendResult, SmsChannelConfig } from '../s
 
 /**
  * 华为云短信客户端
- * 
+ *
  * 注意：这是一个模拟实现，实际使用时需要安装 @huaweicloud/huaweicloud-sdk-msgsms 包
  * 并使用真实的华为云 SDK
  */
@@ -30,7 +30,7 @@ export class HuaweiSmsClient implements ISmsClient {
 
       // 模拟成功响应
       const mockSmsMsgId = `HUAWEI_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-      
+
       this.logger.log(`[Huawei SMS] Send success, smsMsgId: ${mockSmsMsgId}`);
 
       return {

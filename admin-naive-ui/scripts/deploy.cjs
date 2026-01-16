@@ -13,10 +13,10 @@
  * 例如：node deploy.js dev
  */
 
+const fs = require('node:fs');
+const path = require('node:path');
+const { execSync } = require('node:child_process');
 const { Client } = require('ssh2');
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
 const ora = require('ora');
 const chalk = require('chalk');
 const compressing = require('compressing');
@@ -79,17 +79,17 @@ function execRemoteCommand(command) {
       let stderr = '';
 
       stream
-        .on('close', (code) => {
+        .on('close', code => {
           if (code !== 0) {
             reject(new Error(`Command failed with code ${code}: ${stderr}`));
           } else {
             resolve(stdout);
           }
         })
-        .on('data', (data) => {
+        .on('data', data => {
           stdout += data.toString();
         })
-        .stderr.on('data', (data) => {
+        .stderr.on('data', data => {
           stderr += data.toString();
         });
     });
@@ -105,7 +105,7 @@ function uploadFile(localPath, remotePath) {
         return;
       }
 
-      sftp.fastPut(localPath, remotePath, (err) => {
+      sftp.fastPut(localPath, remotePath, err => {
         if (err) {
           reject(err);
         } else {
@@ -163,7 +163,7 @@ async function deploy() {
   const connectionConfig = {
     host: config.host,
     port: config.port,
-    username: config.username,
+    username: config.username
   };
 
   // 优先使用私钥，其次使用密码
@@ -278,7 +278,7 @@ async function deploy() {
         process.exit(1);
       }
     })
-    .on('error', (err) => {
+    .on('error', err => {
       spinner.fail(chalk.red('✗ 服务器连接失败'));
       console.error(chalk.red('错误信息：'), err.message);
 

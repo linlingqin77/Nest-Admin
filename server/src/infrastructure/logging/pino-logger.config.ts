@@ -56,7 +56,6 @@ function maskPhone(phone: string): string {
   return `${cleaned.slice(0, 3)}****${cleaned.slice(-4)}`;
 }
 
-
 /**
  * 邮箱脱敏
  * 格式: a**b@domain.com
@@ -211,7 +210,6 @@ export function maskObjectDeep(obj: unknown, sensitiveFields: string[]): unknown
 export function getRequestId(req: Request): string {
   return req['requestId'] || req['id'] || (req.headers['x-request-id'] as string) || 'unknown';
 }
-
 
 /**
  * 创建 Pino 日志配置

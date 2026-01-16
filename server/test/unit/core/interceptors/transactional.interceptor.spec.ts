@@ -5,11 +5,7 @@ import { of } from 'rxjs';
 import { TransactionalInterceptor } from 'src/core/interceptors/transactional.interceptor';
 import { PrismaService } from 'src/infrastructure/prisma';
 import { TransactionContextService } from 'src/core/transaction/transaction-context.service';
-import {
-  TransactionalOptions,
-  IsolationLevel,
-  Propagation,
-} from 'src/core/decorators/transactional.decorator';
+import { TransactionalOptions, IsolationLevel, Propagation } from 'src/core/decorators/transactional.decorator';
 import { BusinessException } from 'src/shared/exceptions';
 import { firstValueFrom } from 'rxjs';
 

@@ -101,9 +101,7 @@ describe('TenantSwitch Property-Based Tests', () => {
   };
 
   // Helper function to restore tenant
-  const restoreTenant = (
-    userToken: string,
-  ): { success: boolean; originalTenantId?: string; error?: string } => {
+  const restoreTenant = (userToken: string): { success: boolean; originalTenantId?: string; error?: string } => {
     const session = userSessions.get(userToken);
     if (!session) {
       return { success: false, error: '用户会话不存在' };
@@ -170,131 +168,122 @@ describe('TenantSwitch Property-Based Tests', () => {
   describe('Property 16: Tenant Switch Context Correctness', () => {
     it('Property 16a: After switch, tenant context should be the target tenant', () => {
       fc.assert(
-        fc.property(
-          fc.integer({ min: 1, max: 100 }),
-          (companyId) => {
-            // Reset state
-            tenants.clear();
-            userSessions.clear();
-            tenantSwitchOriginals.clear();
-            tenantIdCounter = 1;
+        fc.property(fc.integer({ min: 1, max: 100 }), (companyId) => {
+          // Reset state
+          tenants.clear();
+          userSessions.clear();
+          tenantSwitchOriginals.clear();
+          tenantIdCounter = 1;
 
-            // Create super admin tenant
-            createTenant({
-              tenantId: SUPER_TENANT_ID,
-              companyName: '超级管理员',
-            });
+          // Create super admin tenant
+          createTenant({
+            tenantId: SUPER_TENANT_ID,
+            companyName: '超级管理员',
+          });
 
-            // Create target tenant
-            const targetTenant = createTenant({
-              companyName: `Company ${companyId}`,
-            });
+          // Create target tenant
+          const targetTenant = createTenant({
+            companyName: `Company ${companyId}`,
+          });
 
-            // Create super admin session
-            const session = createUserSession({
-              tenantId: SUPER_TENANT_ID,
-            });
+          // Create super admin session
+          const session = createUserSession({
+            tenantId: SUPER_TENANT_ID,
+          });
 
-            // Switch to target tenant
-            const switchResult = switchTenant(targetTenant.tenantId, session.token);
+          // Switch to target tenant
+          const switchResult = switchTenant(targetTenant.tenantId, session.token);
 
-            // Get current context
-            const context = getCurrentTenantContext(session.token);
+          // Get current context
+          const context = getCurrentTenantContext(session.token);
 
-            // Property: After switch, context should be target tenant
-            return (
-              switchResult.success === true &&
-              context !== null &&
-              context.tenantId === targetTenant.tenantId &&
-              context.isSwitched === true
-            );
-          },
-        ),
+          // Property: After switch, context should be target tenant
+          return (
+            switchResult.success === true &&
+            context !== null &&
+            context.tenantId === targetTenant.tenantId &&
+            context.isSwitched === true
+          );
+        }),
         { numRuns: 50 },
       );
     });
 
     it('Property 16b: Only super admin can switch tenants', () => {
       fc.assert(
-        fc.property(
-          fc.integer({ min: 100001, max: 999999 }),
-          (nonSuperTenantIdNum) => {
-            // Reset state
-            tenants.clear();
-            userSessions.clear();
-            tenantSwitchOriginals.clear();
-            tenantIdCounter = 1;
+        fc.property(fc.integer({ min: 100001, max: 999999 }), (nonSuperTenantIdNum) => {
+          // Reset state
+          tenants.clear();
+          userSessions.clear();
+          tenantSwitchOriginals.clear();
+          tenantIdCounter = 1;
 
-            const nonSuperTenantId = String(nonSuperTenantIdNum).padStart(6, '0');
+          const nonSuperTenantId = String(nonSuperTenantIdNum).padStart(6, '0');
 
-            // Create super admin tenant
-            createTenant({
-              tenantId: SUPER_TENANT_ID,
-              companyName: '超级管理员',
-            });
+          // Create super admin tenant
+          createTenant({
+            tenantId: SUPER_TENANT_ID,
+            companyName: '超级管理员',
+          });
 
-            // Create non-super admin tenant
-            createTenant({
-              tenantId: nonSuperTenantId,
-              companyName: 'Non-Super Tenant',
-            });
+          // Create non-super admin tenant
+          createTenant({
+            tenantId: nonSuperTenantId,
+            companyName: 'Non-Super Tenant',
+          });
 
-            // Create another tenant to switch to
-            const targetTenant = createTenant({
-              companyName: 'Target Company',
-            });
+          // Create another tenant to switch to
+          const targetTenant = createTenant({
+            companyName: 'Target Company',
+          });
 
-            // Create non-super admin session
-            const session = createUserSession({
-              tenantId: nonSuperTenantId,
-            });
+          // Create non-super admin session
+          const session = createUserSession({
+            tenantId: nonSuperTenantId,
+          });
 
-            // Try to switch tenant (should fail)
-            const switchResult = switchTenant(targetTenant.tenantId, session.token);
+          // Try to switch tenant (should fail)
+          const switchResult = switchTenant(targetTenant.tenantId, session.token);
 
-            // Property: Non-super admin should not be able to switch
-            return switchResult.success === false && switchResult.error === '仅超级管理员可切换租户';
-          },
-        ),
+          // Property: Non-super admin should not be able to switch
+          return switchResult.success === false && switchResult.error === '仅超级管理员可切换租户';
+        }),
         { numRuns: 50 },
       );
     });
 
     it('Property 16c: Cannot switch to disabled tenant', () => {
       fc.assert(
-        fc.property(
-          fc.integer({ min: 1, max: 100 }),
-          (companyId) => {
-            // Reset state
-            tenants.clear();
-            userSessions.clear();
-            tenantSwitchOriginals.clear();
-            tenantIdCounter = 1;
+        fc.property(fc.integer({ min: 1, max: 100 }), (companyId) => {
+          // Reset state
+          tenants.clear();
+          userSessions.clear();
+          tenantSwitchOriginals.clear();
+          tenantIdCounter = 1;
 
-            // Create super admin tenant
-            createTenant({
-              tenantId: SUPER_TENANT_ID,
-              companyName: '超级管理员',
-            });
+          // Create super admin tenant
+          createTenant({
+            tenantId: SUPER_TENANT_ID,
+            companyName: '超级管理员',
+          });
 
-            // Create disabled tenant
-            const disabledTenant = createTenant({
-              companyName: `Disabled Company ${companyId}`,
-              status: STATUS_DISABLED,
-            });
+          // Create disabled tenant
+          const disabledTenant = createTenant({
+            companyName: `Disabled Company ${companyId}`,
+            status: STATUS_DISABLED,
+          });
 
-            // Create super admin session
-            const session = createUserSession({
-              tenantId: SUPER_TENANT_ID,
-            });
+          // Create super admin session
+          const session = createUserSession({
+            tenantId: SUPER_TENANT_ID,
+          });
 
-            // Try to switch to disabled tenant
-            const switchResult = switchTenant(disabledTenant.tenantId, session.token);
+          // Try to switch to disabled tenant
+          const switchResult = switchTenant(disabledTenant.tenantId, session.token);
 
-            // Property: Should fail for disabled tenant
-            return switchResult.success === false && switchResult.error === '目标租户不存在或已停用';
-          },
-        ),
+          // Property: Should fail for disabled tenant
+          return switchResult.success === false && switchResult.error === '目标租户不存在或已停用';
+        }),
         { numRuns: 50 },
       );
     });
@@ -311,185 +300,173 @@ describe('TenantSwitch Property-Based Tests', () => {
   describe('Property 17: Tenant Restore Correctness', () => {
     it('Property 17a: After restore, tenant context should be the original tenant', () => {
       fc.assert(
-        fc.property(
-          fc.integer({ min: 1, max: 100 }),
-          (companyId) => {
-            // Reset state
-            tenants.clear();
-            userSessions.clear();
-            tenantSwitchOriginals.clear();
-            tenantIdCounter = 1;
+        fc.property(fc.integer({ min: 1, max: 100 }), (companyId) => {
+          // Reset state
+          tenants.clear();
+          userSessions.clear();
+          tenantSwitchOriginals.clear();
+          tenantIdCounter = 1;
 
-            // Create super admin tenant
-            createTenant({
-              tenantId: SUPER_TENANT_ID,
-              companyName: '超级管理员',
-            });
+          // Create super admin tenant
+          createTenant({
+            tenantId: SUPER_TENANT_ID,
+            companyName: '超级管理员',
+          });
 
-            // Create target tenant
-            const targetTenant = createTenant({
-              companyName: `Company ${companyId}`,
-            });
+          // Create target tenant
+          const targetTenant = createTenant({
+            companyName: `Company ${companyId}`,
+          });
 
-            // Create super admin session
-            const session = createUserSession({
-              tenantId: SUPER_TENANT_ID,
-            });
+          // Create super admin session
+          const session = createUserSession({
+            tenantId: SUPER_TENANT_ID,
+          });
 
-            // Get original context
-            const originalContext = getCurrentTenantContext(session.token);
+          // Get original context
+          const originalContext = getCurrentTenantContext(session.token);
 
-            // Switch to target tenant
-            switchTenant(targetTenant.tenantId, session.token);
+          // Switch to target tenant
+          switchTenant(targetTenant.tenantId, session.token);
 
-            // Restore to original tenant
-            const restoreResult = restoreTenant(session.token);
+          // Restore to original tenant
+          const restoreResult = restoreTenant(session.token);
 
-            // Get restored context
-            const restoredContext = getCurrentTenantContext(session.token);
+          // Get restored context
+          const restoredContext = getCurrentTenantContext(session.token);
 
-            // Property: After restore, context should be original tenant
-            return (
-              restoreResult.success === true &&
-              restoredContext !== null &&
-              restoredContext.tenantId === originalContext?.tenantId &&
-              restoredContext.isSwitched === false
-            );
-          },
-        ),
+          // Property: After restore, context should be original tenant
+          return (
+            restoreResult.success === true &&
+            restoredContext !== null &&
+            restoredContext.tenantId === originalContext?.tenantId &&
+            restoredContext.isSwitched === false
+          );
+        }),
         { numRuns: 50 },
       );
     });
 
     it('Property 17b: Restore should fail if no switch record exists', () => {
       fc.assert(
-        fc.property(
-          fc.integer({ min: 1, max: 100 }),
-          (userId) => {
-            // Reset state
-            tenants.clear();
-            userSessions.clear();
-            tenantSwitchOriginals.clear();
-            tenantIdCounter = 1;
+        fc.property(fc.integer({ min: 1, max: 100 }), (userId) => {
+          // Reset state
+          tenants.clear();
+          userSessions.clear();
+          tenantSwitchOriginals.clear();
+          tenantIdCounter = 1;
 
-            // Create super admin tenant
-            createTenant({
-              tenantId: SUPER_TENANT_ID,
-              companyName: '超级管理员',
-            });
+          // Create super admin tenant
+          createTenant({
+            tenantId: SUPER_TENANT_ID,
+            companyName: '超级管理员',
+          });
 
-            // Create super admin session (no switch)
-            const session = createUserSession({
-              tenantId: SUPER_TENANT_ID,
-              userId,
-            });
+          // Create super admin session (no switch)
+          const session = createUserSession({
+            tenantId: SUPER_TENANT_ID,
+            userId,
+          });
 
-            // Try to restore without switching first
-            const restoreResult = restoreTenant(session.token);
+          // Try to restore without switching first
+          const restoreResult = restoreTenant(session.token);
 
-            // Property: Should fail if no switch record
-            return restoreResult.success === false && restoreResult.error === '没有租户切换记录';
-          },
-        ),
+          // Property: Should fail if no switch record
+          return restoreResult.success === false && restoreResult.error === '没有租户切换记录';
+        }),
         { numRuns: 50 },
       );
     });
 
     it('Property 17c: Multiple switches should restore to original tenant', () => {
       fc.assert(
-        fc.property(
-          fc.integer({ min: 2, max: 5 }),
-          (numSwitches) => {
-            // Reset state
-            tenants.clear();
-            userSessions.clear();
-            tenantSwitchOriginals.clear();
-            tenantIdCounter = 1;
+        fc.property(fc.integer({ min: 2, max: 5 }), (numSwitches) => {
+          // Reset state
+          tenants.clear();
+          userSessions.clear();
+          tenantSwitchOriginals.clear();
+          tenantIdCounter = 1;
 
-            // Create super admin tenant
-            createTenant({
-              tenantId: SUPER_TENANT_ID,
-              companyName: '超级管理员',
-            });
+          // Create super admin tenant
+          createTenant({
+            tenantId: SUPER_TENANT_ID,
+            companyName: '超级管理员',
+          });
 
-            // Create multiple target tenants
-            const targetTenants = Array.from({ length: numSwitches }, (_, i) =>
-              createTenant({ companyName: `Target Company ${i}` }),
-            );
+          // Create multiple target tenants
+          const targetTenants = Array.from({ length: numSwitches }, (_, i) =>
+            createTenant({ companyName: `Target Company ${i}` }),
+          );
 
-            // Create super admin session
-            const session = createUserSession({
-              tenantId: SUPER_TENANT_ID,
-            });
+          // Create super admin session
+          const session = createUserSession({
+            tenantId: SUPER_TENANT_ID,
+          });
 
-            // Perform multiple switches
-            for (const targetTenant of targetTenants) {
-              switchTenant(targetTenant.tenantId, session.token);
-            }
+          // Perform multiple switches
+          for (const targetTenant of targetTenants) {
+            switchTenant(targetTenant.tenantId, session.token);
+          }
 
-            // Restore to original tenant
-            const restoreResult = restoreTenant(session.token);
+          // Restore to original tenant
+          const restoreResult = restoreTenant(session.token);
 
-            // Get restored context
-            const restoredContext = getCurrentTenantContext(session.token);
+          // Get restored context
+          const restoredContext = getCurrentTenantContext(session.token);
 
-            // Property: Should restore to original super admin tenant
-            return (
-              restoreResult.success === true &&
-              restoreResult.originalTenantId === SUPER_TENANT_ID &&
-              restoredContext !== null &&
-              restoredContext.tenantId === SUPER_TENANT_ID &&
-              restoredContext.isSwitched === false
-            );
-          },
-        ),
+          // Property: Should restore to original super admin tenant
+          return (
+            restoreResult.success === true &&
+            restoreResult.originalTenantId === SUPER_TENANT_ID &&
+            restoredContext !== null &&
+            restoredContext.tenantId === SUPER_TENANT_ID &&
+            restoredContext.isSwitched === false
+          );
+        }),
         { numRuns: 50 },
       );
     });
 
     it('Property 17d: Switch record should be cleared after restore', () => {
       fc.assert(
-        fc.property(
-          fc.integer({ min: 1, max: 100 }),
-          (companyId) => {
-            // Reset state
-            tenants.clear();
-            userSessions.clear();
-            tenantSwitchOriginals.clear();
-            tenantIdCounter = 1;
+        fc.property(fc.integer({ min: 1, max: 100 }), (companyId) => {
+          // Reset state
+          tenants.clear();
+          userSessions.clear();
+          tenantSwitchOriginals.clear();
+          tenantIdCounter = 1;
 
-            // Create super admin tenant
-            createTenant({
-              tenantId: SUPER_TENANT_ID,
-              companyName: '超级管理员',
-            });
+          // Create super admin tenant
+          createTenant({
+            tenantId: SUPER_TENANT_ID,
+            companyName: '超级管理员',
+          });
 
-            // Create target tenant
-            const targetTenant = createTenant({
-              companyName: `Company ${companyId}`,
-            });
+          // Create target tenant
+          const targetTenant = createTenant({
+            companyName: `Company ${companyId}`,
+          });
 
-            // Create super admin session
-            const session = createUserSession({
-              tenantId: SUPER_TENANT_ID,
-            });
+          // Create super admin session
+          const session = createUserSession({
+            tenantId: SUPER_TENANT_ID,
+          });
 
-            // Switch to target tenant
-            switchTenant(targetTenant.tenantId, session.token);
+          // Switch to target tenant
+          switchTenant(targetTenant.tenantId, session.token);
 
-            // Verify switch record exists
-            const hasRecordBeforeRestore = tenantSwitchOriginals.has(session.token);
+          // Verify switch record exists
+          const hasRecordBeforeRestore = tenantSwitchOriginals.has(session.token);
 
-            // Restore to original tenant
-            restoreTenant(session.token);
+          // Restore to original tenant
+          restoreTenant(session.token);
 
-            // Verify switch record is cleared
-            const hasRecordAfterRestore = tenantSwitchOriginals.has(session.token);
+          // Verify switch record is cleared
+          const hasRecordAfterRestore = tenantSwitchOriginals.has(session.token);
 
-            // Property: Switch record should be cleared after restore
-            return hasRecordBeforeRestore === true && hasRecordAfterRestore === false;
-          },
-        ),
+          // Property: Switch record should be cleared after restore
+          return hasRecordBeforeRestore === true && hasRecordAfterRestore === false;
+        }),
         { numRuns: 50 },
       );
     });

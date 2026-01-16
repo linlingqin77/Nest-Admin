@@ -5,9 +5,19 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { LoginTenantResponseDto, CaptchaCodeResponseDto, AuthLoginRequestDto, LoginTokenResponseDto, AuthRegisterRequestDto, AuthRegisterResultResponseDto, AuthLogoutResponseDto, SocialLoginRequestDto, SocialCallbackResponseDto, PublicKeyResponseDto } from './types';
+import type {
+  AuthLoginRequestDto,
+  AuthLogoutResponseDto,
+  AuthRegisterRequestDto,
+  AuthRegisterResultResponseDto,
+  CaptchaCodeResponseDto,
+  LoginTenantResponseDto,
+  LoginTokenResponseDto,
+  PublicKeyResponseDto,
+  SocialCallbackResponseDto,
+  SocialLoginRequestDto
+} from './types';
 
 /**
  * 获取租户列表 - GET /auth/tenant/list
@@ -20,7 +30,7 @@ export function fetchAuthGetTenantList() {
   return apiRequest<LoginTenantResponseDto>({
     method: 'GET',
     url: '/auth/tenant/list',
-    operationId: 'AuthController_getTenantList_v1',
+    operationId: 'AuthController_getTenantList_v1'
   });
 }
 
@@ -33,7 +43,7 @@ export function fetchAuthGetCaptchaCode() {
   return apiRequest<CaptchaCodeResponseDto>({
     method: 'GET',
     url: '/auth/code',
-    operationId: 'AuthController_getCaptchaCode_v1',
+    operationId: 'AuthController_getCaptchaCode_v1'
   });
 }
 
@@ -49,7 +59,7 @@ export function fetchAuthLogin(data: AuthLoginRequestDto) {
     method: 'POST',
     url: '/auth/login',
     data,
-    operationId: 'AuthController_login_v1',
+    operationId: 'AuthController_login_v1'
   });
 }
 
@@ -65,7 +75,7 @@ export function fetchAuthRegister(data: AuthRegisterRequestDto) {
     method: 'POST',
     url: '/auth/register',
     data,
-    operationId: 'AuthController_register_v1',
+    operationId: 'AuthController_register_v1'
   });
 }
 
@@ -79,7 +89,7 @@ export function fetchAuthLogout() {
   return apiRequest<AuthLogoutResponseDto>({
     method: 'POST',
     url: '/auth/logout',
-    operationId: 'AuthController_logout_v1',
+    operationId: 'AuthController_logout_v1'
   });
 }
 
@@ -93,7 +103,7 @@ export function fetchAuthSocialCallback(data: SocialLoginRequestDto) {
     method: 'POST',
     url: '/auth/social/callback',
     data,
-    operationId: 'AuthController_socialCallback_v1',
+    operationId: 'AuthController_socialCallback_v1'
   });
 }
 
@@ -106,6 +116,6 @@ export function fetchAuthGetPublicKey() {
   return apiRequest<PublicKeyResponseDto>({
     method: 'GET',
     url: '/auth/publicKey',
-    operationId: 'AuthController_getPublicKey_v1',
+    operationId: 'AuthController_getPublicKey_v1'
   });
 }

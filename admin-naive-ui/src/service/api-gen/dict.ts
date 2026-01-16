@@ -5,9 +5,25 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CreateDictTypeRequestDto, CreateDictTypeResultResponseDto, UpdateDictTypeRequestDto, UpdateDictTypeResultResponseDto, RefreshCacheResultResponseDto, DeleteDictTypeResultResponseDto, DictTypeResponseDto, DictTypeListResponseDto, CreateDictDataRequestDto, CreateDictDataResultResponseDto, UpdateDictDataRequestDto, UpdateDictDataResultResponseDto, DeleteDictDataResultResponseDto, DictDataResponseDto, DictDataListResponseDto, ListDictTypeRequestDto } from './types';
+import type {
+  CreateDictDataRequestDto,
+  CreateDictDataResultResponseDto,
+  CreateDictTypeRequestDto,
+  CreateDictTypeResultResponseDto,
+  DeleteDictDataResultResponseDto,
+  DeleteDictTypeResultResponseDto,
+  DictDataListResponseDto,
+  DictDataResponseDto,
+  DictTypeListResponseDto,
+  DictTypeResponseDto,
+  ListDictTypeRequestDto,
+  RefreshCacheResultResponseDto,
+  UpdateDictDataRequestDto,
+  UpdateDictDataResultResponseDto,
+  UpdateDictTypeRequestDto,
+  UpdateDictTypeResultResponseDto
+} from './types';
 
 /**
  * 字典类型-创建
@@ -18,7 +34,7 @@ export function fetchDictCreateType(data: CreateDictTypeRequestDto) {
     method: 'POST',
     url: '/system/dict/type',
     data,
-    operationId: 'DictController_createType_v1',
+    operationId: 'DictController_createType_v1'
   });
 }
 
@@ -31,7 +47,7 @@ export function fetchDictUpdateType(data: UpdateDictTypeRequestDto) {
     method: 'PUT',
     url: '/system/dict/type',
     data,
-    operationId: 'DictController_updateType_v1',
+    operationId: 'DictController_updateType_v1'
   });
 }
 
@@ -43,7 +59,7 @@ export function fetchDictRefreshCache() {
   return apiRequest<RefreshCacheResultResponseDto>({
     method: 'DELETE',
     url: '/system/dict/type/refreshCache',
-    operationId: 'DictController_refreshCache_v1',
+    operationId: 'DictController_refreshCache_v1'
   });
 }
 
@@ -55,7 +71,7 @@ export function fetchDictDeleteType(id: string | number) {
   return apiRequest<DeleteDictTypeResultResponseDto>({
     method: 'DELETE',
     url: buildUrl('/system/dict/type/{id}', { id }),
-    operationId: 'DictController_deleteType_v1',
+    operationId: 'DictController_deleteType_v1'
   });
 }
 
@@ -67,7 +83,7 @@ export function fetchDictFindOneType(id: string | number) {
   return apiRequest<DictTypeResponseDto>({
     method: 'GET',
     url: buildUrl('/system/dict/type/{id}', { id }),
-    operationId: 'DictController_findOneType_v1',
+    operationId: 'DictController_findOneType_v1'
   });
 }
 
@@ -80,7 +96,7 @@ export function fetchDictFindAllType(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/dict/type/list',
     params,
-    operationId: 'DictController_findAllType_v1',
+    operationId: 'DictController_findAllType_v1'
   });
 }
 
@@ -92,7 +108,7 @@ export function fetchDictFindOptionselect() {
   return apiRequest<DictTypeResponseDto[]>({
     method: 'GET',
     url: '/system/dict/type/optionselect',
-    operationId: 'DictController_findOptionselect_v1',
+    operationId: 'DictController_findOptionselect_v1'
   });
 }
 
@@ -105,7 +121,7 @@ export function fetchDictCreateDictData(data: CreateDictDataRequestDto) {
     method: 'POST',
     url: '/system/dict/data',
     data,
-    operationId: 'DictController_createDictData_v1',
+    operationId: 'DictController_createDictData_v1'
   });
 }
 
@@ -118,7 +134,7 @@ export function fetchDictUpdateDictData(data: UpdateDictDataRequestDto) {
     method: 'PUT',
     url: '/system/dict/data',
     data,
-    operationId: 'DictController_updateDictData_v1',
+    operationId: 'DictController_updateDictData_v1'
   });
 }
 
@@ -130,7 +146,7 @@ export function fetchDictDeleteDictData(id: string | number) {
   return apiRequest<DeleteDictDataResultResponseDto>({
     method: 'DELETE',
     url: buildUrl('/system/dict/data/{id}', { id }),
-    operationId: 'DictController_deleteDictData_v1',
+    operationId: 'DictController_deleteDictData_v1'
   });
 }
 
@@ -142,7 +158,7 @@ export function fetchDictFindOneDictData(id: string | number) {
   return apiRequest<DictDataResponseDto>({
     method: 'GET',
     url: buildUrl('/system/dict/data/{id}', { id }),
-    operationId: 'DictController_findOneDictData_v1',
+    operationId: 'DictController_findOneDictData_v1'
   });
 }
 
@@ -155,7 +171,7 @@ export function fetchDictFindAllData(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/dict/data/list',
     params,
-    operationId: 'DictController_findAllData_v1',
+    operationId: 'DictController_findAllData_v1'
   });
 }
 
@@ -167,7 +183,7 @@ export function fetchDictFindOneDataType(id: string | number) {
   return apiRequest<DictDataResponseDto[]>({
     method: 'GET',
     url: buildUrl('/system/dict/data/type/{id}', { id }),
-    operationId: 'DictController_findOneDataType_v1',
+    operationId: 'DictController_findOneDataType_v1'
   });
 }
 
@@ -180,7 +196,7 @@ export function fetchDictExport(data: ListDictTypeRequestDto) {
     method: 'POST',
     url: '/system/dict/type/export',
     data,
-    operationId: 'DictController_export_v1',
+    operationId: 'DictController_export_v1'
   });
 }
 
@@ -193,6 +209,6 @@ export function fetchDictExportData(data: ListDictTypeRequestDto) {
     method: 'POST',
     url: '/system/dict/data/export',
     data,
-    operationId: 'DictController_exportData_v1',
+    operationId: 'DictController_exportData_v1'
   });
 }

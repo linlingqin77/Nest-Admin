@@ -64,7 +64,7 @@ export const encryptWithAes = (message: string, aesKey: CryptoJS.lib.WordArray) 
   const encrypted = CryptoJS.AES.encrypt(message, aesKey, {
     iv,
     mode: CryptoJS.mode.CBC,
-    padding: CryptoJS.pad.Pkcs7,
+    padding: CryptoJS.pad.Pkcs7
   });
 
   // 将IV和密文拼接: IV(16字节) + 密文
@@ -94,14 +94,14 @@ export const decryptWithAes = (message: string, aesKey: CryptoJS.lib.WordArray) 
 
   // 构造CipherParams对象
   const cipherParams = CryptoJS.lib.CipherParams.create({
-    ciphertext,
+    ciphertext
   });
 
   // 使用CBC模式解密
   const decrypted = CryptoJS.AES.decrypt(cipherParams, aesKey, {
     iv,
     mode: CryptoJS.mode.CBC,
-    padding: CryptoJS.pad.Pkcs7,
+    padding: CryptoJS.pad.Pkcs7
   });
 
   return decrypted.toString(CryptoJS.enc.Utf8);

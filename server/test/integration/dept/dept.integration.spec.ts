@@ -64,11 +64,13 @@ describe('Dept Integration Tests', () => {
         // Sort by ID descending to delete children first
         const sortedIds = [...createdDeptIds].sort((a, b) => b - a);
         for (const deptId of sortedIds) {
-          await prisma.sysDept.delete({
-            where: { deptId },
-          }).catch(() => {
-            // Ignore if already deleted
-          });
+          await prisma.sysDept
+            .delete({
+              where: { deptId },
+            })
+            .catch(() => {
+              // Ignore if already deleted
+            });
         }
       }
     } catch (error) {
@@ -81,16 +83,18 @@ describe('Dept Integration Tests', () => {
   /**
    * Helper function to create a test department
    */
-  async function createTestDept(data: Partial<{
-    deptName: string;
-    parentId: number;
-    ancestors: string;
-    orderNum: number;
-    leader: string;
-    phone: string;
-    email: string;
-    status: string;
-  }> = {}) {
+  async function createTestDept(
+    data: Partial<{
+      deptName: string;
+      parentId: number;
+      ancestors: string;
+      orderNum: number;
+      leader: string;
+      phone: string;
+      email: string;
+      status: string;
+    }> = {},
+  ) {
     const timestamp = Date.now();
 
     const dept = await prisma.sysDept.create({
@@ -134,7 +138,7 @@ describe('Dept Integration Tests', () => {
       const tree = await deptService.deptTree();
 
       expect(Array.isArray(tree)).toBe(true);
-      
+
       // Find our parent in the tree
       const findDeptInTree = (nodes: any[], deptId: number): any => {
         for (const node of nodes) {
@@ -149,7 +153,7 @@ describe('Dept Integration Tests', () => {
 
       const parentNode = findDeptInTree(tree, parentDept.deptId);
       expect(parentNode).toBeDefined();
-      
+
       // Child should be in parent's children
       if (parentNode && parentNode.children) {
         const childNode = parentNode.children.find((c: any) => c.id === childDept.deptId);
@@ -162,7 +166,7 @@ describe('Dept Integration Tests', () => {
 
       expect(result.code).toBe(200);
       expect(Array.isArray(result.data)).toBe(true);
-      
+
       // Each department should have required fields
       if (result.data.length > 0) {
         const dept = result.data[0];
@@ -246,11 +250,9 @@ describe('Dept Integration Tests', () => {
       const result = await deptService.findAll({});
 
       expect(result.code).toBe(200);
-      
+
       // Find our test departments in the result
-      const testDepts = result.data.filter((d: any) => 
-        [dept1.deptId, dept2.deptId, dept3.deptId].includes(d.deptId)
-      );
+      const testDepts = result.data.filter((d: any) => [dept1.deptId, dept2.deptId, dept3.deptId].includes(d.deptId));
 
       // They should be ordered by orderNum
       if (testDepts.length === 3) {
@@ -394,7 +396,7 @@ describe('Dept Integration Tests', () => {
 
       expect(result.code).toBe(200);
       expect(Array.isArray(result.data)).toBe(true);
-      
+
       // All returned departments should have normal status
       result.data.forEach((dept: any) => {
         expect(dept.status).toBe(StatusEnum.NORMAL);

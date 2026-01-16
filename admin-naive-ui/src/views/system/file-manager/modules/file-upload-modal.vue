@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { NModal, NCard, NUpload, NButton, NSpace, useMessage } from 'naive-ui';
+import { NButton, NCard, NModal, NSpace, NUpload, useMessage } from 'naive-ui';
 import type { UploadFileInfo } from 'naive-ui';
 import { fetchUploadFile } from '@/service/api';
 import { $t } from '@/locales';
@@ -52,7 +52,7 @@ function handleClose() {
 }
 
 defineExpose({
-  openModal,
+  openModal
 });
 </script>
 
@@ -64,7 +64,7 @@ defineExpose({
           <icon-material-symbols-cloud-upload class="text-48px text-primary" />
         </div>
         <div class="text-16px">点击或拖拽文件到此区域上传</div>
-        <div class="text-12px text-gray mt-2">支持单个或批量上传，最多10个文件</div>
+        <div class="mt-2 text-12px text-gray">支持单个或批量上传，最多10个文件</div>
       </div>
     </NUpload>
 

@@ -5,7 +5,7 @@ import { fetchSocialAuthBinding, fetchSocialAuthUnbinding, fetchSocialList } fro
 import { useAuthStore } from '@/store/modules/auth';
 
 defineOptions({
-  name: 'SocialCard',
+  name: 'SocialCard'
 });
 
 const authStore = useAuthStore();
@@ -65,13 +65,13 @@ const socialSources: {
   { key: 'topiam', localIcon: 'topiam', color: '', name: 'TopIAM' },
   { key: 'maxkey', localIcon: 'maxkey', color: '', name: 'MaxKey' },
   { key: 'gitee', icon: 'simple-icons:gitee', color: '#c71d23', name: 'Gitee' },
-  { key: 'github', icon: 'mdi:github', color: '#010409', name: 'GitHub' },
+  { key: 'github', icon: 'mdi:github', color: '#010409', name: 'GitHub' }
 ];
 
 getSsoUserList();
 
 function getSocial(key: string) {
-  return socialList.value.find((s) => s.source.toLowerCase() === key);
+  return socialList.value.find(s => s.source.toLowerCase() === key);
 }
 </script>
 

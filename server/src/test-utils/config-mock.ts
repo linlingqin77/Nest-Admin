@@ -226,11 +226,11 @@ export const createConfigMock = (): ConfigMock => {
   let jwtConfig = { ...defaultJwtConfig };
   let tenantConfig = { ...defaultTenantConfig };
   let cryptoConfig = { ...defaultCryptoConfig };
-  let cosConfig = { ...defaultCosConfig };
-  let permConfig = { ...defaultPermConfig };
-  let genConfig = { ...defaultGenConfig };
-  let userConfig = { ...defaultUserConfig };
-  let clientConfig = { ...defaultClientConfig };
+  const cosConfig = { ...defaultCosConfig };
+  const permConfig = { ...defaultPermConfig };
+  const genConfig = { ...defaultGenConfig };
+  const userConfig = { ...defaultUserConfig };
+  const clientConfig = { ...defaultClientConfig };
 
   const mock: ConfigMock = {
     // Getter 属性

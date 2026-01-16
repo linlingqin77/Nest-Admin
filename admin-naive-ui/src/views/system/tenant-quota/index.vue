@@ -11,7 +11,7 @@ import QuotaEditDrawer from './modules/quota-edit-drawer.vue';
 import QuotaProgress from './modules/quota-progress.vue';
 
 defineOptions({
-  name: 'TenantQuotaList',
+  name: 'TenantQuotaList'
 });
 
 const appStore = useAppStore();
@@ -49,7 +49,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchGetTenantQuotaList,
   apiParams: {
@@ -57,20 +57,20 @@ const {
     pageSize: 10,
     tenantId: null,
     companyName: null,
-    status: null,
+    status: null
   },
   columns: () => [
     {
       key: 'index',
       title: $t('common.index'),
       align: 'center',
-      width: 64,
+      width: 64
     },
     {
       key: 'tenantId',
       title: '租户编号',
       align: 'center',
-      width: 100,
+      width: 100
     },
     {
       key: 'companyName',
@@ -78,8 +78,8 @@ const {
       align: 'center',
       minWidth: 120,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'userQuota',
@@ -87,15 +87,8 @@ const {
       align: 'center',
       width: 180,
       render(row) {
-        return (
-          <QuotaProgress
-            used={row.userUsed}
-            quota={row.userQuota}
-            usageRate={row.userUsageRate}
-            unit="人"
-          />
-        );
-      },
+        return <QuotaProgress used={row.userUsed} quota={row.userQuota} usageRate={row.userUsageRate} unit="人" />;
+      }
     },
     {
       key: 'storageQuota',
@@ -104,14 +97,9 @@ const {
       width: 180,
       render(row) {
         return (
-          <QuotaProgress
-            used={row.storageUsed}
-            quota={row.storageQuota}
-            usageRate={row.storageUsageRate}
-            unit="MB"
-          />
+          <QuotaProgress used={row.storageUsed} quota={row.storageQuota} usageRate={row.storageUsageRate} unit="MB" />
         );
-      },
+      }
     },
     {
       key: 'apiQuota',
@@ -119,15 +107,8 @@ const {
       align: 'center',
       width: 180,
       render(row) {
-        return (
-          <QuotaProgress
-            used={row.apiUsed}
-            quota={row.apiQuota}
-            usageRate={row.apiUsageRate}
-            unit="次"
-          />
-        );
-      },
+        return <QuotaProgress used={row.apiUsed} quota={row.apiQuota} usageRate={row.apiUsageRate} unit="次" />;
+      }
     },
     {
       key: 'status',
@@ -135,15 +116,19 @@ const {
       align: 'center',
       width: 80,
       render(row) {
-        return <NTag type={getStatusType(row.status)} size="small">{getStatusText(row.status)}</NTag>;
-      },
+        return (
+          <NTag type={getStatusType(row.status)} size="small">
+            {getStatusText(row.status)}
+          </NTag>
+        );
+      }
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 100,
-      render: (row) => {
+      render: row => {
         const editBtn = () => {
           return (
             <ButtonIcon
@@ -169,9 +154,9 @@ const {
             ))}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const { drawerVisible, operateType, editingData, handleEdit } = useTableOperate(data, getData);
@@ -203,7 +188,7 @@ function edit(tenantId: string) {
         :scroll-x="1100"
         :loading="loading"
         remote
-        :row-key="(row) => row.tenantId"
+        :row-key="row => row.tenantId"
         :pagination="mobilePagination"
         class="sm:h-full"
       />

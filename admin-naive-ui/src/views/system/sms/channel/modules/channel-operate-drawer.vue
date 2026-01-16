@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue';
 import { fetchSmsChannelCreate, fetchSmsChannelUpdate } from '@/service/api-gen';
-import type { CreateSmsChannelDto, UpdateSmsChannelDto } from '@/typings/api-gen';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
+import type { CreateSmsChannelDto, UpdateSmsChannelDto } from '@/typings/api-gen';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'SmsChannelOperateDrawer',
+  name: 'SmsChannelOperateDrawer'
 });
 
 interface Props {
@@ -25,7 +25,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
@@ -34,7 +34,7 @@ const { createRequiredRule } = useFormRules();
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
     add: '新增短信渠道',
-    edit: '编辑短信渠道',
+    edit: '编辑短信渠道'
   };
   return titles[props.operateType];
 });
@@ -53,7 +53,7 @@ function createDefaultModel(): Model {
     apiSecret: '',
     callbackUrl: '',
     status: '0',
-    remark: '',
+    remark: ''
   };
 }
 
@@ -62,7 +62,7 @@ const channelCodeOptions = [
   { label: '腾讯云', value: 'tencent' },
   { label: '华为云', value: 'huawei' },
   { label: '七牛云', value: 'qiniu' },
-  { label: '云片', value: 'yunpian' },
+  { label: '云片', value: 'yunpian' }
 ];
 
 type RuleKey = Extract<keyof Model, 'code' | 'name' | 'signature' | 'apiKey' | 'apiSecret' | 'status'>;
@@ -73,7 +73,7 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
   signature: createRequiredRule('短信签名不能为空'),
   apiKey: createRequiredRule('API Key不能为空'),
   apiSecret: createRequiredRule('API Secret不能为空'),
-  status: createRequiredRule('状态不能为空'),
+  status: createRequiredRule('状态不能为空')
 };
 
 function handleUpdateModelWhenEdit() {
@@ -97,7 +97,16 @@ async function handleSubmit() {
   try {
     if (props.operateType === 'add') {
       const { code, name, signature, apiKey, apiSecret, callbackUrl, status, remark } = model;
-      await fetchSmsChannelCreate({ code, name, signature, apiKey, apiSecret, callbackUrl, status, remark } as CreateSmsChannelDto);
+      await fetchSmsChannelCreate({
+        code,
+        name,
+        signature,
+        apiKey,
+        apiSecret,
+        callbackUrl,
+        status,
+        remark
+      } as CreateSmsChannelDto);
     } else if (props.operateType === 'edit') {
       await fetchSmsChannelUpdate(model as UpdateSmsChannelDto);
     }
@@ -140,7 +149,12 @@ watch(visible, () => {
           <NInput v-model:value="model.apiKey" placeholder="请输入API Key" />
         </NFormItem>
         <NFormItem label="API Secret" path="apiSecret">
-          <NInput v-model:value="model.apiSecret" type="password" show-password-on="click" placeholder="请输入API Secret" />
+          <NInput
+            v-model:value="model.apiSecret"
+            type="password"
+            show-password-on="click"
+            placeholder="请输入API Secret"
+          />
         </NFormItem>
         <NFormItem label="回调地址" path="callbackUrl">
           <NInput v-model:value="model.callbackUrl" placeholder="请输入回调地址（可选）" />

@@ -31,7 +31,6 @@ import { UserBatchService } from '@/module/system/user/services/user-batch.servi
 import { UserQueryService } from '@/module/system/user/services/user-query.service';
 import { DelFlagEnum, StatusEnum, DataScopeEnum } from '@/shared/enums/index';
 
-
 describe('UserService Property-Based Tests', () => {
   let service: UserService;
   let prisma: PrismaService;
@@ -290,72 +289,62 @@ describe('UserService Property-Based Tests', () => {
 
     it('should isolate user data between different tenants - tenant B cannot see tenant A users', async () => {
       await fc.assert(
-        fc.asyncProperty(
-          tenantIdArb,
-          tenantIdArb,
-          userNameArb,
-          async (tenantIdA, tenantIdB, userName) => {
-            // Precondition: tenants must be different
-            fc.pre(tenantIdA !== tenantIdB);
+        fc.asyncProperty(tenantIdArb, tenantIdArb, userNameArb, async (tenantIdA, tenantIdB, userName) => {
+          // Precondition: tenants must be different
+          fc.pre(tenantIdA !== tenantIdB);
 
-            // Setup: Create a user in tenant A
-            const userA = createMockUser(tenantIdA, userName);
-            if (!tenantDataStore.has(tenantIdA)) {
-              tenantDataStore.set(tenantIdA, new Map());
-            }
-            tenantDataStore.get(tenantIdA)!.set(userA.userId, userA);
+          // Setup: Create a user in tenant A
+          const userA = createMockUser(tenantIdA, userName);
+          if (!tenantDataStore.has(tenantIdA)) {
+            tenantDataStore.set(tenantIdA, new Map());
+          }
+          tenantDataStore.get(tenantIdA)!.set(userA.userId, userA);
 
-            // Action: Query users as tenant B
-            const tenantBUsers = await prisma.sysUser.findMany({
-              where: {
-                tenantId: tenantIdB,
-                delFlag: DelFlagEnum.NORMAL,
-              },
-            });
+          // Action: Query users as tenant B
+          const tenantBUsers = await prisma.sysUser.findMany({
+            where: {
+              tenantId: tenantIdB,
+              delFlag: DelFlagEnum.NORMAL,
+            },
+          });
 
-            // Assertion: Tenant B should not see tenant A's user
-            const foundUserA = tenantBUsers.find((u: any) => u.userId === userA.userId);
-            expect(foundUserA).toBeUndefined();
+          // Assertion: Tenant B should not see tenant A's user
+          const foundUserA = tenantBUsers.find((u: any) => u.userId === userA.userId);
+          expect(foundUserA).toBeUndefined();
 
-            // Cleanup
-            tenantDataStore.get(tenantIdA)?.delete(userA.userId);
-          },
-        ),
+          // Cleanup
+          tenantDataStore.get(tenantIdA)?.delete(userA.userId);
+        }),
         { numRuns: 100 },
       );
     });
 
     it('should isolate user queries - findFirst respects tenant boundary', async () => {
       await fc.assert(
-        fc.asyncProperty(
-          tenantIdArb,
-          tenantIdArb,
-          userNameArb,
-          async (tenantIdA, tenantIdB, userName) => {
-            fc.pre(tenantIdA !== tenantIdB);
+        fc.asyncProperty(tenantIdArb, tenantIdArb, userNameArb, async (tenantIdA, tenantIdB, userName) => {
+          fc.pre(tenantIdA !== tenantIdB);
 
-            // Setup: Create user in tenant A
-            const userA = createMockUser(tenantIdA, userName);
-            if (!tenantDataStore.has(tenantIdA)) {
-              tenantDataStore.set(tenantIdA, new Map());
-            }
-            tenantDataStore.get(tenantIdA)!.set(userA.userId, userA);
+          // Setup: Create user in tenant A
+          const userA = createMockUser(tenantIdA, userName);
+          if (!tenantDataStore.has(tenantIdA)) {
+            tenantDataStore.set(tenantIdA, new Map());
+          }
+          tenantDataStore.get(tenantIdA)!.set(userA.userId, userA);
 
-            // Action: Try to find user by ID as tenant B
-            const result = await prisma.sysUser.findFirst({
-              where: {
-                tenantId: tenantIdB,
-                userId: userA.userId,
-              },
-            });
+          // Action: Try to find user by ID as tenant B
+          const result = await prisma.sysUser.findFirst({
+            where: {
+              tenantId: tenantIdB,
+              userId: userA.userId,
+            },
+          });
 
-            // Assertion: Should not find the user
-            expect(result).toBeNull();
+          // Assertion: Should not find the user
+          expect(result).toBeNull();
 
-            // Cleanup
-            tenantDataStore.get(tenantIdA)?.delete(userA.userId);
-          },
-        ),
+          // Cleanup
+          tenantDataStore.get(tenantIdA)?.delete(userA.userId);
+        }),
         { numRuns: 100 },
       );
     });

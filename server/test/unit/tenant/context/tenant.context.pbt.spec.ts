@@ -5,14 +5,10 @@ import { TenantContext } from '../../../../src/tenant/context/tenant.context';
 const PBT_CONFIG = { numRuns: 100 };
 
 // 生成有效的租户ID（6位数字字符串，>= 100001）
-const validTenantIdArb = fc
-  .integer({ min: 100001, max: 999999 })
-  .map((n) => n.toString().padStart(6, '0'));
+const validTenantIdArb = fc.integer({ min: 100001, max: 999999 }).map((n) => n.toString().padStart(6, '0'));
 
 // 生成非超级租户ID
-const nonSuperTenantIdArb = validTenantIdArb.filter(
-  (id) => id !== TenantContext.SUPER_TENANT_ID,
-);
+const nonSuperTenantIdArb = validTenantIdArb.filter((id) => id !== TenantContext.SUPER_TENANT_ID);
 
 // 生成租户上下文数据
 const tenantContextDataArb = fc.record({
@@ -71,10 +67,7 @@ describe('TenantContext - Property Tests', () => {
           return TenantContext.run(contextData, () => {
             const tenantId = TenantContext.getTenantId();
             const ignoreTenant = TenantContext.isIgnoreTenant();
-            return (
-              tenantId === contextData.tenantId &&
-              ignoreTenant === (contextData.ignoreTenant ?? false)
-            );
+            return tenantId === contextData.tenantId && ignoreTenant === (contextData.ignoreTenant ?? false);
           });
         }),
         PBT_CONFIG,
@@ -88,29 +81,24 @@ describe('TenantContext - Property Tests', () => {
      */
     it('嵌套 run 调用应该正确隔离上下文', () => {
       fc.assert(
-        fc.property(
-          validTenantIdArb,
-          validTenantIdArb,
-          validTenantIdArb,
-          (tenant1, tenant2, tenant3) => {
-            return TenantContext.run({ tenantId: tenant1 }, () => {
-              const level1 = TenantContext.getTenantId();
+        fc.property(validTenantIdArb, validTenantIdArb, validTenantIdArb, (tenant1, tenant2, tenant3) => {
+          return TenantContext.run({ tenantId: tenant1 }, () => {
+            const level1 = TenantContext.getTenantId();
 
-              TenantContext.run({ tenantId: tenant2 }, () => {
-                const level2 = TenantContext.getTenantId();
+            TenantContext.run({ tenantId: tenant2 }, () => {
+              const level2 = TenantContext.getTenantId();
 
-                TenantContext.run({ tenantId: tenant3 }, () => {
-                  const level3 = TenantContext.getTenantId();
-                  if (level3 !== tenant3) return false;
-                });
-
-                if (TenantContext.getTenantId() !== tenant2) return false;
+              TenantContext.run({ tenantId: tenant3 }, () => {
+                const level3 = TenantContext.getTenantId();
+                if (level3 !== tenant3) return false;
               });
 
-              return TenantContext.getTenantId() === tenant1;
+              if (TenantContext.getTenantId() !== tenant2) return false;
             });
-          },
-        ),
+
+            return TenantContext.getTenantId() === tenant1;
+          });
+        }),
         PBT_CONFIG,
       );
     });
@@ -185,12 +173,9 @@ describe('TenantContext - Property Tests', () => {
     it('超级租户 shouldApplyTenantFilter 应该返回 false', () => {
       fc.assert(
         fc.property(fc.boolean(), (ignoreTenant) => {
-          return TenantContext.run(
-            { tenantId: TenantContext.SUPER_TENANT_ID, ignoreTenant },
-            () => {
-              return TenantContext.shouldApplyTenantFilter() === false;
-            },
-          );
+          return TenantContext.run({ tenantId: TenantContext.SUPER_TENANT_ID, ignoreTenant }, () => {
+            return TenantContext.shouldApplyTenantFilter() === false;
+          });
         }),
         PBT_CONFIG,
       );

@@ -11,13 +11,14 @@ describe('QueueAccessGuard', () => {
     guard = new QueueAccessGuard(reflector);
   });
 
-  const createMockContext = (user: any, method: string = 'GET'): ExecutionContext => ({
-    switchToHttp: () => ({
-      getRequest: () => ({ user, method }),
-    }),
-    getHandler: () => jest.fn(),
-    getClass: () => jest.fn(),
-  } as unknown as ExecutionContext);
+  const createMockContext = (user: any, method: string = 'GET'): ExecutionContext =>
+    ({
+      switchToHttp: () => ({
+        getRequest: () => ({ user, method }),
+      }),
+      getHandler: () => jest.fn(),
+      getClass: () => jest.fn(),
+    }) as unknown as ExecutionContext;
 
   describe('canActivate', () => {
     it('should throw ForbiddenException when user is not authenticated', async () => {

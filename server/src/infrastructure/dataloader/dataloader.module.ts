@@ -26,23 +26,7 @@ import { PrismaModule } from 'src/infrastructure/prisma';
 @Global()
 @Module({
   imports: [PrismaModule],
-  providers: [
-    UserLoader,
-    DeptLoader,
-    RoleLoader,
-    MenuLoader,
-    PostLoader,
-    DictTypeLoader,
-    DictDataLoader,
-  ],
-  exports: [
-    UserLoader,
-    DeptLoader,
-    RoleLoader,
-    MenuLoader,
-    PostLoader,
-    DictTypeLoader,
-    DictDataLoader,
-  ],
+  providers: [UserLoader, DeptLoader, RoleLoader, MenuLoader, PostLoader, DictTypeLoader, DictDataLoader],
+  exports: [UserLoader, DeptLoader, RoleLoader, MenuLoader, PostLoader, DictTypeLoader, DictDataLoader],
 })
 export class DataLoaderModule {}

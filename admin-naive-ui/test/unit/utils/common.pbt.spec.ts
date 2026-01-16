@@ -7,7 +7,7 @@
  * **Validates: Requirements 13.3**
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as fc from 'fast-check';
 
 /**
@@ -50,14 +50,12 @@ const parseDate = (dateStr: string, format = 'YYYY-MM-DD'): Date => {
   const minuteIndex = format.indexOf('mm');
   const secondIndex = format.indexOf('ss');
 
-  if (yearIndex !== -1) parts.year = parseInt(dateStr.substring(yearIndex, yearIndex + 4), 10);
-  if (monthIndex !== -1) parts.month = parseInt(dateStr.substring(monthIndex, monthIndex + 2), 10);
-  if (dayIndex !== -1) parts.day = parseInt(dateStr.substring(dayIndex, dayIndex + 2), 10);
-  if (hourIndex !== -1) parts.hour = parseInt(dateStr.substring(hourIndex, hourIndex + 2), 10);
-  if (minuteIndex !== -1)
-    parts.minute = parseInt(dateStr.substring(minuteIndex, minuteIndex + 2), 10);
-  if (secondIndex !== -1)
-    parts.second = parseInt(dateStr.substring(secondIndex, secondIndex + 2), 10);
+  if (yearIndex !== -1) parts.year = Number.parseInt(dateStr.substring(yearIndex, yearIndex + 4), 10);
+  if (monthIndex !== -1) parts.month = Number.parseInt(dateStr.substring(monthIndex, monthIndex + 2), 10);
+  if (dayIndex !== -1) parts.day = Number.parseInt(dateStr.substring(dayIndex, dayIndex + 2), 10);
+  if (hourIndex !== -1) parts.hour = Number.parseInt(dateStr.substring(hourIndex, hourIndex + 2), 10);
+  if (minuteIndex !== -1) parts.minute = Number.parseInt(dateStr.substring(minuteIndex, minuteIndex + 2), 10);
+  if (secondIndex !== -1) parts.second = Number.parseInt(dateStr.substring(secondIndex, secondIndex + 2), 10);
 
   return new Date(
     parts.year || 0,
@@ -65,7 +63,7 @@ const parseDate = (dateStr: string, format = 'YYYY-MM-DD'): Date => {
     parts.day || 1,
     parts.hour || 0,
     parts.minute || 0,
-    parts.second || 0,
+    parts.second || 0
   );
 };
 
@@ -82,12 +80,12 @@ const deepClone = <T>(obj: T): T => {
   }
 
   if (Array.isArray(obj)) {
-    return obj.map((item) => deepClone(item)) as unknown as T;
+    return obj.map(item => deepClone(item)) as unknown as T;
   }
 
   const cloned = {} as T;
   for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+    if (Object.hasOwn(obj, key)) {
       cloned[key] = deepClone(obj[key]);
     }
   }
@@ -97,10 +95,7 @@ const deepClone = <T>(obj: T): T => {
 /**
  * 防抖函数
  */
-const debounce = <T extends (...args: any[]) => any>(
-  fn: T,
-  delay: number,
-): ((...args: Parameters<T>) => void) => {
+const debounce = <T extends (...args: any[]) => any>(fn: T, delay: number): ((...args: Parameters<T>) => void) => {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
   return (...args: Parameters<T>) => {
@@ -122,10 +117,8 @@ describe('formatDate - 属性测试', () => {
     it('formatDate 和 parseDate 应该是可逆的', () => {
       fc.assert(
         fc.property(
-          fc.date({ min: new Date('2000-01-01'), max: new Date('2099-12-31') }).filter(
-            (d) => !isNaN(d.getTime()),
-          ),
-          (date) => {
+          fc.date({ min: new Date('2000-01-01'), max: new Date('2099-12-31') }).filter(d => !isNaN(d.getTime())),
+          date => {
             const format = 'YYYY-MM-DD HH:mm:ss';
             const formatted = formatDate(date, format);
             if (!formatted) return true; // 跳过无效日期
@@ -137,9 +130,9 @@ describe('formatDate - 属性测试', () => {
             const parsedSeconds = Math.floor(parsed.getTime() / 1000);
 
             return originalSeconds === parsedSeconds;
-          },
+          }
         ),
-        { numRuns: 100 },
+        { numRuns: 100 }
       );
     });
   });
@@ -152,12 +145,8 @@ describe('formatDate - 属性测试', () => {
     it('相同格式的输出长度应该一致', () => {
       fc.assert(
         fc.property(
-          fc.date({ min: new Date('2000-01-01'), max: new Date('2099-12-31') }).filter(
-            (d) => !isNaN(d.getTime()),
-          ),
-          fc.date({ min: new Date('2000-01-01'), max: new Date('2099-12-31') }).filter(
-            (d) => !isNaN(d.getTime()),
-          ),
+          fc.date({ min: new Date('2000-01-01'), max: new Date('2099-12-31') }).filter(d => !isNaN(d.getTime())),
+          fc.date({ min: new Date('2000-01-01'), max: new Date('2099-12-31') }).filter(d => !isNaN(d.getTime())),
           (date1, date2) => {
             const format = 'YYYY-MM-DD';
             const result1 = formatDate(date1, format);
@@ -167,9 +156,9 @@ describe('formatDate - 属性测试', () => {
               return result1.length === result2.length;
             }
             return true;
-          },
+          }
         ),
-        { numRuns: 100 },
+        { numRuns: 100 }
       );
     });
   });
@@ -181,10 +170,10 @@ describe('formatDate - 属性测试', () => {
      */
     it('null 和 undefined 应该返回空字符串', () => {
       fc.assert(
-        fc.property(fc.constantFrom(null, undefined), (value) => {
+        fc.property(fc.constantFrom(null, undefined), value => {
           return formatDate(value) === '';
         }),
-        { numRuns: 10 },
+        { numRuns: 10 }
       );
     });
   });
@@ -197,23 +186,17 @@ describe('formatDate - 属性测试', () => {
     it('格式化结果应该包含正确的年月日', () => {
       fc.assert(
         fc.property(
-          fc.date({ min: new Date('2000-01-01'), max: new Date('2099-12-31') }).filter(
-            (d) => !isNaN(d.getTime()),
-          ),
-          (date) => {
+          fc.date({ min: new Date('2000-01-01'), max: new Date('2099-12-31') }).filter(d => !isNaN(d.getTime())),
+          date => {
             const formatted = formatDate(date, 'YYYY-MM-DD');
             if (!formatted) return true; // 跳过无效日期
 
             const [year, month, day] = formatted.split('-').map(Number);
 
-            return (
-              year === date.getFullYear() &&
-              month === date.getMonth() + 1 &&
-              day === date.getDate()
-            );
-          },
+            return year === date.getFullYear() && month === date.getMonth() + 1 && day === date.getDate();
+          }
         ),
-        { numRuns: 100 },
+        { numRuns: 100 }
       );
     });
   });
@@ -234,14 +217,14 @@ describe('deepClone - 属性测试', () => {
             fc.boolean(),
             fc.constant(null),
             fc.array(fc.integer()),
-            fc.record({ a: fc.integer(), b: fc.string() }),
+            fc.record({ a: fc.integer(), b: fc.string() })
           ),
-          (value) => {
+          value => {
             const cloned = deepClone(value);
             return JSON.stringify(cloned) === JSON.stringify(value);
-          },
+          }
         ),
-        { numRuns: 100 },
+        { numRuns: 100 }
       );
     });
   });
@@ -253,18 +236,18 @@ describe('deepClone - 属性测试', () => {
      */
     it('修改克隆对象不应影响原对象', () => {
       fc.assert(
-        fc.property(fc.record({ a: fc.integer(), b: fc.integer() }), (obj) => {
+        fc.property(fc.record({ a: fc.integer(), b: fc.integer() }), obj => {
           const original = { ...obj };
           const cloned = deepClone(obj);
 
           // 修改克隆对象
-          cloned.a = cloned.a + 1000;
-          cloned.b = cloned.b + 1000;
+          cloned.a += 1000;
+          cloned.b += 1000;
 
           // 原对象应该不变
           return obj.a === original.a && obj.b === original.b;
         }),
-        { numRuns: 100 },
+        { numRuns: 100 }
       );
     });
   });
@@ -280,11 +263,11 @@ describe('deepClone - 属性测试', () => {
           fc.record({
             level1: fc.record({
               level2: fc.record({
-                value: fc.integer(),
-              }),
-            }),
+                value: fc.integer()
+              })
+            })
           }),
-          (obj) => {
+          obj => {
             const cloned = deepClone(obj);
 
             // 修改克隆的嵌套对象
@@ -292,9 +275,9 @@ describe('deepClone - 属性测试', () => {
 
             // 原对象的嵌套值应该不变
             return obj.level1.level2.value !== cloned.level1.level2.value;
-          },
+          }
         ),
-        { numRuns: 50 },
+        { numRuns: 50 }
       );
     });
   });
@@ -306,17 +289,13 @@ describe('deepClone - 属性测试', () => {
      */
     it('数组应该被正确克隆', () => {
       fc.assert(
-        fc.property(fc.array(fc.integer(), { minLength: 1, maxLength: 10 }), (arr) => {
+        fc.property(fc.array(fc.integer(), { minLength: 1, maxLength: 10 }), arr => {
           const cloned = deepClone(arr);
 
           // 克隆数组应该与原数组相等但不是同一个引用
-          return (
-            JSON.stringify(cloned) === JSON.stringify(arr) &&
-            cloned !== arr &&
-            cloned.length === arr.length
-          );
+          return JSON.stringify(cloned) === JSON.stringify(arr) && cloned !== arr && cloned.length === arr.length;
         }),
-        { numRuns: 100 },
+        { numRuns: 100 }
       );
     });
   });
@@ -328,11 +307,11 @@ describe('deepClone - 属性测试', () => {
      */
     it('基本类型应该直接返回', () => {
       fc.assert(
-        fc.property(fc.oneof(fc.integer(), fc.string(), fc.boolean()), (value) => {
+        fc.property(fc.oneof(fc.integer(), fc.string(), fc.boolean()), value => {
           const cloned = deepClone(value);
           return cloned === value;
         }),
-        { numRuns: 100 },
+        { numRuns: 100 }
       );
     });
   });
@@ -354,7 +333,7 @@ describe('debounce - 属性测试', () => {
      */
     it('防抖函数应该在指定延迟后执行', () => {
       fc.assert(
-        fc.property(fc.integer({ min: 10, max: 500 }), (delay) => {
+        fc.property(fc.integer({ min: 10, max: 500 }), delay => {
           const fn = vi.fn();
           const debouncedFn = debounce(fn, delay);
 
@@ -369,7 +348,7 @@ describe('debounce - 属性测试', () => {
 
           return true;
         }),
-        { numRuns: 20 },
+        { numRuns: 20 }
       );
     });
   });
@@ -381,26 +360,22 @@ describe('debounce - 属性测试', () => {
      */
     it('多次快速调用应该只执行最后一次', () => {
       fc.assert(
-        fc.property(
-          fc.integer({ min: 10, max: 500 }),
-          fc.integer({ min: 2, max: 10 }),
-          (delay, callCount) => {
-            const fn = vi.fn();
-            const debouncedFn = debounce(fn, delay);
+        fc.property(fc.integer({ min: 10, max: 500 }), fc.integer({ min: 2, max: 10 }), (delay, callCount) => {
+          const fn = vi.fn();
+          const debouncedFn = debounce(fn, delay);
 
-            // 多次调用
-            for (let i = 0; i < callCount; i++) {
-              debouncedFn();
-            }
+          // 多次调用
+          for (let i = 0; i < callCount; i++) {
+            debouncedFn();
+          }
 
-            // 延迟后应该只执行一次
-            vi.advanceTimersByTime(delay);
-            expect(fn).toHaveBeenCalledTimes(1);
+          // 延迟后应该只执行一次
+          vi.advanceTimersByTime(delay);
+          expect(fn).toHaveBeenCalledTimes(1);
 
-            return true;
-          },
-        ),
-        { numRuns: 20 },
+          return true;
+        }),
+        { numRuns: 20 }
       );
     });
   });

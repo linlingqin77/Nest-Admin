@@ -6,7 +6,7 @@ import { fetchRoleOptionselect } from '@/service/api-gen';
 import type { RoleResponseDto } from '@/service/api-gen/types';
 
 defineOptions({
-  name: 'RoleSelect',
+  name: 'RoleSelect'
 });
 
 interface Props {
@@ -29,9 +29,9 @@ async function getRoleOptions() {
   try {
     const { data } = await fetchRoleOptionselect();
     const roles = data as RoleResponseDto[];
-    roleOptions.value = roles.map((item) => ({
+    roleOptions.value = roles.map(item => ({
       label: item.roleName!,
-      value: item.roleId!,
+      value: item.roleId!
     }));
   } catch {
     // error handled by request interceptor

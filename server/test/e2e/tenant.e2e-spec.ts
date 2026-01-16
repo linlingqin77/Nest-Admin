@@ -135,15 +135,12 @@ describe('Tenant E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .post(`${apiPrefix}/system/tenant`)
-        .send({
-          companyName: 'NoAuth',
-          contactUserName: '无认证',
-          username: 'noauth',
-          password: 'Test123456',
-        });
+      const response = await helper.getRequest().post(`${apiPrefix}/system/tenant`).send({
+        companyName: 'NoAuth',
+        contactUserName: '无认证',
+        username: 'noauth',
+        password: 'Test123456',
+      });
 
       expect([401, 403]).toContain(response.status);
     });
@@ -172,9 +169,7 @@ describe('Tenant E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/system/tenant/1`);
+      const response = await helper.getRequest().get(`${apiPrefix}/system/tenant/1`);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -225,14 +220,11 @@ describe('Tenant E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .put(`${apiPrefix}/system/tenant`)
-        .send({
-          id: testTenantId,
-          tenantId: testTenantTenantId,
-          contactUserName: '无认证更新',
-        });
+      const response = await helper.getRequest().put(`${apiPrefix}/system/tenant`).send({
+        id: testTenantId,
+        tenantId: testTenantTenantId,
+        contactUserName: '无认证更新',
+      });
 
       expect([401, 403]).toContain(response.status);
     });
@@ -275,9 +267,7 @@ describe('Tenant E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .delete(`${apiPrefix}/system/tenant/999`);
+      const response = await helper.getRequest().delete(`${apiPrefix}/system/tenant/999`);
 
       expect([401, 403]).toContain(response.status);
     });

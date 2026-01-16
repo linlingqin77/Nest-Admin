@@ -120,9 +120,9 @@ describe('CircuitBreakerService', () => {
       ).rejects.toThrow('Failure 2');
 
       // Third call should be rejected because breaker is open
-      await expect(
-        service.execute('threshold-breaker', async () => 'should not execute'),
-      ).rejects.toThrow(CircuitBreakerOpenError);
+      await expect(service.execute('threshold-breaker', async () => 'should not execute')).rejects.toThrow(
+        CircuitBreakerOpenError,
+      );
 
       expect(service.getState('threshold-breaker')).toBe(BreakerState.OPEN);
     });

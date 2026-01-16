@@ -58,10 +58,12 @@ const defaultFormatRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
 const dateOnlyFormatRegex = /^\d{4}-\d{2}-\d{2}$/;
 
 // 生成有效日期的 arbitrary（过滤掉 Invalid Date）
-const validDateArbitrary = fc.date({
-  min: new Date('1970-01-01T00:00:00Z'),
-  max: new Date('2099-12-31T15:59:59Z'),
-}).filter(d => !isNaN(d.getTime()));
+const validDateArbitrary = fc
+  .date({
+    min: new Date('1970-01-01T00:00:00Z'),
+    max: new Date('2099-12-31T15:59:59Z'),
+  })
+  .filter((d) => !isNaN(d.getTime()));
 
 // 生成包含日期字段的普通对象
 const plainObjectWithDatesArbitrary = fc.record({
@@ -114,41 +116,38 @@ describe('serialize.util Property-Based Tests - Date Serialization', () => {
           // 验证 @Exclude 字段被排除
           expect(result.password).toBeUndefined();
         }),
-        { numRuns: 100 }
+        { numRuns: 100 },
       );
     });
 
     it('toDtoList() SHALL trigger @DateFormat() decorator for each item in the list', () => {
       fc.assert(
-        fc.property(
-          fc.array(plainObjectWithDatesArbitrary, { minLength: 1, maxLength: 20 }),
-          (plainList) => {
-            const result = toDtoList(TestDateResponseDto, plainList);
+        fc.property(fc.array(plainObjectWithDatesArbitrary, { minLength: 1, maxLength: 20 }), (plainList) => {
+          const result = toDtoList(TestDateResponseDto, plainList);
 
-            expect(result.length).toBe(plainList.length);
+          expect(result.length).toBe(plainList.length);
 
-            result.forEach((dto, index) => {
-              // 验证 createTime 被格式化
-              expect(dto.createTime).toBeDefined();
-              expect(typeof dto.createTime).toBe('string');
-              expect(defaultFormatRegex.test(dto.createTime)).toBe(true);
+          result.forEach((dto, index) => {
+            // 验证 createTime 被格式化
+            expect(dto.createTime).toBeDefined();
+            expect(typeof dto.createTime).toBe('string');
+            expect(defaultFormatRegex.test(dto.createTime)).toBe(true);
 
-              // 验证 updateTime 被格式化
-              expect(dto.updateTime).toBeDefined();
-              expect(typeof dto.updateTime).toBe('string');
-              expect(defaultFormatRegex.test(dto.updateTime)).toBe(true);
+            // 验证 updateTime 被格式化
+            expect(dto.updateTime).toBeDefined();
+            expect(typeof dto.updateTime).toBe('string');
+            expect(defaultFormatRegex.test(dto.updateTime)).toBe(true);
 
-              // 验证 birthDate 被格式化为自定义格式
-              expect(dto.birthDate).toBeDefined();
-              expect(typeof dto.birthDate).toBe('string');
-              expect(dateOnlyFormatRegex.test(dto.birthDate)).toBe(true);
+            // 验证 birthDate 被格式化为自定义格式
+            expect(dto.birthDate).toBeDefined();
+            expect(typeof dto.birthDate).toBe('string');
+            expect(dateOnlyFormatRegex.test(dto.birthDate)).toBe(true);
 
-              // 验证 @Exclude 字段被排除
-              expect(dto.password).toBeUndefined();
-            });
-          }
-        ),
-        { numRuns: 100 }
+            // 验证 @Exclude 字段被排除
+            expect(dto.password).toBeUndefined();
+          });
+        }),
+        { numRuns: 100 },
       );
     });
 
@@ -184,9 +183,9 @@ describe('serialize.util Property-Based Tests - Date Serialization', () => {
               // 验证 @Exclude 字段被排除
               expect(dto.password).toBeUndefined();
             });
-          }
+          },
         ),
-        { numRuns: 100 }
+        { numRuns: 100 },
       );
     });
 
@@ -196,9 +195,9 @@ describe('serialize.util Property-Based Tests - Date Serialization', () => {
           fc.record({
             id: fc.integer({ min: 1, max: 1000000 }),
             name: fc.string({ minLength: 1, maxLength: 50 }),
-            createTime: validDateArbitrary.map(d => d.toISOString()),
-            updateTime: validDateArbitrary.map(d => d.toISOString()),
-            birthDate: validDateArbitrary.map(d => d.toISOString()),
+            createTime: validDateArbitrary.map((d) => d.toISOString()),
+            updateTime: validDateArbitrary.map((d) => d.toISOString()),
+            birthDate: validDateArbitrary.map((d) => d.toISOString()),
             password: fc.string({ minLength: 8, maxLength: 100 }),
           }),
           (plainObject) => {
@@ -216,9 +215,9 @@ describe('serialize.util Property-Based Tests - Date Serialization', () => {
             expect(result.birthDate).toBeDefined();
             expect(typeof result.birthDate).toBe('string');
             expect(dateOnlyFormatRegex.test(result.birthDate)).toBe(true);
-          }
+          },
         ),
-        { numRuns: 100 }
+        { numRuns: 100 },
       );
     });
   });
@@ -245,32 +244,29 @@ describe('serialize.util Property-Based Tests - Date Serialization', () => {
           // 验证 @Exclude 字段被排除
           expect(result.password).toBeUndefined();
         }),
-        { numRuns: 100 }
+        { numRuns: 100 },
       );
     });
 
     it('toDtoList() SHALL preserve field values for DTOs without @DateFormat()', () => {
       fc.assert(
-        fc.property(
-          fc.array(plainObjectWithoutDatesArbitrary, { minLength: 1, maxLength: 20 }),
-          (plainList) => {
-            const result = toDtoList(TestSimpleResponseDto, plainList);
+        fc.property(fc.array(plainObjectWithoutDatesArbitrary, { minLength: 1, maxLength: 20 }), (plainList) => {
+          const result = toDtoList(TestSimpleResponseDto, plainList);
 
-            expect(result.length).toBe(plainList.length);
+          expect(result.length).toBe(plainList.length);
 
-            result.forEach((dto, index) => {
-              const original = plainList[index];
-              // 验证 @Expose 字段值保持不变
-              expect(dto.id).toBe(original.id);
-              expect(dto.name).toBe(original.name);
-              expect(dto.status).toBe(original.status);
+          result.forEach((dto, index) => {
+            const original = plainList[index];
+            // 验证 @Expose 字段值保持不变
+            expect(dto.id).toBe(original.id);
+            expect(dto.name).toBe(original.name);
+            expect(dto.status).toBe(original.status);
 
-              // 验证 @Exclude 字段被排除
-              expect(dto.password).toBeUndefined();
-            });
-          }
-        ),
-        { numRuns: 100 }
+            // 验证 @Exclude 字段被排除
+            expect(dto.password).toBeUndefined();
+          });
+        }),
+        { numRuns: 100 },
       );
     });
 
@@ -297,9 +293,9 @@ describe('serialize.util Property-Based Tests - Date Serialization', () => {
               // 验证 @Exclude 字段被排除
               expect(dto.password).toBeUndefined();
             });
-          }
+          },
         ),
-        { numRuns: 100 }
+        { numRuns: 100 },
       );
     });
 
@@ -325,9 +321,9 @@ describe('serialize.util Property-Based Tests - Date Serialization', () => {
             // 验证其他字段正常工作
             expect(result.id).toBe(plainObject.id);
             expect(result.name).toBe(plainObject.name);
-          }
+          },
         ),
-        { numRuns: 100 }
+        { numRuns: 100 },
       );
     });
   });

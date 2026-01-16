@@ -57,7 +57,11 @@ export class CreateRoleRequestDto {
   @IsEnum(StatusEnum)
   status?: string;
 
-  @ApiProperty({ required: false, description: '数据范围（1全部 2自定义 3本部门 4本部门及以下 5仅本人）', example: '1' })
+  @ApiProperty({
+    required: false,
+    description: '数据范围（1全部 2自定义 3本部门 4本部门及以下 5仅本人）',
+    example: '1',
+  })
   @IsOptional()
   @IsString()
   dataScope: string;

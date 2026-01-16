@@ -5,9 +5,13 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { TenantAuditLogListVo, TenantAuditLogDetailVo, TenantAuditLogStatsVo, ExportTenantAuditLogDto } from './types';
+import type {
+  ExportTenantAuditLogDto,
+  TenantAuditLogDetailVo,
+  TenantAuditLogListVo,
+  TenantAuditLogStatsVo
+} from './types';
 
 /**
  * 审计日志列表
@@ -18,7 +22,7 @@ export function fetchTenantAuditFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/tenant/audit/list',
     params,
-    operationId: 'TenantAuditController_findAll_v1',
+    operationId: 'TenantAuditController_findAll_v1'
   });
 }
 
@@ -30,7 +34,7 @@ export function fetchTenantAuditFindOne(id: string | number) {
   return apiRequest<TenantAuditLogDetailVo>({
     method: 'GET',
     url: buildUrl('/system/tenant/audit/{id}', { id }),
-    operationId: 'TenantAuditController_findOne_v1',
+    operationId: 'TenantAuditController_findOne_v1'
   });
 }
 
@@ -43,7 +47,7 @@ export function fetchTenantAuditGetStats(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/tenant/audit/stats/summary',
     params,
-    operationId: 'TenantAuditController_getStats_v1',
+    operationId: 'TenantAuditController_getStats_v1'
   });
 }
 
@@ -56,6 +60,6 @@ export function fetchTenantAuditExport(data: ExportTenantAuditLogDto) {
     method: 'POST',
     url: '/system/tenant/audit/export',
     data,
-    operationId: 'TenantAuditController_export_v1',
+    operationId: 'TenantAuditController_export_v1'
   });
 }

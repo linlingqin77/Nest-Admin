@@ -22,55 +22,46 @@ describe('Fixture 工厂 - 属性测试', () => {
     describe('用户 Fixture 隔离性', () => {
       it('多次调用 createUserFixture 应该生成不同的用户 ID', () => {
         fc.assert(
-          fc.property(
-            fc.integer({ min: 2, max: 10 }),
-            (count) => {
-              const users = Array.from({ length: count }, () => createUserFixture());
-              const userIds = users.map((u) => u.userId);
-              const uniqueIds = new Set(userIds);
+          fc.property(fc.integer({ min: 2, max: 10 }), (count) => {
+            const users = Array.from({ length: count }, () => createUserFixture());
+            const userIds = users.map((u) => u.userId);
+            const uniqueIds = new Set(userIds);
 
-              // 所有用户 ID 应该唯一
-              return uniqueIds.size === count;
-            },
-          ),
+            // 所有用户 ID 应该唯一
+            return uniqueIds.size === count;
+          }),
           { numRuns: 100 },
         );
       });
 
       it('多次调用 createUserFixture 应该生成不同的用户名', () => {
         fc.assert(
-          fc.property(
-            fc.integer({ min: 2, max: 10 }),
-            (count) => {
-              const users = Array.from({ length: count }, () => createUserFixture());
-              const userNames = users.map((u) => u.userName);
-              const uniqueNames = new Set(userNames);
+          fc.property(fc.integer({ min: 2, max: 10 }), (count) => {
+            const users = Array.from({ length: count }, () => createUserFixture());
+            const userNames = users.map((u) => u.userName);
+            const uniqueNames = new Set(userNames);
 
-              // 所有用户名应该唯一
-              return uniqueNames.size === count;
-            },
-          ),
+            // 所有用户名应该唯一
+            return uniqueNames.size === count;
+          }),
           { numRuns: 100 },
         );
       });
 
       it('createBatchUsers 生成的用户应该相互独立', () => {
         fc.assert(
-          fc.property(
-            fc.integer({ min: 2, max: 20 }),
-            (count) => {
-              const users = createBatchUsers(count);
+          fc.property(fc.integer({ min: 2, max: 20 }), (count) => {
+            const users = createBatchUsers(count);
 
-              // 验证数量正确
-              if (users.length !== count) return false;
+            // 验证数量正确
+            if (users.length !== count) return false;
 
-              // 验证邮箱唯一
-              const emails = users.map((u) => u.email);
-              const uniqueEmails = new Set(emails);
+            // 验证邮箱唯一
+            const emails = users.map((u) => u.email);
+            const uniqueEmails = new Set(emails);
 
-              return uniqueEmails.size === count;
-            },
-          ),
+            return uniqueEmails.size === count;
+          }),
           { numRuns: 100 },
         );
       });
@@ -79,36 +70,30 @@ describe('Fixture 工厂 - 属性测试', () => {
     describe('角色 Fixture 隔离性', () => {
       it('多次调用 createRoleFixture 应该生成不同的角色 ID', () => {
         fc.assert(
-          fc.property(
-            fc.integer({ min: 2, max: 10 }),
-            (count) => {
-              const roles = Array.from({ length: count }, () => createRoleFixture());
-              const roleIds = roles.map((r) => r.roleId);
-              const uniqueIds = new Set(roleIds);
+          fc.property(fc.integer({ min: 2, max: 10 }), (count) => {
+            const roles = Array.from({ length: count }, () => createRoleFixture());
+            const roleIds = roles.map((r) => r.roleId);
+            const uniqueIds = new Set(roleIds);
 
-              return uniqueIds.size === count;
-            },
-          ),
+            return uniqueIds.size === count;
+          }),
           { numRuns: 100 },
         );
       });
 
       it('createBatchRoles 生成的角色应该相互独立', () => {
         fc.assert(
-          fc.property(
-            fc.integer({ min: 2, max: 20 }),
-            (count) => {
-              const roles = createBatchRoles(count);
+          fc.property(fc.integer({ min: 2, max: 20 }), (count) => {
+            const roles = createBatchRoles(count);
 
-              if (roles.length !== count) return false;
+            if (roles.length !== count) return false;
 
-              // 验证角色 ID 唯一
-              const roleIds = roles.map((r) => r.roleId);
-              const uniqueIds = new Set(roleIds);
+            // 验证角色 ID 唯一
+            const roleIds = roles.map((r) => r.roleId);
+            const uniqueIds = new Set(roleIds);
 
-              return uniqueIds.size === count;
-            },
-          ),
+            return uniqueIds.size === count;
+          }),
           { numRuns: 100 },
         );
       });
@@ -117,36 +102,30 @@ describe('Fixture 工厂 - 属性测试', () => {
     describe('租户 Fixture 隔离性', () => {
       it('多次调用 createTenantFixture 应该生成不同的租户 ID', () => {
         fc.assert(
-          fc.property(
-            fc.integer({ min: 2, max: 10 }),
-            (count) => {
-              const tenants = Array.from({ length: count }, () => createTenantFixture());
-              const tenantIds = tenants.map((t) => t.tenantId);
-              const uniqueIds = new Set(tenantIds);
+          fc.property(fc.integer({ min: 2, max: 10 }), (count) => {
+            const tenants = Array.from({ length: count }, () => createTenantFixture());
+            const tenantIds = tenants.map((t) => t.tenantId);
+            const uniqueIds = new Set(tenantIds);
 
-              return uniqueIds.size === count;
-            },
-          ),
+            return uniqueIds.size === count;
+          }),
           { numRuns: 100 },
         );
       });
 
       it('createBatchTenants 生成的租户应该相互独立', () => {
         fc.assert(
-          fc.property(
-            fc.integer({ min: 2, max: 20 }),
-            (count) => {
-              const tenants = createBatchTenants(count);
+          fc.property(fc.integer({ min: 2, max: 20 }), (count) => {
+            const tenants = createBatchTenants(count);
 
-              if (tenants.length !== count) return false;
+            if (tenants.length !== count) return false;
 
-              // 验证租户 ID 唯一
-              const tenantIds = tenants.map((t) => t.tenantId);
-              const uniqueIds = new Set(tenantIds);
+            // 验证租户 ID 唯一
+            const tenantIds = tenants.map((t) => t.tenantId);
+            const uniqueIds = new Set(tenantIds);
 
-              return uniqueIds.size === count;
-            },
-          ),
+            return uniqueIds.size === count;
+          }),
           { numRuns: 100 },
         );
       });
@@ -165,11 +144,7 @@ describe('Fixture 工厂 - 属性测试', () => {
               const tenants = createBatchTenants(tenantCount);
 
               // 验证各自数量正确
-              return (
-                users.length === userCount &&
-                roles.length === roleCount &&
-                tenants.length === tenantCount
-              );
+              return users.length === userCount && roles.length === roleCount && tenants.length === tenantCount;
             },
           ),
           { numRuns: 100 },

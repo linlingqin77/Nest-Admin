@@ -156,9 +156,7 @@ export class FeatureToggleService {
       const cachedFeatures = await this.redisService.hGetAll(cacheKey);
 
       if (cachedFeatures && Object.keys(cachedFeatures).length > 0) {
-        return Object.fromEntries(
-          Object.entries(cachedFeatures).map(([k, v]) => [k, v === '1' || v === 'true']),
-        );
+        return Object.fromEntries(Object.entries(cachedFeatures).map(([k, v]) => [k, v === '1' || v === 'true']));
       }
 
       // 从数据库获取

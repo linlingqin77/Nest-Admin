@@ -59,7 +59,11 @@ export class ExportHelper {
    * @param data 要导出的数据
    * @param config 导出配置
    */
-  static async export<T extends Record<string, unknown>>(res: Response, data: T[], config: ExportConfig<T>): Promise<void> {
+  static async export<T extends Record<string, unknown>>(
+    res: Response,
+    data: T[],
+    config: ExportConfig<T>,
+  ): Promise<void> {
     // 转换数据
     const transformedData = config.transform ? data.map(config.transform) : data;
 

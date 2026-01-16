@@ -5,7 +5,7 @@ import { useLoading } from '@sa/hooks';
 import { fetchUserOptionselect } from '@/service/api-gen';
 
 defineOptions({
-  name: 'UserSelect',
+  name: 'UserSelect'
 });
 
 interface Props {
@@ -28,9 +28,9 @@ async function getUserOptions() {
   try {
     const { data } = await fetchUserOptionselect();
     const users = data as unknown as Api.System.User[];
-    userOptions.value = users.map((item) => ({
+    userOptions.value = users.map(item => ({
       label: `${item.nickName} ( ${item.userName} )`,
-      value: item.userId,
+      value: item.userId
     }));
   } catch {
     // error handled by request interceptor

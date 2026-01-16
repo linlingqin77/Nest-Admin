@@ -1,105 +1,303 @@
 import * as Lodash from 'lodash';
-import { GenConstants } from 'src/shared/constants/gen.constant';
-export const dtoTem = (options) => {
-  const { BusinessName } = options;
-  const insertExclude = getExcludeClounmByType(options, 'isInsert');
-  const editExclude = getExcludeClounmByType(options, 'isEdit');
-  const queryExclude = getExcludeClounmByType(options, 'isQuery');
-  const listExclude = getExcludeClounmByType(options, 'isList');
-  const All = getAllBaseDto(options);
+import { GenConstants } from '@/shared/constants/gen.constant';
 
-  return `
-import { IsString, IsNumber, IsBoolean, IsDate, IsOptional, IsEnum, IsArray } from 'class-validator';
-import { ApiProperty, OmitType, IntersectionType } from '@nestjs/swagger';
-import { PageQueryDto } from 'src/shared/dto/index';
-import { CharEnum } from 'src/shared/enums/index';
+/**
+ * NestJS DTO 模板生成器
+ *
+ * 生成符合项目规范的 DTO 代码，包含：
+ * - 完整的 @ApiProperty/@ApiPropertyOptional 装饰器
+ * - class-validator 验证装饰器
+ * - 继承 PageQueryDto 实现分页
+ * - 响应 DTO 用于 Swagger 文档
+ *
+ * Requirements: 13.5, 13.6, 15.4, 15.5, 15.6
+ */
+export const dtoTem = (options) => {
+  const { BusinessName, functionName, tableComment, columns, primaryKey } = options;
+  const className = Lodash.upperFirst(BusinessName);
+
+  const baseFields = generateBaseFields(options);
+  const createFields = generateCreateFields(options);
+  const updateFields = generateUpdateFields(options);
+  const queryFields = generateQueryFields(options);
+  const responseFields = generateResponseFields(options);
+
+  return `import {
+  IsString,
+  IsNumber,
+  IsBoolean,
+  IsOptional,
+  IsNotEmpty,
+  IsEnum,
+  IsArray,
+  IsInt,
+  Min,
+  Max,
+  MinLength,
+  MaxLength,
+} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { PageQueryDto } from '@/shared/dto';
 import { Type } from 'class-transformer';
 
-
-export class Base${Lodash.upperFirst(BusinessName)}Dto{
-${All}
+/**
+ * ${functionName || tableComment || BusinessName} 基础 DTO
+ */
+export class Base${className}Dto {
+${baseFields}
 }
 
-export class Create${Lodash.upperFirst(BusinessName)}Dto extends ${getOmitTypeStr(`Base${Lodash.upperFirst(BusinessName)}Dto`, insertExclude)}{}
+/**
+ * 创建${functionName || tableComment || BusinessName} DTO
+ */
+export class Create${className}Dto {
+${createFields}
+}
 
-export class Update${Lodash.upperFirst(BusinessName)}Dto extends ${getOmitTypeStr(`Base${Lodash.upperFirst(BusinessName)}Dto`, editExclude)}{}
+/**
+ * 更新${functionName || tableComment || BusinessName} DTO
+ */
+export class Update${className}Dto {
+${updateFields}
+}
 
-export class Query${Lodash.upperFirst(BusinessName)}Dto extends ${getOmitTypeStr(`IntersectionType(Base${Lodash.upperFirst(BusinessName)}Dto, PageQueryDto)`, queryExclude)}{}
+/**
+ * 查询${functionName || tableComment || BusinessName} DTO
+ */
+export class Query${className}Dto extends PageQueryDto {
+${queryFields}
+}
 
-export class List${Lodash.upperFirst(BusinessName)}Dto extends ${getOmitTypeStr(`Base${Lodash.upperFirst(BusinessName)}Dto`, listExclude)}{}
+/**
+ * ${functionName || tableComment || BusinessName} 响应 DTO
+ */
+export class ${className}ResponseDto {
+${responseFields}
+}
+
+/**
+ * ${functionName || tableComment || BusinessName} 列表响应 DTO
+ */
+export class ${className}ListResponseDto {
+  @ApiProperty({ description: '数据列表', type: [${className}ResponseDto] })
+  rows: ${className}ResponseDto[];
+
+  @ApiProperty({ description: '总记录数', example: 100 })
+  total: number;
+
+  @ApiProperty({ description: '当前页码', example: 1 })
+  pageNum: number;
+
+  @ApiProperty({ description: '每页条数', example: 10 })
+  pageSize: number;
+
+  @ApiProperty({ description: '总页数', example: 10 })
+  pages: number;
+}
 `;
 };
 
-/**
- * 排除对应类型的字段
- * @param options
- * @param type
- * @returns
- */
-const getExcludeClounmByType = (options, type) => {
+const generateBaseFields = (options) => {
   const { columns } = options;
-  return columns
-    .filter((column) => {
-      return column[type] === '0';
-    })
-    .map((column) => {
-      const { javaField } = column;
-      return `'${javaField}'`;
-    })
-    .join(',');
-};
-
-/**
- * 全局的字段
- * @param options
- * @param type
- * @returns
- */
-const getAllBaseDto = (options) => {
-  const { columns } = options;
+  if (!columns) return '';
   return columns
     .map((column) => {
-      const { javaType, javaField, isRequired, columnComment, columnType, queryType } = column;
-      const type = lowercaseFirstLetter(javaType, queryType);
-      const decorators = [
-        `@ApiProperty({${columnType === 'char' ? 'enum: CharEnum, ' : ''}required: ${isRequired == 1} , description: '${columnComment}'})`,
-        isRequired != 1 && `\t@IsOptional()`,
-        '\t' + getValidatorDecorator(javaType, queryType),
-      ]
-        .filter(Boolean)
-        .join('\n');
-
-      return `\t${decorators}\n\t${javaField}${isRequired == 1 ? '' : '?'}: ${type};\n`;
+      const { javaType, javaField, isRequired, columnComment, columnType, queryType, dictType } = column;
+      const tsType = getTsType(javaType, queryType);
+      const comment = getCleanComment(columnComment);
+      const decorators = [];
+      const apiPropertyOptions = [];
+      apiPropertyOptions.push(`description: '${comment}'`);
+      if (columnType === 'char' && dictType) {
+        apiPropertyOptions.push(`enum: ['0', '1']`);
+      }
+      if (isRequired === '1') {
+        decorators.push(`  @ApiProperty({ ${apiPropertyOptions.join(', ')} })`);
+      } else {
+        decorators.push(`  @ApiPropertyOptional({ ${apiPropertyOptions.join(', ')} })`);
+        decorators.push(`  @IsOptional()`);
+      }
+      decorators.push(`  ${getValidatorDecorator(javaType, queryType)}`);
+      const optionalFlag = isRequired === '1' ? '' : '?';
+      return `${decorators.join('\n')}\n  ${javaField}${optionalFlag}: ${tsType};\n`;
     })
     .join('\n');
 };
 
-function getValidatorDecorator(javaType, queryType) {
+const generateCreateFields = (options) => {
+  const { columns } = options;
+  if (!columns) return '';
+  return columns
+    .filter((column) => column.isInsert === '1' && column.isPk !== '1')
+    .map((column) => {
+      const { javaType, javaField, isRequired, columnComment, columnType, queryType, dictType } = column;
+      const tsType = getTsType(javaType, queryType);
+      const comment = getCleanComment(columnComment);
+      const decorators = [];
+      const apiPropertyOptions = [];
+      apiPropertyOptions.push(`description: '${comment}'`);
+      apiPropertyOptions.push(`example: ${getExampleValue(javaType, javaField)}`);
+      if (columnType === 'char' && dictType) {
+        apiPropertyOptions.push(`enum: ['0', '1']`);
+      }
+      if (isRequired === '1') {
+        decorators.push(`  @ApiProperty({ ${apiPropertyOptions.join(', ')} })`);
+        decorators.push(`  @IsNotEmpty({ message: '${comment}不能为空' })`);
+      } else {
+        decorators.push(`  @ApiPropertyOptional({ ${apiPropertyOptions.join(', ')} })`);
+        decorators.push(`  @IsOptional()`);
+      }
+      decorators.push(`  ${getValidatorDecorator(javaType, queryType)}`);
+      const optionalFlag = isRequired === '1' ? '' : '?';
+      return `${decorators.join('\n')}\n  ${javaField}${optionalFlag}: ${tsType};\n`;
+    })
+    .join('\n');
+};
+
+const generateUpdateFields = (options) => {
+  const { columns, primaryKey } = options;
+  if (!columns) return '';
+  const pkColumn = columns.find((col) => col.isPk === '1');
+  let result = '';
+  if (pkColumn) {
+    const pkType = getTsType(pkColumn.javaType, pkColumn.queryType);
+    const pkComment = getCleanComment(pkColumn.columnComment);
+    result += `  @ApiProperty({ description: '${pkComment}', example: 1 })\n`;
+    result += `  @IsNotEmpty({ message: '${pkComment}不能为空' })\n`;
+    result += `  ${getValidatorDecorator(pkColumn.javaType, pkColumn.queryType)}\n`;
+    result += `  ${primaryKey}: ${pkType};\n\n`;
+  }
+  result += columns
+    .filter((column) => column.isEdit === '1' && column.isPk !== '1')
+    .map((column) => {
+      const { javaType, javaField, columnComment, columnType, queryType, dictType } = column;
+      const tsType = getTsType(javaType, queryType);
+      const comment = getCleanComment(columnComment);
+      const decorators = [];
+      const apiPropertyOptions = [];
+      apiPropertyOptions.push(`description: '${comment}'`);
+      apiPropertyOptions.push(`example: ${getExampleValue(javaType, javaField)}`);
+      if (columnType === 'char' && dictType) {
+        apiPropertyOptions.push(`enum: ['0', '1']`);
+      }
+      decorators.push(`  @ApiPropertyOptional({ ${apiPropertyOptions.join(', ')} })`);
+      decorators.push(`  @IsOptional()`);
+      decorators.push(`  ${getValidatorDecorator(javaType, queryType)}`);
+      return `${decorators.join('\n')}\n  ${javaField}?: ${tsType};\n`;
+    })
+    .join('\n');
+  return result;
+};
+
+const generateQueryFields = (options) => {
+  const { columns } = options;
+  if (!columns) return '';
+  return columns
+    .filter((column) => column.isQuery === '1')
+    .map((column) => {
+      const { javaType, javaField, columnComment, queryType, dictType } = column;
+      const tsType = getTsType(javaType, queryType);
+      const comment = getCleanComment(columnComment);
+      const decorators = [];
+      const apiPropertyOptions = [];
+      apiPropertyOptions.push(`description: '${comment}'`);
+      if (dictType) {
+        apiPropertyOptions.push(`enum: ['0', '1']`);
+      }
+      decorators.push(`  @ApiPropertyOptional({ ${apiPropertyOptions.join(', ')} })`);
+      decorators.push(`  @IsOptional()`);
+      decorators.push(`  ${getValidatorDecorator(javaType, queryType)}`);
+      return `${decorators.join('\n')}\n  ${javaField}?: ${tsType};\n`;
+    })
+    .join('\n');
+};
+
+const generateResponseFields = (options) => {
+  const { columns } = options;
+  if (!columns) return '';
+  return columns
+    .filter((column) => column.isList === '1' || column.isPk === '1')
+    .map((column) => {
+      const { javaType, javaField, columnComment, queryType, dictType } = column;
+      const tsType = getTsType(javaType, queryType);
+      const comment = getCleanComment(columnComment);
+      const apiPropertyOptions = [];
+      apiPropertyOptions.push(`description: '${comment}'`);
+      apiPropertyOptions.push(`example: ${getExampleValue(javaType, javaField)}`);
+      if (dictType) {
+        apiPropertyOptions.push(`enum: ['0', '1']`);
+      }
+      return `  @ApiProperty({ ${apiPropertyOptions.join(', ')} })\n  ${javaField}: ${tsType};\n`;
+    })
+    .join('\n');
+};
+
+const getCleanComment = (comment) => {
+  if (!comment) return '';
+  const idx1 = comment.indexOf('（');
+  if (idx1 !== -1) return comment.substring(0, idx1);
+  const idx2 = comment.indexOf('(');
+  if (idx2 !== -1) return comment.substring(0, idx2);
+  return comment;
+};
+
+const getTsType = (javaType, queryType) => {
+  if (javaType === 'Date') {
+    return queryType === GenConstants.QUERY_BETWEEN ? 'string[]' : 'string';
+  }
+  switch (javaType) {
+    case 'Number':
+    case 'Integer':
+    case 'Long':
+    case 'Double':
+    case 'BigDecimal':
+      return 'number';
+    case 'Boolean':
+      return 'boolean';
+    case 'String':
+    default:
+      return 'string';
+  }
+};
+
+const getValidatorDecorator = (javaType, queryType) => {
   switch (javaType) {
     case 'String':
-      return `@IsString()`;
+      return '@IsString()';
     case 'Number':
-      return `@IsNumber()\n\t@Type(() => Number)`;
+    case 'Integer':
+    case 'Long':
+      return '@IsNumber()\n  @Type(() => Number)';
+    case 'Double':
+    case 'BigDecimal':
+      return '@IsNumber()\n  @Type(() => Number)';
     case 'Boolean':
-      return `@IsBoolean()`;
+      return '@IsBoolean()';
     case 'Date':
-      return queryType === GenConstants.QUERY_BETWEEN ? '@IsArray()\n\t@IsString({ each: true })' : '@IsString()';
+      return queryType === GenConstants.QUERY_BETWEEN ? '@IsArray()\n  @IsString({ each: true })' : '@IsString()';
     default:
-      return ``;
+      return '@IsString()';
   }
-}
+};
 
-function lowercaseFirstLetter(str, queryType) {
-  if (str === 'Date') {
-    return queryType === GenConstants.QUERY_BETWEEN ? 'Array<string>' : 'string';
+const getExampleValue = (javaType, fieldName) => {
+  switch (javaType) {
+    case 'Number':
+    case 'Integer':
+    case 'Long':
+      return '1';
+    case 'Double':
+    case 'BigDecimal':
+      return '0.00';
+    case 'Boolean':
+      return 'true';
+    case 'Date':
+      return "'2025-01-01 00:00:00'";
+    case 'String':
+    default:
+      if (fieldName.toLowerCase().includes('name')) return "'示例名称'";
+      if (fieldName.toLowerCase().includes('status')) return "'0'";
+      if (fieldName.toLowerCase().includes('remark')) return "'备注信息'";
+      return "'示例值'";
   }
-  return str.charAt(0).toLowerCase() + str.slice(1);
-}
-
-function getOmitTypeStr(str, excludesStr) {
-  if (excludesStr) {
-    return `OmitType(${str}, [${excludesStr}])`;
-  } else {
-    return str;
-  }
-}
+};

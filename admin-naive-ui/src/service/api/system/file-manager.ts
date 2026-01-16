@@ -12,8 +12,8 @@ export function fetchUploadFile(file: File, folderId?: number) {
     method: 'post',
     data: formData,
     headers: {
-      'Content-Type': 'multipart/form-data',
-    },
+      'Content-Type': 'multipart/form-data'
+    }
   });
 }
 
@@ -22,6 +22,6 @@ export function fetchBatchDeleteFiles(uploadIds: string[]) {
   return request<boolean>({
     url: '/system/file-manager/file',
     method: 'delete',
-    data: { uploadIds },
+    data: { uploadIds }
   });
 }

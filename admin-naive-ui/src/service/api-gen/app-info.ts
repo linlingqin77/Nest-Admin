@@ -5,7 +5,6 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
 
 /**
@@ -15,6 +14,6 @@ export function fetchInfoGetInfo() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/info',
-    operationId: 'InfoController_getInfo_v1',
+    operationId: 'InfoController_getInfo_v1'
   });
 }

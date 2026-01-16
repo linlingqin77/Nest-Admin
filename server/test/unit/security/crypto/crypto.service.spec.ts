@@ -30,10 +30,7 @@ describe('CryptoService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        CryptoService,
-        { provide: AppConfigService, useValue: configMock },
-      ],
+      providers: [CryptoService, { provide: AppConfigService, useValue: configMock }],
     }).compile();
 
     service = module.get<CryptoService>(CryptoService);
@@ -56,10 +53,7 @@ describe('CryptoService', () => {
     it('should be disabled when config.crypto.enabled is false', async () => {
       configMock.crypto.enabled = false;
       const module = await Test.createTestingModule({
-        providers: [
-          CryptoService,
-          { provide: AppConfigService, useValue: configMock },
-        ],
+        providers: [CryptoService, { provide: AppConfigService, useValue: configMock }],
       }).compile();
 
       const disabledService = module.get<CryptoService>(CryptoService);
@@ -73,10 +67,7 @@ describe('CryptoService', () => {
       configMock.crypto.rsaPrivateKey = '';
 
       const module = await Test.createTestingModule({
-        providers: [
-          CryptoService,
-          { provide: AppConfigService, useValue: configMock },
-        ],
+        providers: [CryptoService, { provide: AppConfigService, useValue: configMock }],
       }).compile();
 
       const newService = module.get<CryptoService>(CryptoService);
@@ -266,10 +257,7 @@ describe('CryptoService', () => {
       configMock.crypto.rsaPrivateKey = privateKey;
 
       const module = await Test.createTestingModule({
-        providers: [
-          CryptoService,
-          { provide: AppConfigService, useValue: configMock },
-        ],
+        providers: [CryptoService, { provide: AppConfigService, useValue: configMock }],
       }).compile();
 
       const newService = module.get<CryptoService>(CryptoService);

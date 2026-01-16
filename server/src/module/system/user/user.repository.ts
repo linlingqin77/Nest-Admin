@@ -118,19 +118,20 @@ export class UserRepository extends SoftDeleteRepository<SysUser, Prisma.SysUser
     const total = await this.prisma.sysUser.count({ where });
 
     // Get dept info for users that have deptId
-    const deptIds = users.filter(u => u.deptId).map(u => u.deptId as number);
-    const depts = deptIds.length > 0 
-      ? await this.prisma.sysDept.findMany({
-          where: { deptId: { in: deptIds } },
-          select: { deptId: true, deptName: true },
-        })
-      : [];
+    const deptIds = users.filter((u) => u.deptId).map((u) => u.deptId as number);
+    const depts =
+      deptIds.length > 0
+        ? await this.prisma.sysDept.findMany({
+            where: { deptId: { in: deptIds } },
+            select: { deptId: true, deptName: true },
+          })
+        : [];
 
-    const deptMap = new Map(depts.map(d => [d.deptId, d]));
+    const deptMap = new Map(depts.map((d) => [d.deptId, d]));
 
-    const list: UserWithDept[] = users.map(user => ({
+    const list: UserWithDept[] = users.map((user) => ({
       ...user,
-      dept: user.deptId ? deptMap.get(user.deptId) ?? null : null,
+      dept: user.deptId ? (deptMap.get(user.deptId) ?? null) : null,
     }));
 
     return { list, total };

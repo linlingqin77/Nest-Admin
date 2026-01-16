@@ -211,6 +211,9 @@ const routeMap: RouteMap = {
   "tool": "/tool",
   "tool_build": "/tool/build",
   "tool_gen": "/tool/gen",
+  "tool_gen_datasource": "/tool/gen/datasource",
+  "tool_gen_history": "/tool/gen/history",
+  "tool_gen_template": "/tool/gen/template",
   "tool_swagger": "/tool/swagger",
   "user-center": "/user-center"
 };

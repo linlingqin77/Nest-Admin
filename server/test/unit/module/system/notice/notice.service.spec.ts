@@ -52,7 +52,6 @@ describe('NoticeService', () => {
       expect(noticeRepo.create).toHaveBeenCalledWith(createDto);
     });
 
-
     it('should create a notice with minimal data', async () => {
       const createDto = {
         noticeTitle: '最小公告',
@@ -203,7 +202,6 @@ describe('NoticeService', () => {
       expect(result.data.rows).toHaveLength(0);
     });
   });
-
 
   describe('findOne', () => {
     it('should return a notice by id', async () => {

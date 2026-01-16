@@ -54,7 +54,7 @@ const callbackByCode = async (data: Api.Auth.SocialLoginForm) => {
       source: data.source || '',
       socialCode: data.socialCode || '',
       clientId: import.meta.env.VITE_APP_CLIENT_ID,
-      grantType: 'social',
+      grantType: 'social'
     });
     await processResponse();
   } catch (error) {
@@ -71,7 +71,7 @@ const loginByCode = async (data: Api.Auth.SocialLoginForm) => {
       source: data.source || '',
       socialCode: data.socialCode || '',
       clientId: import.meta.env.VITE_APP_CLIENT_ID,
-      grantType: 'social',
+      grantType: 'social'
     });
     await processResponse();
   } catch (error) {
@@ -94,7 +94,7 @@ const init = async () => {
     socialState: state,
     tenantId,
     source,
-    grantType: 'social',
+    grantType: 'social'
   };
 
   if (!authStore.isLogin) {

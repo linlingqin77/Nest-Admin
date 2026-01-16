@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { NDivider } from 'naive-ui';
 import type { ClientResponseDto } from '@/service/api-gen';
-import { fetchClientFindAll, fetchClientRemove, fetchClientChangeStatus } from '@/service/api-gen';
+import { fetchClientChangeStatus, fetchClientFindAll, fetchClientRemove } from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useDownload } from '@/hooks/business/download';
@@ -15,7 +15,7 @@ import ClientOperateDrawer from './modules/client-operate-drawer.vue';
 import ClientSearch from './modules/client-search.vue';
 
 defineOptions({
-  name: 'ClientList',
+  name: 'ClientList'
 });
 
 useDict('sys_grant_type');
@@ -37,7 +37,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchClientFindAll,
   apiParams: {
@@ -47,74 +47,74 @@ const {
     // the value can not be undefined, otherwise the property in Form will not be reactive
     clientKey: null,
     clientSecret: null,
-    status: null,
+    status: null
   },
   columns: () => [
     {
       type: 'selection',
       align: 'center',
-      disabled: (row) => row.id === 1,
-      width: 48,
+      disabled: row => row.id === 1,
+      width: 48
     },
     {
       key: 'index',
       title: $t('common.index'),
       align: 'center',
-      width: 64,
+      width: 64
     },
     {
       key: 'clientId',
       title: $t('page.system.client.clientId'),
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'clientKey',
       title: $t('page.system.client.clientKey'),
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'clientSecret',
       title: $t('page.system.client.clientSecret'),
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'grantTypeList',
       title: $t('page.system.client.grantTypeList'),
       align: 'center',
       minWidth: 120,
-      render: (row) => {
+      render: row => {
         return <DictTag value={row.grantTypeList} dict-code="sys_grant_type" />;
-      },
+      }
     },
     {
       key: 'deviceType',
       title: $t('page.system.client.deviceType'),
       align: 'center',
       minWidth: 120,
-      render: (row) => {
+      render: row => {
         return <DictTag value={row.deviceType} dict-code="sys_device_type" />;
-      },
+      }
     },
     {
       key: 'activeTimeout',
       title: $t('page.system.client.activeTimeout'),
       align: 'center',
       minWidth: 120,
-      render: (row) => {
+      render: row => {
         return `${row.activeTimeout}${$t('common.second')}`;
-      },
+      }
     },
     {
       key: 'timeout',
       title: $t('page.system.client.timeout'),
       align: 'center',
       minWidth: 120,
-      render: (row) => {
+      render: row => {
         return `${row.timeout}${$t('common.second')}`;
-      },
+      }
     },
     {
       key: 'status',
@@ -130,14 +130,14 @@ const {
             onSubmitted={(value, callback) => handleStatusChange(row, value, callback)}
           />
         );
-      },
+      }
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 130,
-      render: (row) => {
+      render: row => {
         const divider = () => {
           if (!hasAuth('system:client:edit') || !hasAuth('system:client:remove')) {
             return null;
@@ -184,9 +184,9 @@ const {
             {deleteBtn()}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedRowKeys, onBatchDeleted, onDeleted } =
@@ -224,12 +224,12 @@ async function handleExport() {
 async function handleStatusChange(
   row: ClientResponseDto,
   value: Api.Common.EnableStatus,
-  callback: (flag: boolean) => void,
+  callback: (flag: boolean) => void
 ) {
   try {
     await fetchClientChangeStatus({
       id: row.id!,
-      status: value,
+      status: value
     });
     callback(true);
     window.$message?.success($t('page.system.user.statusChangeSuccess'));
@@ -267,7 +267,7 @@ async function handleStatusChange(
         :scroll-x="1200"
         :loading="loading"
         remote
-        :row-key="(row) => row.id"
+        :row-key="row => row.id"
         :pagination="mobilePagination"
         class="sm:h-full"
       />

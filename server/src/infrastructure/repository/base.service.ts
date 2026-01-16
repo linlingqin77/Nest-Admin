@@ -50,11 +50,7 @@ export interface ListQueryConfig {
  * }
  * ```
  */
-export abstract class BaseService<
-  T,
-  R extends SoftDeleteRepository<T, PrismaDelegate>,
-  D = T,
-> {
+export abstract class BaseService<T, R extends SoftDeleteRepository<T, PrismaDelegate>, D = T> {
   protected readonly logger: Logger;
 
   constructor(
@@ -118,9 +114,7 @@ export abstract class BaseService<
 
     // 如果提供了 ResponseDto 类，使用 toDto 进行转换（自动触发 @DateFormat 装饰器）
     // 否则直接返回原始数据
-    const result = this.responseDtoClass
-      ? toDto(this.responseDtoClass, data as object)
-      : (data as unknown as D);
+    const result = this.responseDtoClass ? toDto(this.responseDtoClass, data as object) : (data as unknown as D);
 
     return Result.ok(result);
   }
@@ -150,7 +144,7 @@ export abstract class BaseService<
    * @param ids 记录 ID 数组
    */
   async removeBatch(ids: (number | string)[]): Promise<Result<{ count: number }>> {
-    const numIds = ids.map(id => typeof id === 'string' ? parseInt(id, 10) : id);
+    const numIds = ids.map((id) => (typeof id === 'string' ? parseInt(id, 10) : id));
     const count = await this.repository.softDeleteBatch(numIds);
     return Result.ok({ count });
   }

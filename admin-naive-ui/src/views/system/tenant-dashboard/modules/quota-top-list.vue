@@ -1,10 +1,10 @@
 <script setup lang="tsx">
 import { computed } from 'vue';
-import { NTag, NProgress } from 'naive-ui';
+import { NProgress, NTag } from 'naive-ui';
 import type { DataTableColumns } from 'naive-ui';
 
 defineOptions({
-  name: 'QuotaTopList',
+  name: 'QuotaTopList'
 });
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   data: () => [],
-  loading: false,
+  loading: false
 });
 
 function getProgressStatus(rate: number): 'success' | 'warning' | 'error' | 'default' {
@@ -29,8 +29,8 @@ const columns = computed<DataTableColumns<Api.System.QuotaTopTenant>>(() => [
     title: '企业名称',
     minWidth: 120,
     ellipsis: {
-      tooltip: true,
-    },
+      tooltip: true
+    }
   },
   {
     key: 'overallUsage',
@@ -46,7 +46,7 @@ const columns = computed<DataTableColumns<Api.System.QuotaTopTenant>>(() => [
           indicator-placement="inside"
         />
       );
-    },
+    }
   },
   {
     key: 'userQuotaUsage',
@@ -56,8 +56,12 @@ const columns = computed<DataTableColumns<Api.System.QuotaTopTenant>>(() => [
     render(row) {
       const percentage = Math.round(row.userQuotaUsage);
       const type = percentage >= 100 ? 'error' : percentage >= 80 ? 'warning' : 'success';
-      return <NTag type={type} size="small">{percentage}%</NTag>;
-    },
+      return (
+        <NTag type={type} size="small">
+          {percentage}%
+        </NTag>
+      );
+    }
   },
   {
     key: 'storageQuotaUsage',
@@ -67,8 +71,12 @@ const columns = computed<DataTableColumns<Api.System.QuotaTopTenant>>(() => [
     render(row) {
       const percentage = Math.round(row.storageQuotaUsage);
       const type = percentage >= 100 ? 'error' : percentage >= 80 ? 'warning' : 'success';
-      return <NTag type={type} size="small">{percentage}%</NTag>;
-    },
+      return (
+        <NTag type={type} size="small">
+          {percentage}%
+        </NTag>
+      );
+    }
   },
   {
     key: 'apiQuotaUsage',
@@ -78,9 +86,13 @@ const columns = computed<DataTableColumns<Api.System.QuotaTopTenant>>(() => [
     render(row) {
       const percentage = Math.round(row.apiQuotaUsage);
       const type = percentage >= 100 ? 'error' : percentage >= 80 ? 'warning' : 'success';
-      return <NTag type={type} size="small">{percentage}%</NTag>;
-    },
-  },
+      return (
+        <NTag type={type} size="small">
+          {percentage}%
+        </NTag>
+      );
+    }
+  }
 ]);
 </script>
 

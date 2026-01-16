@@ -14,7 +14,7 @@ import { ResponseCode, ResponseMessage, getResponseMessage } from '../../../../s
 describe('ResponseCode Property-Based Tests', () => {
   // Get all ResponseCode enum values (numeric values only)
   const allResponseCodes = Object.values(ResponseCode).filter(
-    (value): value is ResponseCode => typeof value === 'number'
+    (value): value is ResponseCode => typeof value === 'number',
   );
 
   /**
@@ -28,58 +28,47 @@ describe('ResponseCode Property-Based Tests', () => {
   describe('Property 11: ResponseCode Message Mapping', () => {
     it('For any ResponseCode enum value, there SHALL exist a corresponding message in ResponseMessage', () => {
       fc.assert(
-        fc.property(
-          fc.constantFrom(...allResponseCodes),
-          (code: ResponseCode) => {
-            // Property: Every ResponseCode should have a corresponding message
-            const message = ResponseMessage[code];
-            
-            // Message should exist and be a non-empty string
-            return (
-              message !== undefined &&
-              typeof message === 'string' &&
-              message.length > 0
-            );
-          }
-        ),
-        { numRuns: 100 }
+        fc.property(fc.constantFrom(...allResponseCodes), (code: ResponseCode) => {
+          // Property: Every ResponseCode should have a corresponding message
+          const message = ResponseMessage[code];
+
+          // Message should exist and be a non-empty string
+          return message !== undefined && typeof message === 'string' && message.length > 0;
+        }),
+        { numRuns: 100 },
       );
     });
 
     it('For any ResponseCode, getResponseMessage should return a non-empty string', () => {
       fc.assert(
-        fc.property(
-          fc.constantFrom(...allResponseCodes),
-          (code: ResponseCode) => {
-            const message = getResponseMessage(code);
-            
-            // getResponseMessage should always return a non-empty string
-            return (
-              typeof message === 'string' &&
-              message.length > 0
-            );
-          }
-        ),
-        { numRuns: 100 }
+        fc.property(fc.constantFrom(...allResponseCodes), (code: ResponseCode) => {
+          const message = getResponseMessage(code);
+
+          // getResponseMessage should always return a non-empty string
+          return typeof message === 'string' && message.length > 0;
+        }),
+        { numRuns: 100 },
       );
     });
 
     it('ResponseMessage map should have exactly the same keys as ResponseCode enum', () => {
       // Get all keys from ResponseMessage
-      const messageKeys = Object.keys(ResponseMessage).map(Number).filter(n => !isNaN(n));
-      
+      const messageKeys = Object.keys(ResponseMessage)
+        .map(Number)
+        .filter((n) => !isNaN(n));
+
       // Property: The sets should be equal
       const codeSet = new Set(allResponseCodes);
       const messageKeySet = new Set(messageKeys);
-      
+
       // Check that both sets have the same size
       expect(codeSet.size).toBe(messageKeySet.size);
-      
+
       // Check that every code has a message
       for (const code of allResponseCodes) {
         expect(messageKeySet.has(code)).toBe(true);
       }
-      
+
       // Check that every message key is a valid code
       for (const key of messageKeys) {
         expect(codeSet.has(key as ResponseCode)).toBe(true);
@@ -88,17 +77,14 @@ describe('ResponseCode Property-Based Tests', () => {
 
     it('For any ResponseCode, the message should be consistent between ResponseMessage and getResponseMessage', () => {
       fc.assert(
-        fc.property(
-          fc.constantFrom(...allResponseCodes),
-          (code: ResponseCode) => {
-            const directMessage = ResponseMessage[code];
-            const functionMessage = getResponseMessage(code);
-            
-            // Both should return the same message
-            return directMessage === functionMessage;
-          }
-        ),
-        { numRuns: 100 }
+        fc.property(fc.constantFrom(...allResponseCodes), (code: ResponseCode) => {
+          const directMessage = ResponseMessage[code];
+          const functionMessage = getResponseMessage(code);
+
+          // Both should return the same message
+          return directMessage === functionMessage;
+        }),
+        { numRuns: 100 },
       );
     });
   });

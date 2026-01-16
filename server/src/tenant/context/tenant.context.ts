@@ -57,11 +57,7 @@ export class TenantContext {
    * @param options 可选配置
    * @returns 回调函数的返回值
    */
-  static runWithTenant<T>(
-    tenantId: string,
-    fn: () => T,
-    options?: { ignoreTenant?: boolean },
-  ): T {
+  static runWithTenant<T>(tenantId: string, fn: () => T, options?: { ignoreTenant?: boolean }): T {
     const currentStore = this.storage.getStore();
     const newContext: TenantContextData = {
       tenantId,

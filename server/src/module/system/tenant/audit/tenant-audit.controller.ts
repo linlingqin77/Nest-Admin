@@ -2,10 +2,7 @@ import { Controller, Get, Post, Query, Param, Body, Res } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Response } from 'express';
 import { TenantAuditService } from './tenant-audit.service';
-import {
-  ListTenantAuditLogDto,
-  ExportTenantAuditLogDto,
-} from './dto/tenant-audit.dto';
+import { ListTenantAuditLogDto, ExportTenantAuditLogDto } from './dto/tenant-audit.dto';
 import { RequirePermission } from 'src/core/decorators/require-premission.decorator';
 import { Api } from 'src/core/decorators/api.decorator';
 import {
@@ -74,17 +71,7 @@ export class TenantAuditController {
     res.setHeader('Content-Disposition', `attachment; filename=audit_log_${Date.now()}.xlsx`);
 
     // 简单的CSV格式导出（实际项目中可使用exceljs等库生成Excel）
-    const headers = [
-      'ID',
-      '租户ID',
-      '企业名称',
-      '操作人',
-      '操作类型',
-      '操作描述',
-      '模块',
-      'IP地址',
-      '操作时间',
-    ];
+    const headers = ['ID', '租户ID', '企业名称', '操作人', '操作类型', '操作描述', '模块', 'IP地址', '操作时间'];
 
     const csvContent = [
       headers.join(','),

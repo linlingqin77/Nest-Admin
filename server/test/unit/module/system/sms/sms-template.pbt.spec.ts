@@ -36,15 +36,11 @@ describe('SmsTemplateService Template Parsing Property-Based Tests', () => {
       fc.asyncProperty(
         // Generate random variable names (alphanumeric, starting with letter)
         fc.array(
-          fc.string({ minLength: 1, maxLength: 20 })
-            .filter(s => /^[a-zA-Z][a-zA-Z0-9]*$/.test(s)),
-          { minLength: 1, maxLength: 5 }
+          fc.string({ minLength: 1, maxLength: 20 }).filter((s) => /^[a-zA-Z][a-zA-Z0-9]*$/.test(s)),
+          { minLength: 1, maxLength: 5 },
         ),
         // Generate random variable values
-        fc.array(
-          fc.string({ minLength: 1, maxLength: 50 }),
-          { minLength: 1, maxLength: 5 }
-        ),
+        fc.array(fc.string({ minLength: 1, maxLength: 50 }), { minLength: 1, maxLength: 5 }),
         // Generate random prefix and suffix text
         fc.string({ minLength: 0, maxLength: 100 }),
         fc.string({ minLength: 0, maxLength: 100 }),
@@ -58,7 +54,7 @@ describe('SmsTemplateService Template Parsing Property-Based Tests', () => {
           }
 
           // Build template content with placeholders
-          const placeholders = names.map(name => `\${${name}}`).join(' ');
+          const placeholders = names.map((name) => `\${${name}}`).join(' ');
           const template = `${prefix}${placeholders}${suffix}`;
 
           // Build params object
@@ -72,9 +68,9 @@ describe('SmsTemplateService Template Parsing Property-Based Tests', () => {
 
           // Property 1: Result should not contain any unreplaced placeholders
           const hasUnreplacedPlaceholders = /\$\{[a-zA-Z][a-zA-Z0-9]*\}/.test(result);
-          
+
           // Property 2: All values should appear in the result
-          const allValuesPresent = values.every(value => result.includes(value));
+          const allValuesPresent = values.every((value) => result.includes(value));
 
           // Property 3: Prefix and suffix should be preserved
           const prefixPreserved = prefix === '' || result.startsWith(prefix);
@@ -101,25 +97,20 @@ describe('SmsTemplateService Template Parsing Property-Based Tests', () => {
       fc.asyncProperty(
         // Generate variable names for provided params
         fc.array(
-          fc.string({ minLength: 1, maxLength: 10 })
-            .filter(s => /^[a-zA-Z][a-zA-Z0-9]*$/.test(s)),
-          { minLength: 1, maxLength: 3 }
+          fc.string({ minLength: 1, maxLength: 10 }).filter((s) => /^[a-zA-Z][a-zA-Z0-9]*$/.test(s)),
+          { minLength: 1, maxLength: 3 },
         ),
         // Generate variable names for unprovided params
         fc.array(
-          fc.string({ minLength: 1, maxLength: 10 })
-            .filter(s => /^[a-zA-Z][a-zA-Z0-9]*$/.test(s)),
-          { minLength: 1, maxLength: 3 }
+          fc.string({ minLength: 1, maxLength: 10 }).filter((s) => /^[a-zA-Z][a-zA-Z0-9]*$/.test(s)),
+          { minLength: 1, maxLength: 3 },
         ),
         // Generate values for provided params
-        fc.array(
-          fc.string({ minLength: 1, maxLength: 30 }),
-          { minLength: 1, maxLength: 3 }
-        ),
+        fc.array(fc.string({ minLength: 1, maxLength: 30 }), { minLength: 1, maxLength: 3 }),
         async (providedNames, unprovidedNames, providedValues) => {
           // Ensure unique names and no overlap
           const provided = [...new Set(providedNames)].slice(0, Math.min(providedNames.length, providedValues.length));
-          const unprovided = [...new Set(unprovidedNames)].filter(n => !provided.includes(n));
+          const unprovided = [...new Set(unprovidedNames)].filter((n) => !provided.includes(n));
 
           if (provided.length === 0 || unprovided.length === 0) {
             return true; // Skip if no valid test case
@@ -128,7 +119,7 @@ describe('SmsTemplateService Template Parsing Property-Based Tests', () => {
           const values = providedValues.slice(0, provided.length);
 
           // Build template with both provided and unprovided variables
-          const allPlaceholders = [...provided, ...unprovided].map(name => `\${${name}}`).join(' ');
+          const allPlaceholders = [...provided, ...unprovided].map((name) => `\${${name}}`).join(' ');
           const template = `Template: ${allPlaceholders}`;
 
           // Build params with only provided variables
@@ -141,10 +132,10 @@ describe('SmsTemplateService Template Parsing Property-Based Tests', () => {
           const result = service.parseTemplateContent(template, params);
 
           // Property 1: Provided variables should be replaced
-          const providedReplaced = values.every(value => result.includes(value));
+          const providedReplaced = values.every((value) => result.includes(value));
 
           // Property 2: Unprovided variables should remain as placeholders
-          const unprovidedRemain = unprovided.every(name => result.includes(`\${${name}}`));
+          const unprovidedRemain = unprovided.every((name) => result.includes(`\${${name}}`));
 
           return providedReplaced && unprovidedRemain;
         },
@@ -169,7 +160,7 @@ describe('SmsTemplateService Template Parsing Property-Based Tests', () => {
         async (template) => {
           // Test with empty object
           const result1 = service.parseTemplateContent(template, {});
-          
+
           // Test with null/undefined (cast to satisfy type)
           const result2 = service.parseTemplateContent(template, null as any);
           const result3 = service.parseTemplateContent(template, undefined as any);
@@ -195,18 +186,14 @@ describe('SmsTemplateService Template Parsing Property-Based Tests', () => {
       fc.asyncProperty(
         // Generate random variable names
         fc.array(
-          fc.string({ minLength: 1, maxLength: 15 })
-            .filter(s => /^[a-zA-Z][a-zA-Z0-9]*$/.test(s)),
-          { minLength: 1, maxLength: 10 }
+          fc.string({ minLength: 1, maxLength: 15 }).filter((s) => /^[a-zA-Z][a-zA-Z0-9]*$/.test(s)),
+          { minLength: 1, maxLength: 10 },
         ),
         // Generate random text between placeholders
-        fc.array(
-          fc.string({ minLength: 0, maxLength: 20 }),
-          { minLength: 0, maxLength: 10 }
-        ),
+        fc.array(fc.string({ minLength: 0, maxLength: 20 }), { minLength: 0, maxLength: 10 }),
         async (varNames, textParts) => {
           const uniqueNames = [...new Set(varNames)];
-          
+
           if (uniqueNames.length === 0) {
             return true; // Skip if no valid variable names
           }
@@ -222,7 +209,7 @@ describe('SmsTemplateService Template Parsing Property-Based Tests', () => {
           const extractedParams = service.extractTemplateParams(template);
 
           // Property 1: Should find all unique variable names
-          const allFound = uniqueNames.every(name => extractedParams.includes(name));
+          const allFound = uniqueNames.every((name) => extractedParams.includes(name));
 
           // Property 2: Should not have duplicates
           const noDuplicates = extractedParams.length === new Set(extractedParams).size;
@@ -250,15 +237,14 @@ describe('SmsTemplateService Template Parsing Property-Based Tests', () => {
       fc.asyncProperty(
         // Generate all variable names in template
         fc.array(
-          fc.string({ minLength: 1, maxLength: 10 })
-            .filter(s => /^[a-zA-Z][a-zA-Z0-9]*$/.test(s)),
-          { minLength: 2, maxLength: 6 }
+          fc.string({ minLength: 1, maxLength: 10 }).filter((s) => /^[a-zA-Z][a-zA-Z0-9]*$/.test(s)),
+          { minLength: 2, maxLength: 6 },
         ),
         // Generate which variables to provide (as indices)
         fc.array(fc.boolean(), { minLength: 2, maxLength: 6 }),
         async (allNames, provideFlags) => {
           const uniqueNames = [...new Set(allNames)];
-          
+
           if (uniqueNames.length < 2) {
             return true; // Need at least 2 variables for meaningful test
           }
@@ -280,11 +266,11 @@ describe('SmsTemplateService Template Parsing Property-Based Tests', () => {
           }
 
           // Build template
-          const template = uniqueNames.map(name => `\${${name}}`).join(' ');
+          const template = uniqueNames.map((name) => `\${${name}}`).join(' ');
 
           // Build params
           const params: Record<string, string> = {};
-          provided.forEach(name => {
+          provided.forEach((name) => {
             params[name] = 'value';
           });
 
@@ -292,10 +278,10 @@ describe('SmsTemplateService Template Parsing Property-Based Tests', () => {
           const missingParams = service.validateTemplateParams(template, params);
 
           // Property 1: Should identify all missing variables
-          const allMissingFound = missing.every(name => missingParams.includes(name));
+          const allMissingFound = missing.every((name) => missingParams.includes(name));
 
           // Property 2: Should not include provided variables
-          const noProvidedIncluded = provided.every(name => !missingParams.includes(name));
+          const noProvidedIncluded = provided.every((name) => !missingParams.includes(name));
 
           // Property 3: Count should match missing count
           const countMatches = missingParams.length === missing.length;
@@ -320,26 +306,22 @@ describe('SmsTemplateService Template Parsing Property-Based Tests', () => {
       fc.asyncProperty(
         // Generate random variable names
         fc.array(
-          fc.string({ minLength: 1, maxLength: 10 })
-            .filter(s => /^[a-zA-Z][a-zA-Z0-9]*$/.test(s)),
-          { minLength: 1, maxLength: 5 }
+          fc.string({ minLength: 1, maxLength: 10 }).filter((s) => /^[a-zA-Z][a-zA-Z0-9]*$/.test(s)),
+          { minLength: 1, maxLength: 5 },
         ),
         // Generate random values
-        fc.array(
-          fc.string({ minLength: 1, maxLength: 30 }),
-          { minLength: 1, maxLength: 5 }
-        ),
+        fc.array(fc.string({ minLength: 1, maxLength: 30 }), { minLength: 1, maxLength: 5 }),
         // Generate random surrounding text
         fc.string({ minLength: 0, maxLength: 50 }),
         async (varNames, values, surroundingText) => {
           const uniqueNames = [...new Set(varNames)];
-          
+
           if (uniqueNames.length === 0) {
             return true;
           }
 
           // Build template
-          const template = surroundingText + uniqueNames.map(name => `\${${name}}`).join(' ') + surroundingText;
+          const template = surroundingText + uniqueNames.map((name) => `\${${name}}`).join(' ') + surroundingText;
 
           // Extract params
           const extractedParams = service.extractTemplateParams(template);

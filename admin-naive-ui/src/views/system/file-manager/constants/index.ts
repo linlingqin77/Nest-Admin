@@ -11,27 +11,27 @@ export const FILE_TYPE_CATEGORIES = {
   image: {
     label: '图片',
     icon: 'i-carbon-image',
-    exts: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'ico'],
+    exts: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'ico']
   },
   video: {
     label: '视频',
     icon: 'i-carbon-video',
-    exts: ['mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv', 'webm', 'm4v', '3gp', 'qt'],
+    exts: ['mp4', 'avi', 'mov', 'wmv', 'flv', 'mkv', 'webm', 'm4v', '3gp', 'qt']
   },
   document: {
     label: '文档',
     icon: 'i-carbon-document',
-    exts: ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pdf', 'txt', 'md', 'csv'],
+    exts: ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pdf', 'txt', 'md', 'csv']
   },
   audio: {
     label: '音频',
     icon: 'i-carbon-music',
-    exts: ['mp3', 'wav', 'flac', 'aac', 'ogg', 'wma', 'm4a'],
+    exts: ['mp3', 'wav', 'flac', 'aac', 'ogg', 'wma', 'm4a']
   },
   archive: {
     label: '压缩包',
     icon: 'i-carbon-zip-folder',
-    exts: ['zip', 'rar', '7z', 'tar', 'gz', 'bz2'],
+    exts: ['zip', 'rar', '7z', 'tar', 'gz', 'bz2']
   },
   code: {
     label: '代码',
@@ -56,10 +56,10 @@ export const FILE_TYPE_CATEGORIES = {
       'rs',
       'php',
       'rb',
-      'swift',
-    ],
+      'swift'
+    ]
   },
-  other: { label: '其他', icon: 'i-carbon-document-blank', exts: [] },
+  other: { label: '其他', icon: 'i-carbon-document-blank', exts: [] }
 } as const;
 
 export type FileTypeCategory = keyof typeof FILE_TYPE_CATEGORIES;
@@ -95,7 +95,7 @@ export function formatFileSize(bytes?: number): string {
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`;
+  return `${(bytes / k ** i).toFixed(2)} ${sizes[i]}`;
 }
 
 /** 格式化日期 */
@@ -133,7 +133,7 @@ export function formatDate(date?: string | Date): string {
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
-      minute: '2-digit',
+      minute: '2-digit'
     })
     .replace(/\//g, '-');
 }

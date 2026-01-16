@@ -54,10 +54,7 @@ const DEFAULT_PRESERVE = {
  * });
  * ```
  */
-export const cleanupTestData = async (
-  prisma: PrismaClient,
-  options: CleanupOptions = {},
-): Promise<void> => {
+export const cleanupTestData = async (prisma: PrismaClient, options: CleanupOptions = {}): Promise<void> => {
   const {
     preserveUserIds = DEFAULT_PRESERVE.userIds,
     preserveRoleIds = DEFAULT_PRESERVE.roleIds,
@@ -117,10 +114,7 @@ export const cleanupTestData = async (
         AND: [
           { roleId: { notIn: preserveRoleIds } },
           {
-            OR: [
-              { roleKey: { startsWith: testDataPrefix } },
-              { roleId: { gt: 100 } },
-            ],
+            OR: [{ roleKey: { startsWith: testDataPrefix } }, { roleId: { gt: 100 } }],
           },
         ],
       },
@@ -132,10 +126,7 @@ export const cleanupTestData = async (
         AND: [
           { tenantId: { notIn: preserveTenantIds } },
           {
-            OR: [
-              { companyName: { startsWith: testDataPrefix } },
-              { id: { gt: 100 } },
-            ],
+            OR: [{ companyName: { startsWith: testDataPrefix } }, { id: { gt: 100 } }],
           },
         ],
       },
@@ -164,10 +155,7 @@ export const cleanupTestData = async (
  * @param prisma Prisma 客户端实例
  * @param userIds 要清理的用户 ID 列表
  */
-export const cleanupUserData = async (
-  prisma: PrismaClient,
-  userIds: number[],
-): Promise<void> => {
+export const cleanupUserData = async (prisma: PrismaClient, userIds: number[]): Promise<void> => {
   await prisma.$transaction([
     prisma.sysUserRole.deleteMany({ where: { userId: { in: userIds } } }),
     prisma.sysUserPost.deleteMany({ where: { userId: { in: userIds } } }),
@@ -181,10 +169,7 @@ export const cleanupUserData = async (
  * @param prisma Prisma 客户端实例
  * @param roleIds 要清理的角色 ID 列表
  */
-export const cleanupRoleData = async (
-  prisma: PrismaClient,
-  roleIds: number[],
-): Promise<void> => {
+export const cleanupRoleData = async (prisma: PrismaClient, roleIds: number[]): Promise<void> => {
   await prisma.$transaction([
     prisma.sysUserRole.deleteMany({ where: { roleId: { in: roleIds } } }),
     prisma.sysRoleMenu.deleteMany({ where: { roleId: { in: roleIds } } }),
@@ -199,10 +184,7 @@ export const cleanupRoleData = async (
  * @param prisma Prisma 客户端实例
  * @param tenantIds 要清理的租户 ID 列表
  */
-export const cleanupTenantData = async (
-  prisma: PrismaClient,
-  tenantIds: string[],
-): Promise<void> => {
+export const cleanupTenantData = async (prisma: PrismaClient, tenantIds: string[]): Promise<void> => {
   await prisma.$transaction([
     // 先清理租户下的用户
     prisma.sysUser.deleteMany({ where: { tenantId: { in: tenantIds } } }),
@@ -239,10 +221,7 @@ export const resetDatabase = async (prisma: PrismaClient): Promise<void> => {
  * afterEach(cleanup);
  * ```
  */
-export const createCleanupFunction = (
-  prisma: PrismaClient,
-  options: CleanupOptions = {},
-): (() => Promise<void>) => {
+export const createCleanupFunction = (prisma: PrismaClient, options: CleanupOptions = {}): (() => Promise<void>) => {
   return () => cleanupTestData(prisma, options);
 };
 

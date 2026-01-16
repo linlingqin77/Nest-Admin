@@ -2,7 +2,7 @@
 import type { JobResponseDto } from '@/service/api-gen/types';
 
 defineOptions({
-  name: 'JobDetailDrawer',
+  name: 'JobDetailDrawer'
 });
 
 /** 扩展 JobResponseDto 以包含 nextValidTime */
@@ -18,7 +18,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 function closeDrawer() {
@@ -30,7 +30,7 @@ function getMisfirePolicyText(value?: string) {
     '0': '默认策略',
     '1': '立即执行',
     '2': '执行一次',
-    '3': '放弃执行',
+    '3': '放弃执行'
   };
   return map[value || ''] || '-';
 }

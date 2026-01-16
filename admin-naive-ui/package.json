@@ -16,9 +16,7 @@
     "naive-ui-admin",
     "UnoCSS"
   ],
-  "contributors": [
-    "linlingqin77"
-  ],
+  "contributors": ["linlingqin77"],
   "engines": {
     "node": ">=20.19.0",
     "pnpm": ">=10.5.0"
@@ -30,9 +28,11 @@
     "cleanup": "sa cleanup",
     "commit": "sa git-commit",
     "commit:zh": "sa git-commit -l=zh-cn",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
     "deploy:dev": "node scripts/deploy.cjs dev",
-    "deploy:test": "node scripts/deploy.cjs test",
     "deploy:prod": "node scripts/deploy.cjs prod",
+    "deploy:test": "node scripts/deploy.cjs test",
     "dev": "vite --mode dev",
     "dev:prod": "vite --mode prod",
     "dev:test": "vite --mode test",
@@ -43,16 +43,14 @@
     "prepare": "simple-git-hooks",
     "preview": "vite preview",
     "release": "sa release",
-    "typecheck": "vue-tsc --noEmit --skipLibCheck",
-    "update-pkg": "sa update-pkg",
     "test": "vitest run",
-    "test:watch": "vitest",
+    "test:all": "vitest run && cypress run",
     "test:cov": "vitest run --coverage",
-    "test:ui": "vitest --ui",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run",
     "test:e2e": "cypress run",
-    "test:all": "vitest run && cypress run"
+    "test:ui": "vitest --ui",
+    "test:watch": "vitest",
+    "typecheck": "vue-tsc --noEmit --skipLibCheck",
+    "update-pkg": "sa update-pkg"
   },
   "dependencies": {
     "@better-scroll/core": "2.5.1",

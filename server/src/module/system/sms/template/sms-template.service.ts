@@ -155,7 +155,7 @@ export class SmsTemplateService {
   /**
    * 解析模板变量
    * 将模板内容中的变量占位符替换为实际值
-   * 
+   *
    * @param content 模板内容，如 "您的验证码是${code}，有效期${time}分钟。"
    * @param params 变量值映射，如 { code: '123456', time: '5' }
    * @returns 解析后的内容，如 "您的验证码是123456，有效期5分钟。"
@@ -178,7 +178,7 @@ export class SmsTemplateService {
 
   /**
    * 提取模板中的变量名
-   * 
+   *
    * @param content 模板内容
    * @returns 变量名数组
    */
@@ -199,7 +199,7 @@ export class SmsTemplateService {
 
   /**
    * 验证模板参数是否完整
-   * 
+   *
    * @param content 模板内容
    * @param params 提供的参数
    * @returns 缺失的参数名数组
@@ -207,7 +207,7 @@ export class SmsTemplateService {
   validateTemplateParams(content: string, params: Record<string, string>): string[] {
     const requiredParams = this.extractTemplateParams(content);
     const providedParams = Object.keys(params || {});
-    
+
     return requiredParams.filter((param) => !providedParams.includes(param));
   }
 }

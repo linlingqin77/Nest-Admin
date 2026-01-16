@@ -133,10 +133,7 @@ describe('UserRoleService', () => {
 
     it('should return allocated users', async () => {
       prismaMock.sysUserRole.findMany.mockResolvedValue([{ userId: 1 }, { userId: 2 }]);
-      prismaMock.$transaction.mockResolvedValue([
-        [{ userId: 1, userName: 'user1', deptId: 100 }],
-        1,
-      ]);
+      prismaMock.$transaction.mockResolvedValue([[{ userId: 1, userName: 'user1', deptId: 100 }], 1]);
       prismaMock.sysDept.findMany.mockResolvedValue([{ deptId: 100, deptName: 'IT' }]);
 
       const result = await service.allocatedList({ roleId: '1', pageNum: 1, pageSize: 10 } as any);
@@ -167,10 +164,7 @@ describe('UserRoleService', () => {
   describe('unallocatedList', () => {
     it('should return unallocated users', async () => {
       prismaMock.sysUserRole.findMany.mockResolvedValue([{ userId: 1 }]);
-      prismaMock.$transaction.mockResolvedValue([
-        [{ userId: 2, userName: 'user2', deptId: 100 }],
-        1,
-      ]);
+      prismaMock.$transaction.mockResolvedValue([[{ userId: 2, userName: 'user2', deptId: 100 }], 1]);
       prismaMock.sysDept.findMany.mockResolvedValue([{ deptId: 100, deptName: 'IT' }]);
 
       const result = await service.unallocatedList({ roleId: '1', pageNum: 1, pageSize: 10 } as any);

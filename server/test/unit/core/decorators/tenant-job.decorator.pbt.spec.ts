@@ -1,9 +1,9 @@
 import * as fc from 'fast-check';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Reflector } from '@nestjs/core';
-import { 
-  TenantJobExecutor, 
-  TenantJobOptions, 
+import {
+  TenantJobExecutor,
+  TenantJobOptions,
   TenantJobContext,
   TenantJobResult,
 } from '@/core/decorators/tenant-job.decorator';
@@ -86,9 +86,7 @@ describe('TenantJobExecutor Property-Based Tests', () => {
         ),
         async (tenants) => {
           // Ensure unique tenant IDs
-          const uniqueTenants = tenants.filter(
-            (t, i, arr) => arr.findIndex(x => x.tenantId === t.tenantId) === i
-          );
+          const uniqueTenants = tenants.filter((t, i, arr) => arr.findIndex((x) => x.tenantId === t.tenantId) === i);
 
           // Reset state
           executedTenants = [];
@@ -104,7 +102,7 @@ describe('TenantJobExecutor Property-Based Tests', () => {
           await executor.execute(handler);
 
           // Property: Each tenant should be executed exactly once
-          const expectedTenantIds = uniqueTenants.map(t => t.tenantId).sort();
+          const expectedTenantIds = uniqueTenants.map((t) => t.tenantId).sort();
           const actualTenantIds = executedTenants.sort();
 
           return (
@@ -137,9 +135,7 @@ describe('TenantJobExecutor Property-Based Tests', () => {
         ),
         async (tenants) => {
           // Ensure unique tenant IDs
-          const uniqueTenants = tenants.filter(
-            (t, i, arr) => arr.findIndex(x => x.tenantId === t.tenantId) === i
-          );
+          const uniqueTenants = tenants.filter((t, i, arr) => arr.findIndex((x) => x.tenantId === t.tenantId) === i);
 
           // Reset state
           executionContexts = [];
@@ -155,8 +151,8 @@ describe('TenantJobExecutor Property-Based Tests', () => {
           await executor.execute(handler);
 
           // Property: Each context should match the corresponding tenant
-          return executionContexts.every(ctx => {
-            const tenant = uniqueTenants.find(t => t.tenantId === ctx.tenantId);
+          return executionContexts.every((ctx) => {
+            const tenant = uniqueTenants.find((t) => t.tenantId === ctx.tenantId);
             return tenant && ctx.tenantName === tenant.companyName;
           });
         },
@@ -188,9 +184,7 @@ describe('TenantJobExecutor Property-Based Tests', () => {
         fc.nat(),
         async (tenants, failIndexSeed) => {
           // Ensure unique tenant IDs
-          const uniqueTenants = tenants.filter(
-            (t, i, arr) => arr.findIndex(x => x.tenantId === t.tenantId) === i
-          );
+          const uniqueTenants = tenants.filter((t, i, arr) => arr.findIndex((x) => x.tenantId === t.tenantId) === i);
 
           if (uniqueTenants.length < 2) {
             return true; // Skip if not enough unique tenants
@@ -217,8 +211,8 @@ describe('TenantJobExecutor Property-Based Tests', () => {
 
           // Property: All non-failing tenants should have executed
           const expectedSuccessCount = uniqueTenants.length - 1;
-          const actualSuccessCount = results.filter(r => r.success).length;
-          const failedCount = results.filter(r => !r.success).length;
+          const actualSuccessCount = results.filter((r) => r.success).length;
+          const failedCount = results.filter((r) => !r.success).length;
 
           return (
             actualSuccessCount === expectedSuccessCount &&
@@ -252,9 +246,7 @@ describe('TenantJobExecutor Property-Based Tests', () => {
         ),
         async (tenants) => {
           // Ensure unique tenant IDs
-          const uniqueTenants = tenants.filter(
-            (t, i, arr) => arr.findIndex(x => x.tenantId === t.tenantId) === i
-          );
+          const uniqueTenants = tenants.filter((t, i, arr) => arr.findIndex((x) => x.tenantId === t.tenantId) === i);
 
           if (uniqueTenants.length < 3) {
             return true; // Skip if not enough unique tenants
@@ -315,9 +307,7 @@ describe('TenantJobExecutor Property-Based Tests', () => {
         fc.integer({ min: 1, max: 5 }),
         async (tenants, maxConcurrency) => {
           // Ensure unique tenant IDs
-          const uniqueTenants = tenants.filter(
-            (t, i, arr) => arr.findIndex(x => x.tenantId === t.tenantId) === i
-          );
+          const uniqueTenants = tenants.filter((t, i, arr) => arr.findIndex((x) => x.tenantId === t.tenantId) === i);
 
           // Reset state
           executedTenants = [];
@@ -330,19 +320,19 @@ describe('TenantJobExecutor Property-Based Tests', () => {
             executedTenants.push(context.tenantId);
           };
 
-          const results = await executor.execute(handler, { 
-            parallel: true, 
+          const results = await executor.execute(handler, {
+            parallel: true,
             maxConcurrency,
           });
 
           // Property: All tenants should be processed
-          const expectedTenantIds = new Set(uniqueTenants.map(t => t.tenantId));
+          const expectedTenantIds = new Set(uniqueTenants.map((t) => t.tenantId));
           const actualTenantIds = new Set(executedTenants);
 
           return (
             results.length === uniqueTenants.length &&
             actualTenantIds.size === expectedTenantIds.size &&
-            [...expectedTenantIds].every(id => actualTenantIds.has(id))
+            [...expectedTenantIds].every((id) => actualTenantIds.has(id))
           );
         },
       ),
@@ -368,7 +358,7 @@ describe('TenantJobExecutor Property-Based Tests', () => {
           { minLength: 1, maxLength: 20 },
         ),
         async (results) => {
-          const typedResults: TenantJobResult[] = results.map(r => ({
+          const typedResults: TenantJobResult[] = results.map((r) => ({
             tenantId: r.tenantId,
             success: r.success,
             duration: r.duration,
@@ -379,8 +369,8 @@ describe('TenantJobExecutor Property-Based Tests', () => {
 
           // Property: Summary should match calculated values
           const expectedTotal = typedResults.length;
-          const expectedSuccess = typedResults.filter(r => r.success).length;
-          const expectedFailed = typedResults.filter(r => !r.success).length;
+          const expectedSuccess = typedResults.filter((r) => r.success).length;
+          const expectedFailed = typedResults.filter((r) => !r.success).length;
           const expectedTotalDuration = typedResults.reduce((sum, r) => sum + r.duration, 0);
           const expectedAvgDuration = expectedTotal > 0 ? expectedTotalDuration / expectedTotal : 0;
 

@@ -4,7 +4,7 @@ import { useNaiveForm } from '@/hooks/common/form';
 import { useDict } from '@/hooks/business/dict';
 import { $t } from '@/locales';
 defineOptions({
-  name: 'DeptSearch',
+  name: 'DeptSearch'
 });
 
 interface Emits {

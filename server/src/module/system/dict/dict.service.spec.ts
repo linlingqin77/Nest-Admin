@@ -45,12 +45,7 @@ describe('DictService', () => {
 
   beforeEach(() => {
     prisma = createPrismaMock();
-    service = new DictService(
-      prisma,
-      redisService as any,
-      dictTypeRepo as any,
-      dictDataRepo as any,
-    );
+    service = new DictService(prisma, redisService as any, dictTypeRepo as any, dictDataRepo as any);
     jest.clearAllMocks();
   });
 
@@ -409,9 +404,7 @@ describe('DictService', () => {
 
         expect(result.code).toBe(200);
         expect(result.data).toEqual(cachedData);
-        expect(redisService.get).toHaveBeenCalledWith(
-          `${CacheEnum.SYS_DICT_KEY}sys_user_sex`,
-        );
+        expect(redisService.get).toHaveBeenCalledWith(`${CacheEnum.SYS_DICT_KEY}sys_user_sex`);
         expect(dictDataRepo.findByDictType).not.toHaveBeenCalled();
       });
 
@@ -429,10 +422,7 @@ describe('DictService', () => {
         expect(result.code).toBe(200);
         expect(result.data).toEqual(dbData);
         expect(dictDataRepo.findByDictType).toHaveBeenCalledWith('sys_user_sex');
-        expect(redisService.set).toHaveBeenCalledWith(
-          `${CacheEnum.SYS_DICT_KEY}sys_user_sex`,
-          dbData,
-        );
+        expect(redisService.set).toHaveBeenCalledWith(`${CacheEnum.SYS_DICT_KEY}sys_user_sex`, dbData);
       });
     });
 
@@ -451,18 +441,13 @@ describe('DictService', () => {
 
     describe('clearDictCache', () => {
       it('should delete all dict cache keys', async () => {
-        const cacheKeys = [
-          `${CacheEnum.SYS_DICT_KEY}sys_user_sex`,
-          `${CacheEnum.SYS_DICT_KEY}sys_normal_disable`,
-        ];
+        const cacheKeys = [`${CacheEnum.SYS_DICT_KEY}sys_user_sex`, `${CacheEnum.SYS_DICT_KEY}sys_normal_disable`];
 
         redisService.keys.mockResolvedValue(cacheKeys);
 
         await service.clearDictCache();
 
-        expect(redisService.keys).toHaveBeenCalledWith(
-          `${CacheEnum.SYS_DICT_KEY}*`,
-        );
+        expect(redisService.keys).toHaveBeenCalledWith(`${CacheEnum.SYS_DICT_KEY}*`);
         expect(redisService.del).toHaveBeenCalledWith(cacheKeys);
       });
 
@@ -506,9 +491,7 @@ describe('DictService', () => {
         );
         expect(redisService.set).toHaveBeenCalledWith(
           `${CacheEnum.SYS_DICT_KEY}sys_normal_disable`,
-          expect.arrayContaining([
-            expect.objectContaining({ dictLabel: '正常' }),
-          ]),
+          expect.arrayContaining([expect.objectContaining({ dictLabel: '正常' })]),
         );
       });
     });

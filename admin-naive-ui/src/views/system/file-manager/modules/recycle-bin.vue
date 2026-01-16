@@ -1,80 +1,15 @@
-<template>
-  <div class="recycle-bin-wrapper h-full flex flex-col">
-    <!-- 工具栏 -->
-    <div class="toolbar-container mb-4 p-4 bg-white rounded-lg">
-      <n-space justify="space-between">
-        <n-space>
-          <n-input
-            v-model:value="searchParams.fileName"
-            placeholder="搜索文件名"
-            clearable
-            @keyup.enter="handleSearch"
-            style="width: 240px"
-          >
-            <template #prefix>
-              <icon-carbon-search />
-            </template>
-          </n-input>
-          <n-button @click="handleSearch" :size="themeStore.componentSize">搜索</n-button>
-          <n-button @click="handleReset" :size="themeStore.componentSize">重置</n-button>
-          <n-button @click="getRecycleList" :size="themeStore.componentSize">
-            <template #icon>
-              <icon-carbon-renew />
-            </template>
-            刷新
-          </n-button>
-        </n-space>
-
-        <n-space v-if="selectedRows.length > 0">
-          <n-text>已选择 {{ selectedRows.length }} 项</n-text>
-          <n-button type="primary" @click="handleBatchRestore" :size="themeStore.componentSize">
-            <template #icon>
-              <icon-carbon-undo />
-            </template>
-            恢复
-          </n-button>
-          <n-button type="error" @click="handleBatchDelete" :size="themeStore.componentSize">
-            <template #icon>
-              <icon-carbon-trash-can />
-            </template>
-            彻底删除
-          </n-button>
-        </n-space>
-      </n-space>
-    </div>
-
-    <!-- 数据表格 -->
-    <div class="flex-1 overflow-hidden">
-      <n-data-table
-        :columns="columns"
-        :data="dataSource"
-        :loading="loading"
-        :pagination="pagination"
-        :row-key="(row) => row.uploadId"
-        :checked-row-keys="checkedRowKeys"
-        @update:checked-row-keys="handleCheck"
-        @update:page="handlePageChange"
-        @update:page-size="handlePageSizeChange"
-        class="h-full"
-        flex-height
-        remote
-      />
-    </div>
-  </div>
-</template>
-
 <script setup lang="tsx">
-import { ref, reactive, onMounted } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import type { DataTableColumns, PaginationProps } from 'naive-ui';
-import { useMessage, useDialog, NButton, NSpace, NTag, NTime } from 'naive-ui';
-import { useThemeStore } from '@/store/modules/theme';
+import { NButton, NSpace, NTag, NTime, useDialog, useMessage } from 'naive-ui';
 import {
-  fetchFileManagerGetRecycleList,
-  fetchFileManagerRestoreFiles,
   fetchFileManagerClearRecycle,
+  fetchFileManagerGetRecycleList,
+  fetchFileManagerRestoreFiles
 } from '@/service/api-gen';
 import type { FileResponseDto } from '@/service/api-gen/types';
-import { formatFileSize, formatDateTime } from '@/utils/common';
+import { useThemeStore } from '@/store/modules/theme';
+import { formatDateTime, formatFileSize } from '@/utils/common';
 import { $t } from '@/locales';
 
 const message = useMessage();
@@ -89,7 +24,7 @@ const checkedRowKeys = ref<string[]>([]);
 const searchParams = reactive({
   fileName: '',
   pageNum: 1,
-  pageSize: 20,
+  pageSize: 20
 });
 
 const pagination = reactive<PaginationProps>({
@@ -105,48 +40,48 @@ const pagination = reactive<PaginationProps>({
   onUpdatePageSize: (pageSize: number) => {
     pagination.pageSize = pageSize;
     pagination.page = 1;
-  },
+  }
 });
 
 const columns: DataTableColumns<FileResponseDto> = [
   {
-    type: 'selection',
+    type: 'selection'
   },
   {
     title: '文件名',
     key: 'fileName',
     ellipsis: {
-      tooltip: true,
+      tooltip: true
     },
     render: (row: FileResponseDto) => (
       <NSpace align="center">
         <div class="i-carbon-document" />
         <span>{row.fileName}</span>
       </NSpace>
-    ),
+    )
   },
   {
     title: '大小',
     key: 'size',
     width: 120,
-    render: (row: FileResponseDto) => formatFileSize(row.size),
+    render: (row: FileResponseDto) => formatFileSize(row.size)
   },
   {
     title: '类型',
     key: 'ext',
     width: 100,
-    render: (row: FileResponseDto) => <NTag size="small">{row.ext.toUpperCase()}</NTag>,
+    render: (row: FileResponseDto) => <NTag size="small">{row.ext.toUpperCase()}</NTag>
   },
   {
     title: '删除时间',
     key: 'updateTime',
     width: 180,
-    render: (row: FileResponseDto) => <NTime time={new Date(row.updateTime || '')} format="yyyy-MM-dd HH:mm:ss" />,
+    render: (row: FileResponseDto) => <NTime time={new Date(row.updateTime || '')} format="yyyy-MM-dd HH:mm:ss" />
   },
   {
     title: '删除人',
     key: 'updateBy',
-    width: 120,
+    width: 120
   },
   {
     title: '操作',
@@ -162,8 +97,8 @@ const columns: DataTableColumns<FileResponseDto> = [
           删除
         </NButton>
       </NSpace>
-    ),
-  },
+    )
+  }
 ];
 
 /** 获取回收站列表 */
@@ -173,7 +108,7 @@ async function getRecycleList() {
     const { data } = await fetchFileManagerGetRecycleList({
       ...searchParams,
       pageNum: pagination.page || 1,
-      pageSize: pagination.pageSize || 20,
+      pageSize: pagination.pageSize || 20
     });
 
     if (data) {
@@ -217,7 +152,7 @@ function handlePageSizeChange(pageSize: number) {
 /** 选择变化 */
 function handleCheck(keys: (string | number)[]) {
   checkedRowKeys.value = keys as string[];
-  selectedRows.value = dataSource.value.filter((item) => keys.includes(item.uploadId));
+  selectedRows.value = dataSource.value.filter(item => keys.includes(item.uploadId));
 }
 
 /** 恢复文件 */
@@ -237,7 +172,7 @@ function handleRestore(uploadIds: string[]) {
       } catch (error) {
         message.error($t('page.fileManager.restoreFileFailed'));
       }
-    },
+    }
   });
 }
 
@@ -267,7 +202,7 @@ function handleDelete(uploadIds: string[]) {
       } catch (error) {
         message.error($t('page.fileManager.deleteFailed'));
       }
-    },
+    }
   });
 }
 
@@ -284,6 +219,71 @@ onMounted(() => {
   getRecycleList();
 });
 </script>
+
+<template>
+  <div class="recycle-bin-wrapper h-full flex flex-col">
+    <!-- 工具栏 -->
+    <div class="toolbar-container mb-4 rounded-lg bg-white p-4">
+      <NSpace justify="space-between">
+        <NSpace>
+          <NInput
+            v-model:value="searchParams.fileName"
+            placeholder="搜索文件名"
+            clearable
+            style="width: 240px"
+            @keyup.enter="handleSearch"
+          >
+            <template #prefix>
+              <icon-carbon-search />
+            </template>
+          </NInput>
+          <NButton :size="themeStore.componentSize" @click="handleSearch">搜索</NButton>
+          <NButton :size="themeStore.componentSize" @click="handleReset">重置</NButton>
+          <NButton :size="themeStore.componentSize" @click="getRecycleList">
+            <template #icon>
+              <icon-carbon-renew />
+            </template>
+            刷新
+          </NButton>
+        </NSpace>
+
+        <NSpace v-if="selectedRows.length > 0">
+          <NText>已选择 {{ selectedRows.length }} 项</NText>
+          <NButton type="primary" :size="themeStore.componentSize" @click="handleBatchRestore">
+            <template #icon>
+              <icon-carbon-undo />
+            </template>
+            恢复
+          </NButton>
+          <NButton type="error" :size="themeStore.componentSize" @click="handleBatchDelete">
+            <template #icon>
+              <icon-carbon-trash-can />
+            </template>
+            彻底删除
+          </NButton>
+        </NSpace>
+      </NSpace>
+    </div>
+
+    <!-- 数据表格 -->
+    <div class="flex-1 overflow-hidden">
+      <NDataTable
+        :columns="columns"
+        :data="dataSource"
+        :loading="loading"
+        :pagination="pagination"
+        :row-key="row => row.uploadId"
+        :checked-row-keys="checkedRowKeys"
+        class="h-full"
+        flex-height
+        remote
+        @update:checked-row-keys="handleCheck"
+        @update:page="handlePageChange"
+        @update:page-size="handlePageSizeChange"
+      />
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .recycle-bin-wrapper {

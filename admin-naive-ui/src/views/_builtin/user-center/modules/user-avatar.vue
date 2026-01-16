@@ -38,8 +38,8 @@ const options = reactive<CropperOptions>({
   img: imageUrl.value,
   fileName: '',
   stencilProps: {
-    aspectRatio: 1,
-  },
+    aspectRatio: 1
+  }
 });
 
 /** 编辑头像 */

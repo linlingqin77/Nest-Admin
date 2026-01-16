@@ -40,15 +40,10 @@ describe('Request Tracing Property-Based Tests', () => {
     });
 
     // Generator for valid UUID v4 format (lowercase)
-    const uuidV4Arb = fc.stringMatching(
-      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
-    );
+    const uuidV4Arb = fc.stringMatching(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
 
     // Generator for arbitrary request IDs (could be UUID or custom format)
-    const requestIdArb = fc.oneof(
-      uuidV4Arb,
-      fc.stringMatching(/^[a-zA-Z0-9-]{8,64}$/),
-    );
+    const requestIdArb = fc.oneof(uuidV4Arb, fc.stringMatching(/^[a-zA-Z0-9-]{8,64}$/));
 
     // Generator for HTTP headers
     const headersArb = fc.record({
@@ -229,59 +224,54 @@ describe('Request Tracing Property-Based Tests', () => {
 
     it('should maintain Request ID consistency between request, response, and CLS', async () => {
       await fc.assert(
-        fc.asyncProperty(
-          fc.option(requestIdArb, { nil: undefined }),
-          async (maybeExistingRequestId) => {
-            let responseRequestId: string | undefined;
-            let clsRequestId: string | undefined;
+        fc.asyncProperty(fc.option(requestIdArb, { nil: undefined }), async (maybeExistingRequestId) => {
+          let responseRequestId: string | undefined;
+          let clsRequestId: string | undefined;
 
-            const mockClsServiceWithTracking = {
-              set: jest.fn((key: string, value: any) => {
-                if (key === 'requestId') {
-                  clsRequestId = value;
-                }
-              }),
-              get: jest.fn(),
-              getId: jest.fn(),
-            } as unknown as jest.Mocked<ClsService>;
+          const mockClsServiceWithTracking = {
+            set: jest.fn((key: string, value: any) => {
+              if (key === 'requestId') {
+                clsRequestId = value;
+              }
+            }),
+            get: jest.fn(),
+            getId: jest.fn(),
+          } as unknown as jest.Mocked<ClsService>;
 
-            const middlewareWithTracking = new RequestIdMiddleware(mockClsServiceWithTracking);
+          const middlewareWithTracking = new RequestIdMiddleware(mockClsServiceWithTracking);
 
-            const mockRequest: Partial<Request> = {
-              headers: maybeExistingRequestId
-                ? { 'x-request-id': maybeExistingRequestId }
-                : {},
-            };
+          const mockRequest: Partial<Request> = {
+            headers: maybeExistingRequestId ? { 'x-request-id': maybeExistingRequestId } : {},
+          };
 
-            const mockResponse: Partial<Response> = {
-              setHeader: jest.fn((name: string, value: string) => {
-                if (name === 'X-Request-Id') {
-                  responseRequestId = value;
-                }
-                return mockResponse as Response;
-              }),
-            };
+          const mockResponse: Partial<Response> = {
+            setHeader: jest.fn((name: string, value: string) => {
+              if (name === 'X-Request-Id') {
+                responseRequestId = value;
+              }
+              return mockResponse as Response;
+            }),
+          };
 
-            const mockNext: NextFunction = jest.fn();
+          const mockNext: NextFunction = jest.fn();
 
-            middlewareWithTracking.use(mockRequest as Request, mockResponse as Response, mockNext);
+          middlewareWithTracking.use(mockRequest as Request, mockResponse as Response, mockNext);
 
-            // Property: All three locations should have the same Request ID
-            const requestRequestId = mockRequest['requestId'];
+          // Property: All three locations should have the same Request ID
+          const requestRequestId = mockRequest['requestId'];
 
-            expect(requestRequestId).toBeDefined();
-            expect(responseRequestId).toBeDefined();
-            expect(clsRequestId).toBeDefined();
+          expect(requestRequestId).toBeDefined();
+          expect(responseRequestId).toBeDefined();
+          expect(clsRequestId).toBeDefined();
 
-            expect(requestRequestId).toBe(responseRequestId);
-            expect(requestRequestId).toBe(clsRequestId);
+          expect(requestRequestId).toBe(responseRequestId);
+          expect(requestRequestId).toBe(clsRequestId);
 
-            // If existing Request ID was provided, it should be preserved
-            if (maybeExistingRequestId) {
-              expect(requestRequestId).toBe(maybeExistingRequestId);
-            }
-          },
-        ),
+          // If existing Request ID was provided, it should be preserved
+          if (maybeExistingRequestId) {
+            expect(requestRequestId).toBe(maybeExistingRequestId);
+          }
+        }),
         { numRuns: 100 },
       );
     });

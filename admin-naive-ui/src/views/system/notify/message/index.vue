@@ -12,7 +12,7 @@ import MessageSendDrawer from './modules/message-send-drawer.vue';
 import MessageDetailModal from './modules/message-detail-modal.vue';
 
 defineOptions({
-  name: 'NotifyMessageList',
+  name: 'NotifyMessageList'
 });
 
 const appStore = useAppStore();
@@ -28,7 +28,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchNotifyMessageFindAll as any,
   apiParams: {
@@ -36,13 +36,13 @@ const {
     pageSize: 10,
     userId: null,
     templateCode: null,
-    readStatus: null,
+    readStatus: null
   },
   columns: () => [
     {
       type: 'selection',
       align: 'center',
-      width: 48,
+      width: 48
     },
     {
       key: 'id',
@@ -50,14 +50,14 @@ const {
       align: 'center',
       width: 80,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'userId',
       title: '用户ID',
       align: 'center',
-      width: 80,
+      width: 80
     },
     {
       key: 'templateCode',
@@ -65,14 +65,14 @@ const {
       align: 'center',
       minWidth: 120,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'templateNickname',
       title: '发送人',
       align: 'center',
-      minWidth: 100,
+      minWidth: 100
     },
     {
       key: 'templateContent',
@@ -80,8 +80,8 @@ const {
       align: 'center',
       minWidth: 200,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'readStatus',
@@ -95,7 +95,7 @@ const {
             {typedRow.readStatus ? '已读' : '未读'}
           </NTag>
         );
-      },
+      }
     },
     {
       key: 'readTime',
@@ -105,20 +105,20 @@ const {
       render(row) {
         const typedRow = row as unknown as Api.System.NotifyMessage;
         return typedRow.readTime || '-';
-      },
+      }
     },
     {
       key: 'createTime',
       title: '创建时间',
       align: 'center',
-      minWidth: 160,
+      minWidth: 160
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 130,
-      render: (row) => {
+      render: row => {
         const typedRow = row as unknown as Api.System.NotifyMessage;
         const divider = () => {
           if (!hasAuth('system:notify:message:query') || !hasAuth('system:notify:message:remove')) {
@@ -165,9 +165,9 @@ const {
             {deleteBtn()}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const { checkedRowKeys, onBatchDeleted, onDeleted } = useTableOperate(data, getData);
@@ -240,7 +240,7 @@ async function handleDelete(id: string) {
         :scroll-x="1100"
         :loading="loading"
         remote
-        :row-key="(row) => row.id"
+        :row-key="row => row.id"
         :pagination="mobilePagination"
         class="sm:h-full"
       />

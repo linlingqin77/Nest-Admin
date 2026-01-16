@@ -12,11 +12,13 @@
     ]
   },
   "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/src/$1",
     "^src/(.*)$": "<rootDir>/src/$1",
     "^test/(.*)$": "<rootDir>/test/$1"
   },
   "setupFilesAfterEnv": ["<rootDir>/test/setup.ts"],
   "testTimeout": 60000,
+  "maxWorkers": 1,
   "verbose": true,
   "collectCoverageFrom": [
     "src/**/*.ts",

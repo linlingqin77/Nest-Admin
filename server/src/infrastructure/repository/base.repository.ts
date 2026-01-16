@@ -18,9 +18,7 @@ export function getPrimaryKeyFromDMMF(modelName: string): string {
   if (cached) return cached;
 
   // 从 DMMF 查找模型
-  const model = Prisma.dmmf.datamodel.models.find(
-    (m) => m.name.toLowerCase() === modelName.toLowerCase(),
-  );
+  const model = Prisma.dmmf.datamodel.models.find((m) => m.name.toLowerCase() === modelName.toLowerCase());
 
   if (!model) {
     primaryKeyCache.set(modelName, 'id');
@@ -74,7 +72,6 @@ export interface QueryOptions extends PaginationOptions, SortOptions {
   /** 字段选择 */
   select?: Record<string, unknown>;
 }
-
 
 /**
  * Prisma Delegate 类型约束

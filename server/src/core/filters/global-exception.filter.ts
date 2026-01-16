@@ -110,7 +110,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       const resp = exception.getResponse();
       if (typeof resp === 'object' && resp !== null) {
         const body = resp as ExceptionResponseBody;
-        message = Array.isArray(body.message) ? body.message[0] : ((typeof body.message === 'string' ? body.message : body.msg) ?? message);
+        message = Array.isArray(body.message)
+          ? body.message[0]
+          : ((typeof body.message === 'string' ? body.message : body.msg) ?? message);
         data = body.data ?? null;
         // 如果响应中有 code，使用它
         if (body.code !== undefined) {

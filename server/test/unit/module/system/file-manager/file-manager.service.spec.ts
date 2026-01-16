@@ -55,7 +55,6 @@ jest.mock('@/tenant/context/tenant.context', () => ({
   },
 }));
 
-
 // Mock GenerateUUID
 jest.mock('@/shared/utils', () => ({
   GenerateUUID: jest.fn().mockReturnValue('test-uuid-123'),
@@ -112,10 +111,7 @@ describe('FileManagerService', () => {
         tenantId: mockTenantId,
       } as any);
 
-      const result = await service.createFolder(
-        { folderName: 'test-folder', parentId: 0 },
-        'admin',
-      );
+      const result = await service.createFolder({ folderName: 'test-folder', parentId: 0 }, 'admin');
 
       expect(result.code).toBe(200);
       expect(prismaMock.sysFileFolder.create).toHaveBeenCalled();
@@ -136,10 +132,7 @@ describe('FileManagerService', () => {
         parentId: 1,
       } as any);
 
-      const result = await service.createFolder(
-        { folderName: 'child', parentId: 1 },
-        'admin',
-      );
+      const result = await service.createFolder({ folderName: 'child', parentId: 1 }, 'admin');
 
       expect(result.code).toBe(200);
     });
@@ -147,21 +140,20 @@ describe('FileManagerService', () => {
     it('should throw error when folder name exists', async () => {
       prismaMock.sysFileFolder.findFirst.mockResolvedValue({ folderId: 1 } as any);
 
-      await expect(
-        service.createFolder({ folderName: 'existing', parentId: 0 }, 'admin'),
-      ).rejects.toThrow(BusinessException);
+      await expect(service.createFolder({ folderName: 'existing', parentId: 0 }, 'admin')).rejects.toThrow(
+        BusinessException,
+      );
     });
 
     it('should throw error when parent folder not found', async () => {
       prismaMock.sysFileFolder.findFirst.mockResolvedValue(null);
       prismaMock.sysFileFolder.findUnique.mockResolvedValue(null);
 
-      await expect(
-        service.createFolder({ folderName: 'child', parentId: 999 }, 'admin'),
-      ).rejects.toThrow(BusinessException);
+      await expect(service.createFolder({ folderName: 'child', parentId: 999 }, 'admin')).rejects.toThrow(
+        BusinessException,
+      );
     });
   });
-
 
   describe('updateFolder', () => {
     it('should update folder successfully', async () => {
@@ -177,10 +169,7 @@ describe('FileManagerService', () => {
         folderName: 'new-name',
       } as any);
 
-      const result = await service.updateFolder(
-        { folderId: 1, folderName: 'new-name' },
-        'admin',
-      );
+      const result = await service.updateFolder({ folderId: 1, folderName: 'new-name' }, 'admin');
 
       expect(result.code).toBe(200);
     });
@@ -202,9 +191,9 @@ describe('FileManagerService', () => {
       } as any);
       prismaMock.sysFileFolder.findFirst.mockResolvedValue({ folderId: 2 } as any);
 
-      await expect(
-        service.updateFolder({ folderId: 1, folderName: 'existing' }, 'admin'),
-      ).rejects.toThrow(BusinessException);
+      await expect(service.updateFolder({ folderId: 1, folderName: 'existing' }, 'admin')).rejects.toThrow(
+        BusinessException,
+      );
     });
   });
 
@@ -309,15 +298,11 @@ describe('FileManagerService', () => {
     });
   });
 
-
   describe('listFiles', () => {
     it('should list files with pagination', async () => {
       prismaMock.sysUpload.findMany.mockResolvedValue([{ uploadId: '1' }] as any);
       prismaMock.sysUpload.count.mockResolvedValue(1);
-      prismaMock.$transaction.mockResolvedValue([
-        [{ uploadId: '1' }],
-        1,
-      ]);
+      prismaMock.$transaction.mockResolvedValue([[{ uploadId: '1' }], 1]);
 
       const result = await service.listFiles({ pageNum: 1, pageSize: 10 });
 
@@ -358,10 +343,7 @@ describe('FileManagerService', () => {
       } as any);
       prismaMock.sysUpload.updateMany.mockResolvedValue({ count: 1 });
 
-      const result = await service.moveFiles(
-        { uploadIds: ['file-1'], targetFolderId: 2 },
-        'admin',
-      );
+      const result = await service.moveFiles({ uploadIds: ['file-1'], targetFolderId: 2 }, 'admin');
 
       expect(result.code).toBe(200);
     });
@@ -369,10 +351,7 @@ describe('FileManagerService', () => {
     it('should move files to root folder', async () => {
       prismaMock.sysUpload.updateMany.mockResolvedValue({ count: 1 });
 
-      const result = await service.moveFiles(
-        { uploadIds: ['file-1'], targetFolderId: 0 },
-        'admin',
-      );
+      const result = await service.moveFiles({ uploadIds: ['file-1'], targetFolderId: 0 }, 'admin');
 
       expect(result.code).toBe(200);
     });
@@ -380,10 +359,7 @@ describe('FileManagerService', () => {
     it('should return error when target folder not found', async () => {
       prismaMock.sysFileFolder.findUnique.mockResolvedValue(null);
 
-      const result = await service.moveFiles(
-        { uploadIds: ['file-1'], targetFolderId: 999 },
-        'admin',
-      );
+      const result = await service.moveFiles({ uploadIds: ['file-1'], targetFolderId: 999 }, 'admin');
 
       expect(result.code).toBe(500);
     });
@@ -400,10 +376,7 @@ describe('FileManagerService', () => {
         fileName: 'new-name.txt',
       } as any);
 
-      const result = await service.renameFile(
-        { uploadId: 'file-1', newFileName: 'new-name.txt' },
-        'admin',
-      );
+      const result = await service.renameFile({ uploadId: 'file-1', newFileName: 'new-name.txt' }, 'admin');
 
       expect(result.code).toBe(200);
     });
@@ -411,10 +384,7 @@ describe('FileManagerService', () => {
     it('should return error when file not found', async () => {
       prismaMock.sysUpload.findUnique.mockResolvedValue(null);
 
-      const result = await service.renameFile(
-        { uploadId: 'not-exist', newFileName: 'new.txt' },
-        'admin',
-      );
+      const result = await service.renameFile({ uploadId: 'not-exist', newFileName: 'new.txt' }, 'admin');
 
       expect(result.code).toBe(500);
     });
@@ -486,10 +456,7 @@ describe('FileManagerService', () => {
         expireTime: null,
       } as any);
 
-      const result = await service.createShare(
-        { uploadId: 'file-1', shareCode: '1234' },
-        'admin',
-      );
+      const result = await service.createShare({ uploadId: 'file-1', shareCode: '1234' }, 'admin');
 
       expect(result.code).toBe(200);
       expect(result.data.shareId).toBe('share-1');
@@ -506,10 +473,7 @@ describe('FileManagerService', () => {
         expireTime: new Date(),
       } as any);
 
-      const result = await service.createShare(
-        { uploadId: 'file-1', expireHours: 24 },
-        'admin',
-      );
+      const result = await service.createShare({ uploadId: 'file-1', expireHours: 24 }, 'admin');
 
       expect(result.code).toBe(200);
     });
@@ -615,10 +579,7 @@ describe('FileManagerService', () => {
 
   describe('myShares', () => {
     it('should return user shares', async () => {
-      prismaMock.sysFileShare.findMany.mockResolvedValue([
-        { shareId: 'share-1' },
-        { shareId: 'share-2' },
-      ] as any);
+      prismaMock.sysFileShare.findMany.mockResolvedValue([{ shareId: 'share-1' }, { shareId: 'share-2' }] as any);
 
       const result = await service.myShares('admin');
 
@@ -626,7 +587,6 @@ describe('FileManagerService', () => {
       expect(result.data).toHaveLength(2);
     });
   });
-
 
   describe('getRecycleList', () => {
     it('should return deleted files', async () => {
@@ -695,9 +655,7 @@ describe('FileManagerService', () => {
         parentFileId: null,
         version: 1,
       } as any);
-      prismaMock.sysUpload.findMany.mockResolvedValue([
-        { uploadId: 'file-1', version: 1 },
-      ] as any);
+      prismaMock.sysUpload.findMany.mockResolvedValue([{ uploadId: 'file-1', version: 1 }] as any);
 
       const result = await service.getFileVersions('file-1');
 
@@ -740,9 +698,7 @@ describe('FileManagerService', () => {
     it('should throw error when target version not found', async () => {
       prismaMock.sysUpload.findUnique.mockResolvedValue(null);
 
-      await expect(
-        service.restoreVersion('file-1', 'not-exist', 'admin'),
-      ).rejects.toThrow(BusinessException);
+      await expect(service.restoreVersion('file-1', 'not-exist', 'admin')).rejects.toThrow(BusinessException);
     });
   });
 

@@ -64,7 +64,12 @@ export class SmsTemplateRepository extends SoftDeleteRepository<SysSmsTemplate, 
   /**
    * 根据模板编码查询启用的模板（包含渠道信息）
    */
-  async findEnabledByCode(code: string): Promise<(SysSmsTemplate & { channel: { code: string; name: string; signature: string; apiKey: string; apiSecret: string } }) | null> {
+  async findEnabledByCode(code: string): Promise<
+    | (SysSmsTemplate & {
+        channel: { code: string; name: string; signature: string; apiKey: string; apiSecret: string };
+      })
+    | null
+  > {
     return this.delegate.findFirst({
       where: { code, status: '0', delFlag: '0' },
       include: {

@@ -7,7 +7,7 @@ import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'UserOperateDrawer',
+  name: 'UserOperateDrawer'
 });
 
 interface Props {
@@ -30,7 +30,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const { loading, startLoading, endLoading } = useLoading();
@@ -41,7 +41,7 @@ const { createRequiredRule, patternRules } = useFormRules();
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
     add: $t('page.system.user.addUser'),
-    edit: $t('page.system.user.editUser'),
+    edit: $t('page.system.user.editUser')
   };
   return titles[props.operateType];
 });
@@ -64,7 +64,7 @@ function createDefaultModel(): Model {
     status: '0' as any,
     roleIds: [],
     postIds: [],
-    remark: '',
+    remark: ''
   };
 }
 
@@ -76,7 +76,7 @@ const rules: Record<RuleKey, App.Global.FormRule[]> = {
   password: [{ ...patternRules.pwd, required: props.operateType === 'add' }],
   phonenumber: [patternRules.phone],
   status: [createRequiredRule($t('page.system.user.form.status.required'))],
-  roleIds: [{ ...createRequiredRule('请选择角色'), type: 'array' }],
+  roleIds: [{ ...createRequiredRule('请选择角色'), type: 'array' }]
 };
 
 async function getUserInfo(id?: CommonType.IdType) {
@@ -89,9 +89,9 @@ async function getUserInfo(id?: CommonType.IdType) {
     }
     model.roleIds = data.roleIds;
     model.postIds = data.postIds;
-    roleOptions.value = data.roles.map((role) => ({
+    roleOptions.value = data.roles.map(role => ({
       label: role.roleName,
-      value: role.roleId,
+      value: role.roleId
     }));
   } catch (error) {
     // error handled by request interceptor
@@ -141,7 +141,7 @@ async function handleSubmit() {
         status,
         roleIds,
         postIds,
-        remark,
+        remark
       });
     } else if (props.operateType === 'edit') {
       await fetchUserUpdate({
@@ -155,7 +155,7 @@ async function handleSubmit() {
         status,
         roleIds,
         postIds,
-        remark,
+        remark
       });
     }
 

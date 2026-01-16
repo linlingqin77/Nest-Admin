@@ -1,116 +1,21 @@
-<template>
-  <div ref="containerRef" class="file-grid-view">
-    <n-virtual-list
-      v-if="rows.length > 0"
-      :item-size="CARD_HEIGHT + CARD_GAP"
-      :items="rows"
-      :style="{ height: `${containerHeight}px` }"
-    >
-      <template #default="{ item: row, index }">
-        <div class="grid-row" :style="{ marginBottom: `${CARD_GAP}px` }">
-          <div v-for="(file, fileIndex) in row" :key="file.id" class="file-card-wrapper" :style="cardWrapperStyle">
-            <n-tooltip :delay="500" placement="bottom">
-              <template #trigger>
-                <n-card
-                  :class="[
-                    'file-card',
-                    {
-                      selected: checkedKeys.includes(file.id),
-                      'drag-over': file.type === 'folder' && dragOverId === file.id,
-                    },
-                  ]"
-                  :hoverable="true"
-                  :style="cardStyle(checkedKeys.includes(file.id))"
-                  :draggable="file.type === 'file'"
-                  @click="handleCardClick(file, $event)"
-                  @dblclick="handleCardDblClick(file)"
-                  @contextmenu.prevent="handleContextMenu($event, file)"
-                  @dragstart="handleDragStart(file, $event)"
-                  @dragover="file.type === 'folder' ? handleDragOver(file, $event) : undefined"
-                  @dragleave="file.type === 'folder' ? handleDragLeave() : undefined"
-                  @drop="file.type === 'folder' ? handleDrop(file, $event) : undefined"
-                >
-                  <!-- 选中复选框 -->
-                  <n-checkbox
-                    :checked="checkedKeys.includes(file.id)"
-                    class="card-checkbox"
-                    @click.stop
-                    @update:checked="(checked) => handleCheckChange(file.id, checked)"
-                  />
-
-                  <!-- 缩略图区域 -->
-                  <div class="thumbnail-area">
-                    <n-image
-                      v-if="file.thumbnail"
-                      :src="file.thumbnail"
-                      :width="THUMBNAIL_WIDTH"
-                      :height="THUMBNAIL_HEIGHT"
-                      :lazy="true"
-                      :fallback-src="placeholderImage"
-                      object-fit="cover"
-                      :preview-disabled="true"
-                    />
-                    <div v-else class="file-icon-placeholder">
-                      <SvgIcon
-                        :icon="file.type === 'folder' ? 'material-symbols:folder' : getIconForFile(file.ext)"
-                        class="text-48px"
-                        :style="{ color: file.type === 'folder' ? '#ffc107' : getIconColor(file.ext) }"
-                      />
-                    </div>
-                  </div>
-
-                  <!-- 文件信息 -->
-                  <div class="file-info">
-                    <div class="file-name">
-                      {{ file.name }}
-                    </div>
-                    <div class="file-meta">
-                      <span v-if="file.type === 'file'">{{ formatFileSize(file.size) }}</span>
-                      <span>{{ formatDate(file.updateTime || file.createTime) }}</span>
-                    </div>
-                  </div>
-                </n-card>
-              </template>
-              <!-- Tooltip内容：文件详细信息 -->
-              <div class="file-tooltip">
-                <p><strong>名称:</strong> {{ file.name }}</p>
-                <p v-if="file.type === 'file'"><strong>大小:</strong> {{ formatFileSize(file.size) }}</p>
-                <p v-if="file.ext"><strong>类型:</strong> {{ file.ext.toUpperCase() }} 文件</p>
-                <p><strong>创建时间:</strong> {{ formatDate(file.createTime) }}</p>
-                <p v-if="file.updateTime"><strong>修改时间:</strong> {{ formatDate(file.updateTime) }}</p>
-              </div>
-            </n-tooltip>
-          </div>
-        </div>
-      </template>
-    </n-virtual-list>
-
-    <!-- 空状态 -->
-    <div v-else class="empty-state">
-      <div class="i-carbon-folder-off empty-icon" />
-      <p>暂无文件</p>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
-import { NCard, NImage, NEllipsis, NCheckbox, NVirtualList, NTooltip, useThemeVars } from 'naive-ui';
+import { computed, ref, watch } from 'vue';
 import { useElementSize } from '@vueuse/core';
+import { NCard, NCheckbox, NEllipsis, NImage, NTooltip, NVirtualList, useThemeVars } from 'naive-ui';
 import SvgIcon from '@/components/custom/svg-icon.vue';
-import type { FileItem } from './file-list.vue';
 import {
-  CARD_WIDTH,
-  CARD_HEIGHT,
-  CARD_GAP,
   CARD_BORDER_RADIUS,
-  THUMBNAIL_WIDTH,
+  CARD_GAP,
+  CARD_HEIGHT,
+  CARD_WIDTH,
   THUMBNAIL_HEIGHT,
+  THUMBNAIL_WIDTH,
   calculateGridCols,
-  formatFileSize,
   formatDate,
-  getFileIcon,
+  formatFileSize,
+  getFileIcon
 } from '../constants';
+import type { FileItem } from './file-list.vue';
 
 interface Props {
   fileList: FileItem[];
@@ -128,7 +33,7 @@ interface Emits {
 
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
-  checkedKeys: () => [],
+  checkedKeys: () => []
 });
 
 const emit = defineEmits<Emits>();
@@ -267,7 +172,7 @@ const rows = computed(() => {
 const cardWrapperStyle = computed(() => ({
   width: `${CARD_WIDTH}px`,
   marginRight: `${CARD_GAP}px`,
-  flexShrink: 0,
+  flexShrink: 0
 }));
 
 // 卡片样式
@@ -276,7 +181,7 @@ const cardStyle = computed(() => (isSelected: boolean) => ({
   borderRadius: `${CARD_BORDER_RADIUS}px`,
   border: isSelected ? `2px solid ${themeVars.value.primaryColor}` : 'none',
   transition: 'all 0.3s',
-  position: 'relative' as const,
+  position: 'relative' as const
 }));
 
 // 处理卡片点击
@@ -397,6 +302,116 @@ function handleDrop(file: FileItem, event: DragEvent) {
   }
 }
 </script>
+
+<template>
+  <div ref="containerRef" class="file-grid-view">
+    <NVirtualList
+      v-if="rows.length > 0"
+      :item-size="CARD_HEIGHT + CARD_GAP"
+      :items="rows"
+      :style="{ height: `${containerHeight}px` }"
+    >
+      <template #default="{ item: row, index }">
+        <div class="grid-row" :style="{ marginBottom: `${CARD_GAP}px` }">
+          <div v-for="(file, fileIndex) in row" :key="file.id" class="file-card-wrapper" :style="cardWrapperStyle">
+            <NTooltip :delay="500" placement="bottom">
+              <template #trigger>
+                <NCard
+                  class="file-card"
+                  :class="[
+                    {
+                      selected: checkedKeys.includes(file.id),
+                      'drag-over': file.type === 'folder' && dragOverId === file.id
+                    }
+                  ]"
+                  :hoverable="true"
+                  :style="cardStyle(checkedKeys.includes(file.id))"
+                  :draggable="file.type === 'file'"
+                  @click="handleCardClick(file, $event)"
+                  @dblclick="handleCardDblClick(file)"
+                  @contextmenu.prevent="handleContextMenu($event, file)"
+                  @dragstart="handleDragStart(file, $event)"
+                  @dragover="file.type === 'folder' ? handleDragOver(file, $event) : undefined"
+                  @dragleave="file.type === 'folder' ? handleDragLeave() : undefined"
+                  @drop="file.type === 'folder' ? handleDrop(file, $event) : undefined"
+                >
+                  <!-- 选中复选框 -->
+                  <NCheckbox
+                    :checked="checkedKeys.includes(file.id)"
+                    class="card-checkbox"
+                    @click.stop
+                    @update:checked="checked => handleCheckChange(file.id, checked)"
+                  />
+
+                  <!-- 缩略图区域 -->
+                  <div class="thumbnail-area">
+                    <NImage
+                      v-if="file.thumbnail"
+                      :src="file.thumbnail"
+                      :width="THUMBNAIL_WIDTH"
+                      :height="THUMBNAIL_HEIGHT"
+                      :lazy="true"
+                      :fallback-src="placeholderImage"
+                      object-fit="cover"
+                      :preview-disabled="true"
+                    />
+                    <div v-else class="file-icon-placeholder">
+                      <SvgIcon
+                        :icon="file.type === 'folder' ? 'material-symbols:folder' : getIconForFile(file.ext)"
+                        class="text-48px"
+                        :style="{ color: file.type === 'folder' ? '#ffc107' : getIconColor(file.ext) }"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- 文件信息 -->
+                  <div class="file-info">
+                    <div class="file-name">
+                      {{ file.name }}
+                    </div>
+                    <div class="file-meta">
+                      <span v-if="file.type === 'file'">{{ formatFileSize(file.size) }}</span>
+                      <span>{{ formatDate(file.updateTime || file.createTime) }}</span>
+                    </div>
+                  </div>
+                </NCard>
+              </template>
+              <!-- Tooltip内容：文件详细信息 -->
+              <div class="file-tooltip">
+                <p>
+                  <strong>名称:</strong>
+                  {{ file.name }}
+                </p>
+                <p v-if="file.type === 'file'">
+                  <strong>大小:</strong>
+                  {{ formatFileSize(file.size) }}
+                </p>
+                <p v-if="file.ext">
+                  <strong>类型:</strong>
+                  {{ file.ext.toUpperCase() }} 文件
+                </p>
+                <p>
+                  <strong>创建时间:</strong>
+                  {{ formatDate(file.createTime) }}
+                </p>
+                <p v-if="file.updateTime">
+                  <strong>修改时间:</strong>
+                  {{ formatDate(file.updateTime) }}
+                </p>
+              </div>
+            </NTooltip>
+          </div>
+        </div>
+      </template>
+    </NVirtualList>
+
+    <!-- 空状态 -->
+    <div v-else class="empty-state">
+      <div class="i-carbon-folder-off empty-icon" />
+      <p>暂无文件</p>
+    </div>
+  </div>
+</template>
 
 <style scoped lang="scss">
 .file-grid-view {

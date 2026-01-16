@@ -1,9 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  TenantQuotaService,
-  QuotaResource,
-  QuotaCheckResult,
-} from '../../../../src/tenant/services/quota.service';
+import { TenantQuotaService, QuotaResource, QuotaCheckResult } from '../../../../src/tenant/services/quota.service';
 import { PrismaService } from '../../../../src/infrastructure/prisma';
 import { RedisService } from '../../../../src/module/common/redis/redis.service';
 import { BusinessException } from '../../../../src/shared/exceptions';
@@ -327,9 +323,7 @@ describe('TenantQuotaService', () => {
     it('应该在数据库错误时抛出异常', async () => {
       mockPrismaService.sysTenantUsage.upsert.mockRejectedValue(new Error('Database error'));
 
-      await expect(service.incrementUsage(tenantId, QuotaResource.API_CALLS, 1)).rejects.toThrow(
-        'Database error',
-      );
+      await expect(service.incrementUsage(tenantId, QuotaResource.API_CALLS, 1)).rejects.toThrow('Database error');
     });
   });
 
@@ -559,9 +553,7 @@ describe('TenantQuotaService', () => {
       });
       mockPrismaService.sysUser.count.mockResolvedValue(20);
 
-      await expect(service.checkQuotaOrThrow(tenantId, QuotaResource.USERS)).rejects.toThrow(
-        BusinessException,
-      );
+      await expect(service.checkQuotaOrThrow(tenantId, QuotaResource.USERS)).rejects.toThrow(BusinessException);
     });
 
     it('应该在配额为无限制时不抛出异常', async () => {

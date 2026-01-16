@@ -33,7 +33,12 @@ export class NoticeResponseDto extends BaseResponseDto {
   noticeContent?: string;
 
   @Expose()
-  @ApiPropertyOptional({ description: '公告状态', enum: StatusEnum, enumName: 'StatusEnum', enumSchema: StatusEnumSchema })
+  @ApiPropertyOptional({
+    description: '公告状态',
+    enum: StatusEnum,
+    enumName: 'StatusEnum',
+    enumSchema: StatusEnumSchema,
+  })
   status?: string;
 
   // createTime, updateTime, remark 继承自 BaseResponseDto，已自动应用 @DateFormat() 装饰器

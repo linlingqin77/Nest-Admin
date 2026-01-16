@@ -176,10 +176,7 @@ describe('BatchOperationHelper', () => {
 
   describe('createRequiredValidator', () => {
     it('should validate required fields', async () => {
-      const validator = BatchOperationHelper.createRequiredValidator<{ name: string }>(
-        (item) => item.name,
-        '用户名',
-      );
+      const validator = BatchOperationHelper.createRequiredValidator<{ name: string }>((item) => item.name, '用户名');
 
       const result1 = await validator.validate({ name: '' }, 0);
       expect(result1).toBe('用户名 不能为空');

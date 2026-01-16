@@ -5,9 +5,8 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CreateSmsTemplateDto, UpdateSmsTemplateDto, SmsTemplateListVo, SmsTemplateDetailVo } from './types';
+import type { CreateSmsTemplateDto, SmsTemplateDetailVo, SmsTemplateListVo, UpdateSmsTemplateDto } from './types';
 
 /**
  * 短信模板-创建
@@ -18,7 +17,7 @@ export function fetchSmsTemplateCreate(data: CreateSmsTemplateDto) {
     method: 'POST',
     url: '/system/sms/template',
     data,
-    operationId: 'SmsTemplateController_create_v1',
+    operationId: 'SmsTemplateController_create_v1'
   });
 }
 
@@ -31,7 +30,7 @@ export function fetchSmsTemplateUpdate(data: UpdateSmsTemplateDto) {
     method: 'PUT',
     url: '/system/sms/template',
     data,
-    operationId: 'SmsTemplateController_update_v1',
+    operationId: 'SmsTemplateController_update_v1'
   });
 }
 
@@ -44,7 +43,7 @@ export function fetchSmsTemplateFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/sms/template/list',
     params,
-    operationId: 'SmsTemplateController_findAll_v1',
+    operationId: 'SmsTemplateController_findAll_v1'
   });
 }
 
@@ -56,7 +55,7 @@ export function fetchSmsTemplateFindOne(id: string | number) {
   return apiRequest<SmsTemplateDetailVo>({
     method: 'GET',
     url: buildUrl('/system/sms/template/{id}', { id }),
-    operationId: 'SmsTemplateController_findOne_v1',
+    operationId: 'SmsTemplateController_findOne_v1'
   });
 }
 
@@ -68,6 +67,6 @@ export function fetchSmsTemplateRemove(id: string | number) {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: buildUrl('/system/sms/template/{id}', { id }),
-    operationId: 'SmsTemplateController_remove_v1',
+    operationId: 'SmsTemplateController_remove_v1'
   });
 }

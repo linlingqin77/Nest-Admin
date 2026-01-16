@@ -23,7 +23,7 @@ describe('Job Integration Tests', () => {
   let jobService: JobService;
   let jobLogService: JobLogService;
   let taskService: TaskService;
-  let createdJobIds: number[] = [];
+  const createdJobIds: number[] = [];
   let createdLogIds: number[] = [];
 
   beforeAll(async () => {
@@ -57,15 +57,19 @@ describe('Job Integration Tests', () => {
   afterAll(async () => {
     // Cleanup created test jobs
     if (createdJobIds.length > 0) {
-      await prisma.sysJob.deleteMany({
-        where: { jobId: { in: createdJobIds } },
-      }).catch(() => {});
+      await prisma.sysJob
+        .deleteMany({
+          where: { jobId: { in: createdJobIds } },
+        })
+        .catch(() => {});
     }
     // Cleanup created test logs
     if (createdLogIds.length > 0) {
-      await prisma.sysJobLog.deleteMany({
-        where: { jobLogId: { in: createdLogIds } },
-      }).catch(() => {});
+      await prisma.sysJobLog
+        .deleteMany({
+          where: { jobLogId: { in: createdLogIds } },
+        })
+        .catch(() => {});
     }
     await app.close();
   });
@@ -97,11 +101,7 @@ describe('Job Integration Tests', () => {
     });
 
     it('should execute task with parameters and record log', async () => {
-      const result = await taskService.executeTask(
-        "task.params('hello', 123, true)",
-        'Params Test Job',
-        'SYSTEM',
-      );
+      const result = await taskService.executeTask("task.params('hello', 123, true)", 'Params Test Job', 'SYSTEM');
       expect(result).toBe(true);
 
       // Verify log was created
@@ -119,11 +119,7 @@ describe('Job Integration Tests', () => {
     });
 
     it('should record failure log when task does not exist', async () => {
-      const result = await taskService.executeTask(
-        'nonExistentTask',
-        'Failed Task Job',
-        'DEFAULT',
-      );
+      const result = await taskService.executeTask('nonExistentTask', 'Failed Task Job', 'DEFAULT');
       expect(result).toBe(false);
 
       // Verify failure log was created

@@ -93,7 +93,6 @@ export class UserController {
     summary: '个人中心-修改用户信息',
     description: '修改当前用户的个人基本信息',
     body: UpdateProfileDto,
-    
   })
   @RequirePermission('system:user:edit')
   @Put('/profile')
@@ -125,7 +124,6 @@ export class UserController {
     summary: '个人中心-修改密码',
     description: '修改当前用户的登录密码',
     body: UpdatePwdDto,
-    
   })
   @RequirePermission('system:user:edit')
   @Operlog({ businessType: BusinessType.UPDATE })
@@ -138,7 +136,6 @@ export class UserController {
     summary: '用户-创建',
     description: '创建新用户，可分配角色和岗位',
     body: CreateUserDto,
-    
   })
   @RequirePermission('system:user:add')
   @Operlog({ businessType: BusinessType.INSERT })
@@ -226,7 +223,6 @@ export class UserController {
       { name: 'userId', description: '用户ID', required: true, type: 'number' },
       { name: 'roleIds', description: '角色ID列表，逗号分隔', required: true },
     ],
-    
   })
   @RequireRole('admin')
   @Put('authRole')
@@ -271,7 +267,6 @@ export class UserController {
     summary: '用户-修改状态',
     description: '启用或停用用户账号',
     body: ChangeUserStatusDto,
-    
   })
   @RequireRole('admin')
   @Operlog({ businessType: BusinessType.UPDATE })
@@ -284,7 +279,6 @@ export class UserController {
     summary: '用户-更新',
     description: '更新用户基本信息',
     body: UpdateUserDto,
-    
   })
   @RequirePermission('system:user:edit')
   @Operlog({ businessType: BusinessType.UPDATE })
@@ -301,7 +295,6 @@ export class UserController {
     summary: '用户-重置密码',
     description: '管理员重置用户密码',
     body: ResetPwdDto,
-    
   })
   @RequireRole('admin')
   @Operlog({ businessType: BusinessType.UPDATE })
@@ -314,7 +307,6 @@ export class UserController {
     summary: '用户-删除',
     description: '批量删除用户，多个ID用逗号分隔',
     params: [{ name: 'id', description: '用户ID，多个用逗号分隔' }],
-    
   })
   @RequireRole('admin')
   @Operlog({ businessType: BusinessType.DELETE })

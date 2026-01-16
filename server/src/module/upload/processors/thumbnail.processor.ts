@@ -34,7 +34,7 @@ export class ThumbnailProcessor {
     private readonly config: AppConfigService,
     private readonly prisma: PrismaService,
     private readonly metricsService: MetricsService,
-  ) { }
+  ) {}
 
   @Process('generate-thumbnail')
   async handleThumbnailGeneration(job: Job<ThumbnailJobData>): Promise<void> {

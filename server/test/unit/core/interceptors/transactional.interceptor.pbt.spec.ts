@@ -236,40 +236,34 @@ describe('TransactionalInterceptor Property-Based Tests', () => {
     }
 
     await fc.assert(
-      fc.asyncProperty(
-        fc.string({ minLength: 1, maxLength: 50 }),
-        async (errorMessage) => {
-          // Reset state
-          transactionStarted = false;
-          transactionCommitted = false;
-          transactionRolledBack = false;
+      fc.asyncProperty(fc.string({ minLength: 1, maxLength: 50 }), async (errorMessage) => {
+        // Reset state
+        transactionStarted = false;
+        transactionCommitted = false;
+        transactionRolledBack = false;
 
-          // Configure with noRollbackFor
-          jest.spyOn(reflector, 'get').mockReturnValue({
-            propagation: Propagation.REQUIRED,
-            isolationLevel: IsolationLevel.ReadCommitted,
-            rollbackFor: [],
-            noRollbackFor: [BusinessException],
-          });
+        // Configure with noRollbackFor
+        jest.spyOn(reflector, 'get').mockReturnValue({
+          propagation: Propagation.REQUIRED,
+          isolationLevel: IsolationLevel.ReadCommitted,
+          rollbackFor: [],
+          noRollbackFor: [BusinessException],
+        });
 
-          const context = createMockContext();
-          const errorHandler: CallHandler = {
-            handle: () => throwError(() => new BusinessException(errorMessage)),
-          };
+        const context = createMockContext();
+        const errorHandler: CallHandler = {
+          handle: () => throwError(() => new BusinessException(errorMessage)),
+        };
 
-          // The shouldRollback method should return false for BusinessException
-          const shouldRollback = (interceptor as any).shouldRollback(
-            new BusinessException(errorMessage),
-            {
-              rollbackFor: [],
-              noRollbackFor: [BusinessException],
-            },
-          );
+        // The shouldRollback method should return false for BusinessException
+        const shouldRollback = (interceptor as any).shouldRollback(new BusinessException(errorMessage), {
+          rollbackFor: [],
+          noRollbackFor: [BusinessException],
+        });
 
-          // Property: BusinessException should NOT trigger rollback
-          return shouldRollback === false;
-        },
-      ),
+        // Property: BusinessException should NOT trigger rollback
+        return shouldRollback === false;
+      }),
       { numRuns: 100 },
     );
   });

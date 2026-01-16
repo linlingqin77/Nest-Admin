@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { NButton, NDivider } from 'naive-ui';
 import { useBoolean } from '@sa/hooks';
 import { jsonClone } from '@sa/utils';
-import { fetchJobLogList, fetchJobLogClean } from '@/service/api-gen';
+import { fetchJobLogClean, fetchJobLogList } from '@/service/api-gen';
 import { fetchDeleteJobLog } from '@/service/api/monitor/job-log';
 import type { JobLogResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
@@ -19,7 +19,7 @@ import JobLogSearch from './modules/job-log-search.vue';
 import JobLogDetailDrawer from './modules/job-log-detail-drawer.vue';
 
 defineOptions({
-  name: 'JobLogList',
+  name: 'JobLogList'
 });
 
 /** 搜索参数接口 */
@@ -62,7 +62,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchJobLogList as any,
   apiParams: {
@@ -71,26 +71,26 @@ const {
     jobName: initialJobName,
     jobGroup: initialJobGroup,
     status: null,
-    params: {},
+    params: {}
   } as SearchParams,
   columns: () => [
     {
       type: 'selection',
       align: 'center',
-      width: 48,
+      width: 48
     },
     {
       key: 'index',
       title: $t('common.index'),
       align: 'center',
-      width: 64,
+      width: 64
     },
     {
       key: 'jobName',
       title: '任务名称',
       align: 'center',
       minWidth: 120,
-      ellipsis: { tooltip: true },
+      ellipsis: { tooltip: true }
     },
     {
       key: 'jobGroup',
@@ -99,21 +99,21 @@ const {
       width: 100,
       render(row) {
         return <DictTag value={(row as unknown as JobLogResponseDto).jobGroup} dictCode="sys_job_group" />;
-      },
+      }
     },
     {
       key: 'invokeTarget',
       title: '调用目标字符串',
       align: 'center',
       minWidth: 200,
-      ellipsis: { tooltip: true },
+      ellipsis: { tooltip: true }
     },
     {
       key: 'jobMessage',
       title: '日志信息',
       align: 'center',
       minWidth: 150,
-      ellipsis: { tooltip: true },
+      ellipsis: { tooltip: true }
     },
     {
       key: 'status',
@@ -122,20 +122,20 @@ const {
       width: 100,
       render(row) {
         return <DictTag value={(row as unknown as JobLogResponseDto).status} dictCode="sys_common_status" />;
-      },
+      }
     },
     {
       key: 'createTime',
       title: '执行时间',
       align: 'center',
-      width: 160,
+      width: 160
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 100,
-      render: (row) => {
+      render: row => {
         const typedRow = row as unknown as JobLogResponseDto;
         const viewBtn = () => (
           <ButtonIcon
@@ -172,9 +172,9 @@ const {
             ))}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const { checkedRowKeys, onBatchDeleted, onDeleted } = useTableOperate(data as any, getData);
@@ -211,7 +211,7 @@ async function handleClean() {
       } catch {
         // 错误消息已在请求工具中显示
       }
-    },
+    }
   });
 }
 
@@ -238,7 +238,7 @@ onMounted(() => {
 
 <template>
   <div class="min-h-500px flex-col-stretch gap-12px overflow-hidden lt-sm:overflow-auto">
-    <JobLogSearch v-model:model="(searchParams as any)" @reset="resetSearchParams" @search="getDataByPage" />
+    <JobLogSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getDataByPage" />
     <NCard title="调度日志" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
       <template #header-extra>
         <TableHeaderOperation
@@ -277,7 +277,7 @@ onMounted(() => {
         :scroll-x="1000"
         :loading="loading"
         remote
-        :row-key="(row) => row.jobLogId"
+        :row-key="row => row.jobLogId"
         :pagination="mobilePagination"
         class="h-full"
       />

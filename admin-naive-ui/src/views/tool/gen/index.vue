@@ -3,12 +3,7 @@ import { ref } from 'vue';
 import { NButton, NDivider } from 'naive-ui';
 import { useBoolean } from '@sa/hooks';
 import { jsonClone } from '@sa/utils';
-import {
-  fetchToolFindAll,
-  fetchToolRemove,
-  fetchToolSynchDb,
-  fetchToolGetDataNames,
-} from '@/service/api-gen';
+import { fetchToolFindAll, fetchToolGetDataNames, fetchToolRemove, fetchToolSynchDb } from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
 import { useDownload } from '@/hooks/business/download';
@@ -37,7 +32,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchToolFindAll as any,
   showTotal: true,
@@ -49,55 +44,55 @@ const {
     dataName: null,
     tableName: null,
     tableComment: null,
-    params: {},
+    params: {}
   },
   columns: () => [
     {
       type: 'selection',
       align: 'center',
-      width: 48,
+      width: 48
     },
     {
       key: 'index',
       title: $t('common.index'),
       align: 'center',
-      width: 64,
+      width: 64
     },
     {
       key: 'dataName',
       title: '数据源',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'tableName',
       title: '表名称',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'tableComment',
       title: '表描述',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'className',
       title: '实体',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'createTime',
       title: '创建时间',
       align: 'center',
-      minWidth: 150,
+      minWidth: 150
     },
     {
       key: 'updateTime',
       title: '更新时间',
       align: 'center',
-      minWidth: 150,
+      minWidth: 150
     },
     {
       key: 'operate',
@@ -183,9 +178,9 @@ const {
             ))}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const {
@@ -194,7 +189,7 @@ const {
   handleEdit,
   checkedRowKeys,
   onBatchDeleted,
-  onDeleted,
+  onDeleted
   // closeDrawer
 } = useTableOperate(data as any, getData);
 
@@ -238,7 +233,7 @@ function handleImport() {
 }
 
 function handlePreview(id: CommonType.IdType) {
-  const findItem = (data.value as any[]).find((item) => item.tableId === id) || null;
+  const findItem = (data.value as any[]).find(item => item.tableId === id) || null;
   editingData.value = jsonClone(findItem);
   openPreviewVisible();
 }
@@ -250,15 +245,18 @@ async function handleGenCode(row?: Api.Tool.GenTable) {
     return;
   }
   // request - use zip download for all cases
-  zip(`/tool/gen/batchGenCode/zip?tableIdStr=${tableIds}`, `RuoYi-${row?.tableId ? `${row.className}` : Date.now()}.zip`);
+  zip(
+    `/tool/gen/batchGenCode/zip?tableIdStr=${tableIds}`,
+    `RuoYi-${row?.tableId ? `${row.className}` : Date.now()}.zip`
+  );
 }
 
 const dataNameOptions = ref<CommonType.Option[]>([]);
 
 async function getDataNames() {
   try {
-    const { data: dataNames } = await fetchToolGetDataNames() as { data: string[] };
-    dataNameOptions.value = dataNames?.map((item) => ({ label: item, value: item })) || [];
+    const { data: dataNames } = (await fetchToolGetDataNames()) as { data: string[] };
+    dataNameOptions.value = dataNames?.map(item => ({ label: item, value: item })) || [];
   } catch {
     // error handled by request interceptor
   }
@@ -317,12 +315,16 @@ getDataNames();
         :scroll-x="1200"
         :loading="loading"
         remote
-        :row-key="(row) => row.tableId"
+        :row-key="row => row.tableId"
         :pagination="mobilePagination"
         class="sm:h-full"
       />
       <GenTableImportDrawer v-model:visible="importVisible" :options="dataNameOptions" @submitted="getData" />
-      <GenTableOperateDrawer v-model:visible="drawerVisible" :row-data="(editingData as Api.Tool.GenTable)" @submitted="getData" />
+      <GenTableOperateDrawer
+        v-model:visible="drawerVisible"
+        :row-data="(editingData as Api.Tool.GenTable)"
+        @submitted="getData"
+      />
       <GenTablePreviewDrawer
         v-model:visible="previewVisible"
         :row-data="(editingData as Api.Tool.GenTable)"

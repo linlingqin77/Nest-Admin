@@ -12,10 +12,10 @@ export enum SmsChannelCodeEnum {
 }
 
 export class CreateSmsChannelDto {
-  @ApiProperty({ 
-    description: '渠道编码', 
+  @ApiProperty({
+    description: '渠道编码',
     enum: SmsChannelCodeEnum,
-    example: 'aliyun' 
+    example: 'aliyun',
   })
   @IsString()
   @Length(1, 50)

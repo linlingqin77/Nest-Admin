@@ -341,11 +341,7 @@ describe('UserAuthService', () => {
     });
 
     it('should return unique role ids', async () => {
-      prismaMock.sysUserRole.findMany.mockResolvedValue([
-        { roleId: 1 },
-        { roleId: 2 },
-        { roleId: 1 },
-      ]);
+      prismaMock.sysUserRole.findMany.mockResolvedValue([{ roleId: 1 }, { roleId: 2 }, { roleId: 1 }]);
 
       const result = await service.getRoleIds([1, 2]);
 

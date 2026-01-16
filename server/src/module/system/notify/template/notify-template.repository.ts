@@ -7,7 +7,10 @@ import { PrismaService } from 'src/infrastructure/prisma';
  * 站内信模板仓储层
  */
 @Injectable()
-export class NotifyTemplateRepository extends SoftDeleteRepository<SysNotifyTemplate, Prisma.SysNotifyTemplateDelegate> {
+export class NotifyTemplateRepository extends SoftDeleteRepository<
+  SysNotifyTemplate,
+  Prisma.SysNotifyTemplateDelegate
+> {
   constructor(prisma: PrismaService) {
     super(prisma, 'sysNotifyTemplate');
   }

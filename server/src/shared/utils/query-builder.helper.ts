@@ -182,9 +182,7 @@ export class QueryBuilder<T extends Record<string, unknown>> {
 /**
  * 快捷方法：创建带软删除过滤的查询条件
  */
-export function createWhereWithDelFlag<T extends Record<string, unknown>>(
-  additionalConditions?: Partial<T>,
-): T {
+export function createWhereWithDelFlag<T extends Record<string, unknown>>(additionalConditions?: Partial<T>): T {
   return QueryBuilder.create<T>({ delFlag: '0', ...additionalConditions } as Partial<T>).build();
 }
 
@@ -222,10 +220,7 @@ export function buildListQuery<T extends Record<string, unknown>>(
   // 处理日期范围
   if (fieldMappings.dateRange) {
     const paramsKey = fieldMappings.dateRange.paramsKey || 'params';
-    builder.addDateRange(
-      fieldMappings.dateRange.field,
-      query[paramsKey] as { beginTime?: string; endTime?: string },
-    );
+    builder.addDateRange(fieldMappings.dateRange.field, query[paramsKey] as { beginTime?: string; endTime?: string });
   }
 
   return builder.build();

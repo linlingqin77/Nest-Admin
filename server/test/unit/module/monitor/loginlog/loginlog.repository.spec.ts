@@ -30,10 +30,7 @@ describe('LoginlogRepository', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        LoginlogRepository,
-        { provide: PrismaService, useValue: prismaMock },
-      ],
+      providers: [LoginlogRepository, { provide: PrismaService, useValue: prismaMock }],
     }).compile();
 
     repository = module.get<LoginlogRepository>(LoginlogRepository);
@@ -42,7 +39,6 @@ describe('LoginlogRepository', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-
 
   describe('findPageWithFilter', () => {
     it('should return paginated login logs', async () => {
@@ -69,7 +65,7 @@ describe('LoginlogRepository', () => {
       await repository.truncate();
 
       expect(prismaMock.$executeRawUnsafe).toHaveBeenCalledWith(
-        'TRUNCATE TABLE "SysLogininfor" RESTART IDENTITY CASCADE'
+        'TRUNCATE TABLE "SysLogininfor" RESTART IDENTITY CASCADE',
       );
     });
   });

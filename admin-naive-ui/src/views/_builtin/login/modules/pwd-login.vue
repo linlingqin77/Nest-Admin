@@ -10,7 +10,7 @@ import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { localStg } from '@/utils/storage';
 import { $t } from '@/locales';
 defineOptions({
-  name: 'PwdLogin',
+  name: 'PwdLogin'
 });
 
 const authStore = useAuthStore();
@@ -39,7 +39,7 @@ interface PwdLoginForm {
 const model: PwdLoginForm = reactive({
   tenantId: '000000',
   username: '',
-  password: '',
+  password: ''
 });
 
 // 演示账户快速填充
@@ -62,7 +62,7 @@ const rules = computed<Record<RuleKey, App.Global.FormRule[]>>(() => {
     username: [...formRules.userName, { required: true }],
     password: [createRequiredRule($t('form.pwd.required'))],
     code: captchaEnabled.value ? [createRequiredRule($t('form.code.required'))] : [],
-    tenantId: tenantEnabled.value ? formRules.tenantId : [],
+    tenantId: tenantEnabled.value ? formRules.tenantId : []
   };
 
   return loginRules;
@@ -76,10 +76,10 @@ async function handleFetchTenantList() {
     }
     tenantEnabled.value = data.tenantEnabled;
     if (data.tenantEnabled) {
-      tenantOption.value = data.voList.map((tenant) => {
+      tenantOption.value = data.voList.map(tenant => {
         return {
           label: tenant.companyName,
-          value: tenant.tenantId,
+          value: tenant.tenantId
         };
       });
     }
@@ -108,7 +108,7 @@ async function handleSubmit() {
       username: model.username,
       password: model.password,
       code: model.code,
-      uuid: model.uuid,
+      uuid: model.uuid
     });
   } catch (error) {
     handleFetchCaptchaCode();
@@ -183,8 +183,8 @@ async function handleSocialLogin(type: Api.System.SocialSource) {
         <div class="demo-icon">
           <icon-carbon:user-avatar class="text-24px" />
         </div>
-        <div class="flex-1 ml-12px">
-          <div class="text-16px font-600 mb-2px">演示账户快速体验</div>
+        <div class="ml-12px flex-1">
+          <div class="mb-2px text-16px font-600">演示账户快速体验</div>
           <div class="text-12px opacity-70">账号: demo / 密码: demo123 (仅查看权限)</div>
         </div>
         <icon-carbon:arrow-right class="text-20px opacity-60" />
@@ -232,9 +232,11 @@ async function handleSocialLogin(type: Api.System.SocialSource) {
       <NSpace vertical :size="12" class="mb-8px">
         <div class="mx-6px mb-8px flex-y-center justify-between">
           <NCheckbox v-model:checked="remberMe" size="large">{{ $t('page.login.pwdLogin.rememberMe') }}</NCheckbox>
-          <!-- <NA type="primary" class="text-18px" @click="toggleLoginModule('reset-pwd')">
+          <!--
+ <NA type="primary" class="text-18px" @click="toggleLoginModule('reset-pwd')">
             {{ $t('page.login.pwdLogin.forgetPassword') }}
-          </NA> -->
+          </NA> 
+-->
         </div>
         <NButton type="primary" size="large" block :loading="authStore.loginLoading" @click="handleSubmit">
           {{ $t('common.login') }}
@@ -247,9 +249,11 @@ async function handleSocialLogin(type: Api.System.SocialSource) {
     <!-- 
     <NDivider>
       <div class="color-#858585">{{ $t('page.login.pwdLogin.otherAccountLogin') }}</div>
-    </NDivider> -->
+    </NDivider> 
+-->
 
-    <!-- <div class="w-full flex-y-center gap-16px">
+    <!--
+ <div class="w-full flex-y-center gap-16px">
       <NButton class="flex-1" @click="handleSocialLogin('gitee')">
         <template #icon>
           <icon-simple-icons:gitee class="color-#c71d23" />
@@ -262,7 +266,8 @@ async function handleSocialLogin(type: Api.System.SocialSource) {
         </template>
   <span class="ml-6px">GitHub</span>
 </NButton>
-</div> -->
+</div> 
+-->
 
     <div class="mt-24px w-full text-center text-18px text-#858585">
       您还没有账户？

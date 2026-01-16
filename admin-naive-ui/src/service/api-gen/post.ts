@@ -5,9 +5,18 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CreatePostRequestDto, CreatePostResultResponseDto, UpdatePostRequestDto, UpdatePostResultResponseDto, PostListResponseDto, PostResponseDto, DeptTreeResponseDto, DeletePostResultResponseDto, ListPostRequestDto } from './types';
+import type {
+  CreatePostRequestDto,
+  CreatePostResultResponseDto,
+  DeletePostResultResponseDto,
+  DeptTreeResponseDto,
+  ListPostRequestDto,
+  PostListResponseDto,
+  PostResponseDto,
+  UpdatePostRequestDto,
+  UpdatePostResultResponseDto
+} from './types';
 
 /**
  * 岗位管理-创建
@@ -18,7 +27,7 @@ export function fetchPostCreate(data: CreatePostRequestDto) {
     method: 'POST',
     url: '/system/post',
     data,
-    operationId: 'PostController_create_v1',
+    operationId: 'PostController_create_v1'
   });
 }
 
@@ -31,7 +40,7 @@ export function fetchPostUpdate(data: UpdatePostRequestDto) {
     method: 'PUT',
     url: '/system/post',
     data,
-    operationId: 'PostController_update_v1',
+    operationId: 'PostController_update_v1'
   });
 }
 
@@ -44,7 +53,7 @@ export function fetchPostFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/post/list',
     params,
-    operationId: 'PostController_findAll_v1',
+    operationId: 'PostController_findAll_v1'
   });
 }
 
@@ -57,7 +66,7 @@ export function fetchPostOptionselect(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/post/optionselect',
     params,
-    operationId: 'PostController_optionselect_v1',
+    operationId: 'PostController_optionselect_v1'
   });
 }
 
@@ -69,7 +78,7 @@ export function fetchPostDeptTree() {
   return apiRequest<DeptTreeResponseDto[]>({
     method: 'GET',
     url: '/system/post/deptTree',
-    operationId: 'PostController_deptTree_v1',
+    operationId: 'PostController_deptTree_v1'
   });
 }
 
@@ -81,7 +90,7 @@ export function fetchPostFindOne(id: string | number) {
   return apiRequest<PostResponseDto>({
     method: 'GET',
     url: buildUrl('/system/post/{id}', { id }),
-    operationId: 'PostController_findOne_v1',
+    operationId: 'PostController_findOne_v1'
   });
 }
 
@@ -93,7 +102,7 @@ export function fetchPostRemove(ids: string | number) {
   return apiRequest<DeletePostResultResponseDto>({
     method: 'DELETE',
     url: buildUrl('/system/post/{ids}', { ids }),
-    operationId: 'PostController_remove_v1',
+    operationId: 'PostController_remove_v1'
   });
 }
 
@@ -106,6 +115,6 @@ export function fetchPostExport(data: ListPostRequestDto) {
     method: 'POST',
     url: '/system/post/export',
     data,
-    operationId: 'PostController_export_v1',
+    operationId: 'PostController_export_v1'
   });
 }

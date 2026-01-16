@@ -7,7 +7,7 @@
  * @requirements 14.1, 5.3
  */
 
-import { http, HttpResponse } from 'msw';
+import { HttpResponse, http } from 'msw';
 
 /**
  * 模拟用户数据
@@ -20,7 +20,7 @@ export const mockUsers = [
     email: 'admin@example.com',
     phone: '13800138000',
     status: '0',
-    createTime: '2024-01-01 00:00:00',
+    createTime: '2024-01-01 00:00:00'
   },
   {
     userId: 2,
@@ -29,8 +29,8 @@ export const mockUsers = [
     email: 'user@example.com',
     phone: '13800138001',
     status: '0',
-    createTime: '2024-01-02 00:00:00',
-  },
+    createTime: '2024-01-02 00:00:00'
+  }
 ];
 
 /**
@@ -42,15 +42,15 @@ export const mockRoles = [
     roleName: '超级管理员',
     roleKey: 'admin',
     roleSort: 1,
-    status: '0',
+    status: '0'
   },
   {
     roleId: 2,
     roleName: '普通角色',
     roleKey: 'common',
     roleSort: 2,
-    status: '0',
-  },
+    status: '0'
+  }
 ];
 
 /**
@@ -67,7 +67,7 @@ export const mockMenus = [
     menuType: 'M',
     visible: '0',
     status: '0',
-    icon: 'system',
+    icon: 'system'
   },
   {
     menuId: 100,
@@ -79,8 +79,8 @@ export const mockMenus = [
     menuType: 'C',
     visible: '0',
     status: '0',
-    icon: 'user',
-  },
+    icon: 'user'
+  }
 ];
 
 /**
@@ -89,7 +89,7 @@ export const mockMenus = [
 export const createSuccessResponse = <T>(data: T, msg = '操作成功') => ({
   code: 200,
   msg,
-  data,
+  data
 });
 
 /**
@@ -103,8 +103,8 @@ export const createPageResponse = <T>(rows: T[], total: number, pageNum = 1, pag
     total,
     pageNum,
     pageSize,
-    pages: Math.ceil(total / pageSize),
-  },
+    pages: Math.ceil(total / pageSize)
+  }
 });
 
 /**
@@ -113,7 +113,7 @@ export const createPageResponse = <T>(rows: T[], total: number, pageNum = 1, pag
 export const createErrorResponse = (code: number, msg: string) => ({
   code,
   msg,
-  data: null,
+  data: null
 });
 
 /**
@@ -128,8 +128,8 @@ export const handlers = [
       return HttpResponse.json(
         createSuccessResponse({
           token: 'mock-token-12345',
-          userInfo: mockUsers[0],
-        }),
+          userInfo: mockUsers[0]
+        })
       );
     }
     return HttpResponse.json(createErrorResponse(401, '用户名或密码错误'));
@@ -141,8 +141,8 @@ export const handlers = [
       createSuccessResponse({
         ...mockUsers[0],
         roles: ['admin'],
-        permissions: ['*:*:*'],
-      }),
+        permissions: ['*:*:*']
+      })
     );
   }),
 
@@ -159,7 +159,7 @@ export const handlers = [
   // 获取用户详情
   http.get('/api/system/user/:id', ({ params }) => {
     const userId = Number(params.id);
-    const user = mockUsers.find((u) => u.userId === userId);
+    const user = mockUsers.find(u => u.userId === userId);
     if (user) {
       return HttpResponse.json(createSuccessResponse(user));
     }
@@ -174,7 +174,7 @@ export const handlers = [
   // 菜单列表接口
   http.get('/api/system/menu/list', () => {
     return HttpResponse.json(createSuccessResponse(mockMenus));
-  }),
+  })
 ];
 
 export default handlers;

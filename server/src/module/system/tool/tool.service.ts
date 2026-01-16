@@ -21,6 +21,7 @@ import { Transactional } from 'src/core/decorators/transactional.decorator';
 import { PrismaService } from 'src/infrastructure/prisma';
 import { Prisma, GenTable, GenTableColumn } from '@prisma/client';
 import { Response } from 'express';
+import { PreviewService } from './preview/preview.service';
 
 type DbTableRow = {
   tableName: string;
@@ -44,7 +45,10 @@ type GenTableWithColumns = GenTable & { columns: GenTableColumn[] };
 
 @Injectable()
 export class ToolService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly previewService: PreviewService,
+  ) {}
 
   private async fetchTableDetail(where: Prisma.GenTableWhereInput): Promise<GenTableWithColumns | null> {
     const criteria: Prisma.GenTableWhereInput = { delFlag: DelFlagEnum.NORMAL, ...where };
@@ -332,77 +336,154 @@ export class ToolService {
 
   /**
    * 生成代码压缩包
-   * @param table
-   * @param res
+   * @param table 表名参数
+   * @param res HTTP 响应对象
+   * @param projectName 项目名称（可选，默认为 'code'）
    */
-  async batchGenCode(table: TableName, res: Response) {
-    const zipFilePath = path.posix.join(__dirname, 'temp.zip');
+  async batchGenCode(table: TableName, res: Response, projectName: string = 'code') {
+    // 生成带时间戳的文件名: {projectName}_{timestamp}.zip
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/[-:T.Z]/g, '')
+      .slice(0, 14);
+    const zipFileName = `${projectName}_${timestamp}.zip`;
+    const zipFilePath = path.posix.join(__dirname, zipFileName);
+
     const output = fs.createWriteStream(zipFilePath);
     const archive = archiver('zip', {
       zlib: { level: 9 },
     });
+
     output.on('close', async () => {
-      res.download(zipFilePath, 'download.zip', async (err) => {
-        if (!err) await fs.remove(zipFilePath);
-        else res.status(500).send('Error downloading file');
+      res.download(zipFilePath, zipFileName, async (err) => {
+        if (!err) {
+          await fs.remove(zipFilePath);
+        } else {
+          res.status(500).send('Error downloading file');
+        }
       });
     });
 
     archive.on('error', (err) => {
-      throw err;
+      throw new BusinessException(ResponseCode.BUSINESS_ERROR, `ZIP 文件创建失败: ${err.message}`);
     });
-    const tableNamesList = table.tableNames.split(',').filter((name) => name);
+
+    const tableNamesList = table.tableNames.split(',').filter((name) => name.trim());
+
+    if (tableNamesList.length === 0) {
+      throw new BusinessException(ResponseCode.PARAM_INVALID, '请选择至少一个表进行代码生成');
+    }
+
+    // 批量获取表信息
     const tableList = await Promise.all(
-      tableNamesList.map(async (item) => {
-        const data = await this.fetchTableDetail({ tableName: item });
+      tableNamesList.map(async (tableName) => {
+        const data = await this.fetchTableDetail({ tableName: tableName.trim() });
         if (!data) {
-          throw new BusinessException(ResponseCode.BUSINESS_ERROR, `表 ${item} 不存在`);
+          throw new BusinessException(ResponseCode.BUSINESS_ERROR, `表 ${tableName} 不存在`);
         }
         const primaryKey = await this.getPrimaryKey(data.columns);
-        return { primaryKey, BusinessName: capitalize(data.businessName), ...data, columns: data.columns };
+        return {
+          primaryKey,
+          BusinessName: capitalize(data.businessName),
+          ...data,
+          columns: data.columns,
+        };
       }),
     );
 
     archive.pipe(output);
-    for (const item of tableList) {
-      const list = templateIndex(item);
-      const templates = [
-        {
-          content: list['tool/template/nestjs/entity.ts.vm'],
-          path: `nestjs/${item.BusinessName}/entities/${item.businessName}.entity.ts`,
-        },
-        {
-          content: list['tool/template/nestjs/dto.ts.vm'],
-          path: `nestjs/${item.BusinessName}/dto/${item.businessName}.dto.ts`,
-        },
-        {
-          content: list['tool/template/nestjs/controller.ts.vm'],
-          path: `nestjs/${item.BusinessName}/${item.businessName}.controller.ts`,
-        },
-        {
-          content: list['tool/template/nestjs/service.ts.vm'],
-          path: `nestjs/${item.BusinessName}/${item.businessName}.service.ts`,
-        },
-        {
-          content: list['tool/template/nestjs/module.ts.vm'],
-          path: `nestjs/${item.BusinessName}/${item.businessName}.module.ts`,
-        },
-        { content: list['tool/template/vue/api.js.vm'], path: `vue/${item.BusinessName}/${item.businessName}.js` },
-        {
-          content: list['tool/template/vue/indexVue.vue.vm'],
-          path: `vue/${item.BusinessName}/${item.businessName}/index.vue`,
-        },
-        {
-          content: list['tool/template/vue/dialogVue.vue.vm'],
-          path: `vue/${item.BusinessName}/${item.businessName}/components/indexDialog.vue`,
-        },
-      ];
 
-      for (const template of templates) {
-        if (!template.content) {
-          BusinessException.throw(ResponseCode.DATA_NOT_FOUND, '代码模板内容不存在');
+    // 为每个表生成代码
+    for (const item of tableList) {
+      const templateOutput = templateIndex(item);
+
+      // 使用 PreviewService 获取文件列表
+      const previewResponse = this.previewService.createPreviewResponse(templateOutput, item.BusinessName);
+
+      // 将所有文件添加到 ZIP 归档
+      for (const file of previewResponse.files) {
+        if (!file.content) {
+          throw new BusinessException(ResponseCode.DATA_NOT_FOUND, `模板 ${file.name} 生成失败，内容为空`);
         }
-        archive.append(Buffer.from(template.content), { name: template.path });
+        // 使用 UTF-8 编码
+        archive.append(Buffer.from(file.content, 'utf-8'), { name: file.path });
+      }
+    }
+
+    await archive.finalize();
+  }
+
+  /**
+   * 批量生成代码（通过表ID列表）
+   * @param tableIds 表ID列表
+   * @param res HTTP 响应对象
+   * @param projectName 项目名称（可选）
+   */
+  async batchGenCodeByIds(tableIds: number[], res: Response, projectName: string = 'code') {
+    if (!tableIds || tableIds.length === 0) {
+      throw new BusinessException(ResponseCode.PARAM_INVALID, '请选择至少一个表进行代码生成');
+    }
+
+    // 生成带时间戳的文件名
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/[-:T.Z]/g, '')
+      .slice(0, 14);
+    const zipFileName = `${projectName}_${timestamp}.zip`;
+    const zipFilePath = path.posix.join(__dirname, zipFileName);
+
+    const output = fs.createWriteStream(zipFilePath);
+    const archive = archiver('zip', {
+      zlib: { level: 9 },
+    });
+
+    output.on('close', async () => {
+      res.download(zipFilePath, zipFileName, async (err) => {
+        if (!err) {
+          await fs.remove(zipFilePath);
+        } else {
+          res.status(500).send('Error downloading file');
+        }
+      });
+    });
+
+    archive.on('error', (err) => {
+      throw new BusinessException(ResponseCode.BUSINESS_ERROR, `ZIP 文件创建失败: ${err.message}`);
+    });
+
+    // 批量获取表信息
+    const tableList = await Promise.all(
+      tableIds.map(async (tableId) => {
+        const data = await this.fetchTableDetail({ tableId });
+        if (!data) {
+          throw new BusinessException(ResponseCode.BUSINESS_ERROR, `表ID ${tableId} 不存在`);
+        }
+        const primaryKey = await this.getPrimaryKey(data.columns);
+        return {
+          primaryKey,
+          BusinessName: capitalize(data.businessName),
+          ...data,
+          columns: data.columns,
+        };
+      }),
+    );
+
+    archive.pipe(output);
+
+    // 为每个表生成代码
+    for (const item of tableList) {
+      const templateOutput = templateIndex(item);
+
+      // 使用 PreviewService 获取文件列表
+      const previewResponse = this.previewService.createPreviewResponse(templateOutput, item.BusinessName);
+
+      // 将所有文件添加到 ZIP 归档
+      for (const file of previewResponse.files) {
+        if (!file.content) {
+          throw new BusinessException(ResponseCode.DATA_NOT_FOUND, `模板 ${file.name} 生成失败，内容为空`);
+        }
+        // 使用 UTF-8 编码
+        archive.append(Buffer.from(file.content, 'utf-8'), { name: file.path });
       }
     }
 
@@ -424,7 +505,7 @@ export class ToolService {
   /**
    * 预览生成代码
    * @param id
-   * @returns
+   * @returns 包含文件列表、文件树、统计信息的预览响应
    */
   async preview(id: number) {
     const data = await this.fetchTableDetail({ tableId: id });
@@ -433,7 +514,12 @@ export class ToolService {
     }
     const primaryKey = await this.getPrimaryKey(data.columns);
     const info = { primaryKey, BusinessName: capitalize(data.businessName), ...data, columns: data.columns };
-    return Result.ok(templateIndex(info));
+    const templateOutput = templateIndex(info);
+
+    // 使用 PreviewService 创建完整的预览响应
+    const previewResponse = this.previewService.createPreviewResponse(templateOutput, capitalize(data.businessName));
+
+    return Result.ok(previewResponse);
   }
   /**
    * 查询db数据库列表

@@ -26,9 +26,13 @@ describe('Config Integration Tests', () => {
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api');
     app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1', prefix: 'v' });
-    app.useGlobalPipes(new ValidationPipe({
-      transform: true, whitelist: true, transformOptions: { enableImplicitConversion: true },
-    }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        transformOptions: { enableImplicitConversion: true },
+      }),
+    );
 
     await app.init();
     prisma = app.get(PrismaService);
@@ -97,7 +101,13 @@ describe('Config Integration Tests', () => {
     });
 
     it('should filter configs by configKey', async () => {
-      const result = await configService.findAll({ pageNum: 1, pageSize: 10, skip: 0, take: 10, configKey: 'sys.index' } as any);
+      const result = await configService.findAll({
+        pageNum: 1,
+        pageSize: 10,
+        skip: 0,
+        take: 10,
+        configKey: 'sys.index',
+      } as any);
       expect(result.code).toBe(200);
       result.data.rows.forEach((config: any) => {
         expect(config.configKey.toLowerCase()).toContain('sys.index');
@@ -105,7 +115,13 @@ describe('Config Integration Tests', () => {
     });
 
     it('should filter configs by configType', async () => {
-      const result = await configService.findAll({ pageNum: 1, pageSize: 10, skip: 0, take: 10, configType: 'Y' } as any);
+      const result = await configService.findAll({
+        pageNum: 1,
+        pageSize: 10,
+        skip: 0,
+        take: 10,
+        configType: 'Y',
+      } as any);
       expect(result.code).toBe(200);
       result.data.rows.forEach((config: any) => {
         expect(config.configType).toBe('Y');

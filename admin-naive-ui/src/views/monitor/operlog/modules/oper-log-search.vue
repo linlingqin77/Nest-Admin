@@ -4,7 +4,7 @@ import { useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'OperLogSearch',
+  name: 'OperLogSearch'
 });
 
 interface Emits {
@@ -50,7 +50,7 @@ async function search() {
         <NForm ref="formRef" :model="model" label-placement="left" :label-width="80">
           <NGrid responsive="screen" item-responsive>
             <NFormItemGi span="24 s:12 m:6" label="系统模块" path="title" class="pr-24px">
-              <NInput v-model:value="(model.title as string)" placeholder="请输入系统模块" />
+              <NInput v-model:value="model.title as string" placeholder="请输入系统模块" />
             </NFormItemGi>
             <NFormItemGi span="24 s:12 m:6" label="操作类型" path="businessType" class="pr-24px">
               <DictSelect
@@ -61,10 +61,10 @@ async function search() {
               />
             </NFormItemGi>
             <NFormItemGi span="24 s:12 m:6" label="操作人员" path="operName" class="pr-24px">
-              <NInput v-model:value="(model.operName as string)" placeholder="请输入操作人员" />
+              <NInput v-model:value="model.operName as string" placeholder="请输入操作人员" />
             </NFormItemGi>
             <NFormItemGi span="24 s:12 m:6" label="操作IP" path="operIp" class="pr-24px">
-              <NInput v-model:value="(model.operIp as string)" placeholder="请输入操作IP" />
+              <NInput v-model:value="model.operIp as string" placeholder="请输入操作IP" />
             </NFormItemGi>
             <NFormItemGi span="24 s:12 m:8" label="操作状态" path="status" class="pr-24px">
               <DictSelect

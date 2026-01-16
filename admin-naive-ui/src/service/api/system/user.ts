@@ -4,7 +4,7 @@ import { request } from '@/service/request';
 export function fetchGetDeptTree() {
   return request<Api.Common.CommonTreeRecord>({
     url: '/system/user/deptTree',
-    method: 'get',
+    method: 'get'
   });
 }
 
@@ -13,6 +13,6 @@ export function fetchUpdateUserAvatar(formData: FormData) {
   return request<boolean>({
     url: '/system/user/profile/avatar',
     method: 'post',
-    data: formData,
+    data: formData
   });
 }

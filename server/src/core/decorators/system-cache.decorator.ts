@@ -40,7 +40,10 @@ export function SystemCacheable(options: { key: string | ((args: unknown[]) => s
   return function <T extends object>(target: T, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
 
-    descriptor.value = async function (this: T & { redisService?: RedisService; moduleRef?: { get: (type: typeof RedisService) => RedisService } }, ...args: unknown[]) {
+    descriptor.value = async function (
+      this: T & { redisService?: RedisService; moduleRef?: { get: (type: typeof RedisService) => RedisService } },
+      ...args: unknown[]
+    ) {
       // 获取 RedisService 实例
       const redisService: RedisService | undefined = this.redisService || this.moduleRef?.get(RedisService);
 
@@ -107,7 +110,10 @@ export function ClearSystemCache(keys: string[]) {
   return function <T extends object>(target: T, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
 
-    descriptor.value = async function (this: T & { redisService?: RedisService; moduleRef?: { get: (type: typeof RedisService) => RedisService } }, ...args: unknown[]) {
+    descriptor.value = async function (
+      this: T & { redisService?: RedisService; moduleRef?: { get: (type: typeof RedisService) => RedisService } },
+      ...args: unknown[]
+    ) {
       // 执行原方法
       const result = await originalMethod.apply(this, args);
 

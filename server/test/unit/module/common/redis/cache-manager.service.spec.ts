@@ -86,9 +86,7 @@ describe('CacheManagerService', () => {
         { dictType: 'sys_user_sex' },
         { dictType: 'sys_normal_disable' },
       ]);
-      prismaMock.sysDictData.findMany.mockResolvedValue([
-        { dictValue: '0', dictLabel: '男' },
-      ]);
+      prismaMock.sysDictData.findMany.mockResolvedValue([{ dictValue: '0', dictLabel: '男' }]);
 
       await service.warmup('dict');
 
@@ -117,11 +115,7 @@ describe('CacheManagerService', () => {
     it('should set cache with jitter', async () => {
       await service.set('test:key', { data: 'value' }, 3600);
 
-      expect(redisMock.set).toHaveBeenCalledWith(
-        'test:key',
-        { data: 'value' },
-        expect.any(Number),
-      );
+      expect(redisMock.set).toHaveBeenCalledWith('test:key', { data: 'value' }, expect.any(Number));
       // TTL should be between 3600 and 3900 (base + jitter range)
       const ttl = redisMock.set.mock.calls[0][2];
       expect(ttl).toBeGreaterThanOrEqual(3600);
@@ -197,9 +191,7 @@ describe('CacheManagerService', () => {
 
   describe('getStats', () => {
     it('should return cache statistics', async () => {
-      redisMock.keys
-        .mockResolvedValueOnce(['dict:key1', 'dict:key2'])
-        .mockResolvedValueOnce(['config:key1']);
+      redisMock.keys.mockResolvedValueOnce(['dict:key1', 'dict:key2']).mockResolvedValueOnce(['config:key1']);
 
       const stats = await service.getStats();
 

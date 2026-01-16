@@ -72,7 +72,7 @@ describe('Property 6: Login Token Validity', () => {
   it('should return a valid token on successful login', async () => {
     // Unlock account before testing to avoid lockout from previous test runs
     await helper.unlockAccount('admin');
-    
+
     await fc.assert(
       fc.asyncProperty(fc.constant(null), async () => {
         // Perform login

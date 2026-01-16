@@ -7,8 +7,8 @@
  * **Validates: Requirements 14.2, 14.3, 14.4**
  */
 
-import { describe, it, expect, beforeAll, afterAll, afterEach, vi } from 'vitest';
-import { http, HttpResponse } from 'msw';
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
+import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 
 // Mock API 响应数据
@@ -21,9 +21,9 @@ const mockLoginResponse = {
       userId: 1,
       userName: 'admin',
       nickName: '管理员',
-      avatar: '/avatar.png',
-    },
-  },
+      avatar: '/avatar.png'
+    }
+  }
 };
 
 const mockUserInfoResponse = {
@@ -37,8 +37,8 @@ const mockUserInfoResponse = {
     phone: '13800138000',
     status: '0',
     roles: ['admin'],
-    permissions: ['*:*:*'],
-  },
+    permissions: ['*:*:*']
+  }
 };
 
 // 设置 MSW 服务器
@@ -54,7 +54,7 @@ const server = setupServer(
     return HttpResponse.json({
       code: 401,
       msg: '用户名或密码错误',
-      data: null,
+      data: null
     });
   }),
 
@@ -68,9 +68,9 @@ const server = setupServer(
     return HttpResponse.json({
       code: 200,
       msg: '登出成功',
-      data: null,
+      data: null
     });
-  }),
+  })
 );
 
 // 模拟的 API 服务函数
@@ -78,7 +78,7 @@ const login = async (data: { userName: string; password: string }) => {
   const response = await fetch('/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+    body: JSON.stringify(data)
   });
   return response.json();
 };
@@ -90,7 +90,7 @@ const getUserInfo = async () => {
 
 const logout = async () => {
   const response = await fetch('/api/auth/logout', {
-    method: 'POST',
+    method: 'POST'
   });
   return response.json();
 };
@@ -112,7 +112,7 @@ describe('Auth API Service', () => {
     it('应该在凭证正确时返回 token', async () => {
       const result = await login({
         userName: 'admin',
-        password: 'admin123',
+        password: 'admin123'
       });
 
       expect(result.code).toBe(200);
@@ -126,7 +126,7 @@ describe('Auth API Service', () => {
     it('应该在凭证错误时返回错误', async () => {
       const result = await login({
         userName: 'admin',
-        password: 'wrongpassword',
+        password: 'wrongpassword'
       });
 
       expect(result.code).toBe(401);
@@ -137,7 +137,7 @@ describe('Auth API Service', () => {
     it('应该在用户名错误时返回错误', async () => {
       const result = await login({
         userName: 'wronguser',
-        password: 'admin123',
+        password: 'admin123'
       });
 
       expect(result.code).toBe(401);
@@ -148,14 +148,14 @@ describe('Auth API Service', () => {
       server.use(
         http.post('/api/auth/login', () => {
           return HttpResponse.error();
-        }),
+        })
       );
 
       await expect(
         login({
           userName: 'admin',
-          password: 'admin123',
-        }),
+          password: 'admin123'
+        })
       ).rejects.toThrow();
     });
 
@@ -166,16 +166,16 @@ describe('Auth API Service', () => {
             {
               code: 500,
               msg: '服务器内部错误',
-              data: null,
+              data: null
             },
-            { status: 500 },
+            { status: 500 }
           );
-        }),
+        })
       );
 
       const result = await login({
         userName: 'admin',
-        password: 'admin123',
+        password: 'admin123'
       });
 
       expect(result.code).toBe(500);
@@ -203,11 +203,11 @@ describe('Auth API Service', () => {
             {
               code: 401,
               msg: '未授权，请先登录',
-              data: null,
+              data: null
             },
-            { status: 401 },
+            { status: 401 }
           );
-        }),
+        })
       );
 
       const result = await getUserInfo();
@@ -222,9 +222,9 @@ describe('Auth API Service', () => {
           return HttpResponse.json({
             code: 401,
             msg: 'token 已过期，请重新登录',
-            data: null,
+            data: null
           });
-        }),
+        })
       );
 
       const result = await getUserInfo();
@@ -248,9 +248,9 @@ describe('Auth API Service', () => {
           return HttpResponse.json({
             code: 500,
             msg: '登出失败',
-            data: null,
+            data: null
           });
-        }),
+        })
       );
 
       const result = await logout();
@@ -264,7 +264,7 @@ describe('Auth API Service', () => {
     it('登录响应应该包含必要字段', async () => {
       const result = await login({
         userName: 'admin',
-        password: 'admin123',
+        password: 'admin123'
       });
 
       // 验证响应结构

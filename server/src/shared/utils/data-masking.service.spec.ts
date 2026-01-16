@@ -293,10 +293,7 @@ describe('DataMaskingService', () => {
 
     it('should handle arrays', () => {
       const obj = {
-        users: [
-          { phone: '13812345678' },
-          { phone: '13987654321' },
-        ],
+        users: [{ phone: '13812345678' }, { phone: '13987654321' }],
       };
       const masked = service.maskObjectDeep(obj);
       expect(masked.users[0].phone).toBe('138****5678');

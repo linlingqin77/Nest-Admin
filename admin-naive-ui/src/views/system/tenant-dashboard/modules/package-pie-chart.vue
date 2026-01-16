@@ -3,7 +3,7 @@ import { watch } from 'vue';
 import { useEcharts } from '@/hooks/common/echarts';
 
 defineOptions({
-  name: 'PackagePieChart',
+  name: 'PackagePieChart'
 });
 
 interface Props {
@@ -13,20 +13,20 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   data: () => [],
-  loading: false,
+  loading: false
 });
 
 const { domRef, updateOptions } = useEcharts(() => ({
   tooltip: {
     trigger: 'item',
-    formatter: '{b}: {c} ({d}%)',
+    formatter: '{b}: {c} ({d}%)'
   },
   legend: {
     bottom: '1%',
     left: 'center',
     itemStyle: {
-      borderWidth: 0,
-    },
+      borderWidth: 0
+    }
   },
   series: [
     {
@@ -38,40 +38,40 @@ const { domRef, updateOptions } = useEcharts(() => ({
       itemStyle: {
         borderRadius: 10,
         borderColor: '#fff',
-        borderWidth: 1,
+        borderWidth: 1
       },
       label: {
         show: false,
-        position: 'center',
+        position: 'center'
       },
       emphasis: {
         label: {
           show: true,
-          fontSize: '12',
-        },
+          fontSize: '12'
+        }
       },
       labelLine: {
-        show: false,
+        show: false
       },
-      data: [] as { name: string; value: number }[],
-    },
-  ],
+      data: [] as { name: string; value: number }[]
+    }
+  ]
 }));
 
 watch(
   () => props.data,
-  (newData) => {
+  newData => {
     if (newData && newData.length > 0) {
-      updateOptions((opts) => {
-        opts.series[0].data = newData.map((item) => ({
+      updateOptions(opts => {
+        opts.series[0].data = newData.map(item => ({
           name: item.packageName,
-          value: item.count,
+          value: item.count
         }));
         return opts;
       });
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 </script>
 

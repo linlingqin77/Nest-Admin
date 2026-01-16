@@ -220,10 +220,7 @@ describe('RoleService', () => {
 
     it('should return permissions for normal roles', async () => {
       prismaMock.sysRoleMenu.findMany.mockResolvedValue([{ menuId: 1 }, { menuId: 2 }]);
-      prismaMock.sysMenu.findMany.mockResolvedValue([
-        { perms: 'system:user:list' },
-        { perms: 'system:user:add' },
-      ]);
+      prismaMock.sysMenu.findMany.mockResolvedValue([{ perms: 'system:user:list' }, { perms: 'system:user:add' }]);
 
       const result = await service.getPermissionsByRoleIds([2]);
 

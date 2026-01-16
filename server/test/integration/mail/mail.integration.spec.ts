@@ -133,10 +133,12 @@ describe('Mail Integration Tests', () => {
     });
 
     it('should list mail accounts with pagination', async () => {
-      const result = await mailAccountService.findAll(createListMailAccountDto({
-        pageNum: 1,
-        pageSize: 10,
-      }));
+      const result = await mailAccountService.findAll(
+        createListMailAccountDto({
+          pageNum: 1,
+          pageSize: 10,
+        }),
+      );
 
       expect(result.code).toBe(200);
       expect(result.data.rows).toBeDefined();
@@ -165,11 +167,13 @@ describe('Mail Integration Tests', () => {
         createdAccountIds.push(account.id);
       }
 
-      const result = await mailAccountService.findAll(createListMailAccountDto({
-        pageNum: 1,
-        pageSize: 10,
-        mail: 'filter_',
-      }));
+      const result = await mailAccountService.findAll(
+        createListMailAccountDto({
+          pageNum: 1,
+          pageSize: 10,
+          mail: 'filter_',
+        }),
+      );
 
       expect(result.code).toBe(200);
       expect(result.data.rows.length).toBeGreaterThan(0);
@@ -313,10 +317,12 @@ describe('Mail Integration Tests', () => {
     });
 
     it('should list mail templates with pagination', async () => {
-      const result = await mailTemplateService.findAll(createListMailTemplateDto({
-        pageNum: 1,
-        pageSize: 10,
-      }));
+      const result = await mailTemplateService.findAll(
+        createListMailTemplateDto({
+          pageNum: 1,
+          pageSize: 10,
+        }),
+      );
 
       expect(result.code).toBe(200);
       expect(result.data.rows).toBeDefined();
@@ -324,11 +330,13 @@ describe('Mail Integration Tests', () => {
     });
 
     it('should filter mail templates by account', async () => {
-      const result = await mailTemplateService.findAll(createListMailTemplateDto({
-        pageNum: 1,
-        pageSize: 10,
-        accountId: testAccountId,
-      }));
+      const result = await mailTemplateService.findAll(
+        createListMailTemplateDto({
+          pageNum: 1,
+          pageSize: 10,
+          accountId: testAccountId,
+        }),
+      );
 
       expect(result.code).toBe(200);
       result.data.rows.forEach((row: any) => {
@@ -373,10 +381,12 @@ describe('Mail Integration Tests', () => {
 
   describe('Mail Log Query Operations', () => {
     it('should list mail logs with pagination', async () => {
-      const result = await mailLogService.findAll(createListMailLogDto({
-        pageNum: 1,
-        pageSize: 10,
-      }));
+      const result = await mailLogService.findAll(
+        createListMailLogDto({
+          pageNum: 1,
+          pageSize: 10,
+        }),
+      );
 
       expect(result.code).toBe(200);
       expect(result.data.rows).toBeDefined();
@@ -400,11 +410,13 @@ describe('Mail Integration Tests', () => {
         },
       });
 
-      const result = await mailLogService.findAll(createListMailLogDto({
-        pageNum: 1,
-        pageSize: 10,
-        toMail: 'recipient@test.com',
-      }));
+      const result = await mailLogService.findAll(
+        createListMailLogDto({
+          pageNum: 1,
+          pageSize: 10,
+          toMail: 'recipient@test.com',
+        }),
+      );
 
       expect(result.code).toBe(200);
       result.data.rows.forEach((row: any) => {
@@ -413,11 +425,13 @@ describe('Mail Integration Tests', () => {
     });
 
     it('should filter mail logs by send status', async () => {
-      const result = await mailLogService.findAll(createListMailLogDto({
-        pageNum: 1,
-        pageSize: 10,
-        sendStatus: 1,
-      }));
+      const result = await mailLogService.findAll(
+        createListMailLogDto({
+          pageNum: 1,
+          pageSize: 10,
+          sendStatus: 1,
+        }),
+      );
 
       expect(result.code).toBe(200);
       result.data.rows.forEach((row: any) => {

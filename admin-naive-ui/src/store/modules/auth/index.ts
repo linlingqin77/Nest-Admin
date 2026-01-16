@@ -26,7 +26,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const userInfo: Api.Auth.UserInfo = reactive({
     user: undefined,
     roles: [],
-    permissions: [],
+    permissions: []
   });
 
   /** is super role in static route */
@@ -110,7 +110,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
       ...loginForm,
       tenantId: loginForm.tenantId ?? '000000',
       clientId: VITE_APP_CLIENT_ID!,
-      grantType: loginForm.grantType ?? 'password',
+      grantType: loginForm.grantType ?? 'password'
     };
 
     try {
@@ -177,7 +177,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
       Object.assign(userInfo, {
         user: userInfoData.user,
         roles: userInfoData.roles,
-        permissions: userInfoData.permissions,
+        permissions: userInfoData.permissions
       });
       return true;
     } catch (error) {
@@ -210,6 +210,6 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     resetStore,
     login,
     logout,
-    initUserInfo,
+    initUserInfo
   };
 });

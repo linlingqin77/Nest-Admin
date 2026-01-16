@@ -1,4 +1,14 @@
-import { SetMetadata, applyDecorators, UseInterceptors, CallHandler, ExecutionContext, Injectable, NestInterceptor, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  SetMetadata,
+  applyDecorators,
+  UseInterceptors,
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -80,10 +90,7 @@ export class IdempotentInterceptor implements NestInterceptor {
   ) {}
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-    const options = this.reflector.get<Required<IdempotentOptions>>(
-      IDEMPOTENT_KEY,
-      context.getHandler(),
-    );
+    const options = this.reflector.get<Required<IdempotentOptions>>(IDEMPOTENT_KEY, context.getHandler());
 
     if (!options) {
       return next.handle();
@@ -94,7 +101,7 @@ export class IdempotentInterceptor implements NestInterceptor {
 
     // 尝试获取已存在的结果
     const existingResult = await this.redisService.get(idempotentKey);
-    
+
     if (existingResult !== null) {
       // 检查是否是处理中状态
       if (existingResult === '__PROCESSING__') {
@@ -106,14 +113,8 @@ export class IdempotentInterceptor implements NestInterceptor {
 
     // 使用 Redis SET NX (通过 ioredis client) 实现原子性设置
     const client = this.redisService.getClient();
-    const setResult = await client.set(
-      idempotentKey, 
-      '__PROCESSING__', 
-      'EX', 
-      options.timeout, 
-      'NX'
-    );
-    
+    const setResult = await client.set(idempotentKey, '__PROCESSING__', 'EX', options.timeout, 'NX');
+
     if (!setResult) {
       // 设置失败，说明已有其他请求在处理
       throw new HttpException(options.message, HttpStatus.TOO_MANY_REQUESTS);
@@ -140,12 +141,9 @@ export class IdempotentInterceptor implements NestInterceptor {
   /**
    * 生成幂等性Key
    */
-  private generateKey(
-    request: Request,
-    options: Required<IdempotentOptions>,
-  ): string {
+  private generateKey(request: Request, options: Required<IdempotentOptions>): string {
     const { keyPrefix, keyResolver } = options;
-    
+
     // 基础信息
     const userId = (request as any).user?.userId || 'anonymous';
     const method = request.method;
@@ -172,12 +170,9 @@ export class IdempotentInterceptor implements NestInterceptor {
   /**
    * 解析自定义Key模板
    */
-  private resolveKey(
-    template: string,
-    request: Request,
-  ): string {
+  private resolveKey(template: string, request: Request): string {
     let result = template;
-    
+
     // 替换 {body.xxx} 占位符
     const bodyMatches = template.match(/\{body\.(\w+)\}/g);
     if (bodyMatches) {

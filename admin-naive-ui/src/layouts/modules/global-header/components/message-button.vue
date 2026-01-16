@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia';
 import { useNoticeStore } from '@/store/modules/notice';
 
 defineOptions({
-  name: 'MessgaeButton',
+  name: 'MessgaeButton'
 });
 
 const show = ref(false);
@@ -12,7 +12,7 @@ const noticeStore = useNoticeStore();
 const { state } = storeToRefs(noticeStore);
 
 const noticeNum = computed(() => {
-  return state.value.notices.filter((notice) => !notice.read).length || 0;
+  return state.value.notices.filter(notice => !notice.read).length || 0;
 });
 
 const toGitee = () => {

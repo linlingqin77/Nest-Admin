@@ -30,8 +30,7 @@ export interface RequireQuotaOptions {
  * async createUser() { ... }
  * ```
  */
-export const RequireQuota = (options: RequireQuotaOptions) =>
-  SetMetadata(REQUIRE_QUOTA_KEY, options);
+export const RequireQuota = (options: RequireQuotaOptions) => SetMetadata(REQUIRE_QUOTA_KEY, options);
 
 /**
  * 配额检查守卫
@@ -84,8 +83,7 @@ export class RequireQuotaGuard implements CanActivate {
           `(current: ${result.currentUsage}, limit: ${result.quota})`,
       );
       throw new ForbiddenException(
-        options.message ||
-          `${resourceName}配额已用尽，当前使用: ${result.currentUsage}，配额上限: ${result.quota}`,
+        options.message || `${resourceName}配额已用尽，当前使用: ${result.currentUsage}，配额上限: ${result.quota}`,
       );
     }
 

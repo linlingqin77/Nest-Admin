@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
-import { NModal, NCard, NForm, NFormItem, NInput, NInputNumber, NButton, NSpace, useMessage } from 'naive-ui';
+import { reactive, ref } from 'vue';
+import { NButton, NCard, NForm, NFormItem, NInput, NInputNumber, NModal, NSpace, useMessage } from 'naive-ui';
 import { fetchFileManagerCreateFolder, fetchFileManagerUpdateFolder } from '@/service/api-gen';
 import type { CreateFolderRequestDto, UpdateFolderRequestDto } from '@/service/api-gen/types';
 import { $t } from '@/locales';
@@ -20,11 +20,11 @@ const formModel = reactive({
   parentId: 0,
   folderName: '',
   orderNum: 0,
-  remark: '',
+  remark: ''
 });
 
 const rules = {
-  folderName: [{ required: true, message: '请输入文件夹名称', trigger: 'blur' }],
+  folderName: [{ required: true, message: '请输入文件夹名称', trigger: 'blur' }]
 };
 
 function openModal(typeOrParentId: 'add' | 'edit' | number, data?: any) {
@@ -37,7 +37,7 @@ function openModal(typeOrParentId: 'add' | 'edit' | number, data?: any) {
       parentId: typeOrParentId,
       folderName: '',
       orderNum: 0,
-      remark: '',
+      remark: ''
     });
   } else {
     modalType.value = typeOrParentId;
@@ -49,7 +49,7 @@ function openModal(typeOrParentId: 'add' | 'edit' | number, data?: any) {
         parentId: data?.parentId || 0,
         folderName: '',
         orderNum: 0,
-        remark: '',
+        remark: ''
       });
     } else if (typeOrParentId === 'edit' && data) {
       Object.assign(formModel, data);
@@ -68,7 +68,7 @@ async function handleSubmit() {
         parentId: formModel.parentId,
         folderName: formModel.folderName,
         orderNum: formModel.orderNum,
-        remark: formModel.remark,
+        remark: formModel.remark
       };
       await fetchFileManagerCreateFolder(createData);
       message.success($t('common.addSuccess'));
@@ -77,7 +77,7 @@ async function handleSubmit() {
         folderId: formModel.folderId,
         folderName: formModel.folderName,
         orderNum: formModel.orderNum,
-        remark: formModel.remark,
+        remark: formModel.remark
       };
       await fetchFileManagerUpdateFolder(updateData);
       message.success($t('common.updateSuccess'));
@@ -96,7 +96,7 @@ function handleClose() {
 }
 
 defineExpose({
-  openModal,
+  openModal
 });
 </script>
 
@@ -125,7 +125,7 @@ defineExpose({
     <template #footer>
       <NSpace justify="end">
         <NButton @click="handleClose">取消</NButton>
-        <NButton type="primary" :loading="loading" @click="handleSubmit"> 确定 </NButton>
+        <NButton type="primary" :loading="loading" @click="handleSubmit">确定</NButton>
       </NSpace>
     </template>
   </NModal>

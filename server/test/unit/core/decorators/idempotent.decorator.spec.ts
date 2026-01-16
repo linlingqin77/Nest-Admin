@@ -2,11 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, CallHandler, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { of, throwError } from 'rxjs';
-import { 
-  IdempotentInterceptor, 
-  IDEMPOTENT_KEY, 
+import {
+  IdempotentInterceptor,
+  IDEMPOTENT_KEY,
   IdempotentOptions,
-  Idempotent 
+  Idempotent,
 } from '@/core/decorators/idempotent.decorator';
 import { RedisService } from '@/module/common/redis/redis.service';
 
@@ -176,7 +176,7 @@ describe('IdempotentInterceptor Unit Tests', () => {
       };
 
       await expect(interceptor.intercept(context, handler)).rejects.toThrow(HttpException);
-      
+
       try {
         await interceptor.intercept(context, handler);
       } catch (error) {
@@ -191,7 +191,7 @@ describe('IdempotentInterceptor Unit Tests', () => {
     it('should generate different keys for different request bodies', async () => {
       jest.spyOn(reflector, 'get').mockReturnValue(defaultOptions);
       const setKeys: string[] = [];
-      
+
       mockRedisClient.set.mockImplementation(async (key: string) => {
         setKeys.push(key);
         return 'OK';
@@ -219,7 +219,7 @@ describe('IdempotentInterceptor Unit Tests', () => {
         keyResolver: '{body.orderId}',
       };
       jest.spyOn(reflector, 'get').mockReturnValue(customOptions);
-      
+
       let capturedKey = '';
       mockRedisClient.set.mockImplementation(async (key: string) => {
         capturedKey = key;
@@ -239,14 +239,14 @@ describe('IdempotentInterceptor Unit Tests', () => {
 
     it('should include user ID in key', async () => {
       jest.spyOn(reflector, 'get').mockReturnValue(defaultOptions);
-      
+
       let capturedKey = '';
       mockRedisClient.set.mockImplementation(async (key: string) => {
         capturedKey = key;
         return 'OK';
       });
 
-      const context = createMockContext({ 
+      const context = createMockContext({
         body: { orderId: '123' },
         user: { userId: 'user-456' },
       });
@@ -274,15 +274,15 @@ describe('IdempotentInterceptor Unit Tests', () => {
       };
 
       const observable = await interceptor.intercept(context, handler);
-      
+
       await expect(
         new Promise((resolve, reject) => {
           observable.subscribe({ next: resolve, error: reject });
-        })
+        }),
       ).rejects.toThrow('Test error');
 
       // Wait for async deletion
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
       expect(mockRedisService.del).toHaveBeenCalled();
     });
 
@@ -298,15 +298,15 @@ describe('IdempotentInterceptor Unit Tests', () => {
       };
 
       const observable = await interceptor.intercept(context, handler);
-      
+
       await expect(
         new Promise((resolve, reject) => {
           observable.subscribe({ next: resolve, error: reject });
-        })
+        }),
       ).rejects.toThrow('Test error');
 
       // Wait to ensure del is not called
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 50));
       expect(mockRedisService.del).not.toHaveBeenCalled();
     });
 
@@ -347,13 +347,7 @@ describe('IdempotentInterceptor Unit Tests', () => {
       const observable = await interceptor.intercept(context, handler);
       await new Promise((resolve) => observable.subscribe({ next: resolve }));
 
-      expect(mockRedisClient.set).toHaveBeenCalledWith(
-        expect.any(String),
-        '__PROCESSING__',
-        'EX',
-        customTimeout,
-        'NX'
-      );
+      expect(mockRedisClient.set).toHaveBeenCalledWith(expect.any(String), '__PROCESSING__', 'EX', customTimeout, 'NX');
     });
   });
 });

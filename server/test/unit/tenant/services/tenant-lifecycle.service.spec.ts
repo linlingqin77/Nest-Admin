@@ -210,9 +210,7 @@ describe('TenantLifecycleService', () => {
     it('应该在租户不存在时抛出异常', async () => {
       mockPrismaService.sysTenant.findUnique.mockResolvedValue(null);
 
-      await expect(service.updateStatus('999999', TenantStatus.DISABLED)).rejects.toThrow(
-        BusinessException,
-      );
+      await expect(service.updateStatus('999999', TenantStatus.DISABLED)).rejects.toThrow(BusinessException);
     });
   });
 

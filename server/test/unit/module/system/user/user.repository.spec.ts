@@ -45,9 +45,7 @@ const createUsers = (count: number): SysUser[] => {
   );
 };
 
-const createDeletedUser = (overrides: Partial<SysUser> = {}): SysUser =>
-  createUser({ delFlag: '2', ...overrides });
-
+const createDeletedUser = (overrides: Partial<SysUser> = {}): SysUser => createUser({ delFlag: '2', ...overrides });
 
 describe('UserRepository', () => {
   let repository: UserRepository;

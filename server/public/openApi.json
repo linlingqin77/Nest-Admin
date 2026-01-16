@@ -16645,6 +16645,15 @@
             "schema": {
               "$ref": "#/components/schemas/DateRangeDto"
             }
+          },
+          {
+            "name": "dataName",
+            "required": false,
+            "in": "query",
+            "description": "数据源名称",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -17465,15 +17474,26 @@
     },
     "/api/v1/tool/gen/batchGenCode/zip": {
       "get": {
-        "description": "生成代码并下载为zip压缩包",
+        "description": "根据表名生成代码并下载为zip压缩包，文件名格式：{projectName}_{timestamp}.zip",
         "operationId": "ToolController_batchGenCode_v1",
         "parameters": [
           {
             "name": "tableNames",
             "required": true,
             "in": "query",
-            "description": "表名称列表",
+            "description": "表名称列表（逗号分隔）",
             "schema": {
+              "example": "sys_user,sys_role",
+              "type": "string"
+            }
+          },
+          {
+            "name": "projectName",
+            "required": false,
+            "in": "query",
+            "description": "项目名称（用于ZIP文件命名）",
+            "schema": {
+              "example": "my-project",
               "type": "string"
             }
           }
@@ -17577,7 +17597,130 @@
             "Authorization": []
           }
         ],
-        "summary": "批量生成代码",
+        "summary": "批量生成代码（通过表名）",
+        "tags": [
+          "系统工具"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/batchGenCode": {
+      "post": {
+        "description": "根据表ID列表生成代码并下载为zip压缩包，文件名格式：{projectName}_{timestamp}.zip",
+        "operationId": "ToolController_batchGenCodeByIds_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Result"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "additionalProperties": true,
+                          "description": "响应数据"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          },
+          "401": {
+            "description": "未登录或登录已过期",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 401
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "请先登录"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权限访问",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 403
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "没有操作权限"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器内部错误",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 500
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "系统异常"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "批量生成代码（通过表ID）",
         "tags": [
           "系统工具"
         ]
@@ -17700,6 +17843,1671 @@
         "summary": "预览生成代码",
         "tags": [
           "系统工具"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/datasource": {
+      "post": {
+        "description": "创建新的数据库连接配置",
+        "operationId": "DataSourceController_create_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDataSourceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataSourceResponseDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "参数错误"
+          },
+          "409": {
+            "description": "数据源名称已存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "创建数据源",
+        "tags": [
+          "数据源管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/datasource/{id}": {
+      "put": {
+        "description": "更新数据库连接配置",
+        "operationId": "DataSourceController_update_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "数据源ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDataSourceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataSourceResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "参数错误"
+          },
+          "404": {
+            "description": "数据源不存在"
+          },
+          "409": {
+            "description": "数据源名称已存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "更新数据源",
+        "tags": [
+          "数据源管理"
+        ]
+      },
+      "delete": {
+        "description": "删除数据库连接配置（软删除）",
+        "operationId": "DataSourceController_delete_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "数据源ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功"
+          },
+          "404": {
+            "description": "数据源不存在"
+          },
+          "409": {
+            "description": "数据源正在使用中"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "删除数据源",
+        "tags": [
+          "数据源管理"
+        ]
+      },
+      "get": {
+        "description": "根据ID查询数据源详情",
+        "operationId": "DataSourceController_findOne_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "数据源ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "查询成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataSourceResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "数据源不存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "查询数据源详情",
+        "tags": [
+          "数据源管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/datasource/list": {
+      "get": {
+        "description": "分页查询数据源列表",
+        "operationId": "DataSourceController_list_v1",
+        "parameters": [
+          {
+            "name": "pageNum",
+            "required": false,
+            "in": "query",
+            "description": "页码（从1开始）",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "每页条数",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "orderByColumn",
+            "required": false,
+            "in": "query",
+            "description": "排序字段",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isAsc",
+            "required": false,
+            "in": "query",
+            "description": "排序方向",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "params",
+            "required": false,
+            "in": "query",
+            "description": "时间范围",
+            "schema": {
+              "$ref": "#/components/schemas/DateRangeDto"
+            }
+          },
+          {
+            "name": "name",
+            "required": false,
+            "in": "query",
+            "description": "数据源名称（模糊查询）",
+            "schema": {
+              "example": "开发",
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "description": "数据库类型",
+            "schema": {
+              "example": "postgresql",
+              "type": "string",
+              "enum": [
+                "postgresql",
+                "mysql",
+                "sqlite"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "状态（0正常 1停用）",
+            "schema": {
+              "example": "0",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "查询成功"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "查询数据源列表",
+        "tags": [
+          "数据源管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/datasource/test": {
+      "post": {
+        "description": "测试数据库连接是否可用",
+        "operationId": "DataSourceController_testConnection_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestConnectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "连接成功"
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "连接失败"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "测试数据源连接",
+        "tags": [
+          "数据源管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/datasource/{id}/test": {
+      "get": {
+        "description": "测试已保存的数据库连接是否可用",
+        "operationId": "DataSourceController_testConnectionById_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "数据源ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "连接成功"
+          },
+          "400": {
+            "description": "连接失败"
+          },
+          "404": {
+            "description": "数据源不存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "测试已保存的数据源连接",
+        "tags": [
+          "数据源管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/datasource/{id}/tables": {
+      "get": {
+        "description": "获取指定数据源中的所有表",
+        "operationId": "DataSourceController_getTables_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "数据源ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "查询成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DbTableDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "数据源不存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "获取数据源的表列表",
+        "tags": [
+          "数据源管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/datasource/{id}/tables/{tableName}/columns": {
+      "get": {
+        "description": "获取指定表的所有列信息",
+        "operationId": "DataSourceController_getColumns_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "数据源ID",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "tableName",
+            "required": true,
+            "in": "path",
+            "description": "表名",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "查询成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DbColumnDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "数据源不存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "获取表的列信息",
+        "tags": [
+          "数据源管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/template/group": {
+      "post": {
+        "description": "创建新的模板组",
+        "operationId": "TemplateController_createGroup_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTemplateGroupDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateGroupResponseDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "参数错误"
+          },
+          "409": {
+            "description": "模板组名称已存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "创建模板组",
+        "tags": [
+          "模板管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/template/group/{id}": {
+      "put": {
+        "description": "更新模板组信息",
+        "operationId": "TemplateController_updateGroup_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "模板组ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTemplateGroupDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateGroupResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "参数错误"
+          },
+          "403": {
+            "description": "无权修改系统级模板组"
+          },
+          "404": {
+            "description": "模板组不存在"
+          },
+          "409": {
+            "description": "模板组名称已存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "更新模板组",
+        "tags": [
+          "模板管理"
+        ]
+      },
+      "delete": {
+        "description": "删除模板组及其所有模板（软删除）",
+        "operationId": "TemplateController_deleteGroup_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "模板组ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功"
+          },
+          "403": {
+            "description": "系统级模板组不允许删除"
+          },
+          "404": {
+            "description": "模板组不存在"
+          },
+          "409": {
+            "description": "模板组正在使用中"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "删除模板组",
+        "tags": [
+          "模板管理"
+        ]
+      },
+      "get": {
+        "description": "根据ID查询模板组详情，包含所有模板",
+        "operationId": "TemplateController_findOneGroup_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "模板组ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "查询成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateGroupResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "模板组不存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "查询模板组详情",
+        "tags": [
+          "模板管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/template/group/list": {
+      "get": {
+        "description": "分页查询模板组列表，包含当前租户和系统级模板组",
+        "operationId": "TemplateController_listGroups_v1",
+        "parameters": [
+          {
+            "name": "pageNum",
+            "required": false,
+            "in": "query",
+            "description": "页码（从1开始）",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "每页条数",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "orderByColumn",
+            "required": false,
+            "in": "query",
+            "description": "排序字段",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isAsc",
+            "required": false,
+            "in": "query",
+            "description": "排序方向",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "params",
+            "required": false,
+            "in": "query",
+            "description": "时间范围",
+            "schema": {
+              "$ref": "#/components/schemas/DateRangeDto"
+            }
+          },
+          {
+            "name": "name",
+            "required": false,
+            "in": "query",
+            "description": "模板组名称（模糊查询）",
+            "schema": {
+              "example": "NestJS",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "状态（0正常 1停用）",
+            "schema": {
+              "example": "0",
+              "type": "string"
+            }
+          },
+          {
+            "name": "systemOnly",
+            "required": false,
+            "in": "query",
+            "description": "是否只查询系统级模板",
+            "schema": {
+              "example": false,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "查询成功"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "查询模板组列表",
+        "tags": [
+          "模板管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/template/group/default": {
+      "get": {
+        "description": "获取当前租户或系统级的默认模板组",
+        "operationId": "TemplateController_getDefaultGroup_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "查询成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateGroupResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "未找到默认模板组"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "获取默认模板组",
+        "tags": [
+          "模板管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/template/group/{id}/export": {
+      "get": {
+        "description": "将模板组导出为 JSON 文件",
+        "operationId": "TemplateController_exportGroup_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "模板组ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "导出成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportTemplateGroupDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "模板组不存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "导出模板组",
+        "tags": [
+          "模板管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/template/group/import": {
+      "post": {
+        "description": "从 JSON 数据导入模板组",
+        "operationId": "TemplateController_importGroup_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportTemplateGroupDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "导入成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateGroupResponseDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "参数错误或模板语法错误"
+          },
+          "409": {
+            "description": "模板组名称已存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "导入模板组",
+        "tags": [
+          "模板管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/template": {
+      "post": {
+        "description": "在指定模板组中创建新模板",
+        "operationId": "TemplateController_createTemplate_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTemplateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateResponseDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          },
+          "400": {
+            "description": "参数错误或模板语法错误"
+          },
+          "403": {
+            "description": "无权向系统级模板组添加模板"
+          },
+          "404": {
+            "description": "模板组不存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "创建模板",
+        "tags": [
+          "模板管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/template/{id}": {
+      "put": {
+        "description": "更新模板信息",
+        "operationId": "TemplateController_updateTemplate_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "模板ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTemplateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "参数错误或模板语法错误"
+          },
+          "403": {
+            "description": "无权修改系统级模板"
+          },
+          "404": {
+            "description": "模板不存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "更新模板",
+        "tags": [
+          "模板管理"
+        ]
+      },
+      "delete": {
+        "description": "删除模板（软删除）",
+        "operationId": "TemplateController_deleteTemplate_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "模板ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功"
+          },
+          "403": {
+            "description": "系统级模板不允许删除"
+          },
+          "404": {
+            "description": "模板不存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "删除模板",
+        "tags": [
+          "模板管理"
+        ]
+      },
+      "get": {
+        "description": "根据ID查询模板详情",
+        "operationId": "TemplateController_findOneTemplate_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "模板ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "查询成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TemplateResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "模板不存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "查询模板详情",
+        "tags": [
+          "模板管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/template/list": {
+      "get": {
+        "description": "分页查询模板列表",
+        "operationId": "TemplateController_listTemplates_v1",
+        "parameters": [
+          {
+            "name": "pageNum",
+            "required": false,
+            "in": "query",
+            "description": "页码（从1开始）",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "每页条数",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "orderByColumn",
+            "required": false,
+            "in": "query",
+            "description": "排序字段",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isAsc",
+            "required": false,
+            "in": "query",
+            "description": "排序方向",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "params",
+            "required": false,
+            "in": "query",
+            "description": "时间范围",
+            "schema": {
+              "$ref": "#/components/schemas/DateRangeDto"
+            }
+          },
+          {
+            "name": "groupId",
+            "required": false,
+            "in": "query",
+            "description": "模板组ID",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "name",
+            "required": false,
+            "in": "query",
+            "description": "模板名称（模糊查询）",
+            "schema": {
+              "example": "Controller",
+              "type": "string"
+            }
+          },
+          {
+            "name": "language",
+            "required": false,
+            "in": "query",
+            "description": "模板语言",
+            "schema": {
+              "example": "typescript",
+              "type": "string",
+              "enum": [
+                "typescript",
+                "vue",
+                "sql"
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "状态（0正常 1停用）",
+            "schema": {
+              "example": "0",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "查询成功"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "查询模板列表",
+        "tags": [
+          "模板管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/template/validate": {
+      "post": {
+        "description": "验证模板内容的语法是否正确，并返回使用的变量列表",
+        "operationId": "TemplateController_validateTemplate_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateTemplateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "验证完成",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "valid": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "variables": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": [
+                            "tableName",
+                            "className"
+                          ]
+                        },
+                        "warnings": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": []
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "验证模板语法",
+        "tags": [
+          "模板管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/history/list": {
+      "get": {
+        "description": "分页查询代码生成历史记录列表",
+        "operationId": "HistoryController_list_v1",
+        "parameters": [
+          {
+            "name": "tableId",
+            "required": false,
+            "in": "query",
+            "description": "表ID",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "tableName",
+            "required": false,
+            "in": "query",
+            "description": "表名（模糊匹配）",
+            "schema": {
+              "example": "sys_user",
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageNum",
+            "required": false,
+            "in": "query",
+            "description": "页码",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "每页条数",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "查询成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "rows": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "number",
+                                "example": 1
+                              },
+                              "tableId": {
+                                "type": "number",
+                                "example": 1
+                              },
+                              "tableName": {
+                                "type": "string",
+                                "example": "sys_user"
+                              },
+                              "templateGroupId": {
+                                "type": "number",
+                                "example": 1
+                              },
+                              "generatedBy": {
+                                "type": "string",
+                                "example": "admin"
+                              },
+                              "generatedAt": {
+                                "type": "string",
+                                "example": "2025-01-16T00:00:00.000Z"
+                              }
+                            }
+                          }
+                        },
+                        "total": {
+                          "type": "number",
+                          "example": 100
+                        },
+                        "pageNum": {
+                          "type": "number",
+                          "example": 1
+                        },
+                        "pageSize": {
+                          "type": "number",
+                          "example": 10
+                        },
+                        "pages": {
+                          "type": "number",
+                          "example": 10
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "查询历史记录列表",
+        "tags": [
+          "生成历史管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/history/{id}": {
+      "get": {
+        "description": "根据ID查询历史记录详情，包含生成的代码快照",
+        "operationId": "HistoryController_findOne_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "历史记录ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "查询成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "操作成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number",
+                          "example": 1
+                        },
+                        "tableId": {
+                          "type": "number",
+                          "example": 1
+                        },
+                        "tableName": {
+                          "type": "string",
+                          "example": "sys_user"
+                        },
+                        "templateGroupId": {
+                          "type": "number",
+                          "example": 1
+                        },
+                        "generatedBy": {
+                          "type": "string",
+                          "example": "admin"
+                        },
+                        "generatedAt": {
+                          "type": "string",
+                          "example": "2025-01-16T00:00:00.000Z"
+                        },
+                        "snapshotData": {
+                          "type": "object",
+                          "description": "生成的代码快照"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "历史记录不存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "查询历史记录详情",
+        "tags": [
+          "生成历史管理"
+        ]
+      },
+      "delete": {
+        "description": "删除指定的历史记录",
+        "operationId": "HistoryController_delete_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "历史记录ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功"
+          },
+          "404": {
+            "description": "历史记录不存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "删除历史记录",
+        "tags": [
+          "生成历史管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/history/{id}/download": {
+      "get": {
+        "description": "下载指定历史版本的生成代码（ZIP格式）",
+        "operationId": "HistoryController_download_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "历史记录ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "下载成功",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "历史记录不存在"
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "下载历史版本代码",
+        "tags": [
+          "生成历史管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/history/batch": {
+      "delete": {
+        "description": "批量删除多条历史记录",
+        "operationId": "HistoryController_batchDelete_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "historyIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "description": "历史记录ID列表",
+                    "example": [
+                      1,
+                      2,
+                      3
+                    ]
+                  }
+                },
+                "required": [
+                  "historyIds"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "成功删除 3 条记录"
+                    },
+                    "data": {
+                      "type": "number",
+                      "example": 3
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "批量删除历史记录",
+        "tags": [
+          "生成历史管理"
+        ]
+      }
+    },
+    "/api/v1/tool/gen/history/cleanup": {
+      "post": {
+        "description": "清理指定天数之前的历史记录（默认30天）",
+        "operationId": "HistoryController_cleanup_v1",
+        "parameters": [
+          {
+            "name": "days",
+            "required": false,
+            "in": "query",
+            "description": "保留天数",
+            "schema": {
+              "example": 30,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "清理成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 200
+                    },
+                    "msg": {
+                      "type": "string",
+                      "example": "成功清理 10 条过期记录"
+                    },
+                    "data": {
+                      "type": "number",
+                      "example": 10
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "Authorization": []
+          }
+        ],
+        "summary": "清理过期历史记录",
+        "tags": [
+          "生成历史管理"
         ]
       }
     },
@@ -42019,6 +43827,803 @@
         },
         "required": [
           "tableId"
+        ]
+      },
+      "GenerateCodeDto": {
+        "type": "object",
+        "properties": {
+          "tableIds": {
+            "description": "表ID列表",
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "templateGroupId": {
+            "type": "number",
+            "description": "模板组ID"
+          },
+          "projectName": {
+            "type": "string",
+            "description": "项目名称（用于ZIP文件命名）",
+            "example": "my-project"
+          }
+        },
+        "required": [
+          "tableIds"
+        ]
+      },
+      "CreateDataSourceDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "数据源名称",
+            "example": "开发环境数据库"
+          },
+          "type": {
+            "enum": [
+              "postgresql",
+              "mysql",
+              "sqlite"
+            ],
+            "type": "string",
+            "description": "数据库类型",
+            "example": "postgresql"
+          },
+          "host": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "主机地址",
+            "example": "localhost"
+          },
+          "port": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 65535,
+            "description": "端口号",
+            "example": 5432
+          },
+          "database": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "数据库名称",
+            "example": "nest_admin"
+          },
+          "username": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "用户名",
+            "example": "postgres"
+          },
+          "password": {
+            "type": "string",
+            "description": "密码",
+            "example": "password123"
+          },
+          "remark": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "备注",
+            "example": "开发环境使用的数据库"
+          }
+        },
+        "required": [
+          "name",
+          "type",
+          "host",
+          "port",
+          "database",
+          "username",
+          "password"
+        ]
+      },
+      "DataSourceResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "数据源ID",
+            "example": 1
+          },
+          "tenantId": {
+            "type": "string",
+            "description": "租户ID",
+            "example": "000000"
+          },
+          "name": {
+            "type": "string",
+            "description": "数据源名称",
+            "example": "开发环境数据库"
+          },
+          "type": {
+            "type": "string",
+            "description": "数据库类型",
+            "enum": [
+              "postgresql",
+              "mysql",
+              "sqlite"
+            ],
+            "example": "postgresql"
+          },
+          "host": {
+            "type": "string",
+            "description": "主机地址",
+            "example": "localhost"
+          },
+          "port": {
+            "type": "number",
+            "description": "端口号",
+            "example": 5432
+          },
+          "database": {
+            "type": "string",
+            "description": "数据库名称",
+            "example": "nest_admin"
+          },
+          "username": {
+            "type": "string",
+            "description": "用户名",
+            "example": "postgres"
+          },
+          "status": {
+            "type": "string",
+            "description": "状态（0正常 1停用）",
+            "example": "0"
+          },
+          "remark": {
+            "type": "string",
+            "description": "备注",
+            "example": "开发环境使用的数据库"
+          },
+          "createTime": {
+            "format": "date-time",
+            "type": "string",
+            "description": "创建时间",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "updateTime": {
+            "format": "date-time",
+            "type": "string",
+            "description": "更新时间",
+            "example": "2024-01-01T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "tenantId",
+          "name",
+          "type",
+          "host",
+          "port",
+          "database",
+          "username",
+          "status",
+          "createTime"
+        ]
+      },
+      "UpdateDataSourceDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "数据源名称",
+            "example": "开发环境数据库"
+          },
+          "type": {
+            "enum": [
+              "postgresql",
+              "mysql",
+              "sqlite"
+            ],
+            "type": "string",
+            "description": "数据库类型",
+            "example": "postgresql"
+          },
+          "host": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "主机地址",
+            "example": "localhost"
+          },
+          "port": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 65535,
+            "description": "端口号",
+            "example": 5432
+          },
+          "database": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "数据库名称",
+            "example": "nest_admin"
+          },
+          "username": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "用户名",
+            "example": "postgres"
+          },
+          "password": {
+            "type": "string",
+            "description": "密码（留空则不更新）",
+            "example": "newpassword123"
+          },
+          "status": {
+            "type": "string",
+            "description": "状态（0正常 1停用）",
+            "example": "0"
+          },
+          "remark": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "备注",
+            "example": "开发环境使用的数据库"
+          }
+        }
+      },
+      "TestConnectionDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "enum": [
+              "postgresql",
+              "mysql",
+              "sqlite"
+            ],
+            "type": "string",
+            "description": "数据库类型",
+            "example": "postgresql"
+          },
+          "host": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "主机地址",
+            "example": "localhost"
+          },
+          "port": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 65535,
+            "description": "端口号",
+            "example": 5432
+          },
+          "database": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "数据库名称",
+            "example": "nest_admin"
+          },
+          "username": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "用户名",
+            "example": "postgres"
+          },
+          "password": {
+            "type": "string",
+            "description": "密码",
+            "example": "password123"
+          }
+        },
+        "required": [
+          "type",
+          "host",
+          "port",
+          "database",
+          "username",
+          "password"
+        ]
+      },
+      "DbTableDto": {
+        "type": "object",
+        "properties": {
+          "tableName": {
+            "type": "string",
+            "description": "表名",
+            "example": "sys_user"
+          },
+          "tableComment": {
+            "type": "string",
+            "description": "表注释",
+            "example": "用户表"
+          },
+          "createTime": {
+            "format": "date-time",
+            "type": "string",
+            "description": "创建时间"
+          },
+          "updateTime": {
+            "format": "date-time",
+            "type": "string",
+            "description": "更新时间"
+          }
+        },
+        "required": [
+          "tableName",
+          "tableComment"
+        ]
+      },
+      "DbColumnDto": {
+        "type": "object",
+        "properties": {
+          "columnName": {
+            "type": "string",
+            "description": "列名",
+            "example": "user_id"
+          },
+          "columnComment": {
+            "type": "string",
+            "description": "列注释",
+            "example": "用户ID"
+          },
+          "columnType": {
+            "type": "string",
+            "description": "列类型",
+            "example": "int"
+          },
+          "isPrimaryKey": {
+            "type": "boolean",
+            "description": "是否主键",
+            "example": true
+          },
+          "isAutoIncrement": {
+            "type": "boolean",
+            "description": "是否自增",
+            "example": true
+          },
+          "isNullable": {
+            "type": "boolean",
+            "description": "是否可空",
+            "example": false
+          },
+          "defaultValue": {
+            "type": "string",
+            "description": "默认值",
+            "example": "0"
+          },
+          "maxLength": {
+            "type": "number",
+            "description": "字符最大长度",
+            "example": 255
+          }
+        },
+        "required": [
+          "columnName",
+          "columnComment",
+          "columnType",
+          "isPrimaryKey",
+          "isAutoIncrement",
+          "isNullable"
+        ]
+      },
+      "CreateTemplateGroupDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "模板组名称",
+            "example": "NestJS + Vue3 标准模板"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "模板组描述",
+            "example": "适用于 NestJS 后端和 Vue3 前端的标准代码生成模板"
+          },
+          "isDefault": {
+            "type": "boolean",
+            "description": "是否为默认模板组",
+            "example": false,
+            "default": false
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "TemplateResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "模板ID",
+            "example": 1
+          },
+          "groupId": {
+            "type": "number",
+            "description": "模板组ID",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "模板名称",
+            "example": "Controller 模板"
+          },
+          "fileName": {
+            "type": "string",
+            "description": "输出文件名模板",
+            "example": "${businessName}.controller.ts"
+          },
+          "filePath": {
+            "type": "string",
+            "description": "输出路径模板",
+            "example": "server/src/module/${moduleName}/${businessName}"
+          },
+          "content": {
+            "type": "string",
+            "description": "模板内容"
+          },
+          "language": {
+            "type": "string",
+            "description": "模板语言",
+            "enum": [
+              "typescript",
+              "vue",
+              "sql"
+            ],
+            "example": "typescript"
+          },
+          "sort": {
+            "type": "number",
+            "description": "排序号",
+            "example": 0
+          },
+          "status": {
+            "type": "string",
+            "description": "状态（0正常 1停用）",
+            "example": "0"
+          },
+          "createTime": {
+            "format": "date-time",
+            "type": "string",
+            "description": "创建时间",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "updateTime": {
+            "format": "date-time",
+            "type": "string",
+            "description": "更新时间",
+            "example": "2024-01-01T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "groupId",
+          "name",
+          "fileName",
+          "filePath",
+          "content",
+          "language",
+          "sort",
+          "status",
+          "createTime"
+        ]
+      },
+      "TemplateGroupResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "模板组ID",
+            "example": 1
+          },
+          "tenantId": {
+            "type": "string",
+            "nullable": true,
+            "description": "租户ID（null表示系统级）",
+            "example": "000000"
+          },
+          "name": {
+            "type": "string",
+            "description": "模板组名称",
+            "example": "NestJS + Vue3 标准模板"
+          },
+          "description": {
+            "type": "string",
+            "description": "模板组描述",
+            "example": "适用于 NestJS 后端和 Vue3 前端的标准代码生成模板"
+          },
+          "isDefault": {
+            "type": "boolean",
+            "description": "是否为默认模板组",
+            "example": false
+          },
+          "status": {
+            "type": "string",
+            "description": "状态（0正常 1停用）",
+            "example": "0"
+          },
+          "createTime": {
+            "format": "date-time",
+            "type": "string",
+            "description": "创建时间",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "updateTime": {
+            "format": "date-time",
+            "type": "string",
+            "description": "更新时间",
+            "example": "2024-01-01T00:00:00.000Z"
+          },
+          "templates": {
+            "description": "模板列表",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TemplateResponseDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "isDefault",
+          "status",
+          "createTime"
+        ]
+      },
+      "UpdateTemplateGroupDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "模板组名称",
+            "example": "NestJS + Vue3 标准模板"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "模板组描述",
+            "example": "适用于 NestJS 后端和 Vue3 前端的标准代码生成模板"
+          },
+          "isDefault": {
+            "type": "boolean",
+            "description": "是否为默认模板组",
+            "example": false
+          },
+          "status": {
+            "type": "string",
+            "description": "状态（0正常 1停用）",
+            "example": "0"
+          }
+        }
+      },
+      "ImportTemplateItemDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "模板名称"
+          },
+          "fileName": {
+            "type": "string",
+            "description": "输出文件名模板"
+          },
+          "filePath": {
+            "type": "string",
+            "description": "输出路径模板"
+          },
+          "content": {
+            "type": "string",
+            "description": "模板内容"
+          },
+          "language": {
+            "enum": [
+              "typescript",
+              "vue",
+              "sql"
+            ],
+            "type": "string",
+            "description": "模板语言"
+          },
+          "sort": {
+            "type": "number",
+            "description": "排序号"
+          }
+        },
+        "required": [
+          "name",
+          "fileName",
+          "filePath",
+          "content",
+          "language"
+        ]
+      },
+      "ExportTemplateGroupDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "模板组名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "模板组描述"
+          },
+          "exportTime": {
+            "type": "string",
+            "description": "导出时间"
+          },
+          "version": {
+            "type": "string",
+            "description": "版本号"
+          },
+          "templates": {
+            "description": "模板列表",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportTemplateItemDto"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "exportTime",
+          "version",
+          "templates"
+        ]
+      },
+      "ImportTemplateGroupDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "模板组名称",
+            "example": "NestJS + Vue3 标准模板"
+          },
+          "description": {
+            "type": "string",
+            "description": "模板组描述",
+            "example": "适用于 NestJS 后端和 Vue3 前端的标准代码生成模板"
+          },
+          "templates": {
+            "minItems": 1,
+            "description": "模板列表",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportTemplateItemDto"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "templates"
+        ]
+      },
+      "CreateTemplateDto": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "number",
+            "description": "模板组ID",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "模板名称",
+            "example": "Controller 模板"
+          },
+          "fileName": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "输出文件名模板",
+            "example": "${businessName}.controller.ts"
+          },
+          "filePath": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "输出路径模板",
+            "example": "server/src/module/${moduleName}/${businessName}"
+          },
+          "content": {
+            "type": "string",
+            "description": "模板内容",
+            "example": "import { Controller } from \"@nestjs/common\";\n\n@Controller(\"${businessName}\")\nexport class ${className}Controller {}"
+          },
+          "language": {
+            "enum": [
+              "typescript",
+              "vue",
+              "sql"
+            ],
+            "type": "string",
+            "description": "模板语言",
+            "example": "typescript"
+          },
+          "sort": {
+            "type": "number",
+            "minimum": 0,
+            "description": "排序号",
+            "example": 0,
+            "default": 0
+          }
+        },
+        "required": [
+          "groupId",
+          "name",
+          "fileName",
+          "filePath",
+          "content",
+          "language"
+        ]
+      },
+      "UpdateTemplateDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "模板名称",
+            "example": "Controller 模板"
+          },
+          "fileName": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "输出文件名模板",
+            "example": "${businessName}.controller.ts"
+          },
+          "filePath": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "输出路径模板",
+            "example": "server/src/module/${moduleName}/${businessName}"
+          },
+          "content": {
+            "type": "string",
+            "description": "模板内容",
+            "example": "import { Controller } from \"@nestjs/common\";\n\n@Controller(\"${businessName}\")\nexport class ${className}Controller {}"
+          },
+          "language": {
+            "enum": [
+              "typescript",
+              "vue",
+              "sql"
+            ],
+            "type": "string",
+            "description": "模板语言",
+            "example": "typescript"
+          },
+          "sort": {
+            "type": "number",
+            "minimum": 0,
+            "description": "排序号",
+            "example": 0
+          },
+          "status": {
+            "type": "string",
+            "description": "状态（0正常 1停用）",
+            "example": "0"
+          }
+        }
+      },
+      "ValidateTemplateDto": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "模板内容",
+            "example": "import { Controller } from \"@nestjs/common\";\n\n@Controller(\"${businessName}\")\nexport class ${className}Controller {}"
+          }
+        },
+        "required": [
+          "content"
         ]
       },
       "UserResponseDto": {

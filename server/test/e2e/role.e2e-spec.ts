@@ -70,7 +70,8 @@ describe('Role E2E Tests', () => {
 
   describe('GET /system/role/list', () => {
     it('should return paginated role list', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/role/list`)
         .query({ pageNum: 1, pageSize: 10 })
         .set('Authorization', `Bearer ${token}`)
@@ -83,7 +84,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should filter roles by roleName', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/role/list`)
         .query({ pageNum: 1, pageSize: 10, roleName: '管理' })
         .set('Authorization', `Bearer ${token}`)
@@ -93,7 +95,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should filter roles by roleKey', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/role/list`)
         .query({ pageNum: 1, pageSize: 10, roleKey: 'admin' })
         .set('Authorization', `Bearer ${token}`)
@@ -103,7 +106,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should filter roles by status', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/role/list`)
         .query({ pageNum: 1, pageSize: 10, status: '0' })
         .set('Authorization', `Bearer ${token}`)
@@ -124,7 +128,8 @@ describe('Role E2E Tests', () => {
         dataScope: '1',
         menuIds: [],
       };
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .post(`${apiPrefix}/system/role`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -153,7 +158,8 @@ describe('Role E2E Tests', () => {
         dataScope: '1',
         menuIds,
       };
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .post(`${apiPrefix}/system/role`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -195,7 +201,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should return role detail by ID', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/role/${testRoleId}`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -206,7 +213,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should return null for non-existent role', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/role/999999`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -241,7 +249,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should update role successfully', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .put(`${apiPrefix}/system/role`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -266,7 +275,8 @@ describe('Role E2E Tests', () => {
       });
       const menuIds = menus.map((m) => m.menuId);
 
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .put(`${apiPrefix}/system/role`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -309,7 +319,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should delete role (soft delete)', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .delete(`${apiPrefix}/system/role/${deleteRoleId}`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -352,7 +363,8 @@ describe('Role E2E Tests', () => {
         },
       });
 
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .delete(`${apiPrefix}/system/role/${role1.roleId},${role2.roleId}`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -386,7 +398,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should change role status to disabled', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .put(`${apiPrefix}/system/role/changeStatus`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -398,7 +411,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should change role status to enabled', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .put(`${apiPrefix}/system/role/changeStatus`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -441,7 +455,8 @@ describe('Role E2E Tests', () => {
       });
       const deptIds = depts.map((d) => d.deptId);
 
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .put(`${apiPrefix}/system/role/dataScope`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -459,7 +474,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should set data scope to all', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .put(`${apiPrefix}/system/role/dataScope`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -511,7 +527,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should return allocated user list for role', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/role/authUser/allocatedList`)
         .query({ roleId: allocRoleId, pageNum: 1, pageSize: 10 })
         .set('Authorization', `Bearer ${token}`)
@@ -526,7 +543,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should filter allocated users by userName', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/role/authUser/allocatedList`)
         .query({ roleId: allocRoleId, pageNum: 1, pageSize: 10, userName: 'alloc' })
         .set('Authorization', `Bearer ${token}`)
@@ -566,7 +584,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should return unallocated user list for role', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/role/authUser/unallocatedList`)
         .query({ roleId: unallocRoleId, pageNum: 1, pageSize: 100 })
         .set('Authorization', `Bearer ${token}`)
@@ -612,7 +631,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should batch authorize users to role', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .put(`${apiPrefix}/system/role/authUser/selectAll`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -668,7 +688,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should cancel user role authorization', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .put(`${apiPrefix}/system/role/authUser/cancel`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -727,7 +748,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should batch cancel user role authorizations', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .put(`${apiPrefix}/system/role/authUser/cancelAll`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -751,7 +773,8 @@ describe('Role E2E Tests', () => {
 
   describe('GET /system/role/optionselect', () => {
     it('should return role option list', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/role/optionselect`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -768,7 +791,8 @@ describe('Role E2E Tests', () => {
       if (roles.length < 2) return;
 
       const roleIds = roles.map((r) => r.roleId).join(',');
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/role/optionselect`)
         .query({ roleIds })
         .set('Authorization', `Bearer ${token}`)
@@ -815,7 +839,8 @@ describe('Role E2E Tests', () => {
     });
 
     it('should return dept tree with checked keys', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/role/deptTree/${deptTreeRoleId}`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -830,7 +855,8 @@ describe('Role E2E Tests', () => {
 
   describe('POST /system/role/export', () => {
     it('should export roles as Excel', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .post(`${apiPrefix}/system/role/export`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')

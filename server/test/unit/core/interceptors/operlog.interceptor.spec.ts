@@ -15,10 +15,7 @@ describe('OperlogInterceptor', () => {
     } as any;
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        OperlogInterceptor,
-        { provide: OperlogService, useValue: operlogServiceMock },
-      ],
+      providers: [OperlogInterceptor, { provide: OperlogService, useValue: operlogServiceMock }],
     }).compile();
 
     interceptor = module.get<OperlogInterceptor>(OperlogInterceptor);

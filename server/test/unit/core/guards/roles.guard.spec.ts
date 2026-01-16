@@ -74,10 +74,7 @@ describe('RolesGuard', () => {
 
       await guard.canActivate(context);
 
-      expect(reflector.getAllAndOverride).toHaveBeenCalledWith('role', [
-        context.getHandler(),
-        context.getClass(),
-      ]);
+      expect(reflector.getAllAndOverride).toHaveBeenCalledWith('role', [context.getHandler(), context.getClass()]);
     });
   });
 

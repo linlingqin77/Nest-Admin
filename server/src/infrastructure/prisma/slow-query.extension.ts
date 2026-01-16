@@ -56,10 +56,7 @@ const logger = new Logger('SlowQueryExtension');
  * @param callback 可选的回调函数，用于自定义日志处理
  * @returns Prisma 扩展配置
  */
-export function createSlowQueryExtension(
-  config: SlowQueryExtensionConfig = {},
-  callback?: SlowQueryCallback,
-) {
+export function createSlowQueryExtension(config: SlowQueryExtensionConfig = {}, callback?: SlowQueryCallback) {
   const threshold = config.threshold ?? DEFAULT_SLOW_QUERY_THRESHOLD;
   const enabled = config.enabled ?? true;
 
@@ -86,16 +83,13 @@ export function createSlowQueryExtension(
                 timestamp: new Date(),
               };
 
-              logger.warn(
-                `Slow query detected: ${slowQueryLog.query} took ${duration}ms (threshold: ${threshold}ms)`,
-                {
-                  model,
-                  operation,
-                  args,
-                  duration,
-                  threshold,
-                },
-              );
+              logger.warn(`Slow query detected: ${slowQueryLog.query} took ${duration}ms (threshold: ${threshold}ms)`, {
+                model,
+                operation,
+                args,
+                duration,
+                threshold,
+              });
 
               if (callback) {
                 callback(slowQueryLog);
@@ -108,17 +102,14 @@ export function createSlowQueryExtension(
             const duration = Date.now() - startTime;
 
             if (duration >= threshold) {
-              logger.warn(
-                `Slow query (failed): ${model}.${operation} took ${duration}ms (threshold: ${threshold}ms)`,
-                {
-                  model,
-                  operation,
-                  args,
-                  duration,
-                  threshold,
-                  error: error instanceof Error ? error.message : String(error),
-                },
-              );
+              logger.warn(`Slow query (failed): ${model}.${operation} took ${duration}ms (threshold: ${threshold}ms)`, {
+                model,
+                operation,
+                args,
+                duration,
+                threshold,
+                error: error instanceof Error ? error.message : String(error),
+              });
             }
 
             throw error;

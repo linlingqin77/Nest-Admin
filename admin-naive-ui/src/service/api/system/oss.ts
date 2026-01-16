@@ -5,6 +5,6 @@ export function fetchUploadFile(formData: FormData) {
   return request<Api.System.Oss>({
     url: '/resource/oss/upload',
     method: 'post',
-    data: formData,
+    data: formData
   });
 }

@@ -124,9 +124,7 @@ describe('LoginSecurityService', () => {
     });
 
     it('should not return negative remaining attempts', async () => {
-      mockRedisService.get
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce('10'); // more than max
+      mockRedisService.get.mockResolvedValueOnce(null).mockResolvedValueOnce('10'); // more than max
       mockRedisService.ttl.mockResolvedValue(-2);
 
       const result = await service.getSecurityStatus('testuser');
@@ -146,11 +144,7 @@ describe('LoginSecurityService', () => {
 
       const result = await service.recordLoginFailure('testuser');
 
-      expect(mockRedisService.set).toHaveBeenCalledWith(
-        `${CacheEnum.PWD_ERR_CNT_KEY}testuser`,
-        3,
-        15 * 60 * 1000,
-      );
+      expect(mockRedisService.set).toHaveBeenCalledWith(`${CacheEnum.PWD_ERR_CNT_KEY}testuser`, 3, 15 * 60 * 1000);
       expect(result.failedAttempts).toBe(3);
     });
 
@@ -190,11 +184,7 @@ describe('LoginSecurityService', () => {
 
       await service.recordLoginFailure('testuser', customConfig);
 
-      expect(mockRedisService.set).toHaveBeenCalledWith(
-        `${CacheEnum.PWD_ERR_CNT_KEY}testuser`,
-        3,
-        5 * 60 * 1000,
-      );
+      expect(mockRedisService.set).toHaveBeenCalledWith(`${CacheEnum.PWD_ERR_CNT_KEY}testuser`, 3, 5 * 60 * 1000);
     });
   });
 

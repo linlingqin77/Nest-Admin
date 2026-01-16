@@ -5,9 +5,15 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { TenantStatsVo, TenantTrendDataVo, PackageDistributionVo, ExpiringTenantVo, QuotaTopTenantVo, DashboardDataVo } from './types';
+import type {
+  DashboardDataVo,
+  ExpiringTenantVo,
+  PackageDistributionVo,
+  QuotaTopTenantVo,
+  TenantStatsVo,
+  TenantTrendDataVo
+} from './types';
 
 /**
  * 租户仪表盘-统计数据
@@ -17,7 +23,7 @@ export function fetchTenantDashboardGetStats() {
   return apiRequest<TenantStatsVo>({
     method: 'GET',
     url: '/system/tenant/dashboard/stats',
-    operationId: 'TenantDashboardController_getStats_v1',
+    operationId: 'TenantDashboardController_getStats_v1'
   });
 }
 
@@ -30,7 +36,7 @@ export function fetchTenantDashboardGetTrend(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/tenant/dashboard/trend',
     params,
-    operationId: 'TenantDashboardController_getTrend_v1',
+    operationId: 'TenantDashboardController_getTrend_v1'
   });
 }
 
@@ -42,7 +48,7 @@ export function fetchTenantDashboardGetPackageDistribution() {
   return apiRequest<PackageDistributionVo[]>({
     method: 'GET',
     url: '/system/tenant/dashboard/package-distribution',
-    operationId: 'TenantDashboardController_getPackageDistribution_v1',
+    operationId: 'TenantDashboardController_getPackageDistribution_v1'
   });
 }
 
@@ -55,7 +61,7 @@ export function fetchTenantDashboardGetExpiringTenants(params?: Record<string, u
     method: 'GET',
     url: '/system/tenant/dashboard/expiring-tenants',
     params,
-    operationId: 'TenantDashboardController_getExpiringTenants_v1',
+    operationId: 'TenantDashboardController_getExpiringTenants_v1'
   });
 }
 
@@ -67,7 +73,7 @@ export function fetchTenantDashboardGetQuotaTopTenants() {
   return apiRequest<QuotaTopTenantVo[]>({
     method: 'GET',
     url: '/system/tenant/dashboard/quota-top',
-    operationId: 'TenantDashboardController_getQuotaTopTenants_v1',
+    operationId: 'TenantDashboardController_getQuotaTopTenants_v1'
   });
 }
 
@@ -80,6 +86,6 @@ export function fetchTenantDashboardGetDashboardData(params?: Record<string, unk
     method: 'GET',
     url: '/system/tenant/dashboard',
     params,
-    operationId: 'TenantDashboardController_getDashboardData_v1',
+    operationId: 'TenantDashboardController_getDashboardData_v1'
   });
 }

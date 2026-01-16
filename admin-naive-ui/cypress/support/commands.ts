@@ -47,8 +47,8 @@ Cypress.Commands.add('loginByApi', (username: string, password: string) => {
   cy.request({
     method: 'POST',
     url: '/api/auth/login',
-    body: { userName: username, password },
-  }).then((response) => {
+    body: { userName: username, password }
+  }).then(response => {
     if (response.body.code === 200) {
       window.localStorage.setItem('token', response.body.data.token);
     }

@@ -221,14 +221,7 @@ describe('TenantAuditLog Property-Based Tests', () => {
             auditLogIdCounter = BigInt(1);
 
             // Perform login operation
-            const result = performAuditedOperation(
-              tenantId,
-              operatorId,
-              operatorName,
-              'login',
-              'auth',
-              ipAddress,
-            );
+            const result = performAuditedOperation(tenantId, operatorId, operatorName, 'login', 'auth', ipAddress);
 
             // Verify audit log was created
             const log = findAuditLogById(result.auditLogId);
@@ -290,12 +283,7 @@ describe('TenantAuditLog Property-Based Tests', () => {
             const log = findAuditLogById(result.auditLogId);
 
             // Property: Audit log should exist with correct action type
-            return (
-              result.success &&
-              log !== null &&
-              log.actionType === actionType &&
-              log.module === module
-            );
+            return result.success && log !== null && log.actionType === actionType && log.module === module;
           },
         ),
         { numRuns: 100 },
@@ -362,10 +350,7 @@ describe('TenantAuditLog Property-Based Tests', () => {
           // Generate random IP address
           fc.ipV4(),
           // Generate config key-value pairs
-          fc.dictionary(
-            fc.string({ minLength: 1, maxLength: 20 }),
-            fc.string({ minLength: 1, maxLength: 50 }),
-          ),
+          fc.dictionary(fc.string({ minLength: 1, maxLength: 20 }), fc.string({ minLength: 1, maxLength: 50 })),
           async (tenantId, operatorId, operatorName, ipAddress, configData) => {
             // Reset state
             auditLogs.clear();
@@ -387,12 +372,7 @@ describe('TenantAuditLog Property-Based Tests', () => {
             const log = findAuditLogById(result.auditLogId);
 
             // Property: Audit log should exist with config change type
-            return (
-              result.success &&
-              log !== null &&
-              log.actionType === 'config_change' &&
-              log.module === 'config'
-            );
+            return result.success && log !== null && log.actionType === 'config_change' && log.module === 'config';
           },
         ),
         { numRuns: 100 },
@@ -431,11 +411,7 @@ describe('TenantAuditLog Property-Based Tests', () => {
             const log = findAuditLogById(result.auditLogId);
 
             // Property: Any action type should create an audit log
-            return (
-              result.success &&
-              log !== null &&
-              log.actionType === actionType
-            );
+            return result.success && log !== null && log.actionType === actionType;
           },
         ),
         { numRuns: 100 },
@@ -693,15 +669,9 @@ describe('TenantAuditLog Property-Based Tests', () => {
       await fc.assert(
         fc.asyncProperty(
           // Generate random tenant IDs
-          fc.tuple(
-            fc.stringMatching(/^[0-9]{6}$/),
-            fc.stringMatching(/^[0-9]{6}$/),
-          ),
+          fc.tuple(fc.stringMatching(/^[0-9]{6}$/), fc.stringMatching(/^[0-9]{6}$/)),
           // Generate random action types
-          fc.tuple(
-            fc.constantFrom(...AUDIT_ACTION_TYPES),
-            fc.constantFrom(...AUDIT_ACTION_TYPES),
-          ),
+          fc.tuple(fc.constantFrom(...AUDIT_ACTION_TYPES), fc.constantFrom(...AUDIT_ACTION_TYPES)),
           // Generate number of logs
           fc.integer({ min: 10, max: 30 }),
           async ([tenantId1, tenantId2], [actionType1, actionType2], logCount) => {
@@ -732,10 +702,7 @@ describe('TenantAuditLog Property-Based Tests', () => {
             });
 
             // Property: All results should match ALL filter conditions
-            return results.every(
-              (log) =>
-                log.tenantId.includes(tenantId1) && log.actionType === actionType1,
-            );
+            return results.every((log) => log.tenantId.includes(tenantId1) && log.actionType === actionType1);
           },
         ),
         { numRuns: 100 },

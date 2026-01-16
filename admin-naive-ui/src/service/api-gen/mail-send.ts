@@ -5,9 +5,8 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { SendMailDto, BatchSendMailDto, TestMailDto } from './types';
+import type { BatchSendMailDto, SendMailDto, TestMailDto } from './types';
 
 /**
  * 邮件发送-单发
@@ -18,7 +17,7 @@ export function fetchMailSendSend(data: SendMailDto) {
     method: 'POST',
     url: '/system/mail/send',
     data,
-    operationId: 'MailSendController_send_v1',
+    operationId: 'MailSendController_send_v1'
   });
 }
 
@@ -31,7 +30,7 @@ export function fetchMailSendBatchSend(data: BatchSendMailDto) {
     method: 'POST',
     url: '/system/mail/send/batch',
     data,
-    operationId: 'MailSendController_batchSend_v1',
+    operationId: 'MailSendController_batchSend_v1'
   });
 }
 
@@ -43,7 +42,7 @@ export function fetchMailSendResend(logId: string | number) {
   return apiRequest<unknown>({
     method: 'POST',
     url: buildUrl('/system/mail/send/resend/{logId}', { logId }),
-    operationId: 'MailSendController_resend_v1',
+    operationId: 'MailSendController_resend_v1'
   });
 }
 
@@ -56,6 +55,6 @@ export function fetchMailSendTestSend(data: TestMailDto) {
     method: 'POST',
     url: '/system/mail/send/test',
     data,
-    operationId: 'MailSendController_testSend_v1',
+    operationId: 'MailSendController_testSend_v1'
   });
 }

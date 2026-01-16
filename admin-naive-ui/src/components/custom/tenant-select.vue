@@ -16,7 +16,7 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  clearable: false,
+  clearable: false
 });
 
 const appStore = useAppStore();
@@ -75,10 +75,10 @@ async function handleFetchTenantList() {
     }
     enabled.value = data.tenantEnabled;
     if (data.tenantEnabled) {
-      tenantOption.value = data.voList.map((tenant) => {
+      tenantOption.value = data.voList.map(tenant => {
         return {
           label: tenant.companyName,
-          value: tenant.tenantId,
+          value: tenant.tenantId
         };
       });
     }

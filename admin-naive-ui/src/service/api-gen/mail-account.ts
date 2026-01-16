@@ -5,9 +5,8 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CreateMailAccountDto, UpdateMailAccountDto, MailAccountListVo, MailAccountDetailVo } from './types';
+import type { CreateMailAccountDto, MailAccountDetailVo, MailAccountListVo, UpdateMailAccountDto } from './types';
 
 /**
  * 邮箱账号-创建
@@ -18,7 +17,7 @@ export function fetchMailAccountCreate(data: CreateMailAccountDto) {
     method: 'POST',
     url: '/system/mail/account',
     data,
-    operationId: 'MailAccountController_create_v1',
+    operationId: 'MailAccountController_create_v1'
   });
 }
 
@@ -31,7 +30,7 @@ export function fetchMailAccountUpdate(data: UpdateMailAccountDto) {
     method: 'PUT',
     url: '/system/mail/account',
     data,
-    operationId: 'MailAccountController_update_v1',
+    operationId: 'MailAccountController_update_v1'
   });
 }
 
@@ -44,7 +43,7 @@ export function fetchMailAccountFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/mail/account/list',
     params,
-    operationId: 'MailAccountController_findAll_v1',
+    operationId: 'MailAccountController_findAll_v1'
   });
 }
 
@@ -56,7 +55,7 @@ export function fetchMailAccountGetEnabledAccounts() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/system/mail/account/enabled',
-    operationId: 'MailAccountController_getEnabledAccounts_v1',
+    operationId: 'MailAccountController_getEnabledAccounts_v1'
   });
 }
 
@@ -68,7 +67,7 @@ export function fetchMailAccountFindOne(id: string | number) {
   return apiRequest<MailAccountDetailVo>({
     method: 'GET',
     url: buildUrl('/system/mail/account/{id}', { id }),
-    operationId: 'MailAccountController_findOne_v1',
+    operationId: 'MailAccountController_findOne_v1'
   });
 }
 
@@ -80,6 +79,6 @@ export function fetchMailAccountRemove(id: string | number) {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: buildUrl('/system/mail/account/{id}', { id }),
-    operationId: 'MailAccountController_remove_v1',
+    operationId: 'MailAccountController_remove_v1'
   });
 }

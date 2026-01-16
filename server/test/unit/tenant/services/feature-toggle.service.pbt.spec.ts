@@ -144,14 +144,10 @@ describe('FeatureToggleService - Property Tests', () => {
   });
 
   // 生成有效的租户ID
-  const tenantIdArb = fc
-    .integer({ min: 100001, max: 999999 })
-    .map((n) => n.toString());
+  const tenantIdArb = fc.integer({ min: 100001, max: 999999 }).map((n) => n.toString());
 
   // 生成有效的功能键
-  const featureKeyArb = fc
-    .stringMatching(/^[a-z][a-z_]{1,28}[a-z]$/)
-    .filter((s) => s.length >= 3 && !s.includes('__'));
+  const featureKeyArb = fc.stringMatching(/^[a-z][a-z_]{1,28}[a-z]$/).filter((s) => s.length >= 3 && !s.includes('__'));
 
   describe('Property 8: 功能开关租户隔离', () => {
     /**
@@ -197,31 +193,26 @@ describe('FeatureToggleService - Property Tests', () => {
      */
     it('删除一个租户的功能开关不应该影响其他租户', async () => {
       await fc.assert(
-        fc.asyncProperty(
-          tenantIdArb,
-          tenantIdArb,
-          featureKeyArb,
-          async (tenant1, tenant2, feature) => {
-            // 确保两个租户ID不同
-            fc.pre(tenant1 !== tenant2);
+        fc.asyncProperty(tenantIdArb, tenantIdArb, featureKeyArb, async (tenant1, tenant2, feature) => {
+          // 确保两个租户ID不同
+          fc.pre(tenant1 !== tenant2);
 
-            // 清空存储
-            featureStore.clear();
-            cacheStore.clear();
+          // 清空存储
+          featureStore.clear();
+          cacheStore.clear();
 
-            // 两个租户都启用该功能
-            await service.setFeature(tenant1, feature, true);
-            await service.setFeature(tenant2, feature, true);
+          // 两个租户都启用该功能
+          await service.setFeature(tenant1, feature, true);
+          await service.setFeature(tenant2, feature, true);
 
-            // 删除租户1的功能开关
-            await service.deleteFeature(tenant1, feature);
+          // 删除租户1的功能开关
+          await service.deleteFeature(tenant1, feature);
 
-            // 验证租户2的功能状态不受影响
-            const result2 = await service.isEnabled(tenant2, feature);
+          // 验证租户2的功能状态不受影响
+          const result2 = await service.isEnabled(tenant2, feature);
 
-            return result2 === true;
-          },
-        ),
+          return result2 === true;
+        }),
         { numRuns: 100 },
       );
     });
@@ -232,30 +223,25 @@ describe('FeatureToggleService - Property Tests', () => {
      */
     it('清除一个租户的缓存不应该影响其他租户', async () => {
       await fc.assert(
-        fc.asyncProperty(
-          tenantIdArb,
-          tenantIdArb,
-          featureKeyArb,
-          async (tenant1, tenant2, feature) => {
-            // 确保两个租户ID不同
-            fc.pre(tenant1 !== tenant2);
+        fc.asyncProperty(tenantIdArb, tenantIdArb, featureKeyArb, async (tenant1, tenant2, feature) => {
+          // 确保两个租户ID不同
+          fc.pre(tenant1 !== tenant2);
 
-            // 清空存储
-            featureStore.clear();
-            cacheStore.clear();
+          // 清空存储
+          featureStore.clear();
+          cacheStore.clear();
 
-            // 两个租户都启用该功能
-            await service.setFeature(tenant1, feature, true);
-            await service.setFeature(tenant2, feature, true);
+          // 两个租户都启用该功能
+          await service.setFeature(tenant1, feature, true);
+          await service.setFeature(tenant2, feature, true);
 
-            // 清除租户1的缓存
-            await service.clearCache(tenant1);
+          // 清除租户1的缓存
+          await service.clearCache(tenant1);
 
-            // 验证租户2的缓存仍然存在
-            const tenant2Cache = cacheStore.get(tenant2);
-            return tenant2Cache !== undefined && tenant2Cache.has(feature);
-          },
-        ),
+          // 验证租户2的缓存仍然存在
+          const tenant2Cache = cacheStore.get(tenant2);
+          return tenant2Cache !== undefined && tenant2Cache.has(feature);
+        }),
         { numRuns: 100 },
       );
     });
@@ -267,24 +253,19 @@ describe('FeatureToggleService - Property Tests', () => {
      */
     it('设置功能开关后查询应该返回相同的状态', async () => {
       await fc.assert(
-        fc.asyncProperty(
-          tenantIdArb,
-          featureKeyArb,
-          fc.boolean(),
-          async (tenantId, feature, enabled) => {
-            // 清空存储
-            featureStore.clear();
-            cacheStore.clear();
+        fc.asyncProperty(tenantIdArb, featureKeyArb, fc.boolean(), async (tenantId, feature, enabled) => {
+          // 清空存储
+          featureStore.clear();
+          cacheStore.clear();
 
-            // 设置功能开关
-            await service.setFeature(tenantId, feature, enabled);
+          // 设置功能开关
+          await service.setFeature(tenantId, feature, enabled);
 
-            // 查询功能状态
-            const result = await service.isEnabled(tenantId, feature);
+          // 查询功能状态
+          const result = await service.isEnabled(tenantId, feature);
 
-            return result === enabled;
-          },
-        ),
+          return result === enabled;
+        }),
         { numRuns: 100 },
       );
     });

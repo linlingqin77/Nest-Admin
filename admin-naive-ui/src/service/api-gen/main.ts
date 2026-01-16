@@ -5,9 +5,18 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { LoginRequestDto, LoginResponseDto, LogoutResponseDto, RegisterRequestDto, RegisterResultResponseDto, RegisterEnabledResponseDto, CaptchaResponseDto, GetInfoResponseDto, RouterResponseDto } from './types';
+import type {
+  CaptchaResponseDto,
+  GetInfoResponseDto,
+  LoginRequestDto,
+  LoginResponseDto,
+  LogoutResponseDto,
+  RegisterEnabledResponseDto,
+  RegisterRequestDto,
+  RegisterResultResponseDto,
+  RouterResponseDto
+} from './types';
 
 /**
  * 用户登录
@@ -18,7 +27,7 @@ export function fetchMainLogin(data: LoginRequestDto) {
     method: 'POST',
     url: '/login',
     data,
-    operationId: 'MainController_login_v1',
+    operationId: 'MainController_login_v1'
   });
 }
 
@@ -30,7 +39,7 @@ export function fetchMainLogout() {
   return apiRequest<LogoutResponseDto>({
     method: 'POST',
     url: '/logout',
-    operationId: 'MainController_logout_v1',
+    operationId: 'MainController_logout_v1'
   });
 }
 
@@ -43,7 +52,7 @@ export function fetchMainRegister(data: RegisterRequestDto) {
     method: 'POST',
     url: '/register',
     data,
-    operationId: 'MainController_register_v1',
+    operationId: 'MainController_register_v1'
   });
 }
 
@@ -55,7 +64,7 @@ export function fetchMainRegisterUser() {
   return apiRequest<RegisterEnabledResponseDto>({
     method: 'GET',
     url: '/registerUser',
-    operationId: 'MainController_registerUser_v1',
+    operationId: 'MainController_registerUser_v1'
   });
 }
 
@@ -67,7 +76,7 @@ export function fetchMainCaptchaImage() {
   return apiRequest<CaptchaResponseDto>({
     method: 'GET',
     url: '/captchaImage',
-    operationId: 'MainController_captchaImage_v1',
+    operationId: 'MainController_captchaImage_v1'
   });
 }
 
@@ -79,7 +88,7 @@ export function fetchMainGetInfo() {
   return apiRequest<GetInfoResponseDto>({
     method: 'GET',
     url: '/getInfo',
-    operationId: 'MainController_getInfo_v1',
+    operationId: 'MainController_getInfo_v1'
   });
 }
 
@@ -91,6 +100,6 @@ export function fetchMainGetRouters() {
   return apiRequest<RouterResponseDto[]>({
     method: 'GET',
     url: '/getRouters',
-    operationId: 'MainController_getRouters_v1',
+    operationId: 'MainController_getRouters_v1'
   });
 }

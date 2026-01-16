@@ -2,13 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, CallHandler, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { of, throwError } from 'rxjs';
-import { 
-  LockInterceptor, 
-  LOCK_KEY, 
-  LockOptions,
-  Lock,
-  LockAcquireException 
-} from '@/core/decorators/lock.decorator';
+import { LockInterceptor, LOCK_KEY, LockOptions, Lock, LockAcquireException } from '@/core/decorators/lock.decorator';
 import { RedisService } from '@/module/common/redis/redis.service';
 
 /**
@@ -170,7 +164,7 @@ describe('LockInterceptor Unit Tests', () => {
       });
 
       // Wait for finalize to complete
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
       expect(mockRedisClient.eval).toHaveBeenCalled();
     });
   });
@@ -229,7 +223,7 @@ describe('LockInterceptor Unit Tests', () => {
         expect.any(String),
         'EX',
         customLeaseTime,
-        'NX'
+        'NX',
       );
     });
   });
@@ -319,15 +313,15 @@ describe('LockInterceptor Unit Tests', () => {
       };
 
       const observable = await interceptor.intercept(context, handler);
-      
+
       await expect(
         new Promise((resolve, reject) => {
           observable.subscribe({ next: resolve, error: reject });
-        })
+        }),
       ).rejects.toThrow('Test error');
 
       // Wait for finalize to complete
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
       expect(mockRedisClient.eval).toHaveBeenCalled();
     });
 
@@ -350,15 +344,10 @@ describe('LockInterceptor Unit Tests', () => {
       await new Promise((resolve) => observable.subscribe({ next: resolve }));
 
       // Wait for finalize
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       // Verify eval was called with the correct lock value
-      expect(mockRedisClient.eval).toHaveBeenCalledWith(
-        expect.any(String),
-        1,
-        expect.any(String),
-        lockValue
-      );
+      expect(mockRedisClient.eval).toHaveBeenCalledWith(expect.any(String), 1, expect.any(String), lockValue);
     });
   });
 

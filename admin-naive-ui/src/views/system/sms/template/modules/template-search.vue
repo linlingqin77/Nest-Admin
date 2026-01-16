@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useNaiveForm } from '@/hooks/common/form';
+import { onMounted, ref } from 'vue';
 import { fetchSmsChannelGetEnabledChannels } from '@/service/api-gen';
+import { useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'SmsTemplateSearch',
+  name: 'SmsTemplateSearch'
 });
 
 interface Emits {
@@ -24,7 +24,7 @@ const channelOptions = ref<{ label: string; value: number }[]>([]);
 const templateTypeOptions = [
   { label: '验证码', value: 1 },
   { label: '通知', value: 2 },
-  { label: '营销', value: 3 },
+  { label: '营销', value: 3 }
 ];
 
 async function loadChannelOptions() {
@@ -33,7 +33,7 @@ async function loadChannelOptions() {
     if (data && Array.isArray(data)) {
       channelOptions.value = data.map((item: any) => ({
         label: item.name,
-        value: item.id as number,
+        value: item.id as number
       }));
     }
   } catch {

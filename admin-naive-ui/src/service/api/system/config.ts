@@ -4,7 +4,7 @@ import { request } from '@/service/request';
 export function fetchGetConfigByKey(configKey: string) {
   return request<string>({
     url: `/system/config/configKey/${configKey}`,
-    method: 'get',
+    method: 'get'
   });
 }
 
@@ -13,6 +13,6 @@ export function fetchUpdateConfigByKey(configKey: string, configValue: string) {
   return request<boolean>({
     url: '/system/config/updateByKey',
     method: 'put',
-    data: { configKey, configValue },
+    data: { configKey, configValue }
   });
 }

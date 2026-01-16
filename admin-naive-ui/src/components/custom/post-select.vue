@@ -6,7 +6,7 @@ import { fetchPostOptionselect } from '@/service/api-gen';
 import type { PostResponseDto } from '@/service/api-gen/types';
 
 defineOptions({
-  name: 'PostSelect',
+  name: 'PostSelect'
 });
 
 interface Props {
@@ -34,7 +34,7 @@ watch(
     }
     getPostOptions();
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 async function getPostOptions() {
@@ -43,9 +43,9 @@ async function getPostOptions() {
     const { data } = await fetchPostOptionselect({ deptId: props.deptId });
     if (data) {
       const posts = data as PostResponseDto[];
-      postOptions.value = posts.map((item) => ({
+      postOptions.value = posts.map(item => ({
         label: item.postName!,
-        value: item.postId!,
+        value: item.postId!
       }));
     }
   } catch {

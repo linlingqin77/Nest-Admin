@@ -131,7 +131,11 @@ export const faker = {
 
   helpers: {
     arrayElement: <T>(arr: T[]): T => randomElement(arr),
-    slugify: (str: string): string => str.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''),
+    slugify: (str: string): string =>
+      str
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w-]/g, ''),
   },
 };
 

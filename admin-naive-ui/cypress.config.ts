@@ -23,13 +23,13 @@ export default defineConfig({
     responseTimeout: 30000,
     retries: {
       runMode: 2,
-      openMode: 0,
-    },
+      openMode: 0
+    }
   },
   component: {
     devServer: {
       framework: 'vue',
-      bundler: 'vite',
-    },
-  },
+      bundler: 'vite'
+    }
+  }
 });

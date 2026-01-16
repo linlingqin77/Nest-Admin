@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { NDivider, NTag } from 'naive-ui';
-import { fetchNotifyTemplateRemove, fetchNotifyTemplateFindAll } from '@/service/api-gen';
+import { fetchNotifyTemplateFindAll, fetchNotifyTemplateRemove } from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
@@ -12,7 +12,7 @@ import TemplateOperateDrawer from './modules/template-operate-drawer.vue';
 import TemplateSearch from './modules/template-search.vue';
 
 defineOptions({
-  name: 'NotifyTemplateList',
+  name: 'NotifyTemplateList'
 });
 
 useDict('sys_normal_disable');
@@ -22,7 +22,7 @@ const tableProps = useTableProps();
 
 const templateTypeMap: Record<number, { label: string; type: NaiveUI.ThemeColor }> = {
   1: { label: '系统通知', type: 'info' },
-  2: { label: '业务通知', type: 'success' },
+  2: { label: '业务通知', type: 'success' }
 };
 
 const {
@@ -34,7 +34,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchNotifyTemplateFindAll as any,
   apiParams: {
@@ -43,19 +43,19 @@ const {
     name: null,
     code: null,
     type: null,
-    status: null,
+    status: null
   },
   columns: () => [
     {
       type: 'selection',
       align: 'center',
-      width: 48,
+      width: 48
     },
     {
       key: 'id',
       title: 'ID',
       align: 'center',
-      width: 60,
+      width: 60
     },
     {
       key: 'name',
@@ -63,8 +63,8 @@ const {
       align: 'center',
       minWidth: 120,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'code',
@@ -72,14 +72,14 @@ const {
       align: 'center',
       minWidth: 120,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'nickname',
       title: '发送人',
       align: 'center',
-      minWidth: 100,
+      minWidth: 100
     },
     {
       key: 'type',
@@ -89,8 +89,12 @@ const {
       render(row) {
         const typedRow = row as unknown as Api.System.NotifyTemplate;
         const typeInfo = templateTypeMap[typedRow.type] || { label: '未知', type: 'default' };
-        return <NTag size="small" type={typeInfo.type}>{typeInfo.label}</NTag>;
-      },
+        return (
+          <NTag size="small" type={typeInfo.type}>
+            {typeInfo.label}
+          </NTag>
+        );
+      }
     },
     {
       key: 'content',
@@ -98,8 +102,8 @@ const {
       align: 'center',
       minWidth: 200,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'status',
@@ -109,20 +113,20 @@ const {
       render(row) {
         const typedRow = row as unknown as Api.System.NotifyTemplate;
         return <DictTag size="small" value={typedRow.status} dictCode="sys_normal_disable" />;
-      },
+      }
     },
     {
       key: 'createTime',
       title: '创建时间',
       align: 'center',
-      minWidth: 160,
+      minWidth: 160
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 130,
-      render: (row) => {
+      render: row => {
         const typedRow = row as unknown as Api.System.NotifyTemplate;
         const divider = () => {
           if (!hasAuth('system:notify:template:edit') || !hasAuth('system:notify:template:remove')) {
@@ -169,9 +173,9 @@ const {
             {deleteBtn()}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedRowKeys, onBatchDeleted, onDeleted } =
@@ -226,7 +230,7 @@ async function edit(id: CommonType.IdType) {
         :scroll-x="1000"
         :loading="loading"
         remote
-        :row-key="(row) => row.id"
+        :row-key="row => row.id"
         :pagination="mobilePagination"
         class="sm:h-full"
       />

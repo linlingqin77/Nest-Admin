@@ -67,7 +67,6 @@ describe('System module services', () => {
     });
   });
 
-
   describe('DeptService', () => {
     let prisma: PrismaMock;
     let service: DeptService;
@@ -205,7 +204,6 @@ describe('System module services', () => {
       expect(res.data.checkedKeys).toEqual([2]);
     });
   });
-
 
   describe('NoticeService', () => {
     let prisma: PrismaMock;
@@ -352,7 +350,6 @@ describe('System module services', () => {
       expect(prisma.genTableColumn.create).toHaveBeenCalled();
     });
   });
-
 
   describe('UserService', () => {
     let prisma: PrismaMock;

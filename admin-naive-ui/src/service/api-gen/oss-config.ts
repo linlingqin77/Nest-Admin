@@ -5,9 +5,14 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CreateOssConfigRequestDto, UpdateOssConfigRequestDto, OssConfigListResponseDto, OssConfigResponseDto, ChangeOssConfigStatusRequestDto } from './types';
+import type {
+  ChangeOssConfigStatusRequestDto,
+  CreateOssConfigRequestDto,
+  OssConfigListResponseDto,
+  OssConfigResponseDto,
+  UpdateOssConfigRequestDto
+} from './types';
 
 /**
  * OSS配置管理-创建
@@ -18,7 +23,7 @@ export function fetchOssConfigCreate(data: CreateOssConfigRequestDto) {
     method: 'POST',
     url: '/resource/oss/config',
     data,
-    operationId: 'OssConfigController_create_v1',
+    operationId: 'OssConfigController_create_v1'
   });
 }
 
@@ -31,7 +36,7 @@ export function fetchOssConfigUpdate(data: UpdateOssConfigRequestDto) {
     method: 'PUT',
     url: '/resource/oss/config',
     data,
-    operationId: 'OssConfigController_update_v1',
+    operationId: 'OssConfigController_update_v1'
   });
 }
 
@@ -44,7 +49,7 @@ export function fetchOssConfigFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/resource/oss/config/list',
     params,
-    operationId: 'OssConfigController_findAll_v1',
+    operationId: 'OssConfigController_findAll_v1'
   });
 }
 
@@ -56,7 +61,7 @@ export function fetchOssConfigFindOne(id: string | number) {
   return apiRequest<OssConfigResponseDto>({
     method: 'GET',
     url: buildUrl('/resource/oss/config/{id}', { id }),
-    operationId: 'OssConfigController_findOne_v1',
+    operationId: 'OssConfigController_findOne_v1'
   });
 }
 
@@ -69,7 +74,7 @@ export function fetchOssConfigChangeStatus(data: ChangeOssConfigStatusRequestDto
     method: 'PUT',
     url: '/resource/oss/config/changeStatus',
     data,
-    operationId: 'OssConfigController_changeStatus_v1',
+    operationId: 'OssConfigController_changeStatus_v1'
   });
 }
 
@@ -81,6 +86,6 @@ export function fetchOssConfigRemove(ids: string | number) {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: buildUrl('/resource/oss/config/{ids}', { ids }),
-    operationId: 'OssConfigController_remove_v1',
+    operationId: 'OssConfigController_remove_v1'
   });
 }

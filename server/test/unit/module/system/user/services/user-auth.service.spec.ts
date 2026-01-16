@@ -29,7 +29,6 @@ jest.mock('@/shared/utils/index', () => ({
   Uniq: jest.fn((arr) => [...new Set(arr)]),
 }));
 
-
 // 现在导入服务
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAuthService } from '@/module/system/user/services/user-auth.service';
@@ -347,11 +346,7 @@ describe('UserAuthService', () => {
     });
 
     it('should return unique role ids', async () => {
-      prismaMock.sysUserRole.findMany.mockResolvedValue([
-        { roleId: 1 },
-        { roleId: 2 },
-        { roleId: 1 },
-      ]);
+      prismaMock.sysUserRole.findMany.mockResolvedValue([{ roleId: 1 }, { roleId: 2 }, { roleId: 1 }]);
 
       const result = await service.getRoleIds([1, 2]);
 

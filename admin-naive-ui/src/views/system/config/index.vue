@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { NDivider } from 'naive-ui';
-import { fetchConfigFindAll, fetchConfigRemove, fetchConfigRefreshCache } from '@/service/api-gen';
+import { fetchConfigFindAll, fetchConfigRefreshCache, fetchConfigRemove } from '@/service/api-gen';
 import type { ConfigResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
@@ -14,7 +14,7 @@ import ConfigOperateDrawer from './modules/config-operate-drawer.vue';
 import ConfigSearch from './modules/config-search.vue';
 
 defineOptions({
-  name: 'ConfigList',
+  name: 'ConfigList'
 });
 
 useDict('sys_yes_no');
@@ -34,7 +34,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchConfigFindAll,
   apiParams: {
@@ -45,37 +45,37 @@ const {
     configName: null,
     configKey: null,
     configType: null,
-    params: {},
+    params: {}
   },
   columns: () => [
     {
       type: 'selection',
       align: 'center',
-      width: 48,
+      width: 48
     },
     {
       key: 'index',
       title: $t('common.index'),
       align: 'center',
-      width: 64,
+      width: 64
     },
     {
       key: 'configName',
       title: $t('page.system.config.configName'),
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'configKey',
       title: $t('page.system.config.configKey'),
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'configValue',
       title: $t('page.system.config.configValue'),
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'configType',
@@ -84,7 +84,7 @@ const {
       minWidth: 120,
       render(row) {
         return <DictTag size="small" value={row.configType} dictCode="sys_yes_no" />;
-      },
+      }
     },
     {
       key: 'remark',
@@ -92,8 +92,8 @@ const {
       align: 'center',
       minWidth: 120,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'createTime',
@@ -101,15 +101,15 @@ const {
       align: 'center',
       minWidth: 120,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 130,
-      render: (row) => {
+      render: row => {
         const divider = () => {
           if (!hasAuth('system:config:edit') || !hasAuth('system:config:remove')) {
             return null;
@@ -155,9 +155,9 @@ const {
             {deleteBtn()}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedRowKeys, onBatchDeleted, onDeleted } =
@@ -238,7 +238,7 @@ async function handleRefreshCache() {
         :scroll-x="962"
         :loading="loading"
         remote
-        :row-key="(row) => row.configId"
+        :row-key="row => row.configId"
         :pagination="mobilePagination"
         class="sm:h-full"
       />

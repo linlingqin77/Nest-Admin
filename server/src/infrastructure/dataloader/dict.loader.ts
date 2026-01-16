@@ -157,9 +157,7 @@ export class DictDataLoader extends BaseLoader<number, SysDictData> {
    * @param typeValuePairs - 字典类型和值的组合数组 [{type, value}]
    * @returns 组合键到字典数据的映射
    */
-  async loadByTypeAndValue(
-    typeValuePairs: Array<{ type: string; value: string }>,
-  ): Promise<Map<string, SysDictData>> {
+  async loadByTypeAndValue(typeValuePairs: Array<{ type: string; value: string }>): Promise<Map<string, SysDictData>> {
     // 按类型分组
     const typeGroups = new Map<string, string[]>();
     for (const pair of typeValuePairs) {
@@ -197,9 +195,7 @@ export class DictDataLoader extends BaseLoader<number, SysDictData> {
    * @param typeValuePairs - 字典类型和值的组合数组
    * @returns 组合键到标签的映射
    */
-  async loadLabels(
-    typeValuePairs: Array<{ type: string; value: string }>,
-  ): Promise<Map<string, string>> {
+  async loadLabels(typeValuePairs: Array<{ type: string; value: string }>): Promise<Map<string, string>> {
     const dataMap = await this.loadByTypeAndValue(typeValuePairs);
 
     const result = new Map<string, string>();

@@ -32,7 +32,7 @@ const xssPayloadArbitrary = fc.oneof(
 const sqlInjectionArbitrary = fc.oneof(
   fc.constant("'; DROP TABLE users; --"),
   fc.constant("' OR '1'='1"),
-  fc.constant("1; DELETE FROM users"),
+  fc.constant('1; DELETE FROM users'),
   fc.constant("' UNION SELECT * FROM users --"),
   fc.constant("admin'--"),
   fc.constant("1' OR '1'='1' /*"),
@@ -107,26 +107,14 @@ const sanitizePath = (input: string): string => {
   if (!input || typeof input !== 'string') return input;
 
   // 移除路径遍历字符
-  return input
-    .replace(/\.\./g, '')
-    .replace(/%2e/gi, '')
-    .replace(/%252f/gi, '')
-    .replace(/\\/g, '/');
+  return input.replace(/\.\./g, '').replace(/%2e/gi, '').replace(/%252f/gi, '').replace(/\\/g, '/');
 };
 
 /**
  * 验证字符串是否包含危险的 HTML 标签
  */
 const containsDangerousHtml = (input: string): boolean => {
-  const dangerousPatterns = [
-    /<script/i,
-    /<iframe/i,
-    /<object/i,
-    /<embed/i,
-    /<svg/i,
-    /on\w+\s*=/i,
-    /javascript:/i,
-  ];
+  const dangerousPatterns = [/<script/i, /<iframe/i, /<object/i, /<embed/i, /<svg/i, /on\w+\s*=/i, /javascript:/i];
   return dangerousPatterns.some((pattern) => pattern.test(input));
 };
 
@@ -218,7 +206,9 @@ describe('输入安全验证 - 属性测试', () => {
       it('正常查询参数不应被过度过滤', () => {
         fc.assert(
           fc.property(
-            fc.string({ minLength: 1, maxLength: 50 }).filter((s) => !containsSqlInjection(s) && !s.includes("'") && !s.includes(';')),
+            fc
+              .string({ minLength: 1, maxLength: 50 })
+              .filter((s) => !containsSqlInjection(s) && !s.includes("'") && !s.includes(';')),
             (normalParam) => {
               const sanitized = sanitizeSql(normalParam);
 
@@ -252,7 +242,9 @@ describe('输入安全验证 - 属性测试', () => {
       it('正常文件名不应被过度过滤', () => {
         fc.assert(
           fc.property(
-            fc.string({ minLength: 1, maxLength: 50 }).filter((s) => !containsPathTraversal(s) && !s.includes('..') && !s.includes('\\')),
+            fc
+              .string({ minLength: 1, maxLength: 50 })
+              .filter((s) => !containsPathTraversal(s) && !s.includes('..') && !s.includes('\\')),
             (normalFilename) => {
               const sanitized = sanitizePath(normalFilename);
 

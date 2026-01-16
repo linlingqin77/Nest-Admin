@@ -54,6 +54,10 @@ export class GenDbTableList extends PageQueryDto {
   @IsString()
   @IsOptional()
   tableComment?: string;
+  @ApiProperty({ description: '数据源名称', required: false })
+  @IsString()
+  @IsOptional()
+  dataName?: string;
 }
 
 export class TableName {

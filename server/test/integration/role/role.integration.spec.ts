@@ -118,12 +118,14 @@ describe('Role Integration Tests', () => {
   /**
    * Helper function to create a test role
    */
-  async function createTestRole(data: Partial<{
-    roleName: string;
-    roleKey: string;
-    menuIds: number[];
-    deptIds: number[];
-  }> = {}) {
+  async function createTestRole(
+    data: Partial<{
+      roleName: string;
+      roleKey: string;
+      menuIds: number[];
+      deptIds: number[];
+    }> = {},
+  ) {
     const timestamp = Date.now();
 
     const role = await prisma.sysRole.create({
@@ -172,13 +174,15 @@ describe('Role Integration Tests', () => {
   /**
    * Helper function to create a test user
    */
-  async function createTestUser(data: Partial<{
-    userName: string;
-    nickName: string;
-    password: string;
-    deptId: number;
-    roleIds: number[];
-  }> = {}) {
+  async function createTestUser(
+    data: Partial<{
+      userName: string;
+      nickName: string;
+      password: string;
+      deptId: number;
+      roleIds: number[];
+    }> = {},
+  ) {
     const timestamp = Date.now();
     const shortTimestamp = timestamp.toString().slice(-6);
     const hashedPassword = await bcrypt.hash(data.password || '123456', 10);
@@ -220,12 +224,14 @@ describe('Role Integration Tests', () => {
   /**
    * Helper function to create a test menu
    */
-  async function createTestMenu(data: Partial<{
-    menuName: string;
-    parentId: number;
-    menuType: string;
-    perms: string;
-  }> = {}) {
+  async function createTestMenu(
+    data: Partial<{
+      menuName: string;
+      parentId: number;
+      menuType: string;
+      perms: string;
+    }> = {},
+  ) {
     const timestamp = Date.now();
 
     const menu = await prisma.sysMenu.create({
@@ -270,7 +276,7 @@ describe('Role Integration Tests', () => {
     it('should create role with menu permissions and verify association', async () => {
       // Get existing menus for testing
       const existingMenus = await getExistingMenus(3);
-      
+
       if (existingMenus.length === 0) {
         console.log('Skipping test: No existing menus available');
         return;
@@ -300,7 +306,7 @@ describe('Role Integration Tests', () => {
     it('should update role menu permissions correctly', async () => {
       // Get existing menus for testing
       const existingMenus = await getExistingMenus(4);
-      
+
       if (existingMenus.length < 4) {
         console.log('Skipping test: Not enough existing menus available');
         return;
@@ -389,7 +395,7 @@ describe('Role Integration Tests', () => {
     it('should get role detail and verify menu associations exist', async () => {
       // Get existing menus
       const existingMenus = await getExistingMenus(2);
-      
+
       if (existingMenus.length === 0) {
         console.log('Skipping test: No existing menus available');
         return;

@@ -79,7 +79,6 @@ describe('UserService', () => {
     remark: null,
   };
 
-
   const mockRole = {
     roleId: 1,
     tenantId: '000000',
@@ -244,7 +243,10 @@ describe('UserService', () => {
           useValue: {
             create: jest.fn().mockResolvedValue({ code: 200 }),
             findAll: jest.fn().mockResolvedValue({ code: 200, data: { rows: [], total: 0 } }),
-            findOne: jest.fn().mockResolvedValue({ code: 200, data: { data: mockUser, postIds: [], posts: [], roles: [], roleIds: [] } }),
+            findOne: jest.fn().mockResolvedValue({
+              code: 200,
+              data: { data: mockUser, postIds: [], posts: [], roles: [], roleIds: [] },
+            }),
             update: jest.fn().mockResolvedValue({ code: 200 }),
             remove: jest.fn().mockResolvedValue({ code: 200, data: { count: 1 } }),
             changeStatus: jest.fn().mockResolvedValue({ code: 200 }),
@@ -254,8 +256,12 @@ describe('UserService', () => {
         {
           provide: UserBatchService,
           useValue: {
-            batchCreate: jest.fn().mockResolvedValue({ code: 200, data: { successCount: 0, failedCount: 0, totalCount: 0, results: [] } }),
-            batchDelete: jest.fn().mockResolvedValue({ code: 200, data: { successCount: 0, failedCount: 0, totalCount: 0, results: [] } }),
+            batchCreate: jest
+              .fn()
+              .mockResolvedValue({ code: 200, data: { successCount: 0, failedCount: 0, totalCount: 0, results: [] } }),
+            batchDelete: jest
+              .fn()
+              .mockResolvedValue({ code: 200, data: { successCount: 0, failedCount: 0, totalCount: 0, results: [] } }),
           },
         },
         {
@@ -526,7 +532,6 @@ describe('UserService', () => {
       expect(result.msg).toContain('注册账号已存在');
     });
   });
-
 
   describe('findAll', () => {
     const mockUserList = [
@@ -834,12 +839,19 @@ describe('UserService', () => {
     });
   });
 
-
   describe('batchCreate', () => {
     beforeEach(() => {
       userBatchService.batchCreate.mockResolvedValue({
         code: 200,
-        data: { successCount: 2, failedCount: 0, totalCount: 2, results: [{ index: 0, success: true }, { index: 1, success: true }] },
+        data: {
+          successCount: 2,
+          failedCount: 0,
+          totalCount: 2,
+          results: [
+            { index: 0, success: true },
+            { index: 1, success: true },
+          ],
+        },
       });
     });
 
@@ -863,7 +875,12 @@ describe('UserService', () => {
     it('should fail when username already exists', async () => {
       userBatchService.batchCreate.mockResolvedValueOnce({
         code: 200,
-        data: { successCount: 0, failedCount: 1, totalCount: 1, results: [{ index: 0, success: false, error: '用户名 "existingUser" 已存在' }] },
+        data: {
+          successCount: 0,
+          failedCount: 1,
+          totalCount: 1,
+          results: [{ index: 0, success: false, error: '用户名 "existingUser" 已存在' }],
+        },
       });
 
       const batchDto = {
@@ -882,7 +899,12 @@ describe('UserService', () => {
     it('should fail when phone number already exists', async () => {
       userBatchService.batchCreate.mockResolvedValueOnce({
         code: 200,
-        data: { successCount: 0, failedCount: 1, totalCount: 1, results: [{ index: 0, success: false, error: '手机号 "13800138000" 已存在' }] },
+        data: {
+          successCount: 0,
+          failedCount: 1,
+          totalCount: 1,
+          results: [{ index: 0, success: false, error: '手机号 "13800138000" 已存在' }],
+        },
       });
 
       const batchDto = {
@@ -906,7 +928,12 @@ describe('UserService', () => {
     it('should fail when email already exists', async () => {
       userBatchService.batchCreate.mockResolvedValueOnce({
         code: 200,
-        data: { successCount: 0, failedCount: 1, totalCount: 1, results: [{ index: 0, success: false, error: '邮箱 "existing@example.com" 已存在' }] },
+        data: {
+          successCount: 0,
+          failedCount: 1,
+          totalCount: 1,
+          results: [{ index: 0, success: false, error: '邮箱 "existing@example.com" 已存在' }],
+        },
       });
 
       const batchDto = {
@@ -963,7 +990,16 @@ describe('UserService', () => {
     beforeEach(() => {
       userBatchService.batchDelete.mockResolvedValue({
         code: 200,
-        data: { successCount: 3, failedCount: 0, totalCount: 3, results: [{ index: 0, success: true }, { index: 1, success: true }, { index: 2, success: true }] },
+        data: {
+          successCount: 3,
+          failedCount: 0,
+          totalCount: 3,
+          results: [
+            { index: 0, success: true },
+            { index: 1, success: true },
+            { index: 2, success: true },
+          ],
+        },
       });
     });
 
@@ -1006,7 +1042,12 @@ describe('UserService', () => {
     it('should not delete system users', async () => {
       userBatchService.batchDelete.mockResolvedValueOnce({
         code: 200,
-        data: { successCount: 0, failedCount: 1, totalCount: 1, results: [{ index: 0, success: false, error: '系统用户不可删除' }] },
+        data: {
+          successCount: 0,
+          failedCount: 1,
+          totalCount: 1,
+          results: [{ index: 0, success: false, error: '系统用户不可删除' }],
+        },
       });
 
       const batchDto = { userIds: [2] };
@@ -1021,7 +1062,12 @@ describe('UserService', () => {
     it('should fail when user does not exist', async () => {
       userBatchService.batchDelete.mockResolvedValueOnce({
         code: 200,
-        data: { successCount: 0, failedCount: 1, totalCount: 1, results: [{ index: 0, success: false, error: '用户ID 999 不存在' }] },
+        data: {
+          successCount: 0,
+          failedCount: 1,
+          totalCount: 1,
+          results: [{ index: 0, success: false, error: '用户ID 999 不存在' }],
+        },
       });
 
       const batchDto = { userIds: [999] };

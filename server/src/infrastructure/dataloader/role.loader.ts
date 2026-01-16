@@ -51,7 +51,6 @@ export class RoleLoader extends BaseLoader<number, SysRole> {
     return roleIds.map((id) => roleMap.get(id) ?? null);
   }
 
-
   /**
    * 批量加载用户的角色列表
    *
@@ -216,9 +215,7 @@ export class RoleLoader extends BaseLoader<number, SysRole> {
           })
         : [];
 
-    const menuPermMap = new Map<number, string>(
-      menus.filter((m) => m.perms).map((m) => [m.menuId, m.perms as string]),
-    );
+    const menuPermMap = new Map<number, string>(menus.filter((m) => m.perms).map((m) => [m.menuId, m.perms as string]));
 
     // 按角色 ID 分组
     const result = new Map<number, string[]>();

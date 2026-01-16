@@ -648,11 +648,26 @@ pnpm prisma:seed
 # 查看 Prisma Studio
 pnpm prisma:studio
 
-# 运行测试
+# 运行单元测试
 pnpm test
 
+# 运行测试并监听
+pnpm test:watch
+
+# 运行测试并生成覆盖率
+pnpm test:cov
+
+# 运行 E2E 测试
+pnpm test:e2e
+
+# 运行集成测试
+pnpm test:integration
+
+# 运行所有测试
+pnpm test:all
+
 # 构建生产版本
-pnpm build
+pnpm build:prod
 ```
 
 ### 前端命令
@@ -664,6 +679,9 @@ pnpm dev
 # 生成路由
 pnpm gen-route
 
+# 生成 API 类型
+pnpm gen:api
+
 # 类型检查
 pnpm typecheck
 
@@ -672,6 +690,27 @@ pnpm lint
 
 # 代码格式化
 pnpm format
+
+# 运行单元测试
+pnpm test
+
+# 运行测试并监听
+pnpm test:watch
+
+# 运行测试并生成覆盖率
+pnpm test:cov
+
+# 可视化测试界面
+pnpm test:ui
+
+# 打开 Cypress 交互界面
+pnpm cypress:open
+
+# 运行 Cypress E2E 测试
+pnpm cypress:run
+
+# 运行所有测试
+pnpm test:all
 
 # 构建生产版本
 pnpm build

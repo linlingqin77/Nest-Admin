@@ -16,10 +16,12 @@ describe('DecryptInterceptor', () => {
     decryptRequest: jest.fn(),
   };
 
-  const createMockContext = (options: {
-    body?: any;
-    headers?: Record<string, string>;
-  } = {}): ExecutionContext => {
+  const createMockContext = (
+    options: {
+      body?: any;
+      headers?: Record<string, string>;
+    } = {},
+  ): ExecutionContext => {
     const { body = {}, headers = {} } = options;
     return {
       switchToHttp: () => ({
@@ -153,10 +155,7 @@ describe('DecryptInterceptor', () => {
 
       interceptor.intercept(context, next).subscribe({
         next: () => {
-          expect(mockCryptoService.decryptRequest).toHaveBeenCalledWith(
-            'encrypted-aes-key',
-            'encrypted-data',
-          );
+          expect(mockCryptoService.decryptRequest).toHaveBeenCalledWith('encrypted-aes-key', 'encrypted-data');
           // Verify body was replaced
           expect(request.body).toEqual({ username: 'test', password: '123456' });
           done();

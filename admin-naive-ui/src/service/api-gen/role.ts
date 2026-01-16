@@ -5,9 +5,26 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CreateRoleRequestDto, CreateRoleResultResponseDto, UpdateRoleRequestDto, UpdateRoleResultResponseDto, RoleListResponseDto, RoleResponseDto, RoleDeptTreeResponseDto, DeleteRoleResultResponseDto, DataScopeResultResponseDto, ChangeRoleStatusRequestDto, ChangeRoleStatusResultResponseDto, AllocatedUserListResponseDto, AuthUserCancelRequestDto, AuthUserResultResponseDto, AuthUserCancelAllRequestDto, AuthUserSelectAllRequestDto, ListRoleRequestDto } from './types';
+import type {
+  AllocatedUserListResponseDto,
+  AuthUserCancelAllRequestDto,
+  AuthUserCancelRequestDto,
+  AuthUserResultResponseDto,
+  AuthUserSelectAllRequestDto,
+  ChangeRoleStatusRequestDto,
+  ChangeRoleStatusResultResponseDto,
+  CreateRoleRequestDto,
+  CreateRoleResultResponseDto,
+  DataScopeResultResponseDto,
+  DeleteRoleResultResponseDto,
+  ListRoleRequestDto,
+  RoleDeptTreeResponseDto,
+  RoleListResponseDto,
+  RoleResponseDto,
+  UpdateRoleRequestDto,
+  UpdateRoleResultResponseDto
+} from './types';
 
 /**
  * 角色管理-创建
@@ -18,7 +35,7 @@ export function fetchRoleCreate(data: CreateRoleRequestDto) {
     method: 'POST',
     url: '/system/role',
     data,
-    operationId: 'RoleController_create_v1',
+    operationId: 'RoleController_create_v1'
   });
 }
 
@@ -31,7 +48,7 @@ export function fetchRoleUpdate(data: UpdateRoleRequestDto) {
     method: 'PUT',
     url: '/system/role',
     data,
-    operationId: 'RoleController_update_v1',
+    operationId: 'RoleController_update_v1'
   });
 }
 
@@ -44,7 +61,7 @@ export function fetchRoleFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/role/list',
     params,
-    operationId: 'RoleController_findAll_v1',
+    operationId: 'RoleController_findAll_v1'
   });
 }
 
@@ -57,7 +74,7 @@ export function fetchRoleOptionselect(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/role/optionselect',
     params,
-    operationId: 'RoleController_optionselect_v1',
+    operationId: 'RoleController_optionselect_v1'
   });
 }
 
@@ -69,7 +86,7 @@ export function fetchRoleDeptTree(id: string | number) {
   return apiRequest<RoleDeptTreeResponseDto>({
     method: 'GET',
     url: buildUrl('/system/role/deptTree/{id}', { id }),
-    operationId: 'RoleController_deptTree_v1',
+    operationId: 'RoleController_deptTree_v1'
   });
 }
 
@@ -81,7 +98,7 @@ export function fetchRoleFindOne(id: string | number) {
   return apiRequest<RoleResponseDto>({
     method: 'GET',
     url: buildUrl('/system/role/{id}', { id }),
-    operationId: 'RoleController_findOne_v1',
+    operationId: 'RoleController_findOne_v1'
   });
 }
 
@@ -93,7 +110,7 @@ export function fetchRoleRemove(id: string | number) {
   return apiRequest<DeleteRoleResultResponseDto>({
     method: 'DELETE',
     url: buildUrl('/system/role/{id}', { id }),
-    operationId: 'RoleController_remove_v1',
+    operationId: 'RoleController_remove_v1'
   });
 }
 
@@ -106,7 +123,7 @@ export function fetchRoleDataScope(data: UpdateRoleRequestDto) {
     method: 'PUT',
     url: '/system/role/dataScope',
     data,
-    operationId: 'RoleController_dataScope_v1',
+    operationId: 'RoleController_dataScope_v1'
   });
 }
 
@@ -119,7 +136,7 @@ export function fetchRoleChangeStatus(data: ChangeRoleStatusRequestDto) {
     method: 'PUT',
     url: '/system/role/changeStatus',
     data,
-    operationId: 'RoleController_changeStatus_v1',
+    operationId: 'RoleController_changeStatus_v1'
   });
 }
 
@@ -132,7 +149,7 @@ export function fetchRoleAuthUserAllocatedList(params?: Record<string, unknown>)
     method: 'GET',
     url: '/system/role/authUser/allocatedList',
     params,
-    operationId: 'RoleController_authUserAllocatedList_v1',
+    operationId: 'RoleController_authUserAllocatedList_v1'
   });
 }
 
@@ -145,7 +162,7 @@ export function fetchRoleAuthUserUnAllocatedList(params?: Record<string, unknown
     method: 'GET',
     url: '/system/role/authUser/unallocatedList',
     params,
-    operationId: 'RoleController_authUserUnAllocatedList_v1',
+    operationId: 'RoleController_authUserUnAllocatedList_v1'
   });
 }
 
@@ -158,7 +175,7 @@ export function fetchRoleAuthUserCancel(data: AuthUserCancelRequestDto) {
     method: 'PUT',
     url: '/system/role/authUser/cancel',
     data,
-    operationId: 'RoleController_authUserCancel_v1',
+    operationId: 'RoleController_authUserCancel_v1'
   });
 }
 
@@ -171,7 +188,7 @@ export function fetchRoleAuthUserCancelAll(data: AuthUserCancelAllRequestDto) {
     method: 'PUT',
     url: '/system/role/authUser/cancelAll',
     data,
-    operationId: 'RoleController_authUserCancelAll_v1',
+    operationId: 'RoleController_authUserCancelAll_v1'
   });
 }
 
@@ -184,7 +201,7 @@ export function fetchRoleAuthUserSelectAll(data: AuthUserSelectAllRequestDto) {
     method: 'PUT',
     url: '/system/role/authUser/selectAll',
     data,
-    operationId: 'RoleController_authUserSelectAll_v1',
+    operationId: 'RoleController_authUserSelectAll_v1'
   });
 }
 
@@ -197,6 +214,6 @@ export function fetchRoleExport(data: ListRoleRequestDto) {
     method: 'POST',
     url: '/system/role/export',
     data,
-    operationId: 'RoleController_export_v1',
+    operationId: 'RoleController_export_v1'
   });
 }

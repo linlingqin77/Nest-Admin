@@ -2,7 +2,14 @@ import { Controller, Get, Post, Body, Put, Param, Delete, Query, Res } from '@ne
 import { Response } from 'express';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ConfigService } from './config.service';
-import { CreateConfigDto, UpdateConfigDto, ListConfigDto, ConfigResponseDto, ConfigListResponseDto, ConfigValueResponseDto } from './dto/index';
+import {
+  CreateConfigDto,
+  UpdateConfigDto,
+  ListConfigDto,
+  ConfigResponseDto,
+  ConfigListResponseDto,
+  ConfigValueResponseDto,
+} from './dto/index';
 import { RequirePermission } from 'src/core/decorators/require-premission.decorator';
 import { Api } from 'src/core/decorators/api.decorator';
 import { Operlog } from 'src/core/decorators/operlog.decorator';

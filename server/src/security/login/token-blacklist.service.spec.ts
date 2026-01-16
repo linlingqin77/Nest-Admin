@@ -52,11 +52,7 @@ describe('TokenBlacklistService', () => {
 
       await service.addToBlacklist(tokenUuid, customTtl);
 
-      expect(redisService.set).toHaveBeenCalledWith(
-        `token_blacklist:${tokenUuid}`,
-        expect.any(String),
-        customTtl,
-      );
+      expect(redisService.set).toHaveBeenCalledWith(`token_blacklist:${tokenUuid}`, expect.any(String), customTtl);
     });
   });
 
@@ -137,11 +133,7 @@ describe('TokenBlacklistService', () => {
       const result = await service.incrementUserTokenVersion(userId);
 
       expect(result).toBe(4);
-      expect(redisService.set).toHaveBeenCalledWith(
-        `user_token_version:${userId}`,
-        '4',
-        7 * 24 * 60 * 60 * 1000,
-      );
+      expect(redisService.set).toHaveBeenCalledWith(`user_token_version:${userId}`, '4', 7 * 24 * 60 * 60 * 1000);
     });
 
     it('should use custom TTL when provided', async () => {
@@ -152,11 +144,7 @@ describe('TokenBlacklistService', () => {
 
       await service.incrementUserTokenVersion(userId, customTtl);
 
-      expect(redisService.set).toHaveBeenCalledWith(
-        `user_token_version:${userId}`,
-        '1',
-        customTtl,
-      );
+      expect(redisService.set).toHaveBeenCalledWith(`user_token_version:${userId}`, '1', customTtl);
     });
   });
 
@@ -206,11 +194,7 @@ describe('TokenBlacklistService', () => {
 
       await service.invalidateAllUserTokens(userId, 'password_change');
 
-      expect(redisService.set).toHaveBeenCalledWith(
-        `user_token_version:${userId}`,
-        '3',
-        expect.any(Number),
-      );
+      expect(redisService.set).toHaveBeenCalledWith(`user_token_version:${userId}`, '3', expect.any(Number));
     });
   });
 

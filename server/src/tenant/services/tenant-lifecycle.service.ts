@@ -162,9 +162,7 @@ export class TenantLifecycleService {
         },
       });
 
-      this.logger.log(
-        `Tenant ${tenantId} initialized: dept=${dept.deptId}, role=${role.roleId}, user=${user.userId}`,
-      );
+      this.logger.log(`Tenant ${tenantId} initialized: dept=${dept.deptId}, role=${role.roleId}, user=${user.userId}`);
     });
   }
 

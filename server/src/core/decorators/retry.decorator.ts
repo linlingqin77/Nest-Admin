@@ -67,7 +67,10 @@ export interface RetryOptions {
  * @param options 重试选项
  * @returns 延迟时间（毫秒）
  */
-export function calculateBackoffDelay(attempt: number, options: Required<Pick<RetryOptions, 'backoff' | 'baseDelayMs' | 'maxDelayMs' | 'multiplier' | 'jitter'>>): number {
+export function calculateBackoffDelay(
+  attempt: number,
+  options: Required<Pick<RetryOptions, 'backoff' | 'baseDelayMs' | 'maxDelayMs' | 'multiplier' | 'jitter'>>,
+): number {
   let delay: number;
 
   switch (options.backoff) {
@@ -168,7 +171,6 @@ export function RetryMeta(options?: RetryOptions): MethodDecorator {
   });
 }
 
-
 /**
  * 重试装饰器（方法包装版本）
  *
@@ -222,11 +224,7 @@ export function RetryMeta(options?: RetryOptions): MethodDecorator {
  * ```
  */
 export function Retry(options?: RetryOptions): MethodDecorator {
-  return function (
-    target: object,
-    propertyKey: string | symbol,
-    descriptor: PropertyDescriptor,
-  ): PropertyDescriptor {
+  return function (target: object, propertyKey: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor {
     const originalMethod = descriptor.value;
     const methodName = String(propertyKey);
     const className = target.constructor.name;
@@ -260,11 +258,7 @@ export function Retry(options?: RetryOptions): MethodDecorator {
 
           // 如果已经是最后一次尝试，抛出异常
           if (attempt > resolvedOptions.maxRetries) {
-            throw new RetryExhaustedError(
-              `${className}.${methodName}`,
-              resolvedOptions.maxRetries,
-              lastError,
-            );
+            throw new RetryExhaustedError(`${className}.${methodName}`, resolvedOptions.maxRetries, lastError);
           }
 
           // 执行重试回调

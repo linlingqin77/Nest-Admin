@@ -47,10 +47,7 @@ describe('RedisService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        RedisService,
-        { provide: getRedisToken('default'), useValue: redisMock },
-      ],
+      providers: [RedisService, { provide: getRedisToken('default'), useValue: redisMock }],
     }).compile();
 
     service = module.get<RedisService>(RedisService);

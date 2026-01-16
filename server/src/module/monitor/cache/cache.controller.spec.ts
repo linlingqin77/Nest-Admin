@@ -15,11 +15,13 @@ describe('CacheController', () => {
 
   beforeEach(async () => {
     cacheServiceMock = {
-      getInfo: jest.fn().mockResolvedValue(Result.ok({
-        info: { redis_version: '7.0.0' },
-        dbSize: 100,
-        commandStats: [],
-      })),
+      getInfo: jest.fn().mockResolvedValue(
+        Result.ok({
+          info: { redis_version: '7.0.0' },
+          dbSize: 100,
+          commandStats: [],
+        }),
+      ),
       getNames: jest.fn().mockResolvedValue(Result.ok(['sys_dict', 'sys_config'])),
       getKeys: jest.fn().mockResolvedValue(Result.ok(['key1', 'key2'])),
       getValue: jest.fn().mockResolvedValue(Result.ok({ cacheName: 'test', cacheKey: 'key1', cacheValue: 'value1' })),
@@ -30,9 +32,7 @@ describe('CacheController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CacheController],
-      providers: [
-        { provide: CacheService, useValue: cacheServiceMock },
-      ],
+      providers: [{ provide: CacheService, useValue: cacheServiceMock }],
     }).compile();
 
     controller = module.get<CacheController>(CacheController);

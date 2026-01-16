@@ -46,7 +46,6 @@ describe('PostService', () => {
     jest.clearAllMocks();
   });
 
-
   describe('create', () => {
     it('should create a post successfully', async () => {
       const createDto = {
@@ -243,7 +242,6 @@ describe('PostService', () => {
     });
   });
 
-
   describe('findOne', () => {
     it('should return a post by id', async () => {
       const mockPost = {
@@ -377,9 +375,7 @@ describe('PostService', () => {
 
   describe('deptTree', () => {
     it('should return department tree', async () => {
-      const mockTree = [
-        { id: 1, label: '总公司', children: [{ id: 2, label: '研发部' }] },
-      ];
+      const mockTree = [{ id: 1, label: '总公司', children: [{ id: 2, label: '研发部' }] }];
 
       deptService.deptTree.mockResolvedValue(mockTree);
 
@@ -395,9 +391,7 @@ describe('PostService', () => {
     it('should export post list to Excel', async () => {
       jest.spyOn(service, 'findAll').mockResolvedValue(
         Result.ok({
-          rows: [
-            { postId: 1, postCode: 'ceo', postName: '董事长', postSort: 1, status: '0' },
-          ],
+          rows: [{ postId: 1, postCode: 'ceo', postName: '董事长', postSort: 1, status: '0' }],
           total: 1,
         }) as any,
       );
@@ -420,9 +414,7 @@ describe('PostService', () => {
     });
 
     it('should remove pagination params before export', async () => {
-      const findAllSpy = jest.spyOn(service, 'findAll').mockResolvedValue(
-        Result.ok({ rows: [], total: 0 }) as any,
-      );
+      const findAllSpy = jest.spyOn(service, 'findAll').mockResolvedValue(Result.ok({ rows: [], total: 0 }) as any);
 
       const mockRes = {} as any;
       await service.export(mockRes, { pageNum: 1, pageSize: 10 } as any);

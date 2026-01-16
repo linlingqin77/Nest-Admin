@@ -13,10 +13,7 @@ describe('AuditInterceptor', () => {
   let mockAuditService: jest.Mocked<AuditService>;
   let mockClsService: jest.Mocked<ClsService>;
 
-  const createMockExecutionContext = (
-    request: any = {},
-    handler: any = jest.fn(),
-  ): ExecutionContext => {
+  const createMockExecutionContext = (request: any = {}, handler: any = jest.fn()): ExecutionContext => {
     return {
       switchToHttp: () => ({
         getRequest: () => ({
@@ -32,8 +29,8 @@ describe('AuditInterceptor', () => {
       getClass: () => class {},
       getArgs: () => [],
       getArgByIndex: () => ({}),
-      switchToRpc: () => ({} as any),
-      switchToWs: () => ({} as any),
+      switchToRpc: () => ({}) as any,
+      switchToWs: () => ({}) as any,
       getType: () => 'http' as any,
     } as unknown as ExecutionContext;
   };

@@ -36,47 +36,47 @@ export const apiCustomConfigs: Record<string, ApiCustomConfig> = {
   AuthController_login_v1: {
     isEncrypt: true,
     repeatSubmit: false,
-    isToken: false,
+    isToken: false
   },
 
   // 注册接口 - 需要加密，不需要 token，防止重复提交
   AuthController_register_v1: {
     isEncrypt: true,
     repeatSubmit: false,
-    isToken: false,
+    isToken: false
   },
 
   MainController_register_v1: {
     isEncrypt: true,
     repeatSubmit: false,
-    isToken: false,
+    isToken: false
   },
 
   // 获取验证码 - 不需要 token
   AuthController_getCaptchaCode_v1: {
-    isToken: false,
+    isToken: false
   },
 
   // 获取租户列表 - 不需要 token
   AuthController_getTenantList_v1: {
-    isToken: false,
+    isToken: false
   },
 
   // 获取验证码图片 - 不需要 token
   MainController_captchaImage_v1: {
-    isToken: false,
+    isToken: false
   },
 
   // 是否开启用户注册 - 不需要 token
   MainController_registerUser_v1: {
-    isToken: false,
+    isToken: false
   },
 
   // 登录接口（主模块）- 需要加密，不需要 token
   MainController_login_v1: {
     isEncrypt: true,
     repeatSubmit: false,
-    isToken: false,
+    isToken: false
   },
 
   // ==================== 用户模块 ====================
@@ -84,19 +84,19 @@ export const apiCustomConfigs: Record<string, ApiCustomConfig> = {
   // 重置用户密码 - 需要加密，防止重复提交
   UserController_resetPwd_v1: {
     isEncrypt: true,
-    repeatSubmit: false,
+    repeatSubmit: false
   },
 
   // 修改用户密码 - 需要加密
   UserController_updatePwd_v1: {
-    isEncrypt: true,
+    isEncrypt: true
   },
 
   // 创建用户 - 需要加密（密码字段）
   UserController_create_v1: {
     isEncrypt: true,
-    repeatSubmit: false,
-  },
+    repeatSubmit: false
+  }
 
   // ==================== 其他需要特殊配置的接口 ====================
   // 可以根据需要继续添加...

@@ -2,8 +2,8 @@
 import { computed, ref } from 'vue';
 import { NButton, NDivider } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { fetchPostFindAll, fetchPostRemove, fetchPostDeptTree } from '@/service/api-gen';
-import type { PostResponseDto, DeptTreeResponseDto } from '@/service/api-gen/types';
+import { fetchPostDeptTree, fetchPostFindAll, fetchPostRemove } from '@/service/api-gen';
+import type { DeptTreeResponseDto, PostResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useDownload } from '@/hooks/business/download';
@@ -16,7 +16,7 @@ import PostOperateDrawer from './modules/post-operate-drawer.vue';
 import PostSearch from './modules/post-search.vue';
 
 defineOptions({
-  name: 'PostList',
+  name: 'PostList'
 });
 
 useDict('sys_normal_disable');
@@ -35,7 +35,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchPostFindAll,
   apiParams: {
@@ -46,43 +46,43 @@ const {
     postCode: null,
     postName: null,
     status: null,
-    belongDeptId: null,
+    belongDeptId: null
   },
   columns: () => [
     {
       type: 'selection',
       align: 'center',
-      width: 48,
+      width: 48
     },
     {
       key: 'index',
       title: $t('common.index'),
       align: 'center',
-      width: 64,
+      width: 64
     },
     {
       key: 'postCode',
       title: '岗位编码',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'postCategory',
       title: '类别编码',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'postName',
       title: '岗位名称',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'postSort',
       title: '显示顺序',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'status',
@@ -91,7 +91,7 @@ const {
       minWidth: 120,
       render(row) {
         return <DictTag size="small" value={row.status} dictCode="sys_normal_disable" />;
-      },
+      }
     },
     {
       key: 'createTime',
@@ -99,15 +99,15 @@ const {
       align: 'center',
       minWidth: 120,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 130,
-      render: (row) => {
+      render: row => {
         const divider = () => {
           if (!hasAuth('system:post:edit') || !hasAuth('system:post:remove')) {
             return null;
@@ -153,9 +153,9 @@ const {
             {deleteBtn()}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedRowKeys, onBatchDeleted, onDeleted } =
@@ -292,7 +292,7 @@ function handleResetSearch() {
           :scroll-x="962"
           :loading="loading"
           remote
-          :row-key="(row) => row.postId"
+          :row-key="row => row.postId"
           :pagination="mobilePagination"
           class="sm:h-full"
         />

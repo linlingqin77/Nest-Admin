@@ -4,9 +4,9 @@
  * 测试生成的 API 代码和类型定义的正确性
  */
 
-import { describe, it, expect, beforeAll } from 'vitest';
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 // 配置路径
 const API_GEN_DIR = path.resolve(__dirname, '../../../src/service/api-gen');
@@ -32,8 +32,19 @@ beforeAll(() => {
   generatedTypes = fs.readFileSync(TYPES_FILE, 'utf-8');
 
   // 读取所有生成的 API 文件
+  // 排除手动创建的文件：types.ts, index.ts, request-adapter.ts, api-config.ts
+  // 以及代码生成器相关的手动创建文件：datasource.ts, history.ts, template.ts
   generatedApiFiles = new Map();
-  const files = fs.readdirSync(API_GEN_DIR).filter(f => f.endsWith('.ts') && !['types.ts', 'index.ts', 'request-adapter.ts', 'api-config.ts'].includes(f));
+  const excludedFiles = [
+    'types.ts',
+    'index.ts',
+    'request-adapter.ts',
+    'api-config.ts',
+    'datasource.ts', // 代码生成器 - 数据源管理（手动创建）
+    'history.ts', // 代码生成器 - 历史管理（手动创建）
+    'template.ts' // 代码生成器 - 模板管理（手动创建）
+  ];
+  const files = fs.readdirSync(API_GEN_DIR).filter(f => f.endsWith('.ts') && !excludedFiles.includes(f));
   for (const file of files) {
     const content = fs.readFileSync(path.join(API_GEN_DIR, file), 'utf-8');
     generatedApiFiles.set(file, content);
@@ -58,10 +69,7 @@ describe('OpenAPI 代码生成 - 属性测试', () => {
         const hasInterface = generatedTypes.includes(`export interface ${schemaName}`);
         const hasType = generatedTypes.includes(`export type ${schemaName}`);
 
-        expect(
-          hasInterface || hasType,
-          `Schema "${schemaName}" 应该在生成的类型文件中有对应的定义`
-        ).toBe(true);
+        expect(hasInterface || hasType, `Schema "${schemaName}" 应该在生成的类型文件中有对应的定义`).toBe(true);
       }
     });
 
@@ -98,10 +106,9 @@ describe('OpenAPI 代码生成 - 属性测试', () => {
           // 检查函数体中是否使用 apiRequest<
           const funcName = funcMatch.replace('export function ', '');
           const funcRegex = new RegExp(`export function ${funcName}[^}]+apiRequest<`, 's');
-          expect(
-            funcRegex.test(content),
-            `函数 ${funcName} 在 ${fileName} 中应使用 apiRequest<T>() 泛型调用`
-          ).toBe(true);
+          expect(funcRegex.test(content), `函数 ${funcName} 在 ${fileName} 中应使用 apiRequest<T>() 泛型调用`).toBe(
+            true
+          );
         }
       }
     });
@@ -115,10 +122,7 @@ describe('OpenAPI 代码生成 - 属性测试', () => {
           const funcName = funcMatch.replace('export function ', '');
           // 检查函数前是否有 JSDoc 注释（支持多行注释）
           const jsdocRegex = new RegExp(`\\/\\*\\*[\\s\\S]*?\\*\\/\\s*export function ${funcName}\\b`);
-          expect(
-            jsdocRegex.test(content),
-            `函数 ${funcName} 在 ${fileName} 中应有 JSDoc 注释`
-          ).toBe(true);
+          expect(jsdocRegex.test(content), `函数 ${funcName} 在 ${fileName} 中应有 JSDoc 注释`).toBe(true);
         }
       }
     });
@@ -146,10 +150,7 @@ describe('OpenAPI 代码生成 - 属性测试', () => {
         const apiRequestMatches = content.match(/apiRequest<[^>]+>\(\{[^}]+\}\)/gs) || [];
 
         for (const match of apiRequestMatches) {
-          expect(
-            match.includes('operationId:'),
-            `${fileName} 中的 apiRequest 调用应包含 operationId`
-          ).toBe(true);
+          expect(match.includes('operationId:'), `${fileName} 中的 apiRequest 调用应包含 operationId`).toBe(true);
         }
       }
     });
@@ -195,7 +196,7 @@ describe('OpenAPI 代码生成 - 属性测试', () => {
     it('所有 API 文件应导入 apiRequest', () => {
       for (const [fileName, content] of generatedApiFiles) {
         expect(
-          content.includes("import { apiRequest") || content.includes("import {apiRequest"),
+          content.includes('import { apiRequest') || content.includes('import {apiRequest'),
           `${fileName} 应导入 apiRequest`
         ).toBe(true);
       }
@@ -203,17 +204,11 @@ describe('OpenAPI 代码生成 - 属性测试', () => {
 
     it('所有生成的文件应包含 @generated 标记', () => {
       for (const [fileName, content] of generatedApiFiles) {
-        expect(
-          content.includes('@generated'),
-          `${fileName} 应包含 @generated 标记`
-        ).toBe(true);
+        expect(content.includes('@generated'), `${fileName} 应包含 @generated 标记`).toBe(true);
       }
 
       // 检查 types.ts
-      expect(
-        generatedTypes.includes('@generated'),
-        'types.ts 应包含 @generated 标记'
-      ).toBe(true);
+      expect(generatedTypes.includes('@generated'), 'types.ts 应包含 @generated 标记').toBe(true);
     });
   });
 
@@ -241,10 +236,9 @@ describe('OpenAPI 代码生成 - 属性测试', () => {
         if (operationIds.length > 1) {
           const tags = new Set(operationIds.map(id => operationIdToTag.get(id)).filter(Boolean));
           // 同一个文件中的 API 应该属于同一个 tag（或少数几个相关的 tag）
-          expect(
-            tags.size <= 2,
-            `${fileName} 中的 API 应属于相同或相关的 tag，但发现 ${tags.size} 个不同的 tag`
-          ).toBe(true);
+          expect(tags.size <= 2, `${fileName} 中的 API 应属于相同或相关的 tag，但发现 ${tags.size} 个不同的 tag`).toBe(
+            true
+          );
         }
       }
     });

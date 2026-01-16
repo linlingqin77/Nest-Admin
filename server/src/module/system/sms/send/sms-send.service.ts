@@ -13,17 +13,17 @@ import { CircuitBreakerService } from 'src/resilience/circuit-breaker/circuit-br
  * 短信发送状态枚举
  */
 export enum SmsSendStatus {
-  SENDING = 0,    // 发送中
-  SUCCESS = 1,    // 成功
-  FAILED = 2,     // 失败
+  SENDING = 0, // 发送中
+  SUCCESS = 1, // 成功
+  FAILED = 2, // 失败
 }
 
 /**
  * 短信接收状态枚举
  */
 export enum SmsReceiveStatus {
-  NOT_RECEIVED = 0,  // 未接收
-  RECEIVED = 1,      // 已接收
+  NOT_RECEIVED = 0, // 未接收
+  RECEIVED = 1, // 已接收
 }
 
 @Injectable()
@@ -140,7 +140,7 @@ export class SmsSendService {
 
     // 逐个发送
     const results: { mobile: string; success: boolean; logId?: string; error?: string }[] = [];
-    
+
     for (const mobile of uniqueMobiles) {
       try {
         const result = await this.send({ mobile, templateCode, params });
@@ -158,8 +158,8 @@ export class SmsSendService {
       }
     }
 
-    const successCount = results.filter(r => r.success).length;
-    const failCount = results.filter(r => !r.success).length;
+    const successCount = results.filter((r) => r.success).length;
+    const failCount = results.filter((r) => !r.success).length;
 
     return Result.ok({
       total: uniqueMobiles.length,

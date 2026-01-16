@@ -3,7 +3,7 @@ import { ISmsClient, SmsSendParams, SmsSendResult, SmsChannelConfig } from '../s
 
 /**
  * 腾讯云短信客户端
- * 
+ *
  * 注意：这是一个模拟实现，实际使用时需要安装 tencentcloud-sdk-nodejs 包
  * 并使用真实的腾讯云 SDK
  */
@@ -40,7 +40,7 @@ export class TencentSmsClient implements ISmsClient {
 
       // 模拟成功响应
       const mockSerialNo = `TENCENT_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-      
+
       this.logger.log(`[Tencent SMS] Send success, serialNo: ${mockSerialNo}`);
 
       return {

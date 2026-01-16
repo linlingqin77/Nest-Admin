@@ -7,7 +7,7 @@
  * @requirements 13.1, 13.5
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 /**
  * 日期格式化函数（示例实现）
@@ -38,10 +38,7 @@ const formatDate = (date: Date | string | null | undefined, format = 'YYYY-MM-DD
 /**
  * 防抖函数（示例实现）
  */
-const debounce = <T extends (...args: any[]) => any>(
-  fn: T,
-  delay: number,
-): ((...args: Parameters<T>) => void) => {
+const debounce = <T extends (...args: any[]) => any>(fn: T, delay: number): ((...args: Parameters<T>) => void) => {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
   return (...args: Parameters<T>) => {
@@ -57,10 +54,7 @@ const debounce = <T extends (...args: any[]) => any>(
 /**
  * 节流函数（示例实现）
  */
-const throttle = <T extends (...args: any[]) => any>(
-  fn: T,
-  limit: number,
-): ((...args: Parameters<T>) => void) => {
+const throttle = <T extends (...args: any[]) => any>(fn: T, limit: number): ((...args: Parameters<T>) => void) => {
   let inThrottle = false;
 
   return (...args: Parameters<T>) => {
@@ -87,12 +81,12 @@ const deepClone = <T>(obj: T): T => {
   }
 
   if (Array.isArray(obj)) {
-    return obj.map((item) => deepClone(item)) as unknown as T;
+    return obj.map(item => deepClone(item)) as unknown as T;
   }
 
   const cloned = {} as T;
   for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+    if (Object.hasOwn(obj, key)) {
       cloned[key] = deepClone(obj[key]);
     }
   }
@@ -235,8 +229,8 @@ describe('deepClone', () => {
     const obj = {
       name: 'test',
       nested: {
-        value: 123,
-      },
+        value: 123
+      }
     };
     const cloned = deepClone(obj);
 

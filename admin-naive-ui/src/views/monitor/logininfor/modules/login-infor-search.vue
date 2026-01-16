@@ -4,7 +4,7 @@ import { useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'LoginInforSearch',
+  name: 'LoginInforSearch'
 });
 
 interface Emits {
@@ -50,10 +50,10 @@ async function search() {
         <NForm ref="formRef" :model="model" label-placement="left" :label-width="80">
           <NGrid responsive="screen" item-responsive>
             <NFormItemGi span="24 s:12 m:6" label="IP地址" path="ipaddr" class="pr-24px">
-              <NInput v-model:value="(model.ipaddr as string)" placeholder="请输入登录IP地址" />
+              <NInput v-model:value="model.ipaddr as string" placeholder="请输入登录IP地址" />
             </NFormItemGi>
             <NFormItemGi span="24 s:12 m:6" label="用户账号" path="userName" class="pr-24px">
-              <NInput v-model:value="(model.userName as string)" placeholder="请输入用户账号" />
+              <NInput v-model:value="model.userName as string" placeholder="请输入用户账号" />
             </NFormItemGi>
             <NFormItemGi span="24 s:12 m:6" label="登录状态" path="status" class="pr-24px">
               <DictSelect

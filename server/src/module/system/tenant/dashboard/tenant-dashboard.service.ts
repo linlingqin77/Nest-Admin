@@ -43,63 +43,56 @@ export class TenantDashboardService {
     const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
 
     // 并行查询所有统计数据
-    const [
-      totalTenants,
-      activeTenants,
-      newTenants,
-      totalUsers,
-      todayLoginUsers,
-      storageStats,
-      apiCallsStats,
-    ] = await Promise.all([
-      // 租户总数（排除超级管理员租户）
-      this.prisma.sysTenant.count({
-        where: {
-          delFlag: DelFlagEnum.NORMAL,
-          tenantId: { not: TenantContext.SUPER_TENANT_ID },
-        },
-      }),
-      // 活跃租户数（状态正常）
-      this.prisma.sysTenant.count({
-        where: {
-          delFlag: DelFlagEnum.NORMAL,
-          status: StatusEnum.NORMAL,
-          tenantId: { not: TenantContext.SUPER_TENANT_ID },
-        },
-      }),
-      // 本月新增租户数
-      this.prisma.sysTenant.count({
-        where: {
-          delFlag: DelFlagEnum.NORMAL,
-          tenantId: { not: TenantContext.SUPER_TENANT_ID },
-          createTime: { gte: monthStart },
-        },
-      }),
-      // 用户总数
-      this.prisma.sysUser.count({
-        where: { delFlag: DelFlagEnum.NORMAL },
-      }),
-      // 今日登录用户数（从登录日志统计）
-      this.prisma.sysLogininfor.count({
-        where: {
-          loginTime: { gte: today },
-          status: '0', // 登录成功
-        },
-      }),
-      // 存储使用总量
-      this.prisma.sysTenant.aggregate({
-        where: {
-          delFlag: DelFlagEnum.NORMAL,
-          tenantId: { not: TenantContext.SUPER_TENANT_ID },
-        },
-        _sum: { storageUsed: true },
-      }),
-      // 今日API调用总量
-      this.prisma.sysTenantUsage.aggregate({
-        where: { date: today },
-        _sum: { apiCalls: true },
-      }),
-    ]);
+    const [totalTenants, activeTenants, newTenants, totalUsers, todayLoginUsers, storageStats, apiCallsStats] =
+      await Promise.all([
+        // 租户总数（排除超级管理员租户）
+        this.prisma.sysTenant.count({
+          where: {
+            delFlag: DelFlagEnum.NORMAL,
+            tenantId: { not: TenantContext.SUPER_TENANT_ID },
+          },
+        }),
+        // 活跃租户数（状态正常）
+        this.prisma.sysTenant.count({
+          where: {
+            delFlag: DelFlagEnum.NORMAL,
+            status: StatusEnum.NORMAL,
+            tenantId: { not: TenantContext.SUPER_TENANT_ID },
+          },
+        }),
+        // 本月新增租户数
+        this.prisma.sysTenant.count({
+          where: {
+            delFlag: DelFlagEnum.NORMAL,
+            tenantId: { not: TenantContext.SUPER_TENANT_ID },
+            createTime: { gte: monthStart },
+          },
+        }),
+        // 用户总数
+        this.prisma.sysUser.count({
+          where: { delFlag: DelFlagEnum.NORMAL },
+        }),
+        // 今日登录用户数（从登录日志统计）
+        this.prisma.sysLogininfor.count({
+          where: {
+            loginTime: { gte: today },
+            status: '0', // 登录成功
+          },
+        }),
+        // 存储使用总量
+        this.prisma.sysTenant.aggregate({
+          where: {
+            delFlag: DelFlagEnum.NORMAL,
+            tenantId: { not: TenantContext.SUPER_TENANT_ID },
+          },
+          _sum: { storageUsed: true },
+        }),
+        // 今日API调用总量
+        this.prisma.sysTenantUsage.aggregate({
+          where: { date: today },
+          _sum: { apiCalls: true },
+        }),
+      ]);
 
     // 获取在线用户数（从Redis）
     const onlineUsers = await this.getOnlineUserCount();
@@ -348,11 +341,7 @@ export class TenantDashboardService {
             : 100;
 
       const apiQuotaUsage =
-        tenant.apiQuota > 0
-          ? Math.round((apiCalls / tenant.apiQuota) * 10000) / 100
-          : tenant.apiQuota === -1
-            ? 0
-            : 100;
+        tenant.apiQuota > 0 ? Math.round((apiCalls / tenant.apiQuota) * 10000) / 100 : tenant.apiQuota === -1 ? 0 : 100;
 
       const overallUsage = Math.round(((userQuotaUsage + storageQuotaUsage + apiQuotaUsage) / 3) * 100) / 100;
 

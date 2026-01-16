@@ -76,11 +76,11 @@ export const createUserFixture = (options: UserFixtureOptions = {}): UserInfo =>
         roleId: 2,
         roleName: '普通角色',
         roleKey: 'common',
-        status: '0',
-      },
+        status: '0'
+      }
     ],
     createTime: new Date().toISOString(),
-    updateTime: new Date().toISOString(),
+    updateTime: new Date().toISOString()
   };
 };
 
@@ -91,8 +91,8 @@ export const createUserListFixture = (count: number, options: UserFixtureOptions
   return Array.from({ length: count }, (_, index) =>
     createUserFixture({
       ...options,
-      userId: options.userId ? options.userId + index : undefined,
-    }),
+      userId: options.userId ? options.userId + index : undefined
+    })
   );
 };
 
@@ -117,12 +117,12 @@ export const createAdminUserFixture = (options: Partial<UserFixtureOptions> = {}
         roleId: 1,
         roleName: '超级管理员',
         roleKey: 'admin',
-        status: '0',
-      },
+        status: '0'
+      }
     ],
     createTime: '2024-01-01 00:00:00',
     updateTime: '2024-01-01 00:00:00',
-    ...options,
+    ...options
   };
 };
 
@@ -132,7 +132,7 @@ export const createAdminUserFixture = (options: Partial<UserFixtureOptions> = {}
 export const createDisabledUserFixture = (options: Partial<UserFixtureOptions> = {}): UserInfo => {
   return createUserFixture({
     ...options,
-    status: '1',
+    status: '1'
   });
 };
 
@@ -148,5 +148,5 @@ export default {
   createUserListFixture,
   createAdminUserFixture,
   createDisabledUserFixture,
-  resetUserIdCounter,
+  resetUserIdCounter
 };

@@ -1,342 +1,404 @@
-export const indexVue = (options) => {
-  const html = htmlTemplate(options);
-  const script = indexScript(options);
-  return `
-  ${html}
-  ${script}
-  
-  `;
-};
-const htmlTemplate = (options) => {
-  const { columns, moduleName, businessName } = options;
-  const queryTem = indexQueryTemplate(columns);
-  const buttonTem = indexButtomTemplate(moduleName, businessName);
-  const tableTem = indexTableTemplate(columns, businessName, moduleName);
+/**
+ * Vue3 列表页面模板
+ *
+ * 生成符合项目规范的 Naive UI 列表页面
+ * - 使用 NDataTable 组件
+ * - 使用 useTable、useTableOperate hooks
+ * - 支持 i18n 国际化
+ * - 包含搜索、分页、CRUD 操作
+ *
+ * @module vue/indexVue
+ */
 
-  let html = '';
+export interface IndexVueTemplateOptions {
+  /** 业务名称 (PascalCase) */
+  BusinessName: string;
+  /** 业务名称 (camelCase) */
+  businessName: string;
+  /** 模块名称 */
+  moduleName: string;
+  /** 功能名称 (中文) */
+  functionName: string;
+  /** 主键字段名 */
+  primaryKey: string;
+  /** 表注释 */
+  tableComment?: string;
+  /** 列配置 */
+  columns: Array<{
+    javaField: string;
+    javaType: string;
+    columnComment: string;
+    columnType: string;
+    isPk: string;
+    isInsert: string;
+    isEdit: string;
+    isList: string;
+    isQuery: string;
+    isRequired: string;
+    queryType: string;
+    htmlType: string;
+    dictType?: string;
+  }>;
+}
 
-  html += `
-    <template>
-        <div class="app-container">
-            <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
-            ${queryTem}
-            </el-form>
-            ${buttonTem}
-            <el-table v-loading="loading" :data="${businessName}List" @selection-change="handleSelectionChange">
-             ${tableTem}
-            </el-table>
-            <pagination
-                v-show="total>0"
-                :total="total"
-                v-model:page="queryParams.pageNum"
-                v-model:limit="queryParams.pageSize"
-                @pagination="getList"
-            />
-        </div>
-        <index-dialog ref="dialogRef" @update="updateHandler"></index-dialog>
-    </template>
-    `;
+/**
+ * 生成列表页面
+ */
+export function indexVue(options: IndexVueTemplateOptions): string {
+  const script = generateScript(options);
+  const template = generateTemplate(options);
+  const style = generateStyle();
 
-  return html;
-};
+  return `${script}
 
-const indexScript = (options) => {
-  const { columns, BusinessName, moduleName, businessName, primaryKey } = options;
-  const dicts = indexScriptDicts(columns);
-  const exportScript = handlerExport(moduleName, businessName);
-  let script = '';
+${template}
 
-  script += `
-    <script setup name="${BusinessName}">
-    import { list${BusinessName}, get${BusinessName}, del${BusinessName}, add${BusinessName}, update${BusinessName} } from "@/api/${moduleName}/${businessName}";
-    import { getCurrentInstance,ref } from "vue"
-    import indexDialog from "./components/indexDialog.vue";
-    const { proxy } = getCurrentInstance();
-    ${dicts}
-    const queryParams = ref({
-        pageNum: 1,
-        pageSize: 10,
-    });
-    const loading = ref(true)
-    const showSearch = ref(true);
-    const ids = ref([]);
-    const single = ref(true);
-    const multiple = ref(true);
-    const total = ref(0)
-    const ${businessName}List = ref([])
-    const dialogRef = ref(null)
-    const queryRef = ref(null)
-    const queryHandler = () => {
-        queryParams.value.pageNum = 1;
-        getList();
-    };
+${style}
+`;
+}
 
-    const getList = () => {
-        loading.value = true
-          list${BusinessName}(queryParams.value).then(({data}) => {
-            ${businessName}List.value = data.rows;
-           total.value = data.total;
-           loading.value = false
-         });
-    };
-    /** 搜索按钮操作 */
-    function handleQuery() {
-      queryParams.value.pageNum = 1;
-      getList();
-    }
-    // 多选框选中数据
-    function handleSelectionChange(selection) {
-      ids.value = selection.map(item => item.${primaryKey});
-      single.value = selection.length != 1;
-      multiple.value = !selection.length;
-    }
-    /** 重置按钮操作 */
-    const resetQuery = () => {
-        proxy.resetForm("queryRef");
-        queryHandler()
-    };
-    /** 修改按钮操作 */
-    const handleUpdate = (row) => {
-        const ${primaryKey} = row.${primaryKey} || ids.value
-        dialogRef.value.openDialog(${primaryKey});
-    };
-    /** 新增按钮操作 */
-    const handleAdd = () => {
-        dialogRef.value.openDialog();
-    };
-    /** 删除按钮操作 */
-    const handleDelete = (row) => {
-         const ${primaryKey} = row.${primaryKey} || ids.value
-         proxy.$modal
-          .confirm('是否确认删除编号为"' + ${primaryKey} + '"的数据项?')
-           .then(function () {
-             return del${BusinessName}(${primaryKey});
-           })
-           .then(() => {
-             getList();
-            proxy.$modal.msgSuccess("删除成功");
-           })
-           .catch(() => {});
-      };
-      const updateHandler = () => {
-        queryHandler();
-      };
-      ${exportScript}
-      getList();
-    </script>
-    `;
+/**
+ * 生成 script 部分
+ */
+function generateScript(options: IndexVueTemplateOptions): string {
+  const { BusinessName, businessName, moduleName, functionName, primaryKey, columns } = options;
 
-  return script;
-};
-const indexQueryTemplate = (columns) => {
-  let html = ``;
-  let dictType, AttrName, parentheseIndex, comment;
-  columns.forEach((item) => {
-    if (item.isQuery === '1') {
-      dictType = item.dictType;
-      AttrName = item.javaField.substring(0, 1).toUpperCase() + item.javaField.substring(1);
-      parentheseIndex = item.columnComment.indexOf('（');
-      if (parentheseIndex != -1) {
-        comment = item.columnComment.substring(0, parentheseIndex);
-      } else {
-        comment = item.columnComment;
-      }
-
-      if (item.htmlType == 'input') {
-        html += `
-                <el-form-item label="${comment}" prop="${item.javaField}" >
-                <el-input
-                  v-model="queryParams.${item.javaField}"
-                  placeholder="请输入${comment}"
-                  clearable
-                  style="width: 160px"
-                  @keyup.enter="handleQuery"
-                />
-              </el-form-item>
-                `;
-      } else if (item.htmlType == 'select' || (item.htmlType == 'radio' && dictType != '')) {
-        html += `
-                <el-form-item label="${comment}" prop="${item.javaField}">
-                    <el-select v-model="queryParams.${item.javaField}" placeholder="请选择${comment}" clearable>
-                    <el-option
-                        v-for="dict in ${dictType}"
-                        :key="dict.value"
-                        :label="dict.label"
-                        :value="dict.value"
-                    />
-                    </el-select>
-                </el-form-item>
-                `;
-      } else if ((item.htmlType == 'select' || item.htmlType == 'radio') && dictType == '') {
-        html += `
-                <el-form-item label="${comment}" prop="${item.javaField}">
-                    <el-select v-model="queryParams.${item.javaField}" placeholder="请选择${comment}" clearable>
-                    <el-option label="请选择字典生成" value="" />
-                    </el-select>
-                </el-form-item>
-                `;
-      } else if (item.htmlType == 'datetime' && item.queryType != 'BETWEEN') {
-        html += `
-                <el-form-item label="${comment}" prop="${item.javaField}">
-                    <el-date-picker clearable
-                    v-model="queryParams.${item.javaField}"
-                    type="date"
-                    value-format="YYYY-MM-DD"
-                    placeholder="请选择${comment}">
-                    </el-date-picker>
-                </el-form-item>
-                `;
-      } else if (item.htmlType == 'datetime' && item.queryType == 'BETWEEN') {
-        html += `
-                <el-form-item label="${comment}" style="width: 308px">
-                    <el-date-picker
-                    v-model="${item.javaField}"
-                    value-format="YYYY-MM-DD"
-                    type="daterange"
-                    range-separator="-"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    ></el-date-picker>
-                </el-form-item>
-                `;
-      }
+  // 收集字典类型
+  const dictTypes = new Set<string>();
+  columns.forEach((col) => {
+    if (col.dictType) {
+      dictTypes.add(col.dictType);
     }
   });
-  html += `
-    <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-    </el-form-item>
-    `;
-  return html;
-};
-const indexButtomTemplate = (moduleName, businessName) => {
-  return `
-    <el-row :gutter="10" class="mb8">
-        <el-col :span="1.5">
-        <el-button
+
+  // 生成字典导入
+  const dictImports = dictTypes.size > 0 ? `import { useDict } from '@/hooks/business/dict';` : '';
+  const dictUsage = Array.from(dictTypes)
+    .map((dict) => `useDict('${dict}');`)
+    .join('\n');
+
+  // 生成列表列
+  const listColumns = columns.filter((col) => col.isList === '1' || col.isPk === '1');
+  const columnDefinitions = generateColumnDefinitions(listColumns, moduleName, businessName, primaryKey);
+
+  // 生成查询参数
+  const queryColumns = columns.filter((col) => col.isQuery === '1');
+  const queryParams = generateQueryParams(queryColumns);
+
+  return `<script setup lang="tsx">
+import { ref } from 'vue';
+import { NButton, NDivider } from 'naive-ui';
+import {
+  fetch${BusinessName}List,
+  fetchDelete${BusinessName},
+} from '@/service/api/${moduleName}/${businessName}';
+import type { ${BusinessName}Record, ${BusinessName}SearchParams } from '@/service/api/${moduleName}/${businessName}';
+import { useAppStore } from '@/store/modules/app';
+import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
+import { useAuth } from '@/hooks/business/auth';
+import { useDownload } from '@/hooks/business/download';
+${dictImports}
+import ButtonIcon from '@/components/custom/button-icon.vue';
+import DictTag from '@/components/custom/dict-tag.vue';
+import { $t } from '@/locales';
+import ${BusinessName}Search from './modules/${businessName}-search.vue';
+import ${BusinessName}OperateDrawer from './modules/${businessName}-operate-drawer.vue';
+
+defineOptions({
+  name: '${BusinessName}List',
+});
+
+${dictUsage}
+
+const { hasAuth } = useAuth();
+const appStore = useAppStore();
+const { download } = useDownload();
+
+const tableProps = useTableProps();
+
+const {
+  columns,
+  columnChecks,
+  data,
+  getData,
+  getDataByPage,
+  loading,
+  mobilePagination,
+  searchParams,
+  resetSearchParams,
+} = useTable({
+  apiFn: fetch${BusinessName}List,
+  apiParams: {
+    pageNum: 1,
+    pageSize: 10,
+${queryParams}
+  },
+  columns: () => [
+    {
+      type: 'selection',
+      align: 'center',
+      width: 48,
+    },
+    {
+      key: 'index',
+      title: $t('common.index'),
+      align: 'center',
+      width: 64,
+    },
+${columnDefinitions}
+    {
+      key: 'operate',
+      title: $t('common.operate'),
+      align: 'center',
+      width: 130,
+      render: (row) => {
+        const editBtn = () => (
+          <ButtonIcon
+            text
             type="primary"
-            plain
-            icon="Plus"
-            @click="handleAdd"
-            v-hasPermi="['${moduleName}:${businessName}:add']"
-        >新增</el-button>
-        </el-col>
-        <el-col :span="1.5">
-        <el-button
-            type="success"
-            plain
-            icon="Edit"
-            :disabled="single"
-            @click="handleUpdate" 
-            v-hasPermi="['${moduleName}:${businessName}:edit']"
-        >修改</el-button>
-        </el-col>
-        <el-col :span="1.5">
-        <el-button
-            type="danger"
-            plain
-            icon="Delete"
-            :disabled="multiple"
-            @click="handleDelete"
-            v-hasPermi="['${moduleName}:${businessName}:remove']"
-        >删除</el-button>
-        </el-col>
-        <el-col :span="1.5">
-        <el-button
-            type="warning"
-            plain
-            icon="Download"
-            @click="handleExport"
-            v-hasPermi="['${moduleName}:${businessName}:export']"
-        >导出</el-button>
-        </el-col>
-        <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
-    `;
-};
-const indexTableTemplate = (columns, businessName, moduleName) => {
-  let javaField, parentheseIndex, comment;
-  let html = `<el-table-column type="selection" width="55" align="center" />
-            `;
-  columns.forEach((item) => {
-    javaField = item.javaField;
-    parentheseIndex = item.columnComment.indexOf('（');
-    if (parentheseIndex != -1) {
-      comment = item.columnComment.substring(0, parentheseIndex);
-    } else {
-      comment = item.columnComment;
-    }
-    if (item.isPk == '1') {
-      html += `<el-table-column label="${comment}" align="center" prop="${javaField}" />
-            `;
-    } else if (item.isList == '1' && item.htmlType === 'datetime') {
-      html += `<el-table-column label="${comment}" align="center" prop="${javaField}" width="180">
-                <template v-solt="{row}">
-                <span>{{ parseTime(row.${javaField}, '{y}-{m}-{d}') }}</span>
-                </template>
-            </el-table-column>
-            `;
-    } else if (item.isList == '1' && item.htmlType === 'imageUpload') {
-      html += `<el-table-column label="${comment}" align="center" prop="${javaField}" width="100">
-                <template v-slot="{ row }">
-                <image-preview :src="row.${javaField}" :width="50" :height="50"/>
-                </template>
-            </el-table-column>
-            `;
-    } else if (item.isList == '1' && item.dictType != '') {
-      html += `<el-table-column label="${comment}" align="center" prop="${javaField}">
-                <template v-slot="{ row }">
-            `;
-      if (item.htmlType == 'checkbox') {
-        html += `<dict-tag :options="${item.dictType}" :value="row.${javaField} ? row.${javaField}.split(',') : []"/>
-                `;
-      } else {
-        html += `<dict-tag :options="${item.dictType}" :value="row.${javaField}"/>
-                `;
-      }
-      html += `</template>
-                </el-table-column>
-            `;
-    } else if (item.isList == '1' && javaField != '') {
-      html += `<el-table-column label="${comment}" align="center" prop="${javaField}" />
-            `;
-    }
-  });
-  html += `<el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-            <template v-slot="{row}">
-            <el-button link type="primary" icon="Edit" @click="handleUpdate(row)" v-hasPermi="['${moduleName}:${businessName}:edit']">修改</el-button>
-            <el-button link type="primary" icon="Delete" @click="handleDelete(row)" v-hasPermi="['${moduleName}:${businessName}:remove']">删除</el-button>
-            </template>
-        </el-table-column>
-        `;
-  return html;
-};
+            icon="material-symbols:drive-file-rename-outline-outline"
+            tooltipContent={$t('common.edit')}
+            onClick={() => edit(row.${primaryKey}!)}
+          />
+        );
 
-export const indexScriptDicts = (columns) => {
-  let script = '';
-  const dicts = [];
-  columns.forEach((item) => {
-    if (item.dictType != '') {
-      dicts.push(item.dictType);
-    }
-  });
-  if (dicts.length > 0) {
-    script += `
-    const { ${dicts.toString()} } = proxy.useDict(${"'" + dicts.join("','") + "'"});
-    
-    `;
-  } else {
-    script += ``;
+        const deleteBtn = () => (
+          <ButtonIcon
+            text
+            type="error"
+            icon="material-symbols:delete-outline"
+            tooltipContent={$t('common.delete')}
+            popconfirmContent={$t('common.confirmDelete')}
+            onPositiveClick={() => handleDelete(row.${primaryKey}!)}
+          />
+        );
+
+        const buttons = [];
+        if (hasAuth('${moduleName}:${businessName}:edit')) buttons.push(editBtn());
+        if (hasAuth('${moduleName}:${businessName}:remove')) buttons.push(deleteBtn());
+
+        return (
+          <div class="flex-center gap-8px">
+            {buttons.map((btn, index) => (
+              <>
+                {index !== 0 && <NDivider vertical />}
+                {btn}
+              </>
+            ))}
+          </div>
+        );
+      },
+    },
+  ],
+});
+
+const {
+  drawerVisible,
+  operateType,
+  editingData,
+  handleAdd,
+  handleEdit,
+  checkedRowKeys,
+  onBatchDeleted,
+  onDeleted,
+} = useTableOperate(data, getData);
+
+/** 批量删除 */
+async function handleBatchDelete() {
+  try {
+    await fetchDelete${BusinessName}(checkedRowKeys.value as CommonType.IdType[]);
+    onBatchDeleted();
+  } catch (error) {
+    // 错误消息已在请求工具中显示
   }
-  return script;
-};
-const handlerExport = (moduleName, businessName) => {
-  let h = '';
-  h += `const  handleExport = () =>{`;
-  h += ` proxy.download('${moduleName}/${businessName}/export', {`;
-  h += `...queryParams.value`;
-  h += `}, \`${businessName}_\$\{new Date().getTime()\}.xlsx\`)}`;
+}
 
-  return h;
-};
+/** 删除 */
+async function handleDelete(${primaryKey}: CommonType.IdType) {
+  try {
+    await fetchDelete${BusinessName}(${primaryKey});
+    onDeleted();
+  } catch (error) {
+    // 错误消息已在请求工具中显示
+  }
+}
+
+/** 编辑 */
+function edit(${primaryKey}: CommonType.IdType) {
+  handleEdit('${primaryKey}', ${primaryKey});
+}
+
+/** 导出 */
+function handleExport() {
+  download('/${moduleName}/${businessName}/export', searchParams, \`${functionName}_\${new Date().getTime()}.xlsx\`);
+}
+
+/** 重置搜索 */
+function handleResetSearch() {
+  resetSearchParams();
+}
+</script>`;
+}
+
+/**
+ * 生成 template 部分
+ */
+function generateTemplate(options: IndexVueTemplateOptions): string {
+  const { BusinessName, businessName, moduleName, functionName, primaryKey } = options;
+
+  return `<template>
+  <div class="h-full flex-col-stretch gap-12px overflow-hidden lt-sm:overflow-auto">
+    <${BusinessName}Search v-model:model="searchParams" @reset="handleResetSearch" @search="getDataByPage" />
+    <TableRowCheckAlert v-model:checked-row-keys="checkedRowKeys" />
+    <NCard :title="$t('page.${moduleName}.${businessName}.title')" :bordered="false" size="small" class="card-wrapper sm:flex-1-hidden">
+      <template #header-extra>
+        <TableHeaderOperation
+          v-model:columns="columnChecks"
+          :disabled-delete="checkedRowKeys.length === 0"
+          :loading="loading"
+          :show-add="hasAuth('${moduleName}:${businessName}:add')"
+          :show-delete="hasAuth('${moduleName}:${businessName}:remove')"
+          :show-export="hasAuth('${moduleName}:${businessName}:export')"
+          @add="handleAdd"
+          @delete="handleBatchDelete"
+          @export="handleExport"
+          @refresh="getData"
+        />
+      </template>
+      <NDataTable
+        v-model:checked-row-keys="checkedRowKeys"
+        :columns="columns"
+        :data="data"
+        v-bind="tableProps"
+        :flex-height="!appStore.isMobile"
+        :scroll-x="962"
+        :loading="loading"
+        remote
+        :row-key="(row) => row.${primaryKey}"
+        :pagination="mobilePagination"
+        class="h-full"
+      />
+      <${BusinessName}OperateDrawer
+        v-model:visible="drawerVisible"
+        :operate-type="operateType"
+        :row-data="editingData"
+        @submitted="getDataByPage"
+      />
+    </NCard>
+  </div>
+</template>`;
+}
+
+/**
+ * 生成 style 部分
+ */
+function generateStyle(): string {
+  return `<style scoped>
+:deep(.n-data-table-wrapper),
+:deep(.n-data-table-base-table),
+:deep(.n-data-table-base-table-body) {
+  height: 100%;
+}
+</style>`;
+}
+
+/**
+ * 生成列定义
+ */
+function generateColumnDefinitions(
+  columns: IndexVueTemplateOptions['columns'],
+  moduleName: string,
+  businessName: string,
+  primaryKey: string,
+): string {
+  return columns
+    .map((col) => {
+      const comment = col.columnComment.split('（')[0].split('(')[0];
+      const field = col.javaField;
+
+      // 主键列
+      if (col.isPk === '1') {
+        return `    {
+      key: '${field}',
+      title: $t('page.${moduleName}.${businessName}.${field}'),
+      align: 'center',
+      width: 80,
+    },`;
+      }
+
+      // 日期时间列
+      if (col.htmlType === 'datetime') {
+        return `    {
+      key: '${field}',
+      title: $t('page.${moduleName}.${businessName}.${field}'),
+      align: 'center',
+      width: 180,
+    },`;
+      }
+
+      // 图片列
+      if (col.htmlType === 'imageUpload') {
+        return `    {
+      key: '${field}',
+      title: $t('page.${moduleName}.${businessName}.${field}'),
+      align: 'center',
+      width: 100,
+      render(row) {
+        return row.${field} ? <NImage width={50} src={row.${field}} /> : null;
+      },
+    },`;
+      }
+
+      // 字典列
+      if (col.dictType) {
+        return `    {
+      key: '${field}',
+      title: $t('page.${moduleName}.${businessName}.${field}'),
+      align: 'center',
+      width: 100,
+      render(row) {
+        return <DictTag value={row.${field}} dictCode="${col.dictType}" />;
+      },
+    },`;
+      }
+
+      // 普通列
+      return `    {
+      key: '${field}',
+      title: $t('page.${moduleName}.${businessName}.${field}'),
+      align: 'center',
+      width: 120,
+      ellipsis: true,
+    },`;
+    })
+    .join('\n');
+}
+
+/**
+ * 生成查询参数
+ */
+function generateQueryParams(columns: IndexVueTemplateOptions['columns']): string {
+  return columns
+    .map((col) => {
+      return `    ${col.javaField}: null,`;
+    })
+    .join('\n');
+}
+
+// 导出字典脚本生成函数供其他模板使用
+export function indexScriptDicts(columns: IndexVueTemplateOptions['columns']): string {
+  const dictTypes = new Set<string>();
+  columns.forEach((col) => {
+    if (col.dictType) {
+      dictTypes.add(col.dictType);
+    }
+  });
+
+  if (dictTypes.size === 0) {
+    return '';
+  }
+
+  return Array.from(dictTypes)
+    .map((dict) => `useDict('${dict}');`)
+    .join('\n');
+}

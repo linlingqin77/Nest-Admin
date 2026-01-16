@@ -2,11 +2,16 @@
 import { computed, reactive, watch } from 'vue';
 import { useLoading } from '@sa/hooks';
 import { fetchPostCreate, fetchPostUpdate } from '@/service/api-gen';
-import type { PostResponseDto, CreatePostRequestDto, UpdatePostRequestDto, DeptTreeResponseDto } from '@/service/api-gen/types';
+import type {
+  CreatePostRequestDto,
+  DeptTreeResponseDto,
+  PostResponseDto,
+  UpdatePostRequestDto
+} from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 defineOptions({
-  name: 'PostOperateDrawer',
+  name: 'PostOperateDrawer'
 });
 
 interface Props {
@@ -27,7 +32,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
@@ -36,7 +41,7 @@ const { loading: deptLoading, startLoading: startDeptLoading, endLoading: endDep
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
     add: '新增岗位信息',
-    edit: '编辑岗位信息',
+    edit: '编辑岗位信息'
   };
   return titles[props.operateType];
 });
@@ -53,7 +58,7 @@ function createDefaultModel(): Model {
     postName: '',
     postSort: undefined,
     status: '0',
-    remark: '',
+    remark: ''
   };
 }
 
@@ -65,7 +70,7 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
   postCode: createRequiredRule('岗位编码不能为空'),
   postName: createRequiredRule('岗位名称不能为空'),
   postSort: createRequiredRule('显示顺序不能为空'),
-  status: createRequiredRule('状态不能为空'),
+  status: createRequiredRule('状态不能为空')
 };
 
 function handleUpdateModelWhenEdit() {
@@ -92,7 +97,15 @@ async function handleSubmit() {
   try {
     if (props.operateType === 'add') {
       const { deptId, postCode, postCategory, postName, postSort, status, remark } = model;
-      await fetchPostCreate({ deptId, postCode, postCategory, postName, postSort, status, remark } as CreatePostRequestDto);
+      await fetchPostCreate({
+        deptId,
+        postCode,
+        postCategory,
+        postName,
+        postSort,
+        status,
+        remark
+      } as CreatePostRequestDto);
     } else if (props.operateType === 'edit') {
       const { postId, deptId, postCode, postCategory, postName, postSort, status, remark } = model;
       await fetchPostUpdate({
@@ -103,7 +116,7 @@ async function handleSubmit() {
         postName,
         postSort,
         status,
-        remark,
+        remark
       } as UpdatePostRequestDto);
     }
 

@@ -5,9 +5,8 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { TableName, GenTableUpdate } from './types';
+import type { GenTableUpdate, TableName } from './types';
 
 /**
  * 数据表列表
@@ -18,7 +17,7 @@ export function fetchToolFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/tool/gen/list',
     params,
-    operationId: 'ToolController_findAll_v1',
+    operationId: 'ToolController_findAll_v1'
   });
 }
 
@@ -31,7 +30,7 @@ export function fetchToolGenDbList(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/tool/gen/db/list',
     params,
-    operationId: 'ToolController_genDbList_v1',
+    operationId: 'ToolController_genDbList_v1'
   });
 }
 
@@ -43,7 +42,7 @@ export function fetchToolGetDataNames() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/tool/gen/getDataNames',
-    operationId: 'ToolController_getDataNames_v1',
+    operationId: 'ToolController_getDataNames_v1'
   });
 }
 
@@ -56,7 +55,7 @@ export function fetchToolGenImportTable(data: TableName) {
     method: 'POST',
     url: '/tool/gen/importTable',
     data,
-    operationId: 'ToolController_genImportTable_v1',
+    operationId: 'ToolController_genImportTable_v1'
   });
 }
 
@@ -68,7 +67,7 @@ export function fetchToolSynchDb(tableName: string | number) {
   return apiRequest<unknown>({
     method: 'GET',
     url: buildUrl('/tool/gen/synchDb/{tableName}', { tableName }),
-    operationId: 'ToolController_synchDb_v1',
+    operationId: 'ToolController_synchDb_v1'
   });
 }
 
@@ -80,7 +79,7 @@ export function fetchToolGen(id: string | number) {
   return apiRequest<unknown>({
     method: 'GET',
     url: buildUrl('/tool/gen/{id}', { id }),
-    operationId: 'ToolController_gen_v1',
+    operationId: 'ToolController_gen_v1'
   });
 }
 
@@ -92,7 +91,7 @@ export function fetchToolRemove(id: string | number) {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: buildUrl('/tool/gen/{id}', { id }),
-    operationId: 'ToolController_remove_v1',
+    operationId: 'ToolController_remove_v1'
   });
 }
 
@@ -105,7 +104,7 @@ export function fetchToolGenUpdate(data: GenTableUpdate) {
     method: 'PUT',
     url: '/tool/gen',
     data,
-    operationId: 'ToolController_genUpdate_v1',
+    operationId: 'ToolController_genUpdate_v1'
   });
 }
 
@@ -118,7 +117,7 @@ export function fetchToolBatchGenCode(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/tool/gen/batchGenCode/zip',
     params,
-    operationId: 'ToolController_batchGenCode_v1',
+    operationId: 'ToolController_batchGenCode_v1'
   });
 }
 
@@ -130,6 +129,6 @@ export function fetchToolPreview(id: string | number) {
   return apiRequest<unknown>({
     method: 'GET',
     url: buildUrl('/tool/gen/preview/{id}', { id }),
-    operationId: 'ToolController_preview_v1',
+    operationId: 'ToolController_preview_v1'
   });
 }

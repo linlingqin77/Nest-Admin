@@ -26,10 +26,7 @@ describe('LoginlogRepository', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        LoginlogRepository,
-        { provide: PrismaService, useValue: prismaMock },
-      ],
+      providers: [LoginlogRepository, { provide: PrismaService, useValue: prismaMock }],
     }).compile();
 
     repository = module.get<LoginlogRepository>(LoginlogRepository);
@@ -64,7 +61,7 @@ describe('LoginlogRepository', () => {
       await repository.truncate();
 
       expect(prismaMock.$executeRawUnsafe).toHaveBeenCalledWith(
-        'TRUNCATE TABLE "SysLogininfor" RESTART IDENTITY CASCADE'
+        'TRUNCATE TABLE "SysLogininfor" RESTART IDENTITY CASCADE',
       );
     });
   });

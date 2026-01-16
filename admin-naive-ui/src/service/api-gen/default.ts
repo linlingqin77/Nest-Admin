@@ -5,9 +5,14 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CreateClientRequestDto, UpdateClientRequestDto, ClientListResponseDto, ClientResponseDto, ChangeClientStatusRequestDto } from './types';
+import type {
+  ChangeClientStatusRequestDto,
+  ClientListResponseDto,
+  ClientResponseDto,
+  CreateClientRequestDto,
+  UpdateClientRequestDto
+} from './types';
 
 /**
  * 客户端管理-创建
@@ -18,7 +23,7 @@ export function fetchClientCreate(data: CreateClientRequestDto) {
     method: 'POST',
     url: '/system/client',
     data,
-    operationId: 'ClientController_create_v1',
+    operationId: 'ClientController_create_v1'
   });
 }
 
@@ -31,7 +36,7 @@ export function fetchClientUpdate(data: UpdateClientRequestDto) {
     method: 'PUT',
     url: '/system/client',
     data,
-    operationId: 'ClientController_update_v1',
+    operationId: 'ClientController_update_v1'
   });
 }
 
@@ -44,7 +49,7 @@ export function fetchClientFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/client/list',
     params,
-    operationId: 'ClientController_findAll_v1',
+    operationId: 'ClientController_findAll_v1'
   });
 }
 
@@ -56,7 +61,7 @@ export function fetchClientFindOne(id: string | number) {
   return apiRequest<ClientResponseDto>({
     method: 'GET',
     url: buildUrl('/system/client/{id}', { id }),
-    operationId: 'ClientController_findOne_v1',
+    operationId: 'ClientController_findOne_v1'
   });
 }
 
@@ -69,7 +74,7 @@ export function fetchClientChangeStatus(data: ChangeClientStatusRequestDto) {
     method: 'PUT',
     url: '/system/client/changeStatus',
     data,
-    operationId: 'ClientController_changeStatus_v1',
+    operationId: 'ClientController_changeStatus_v1'
   });
 }
 
@@ -81,6 +86,6 @@ export function fetchClientRemove(ids: string | number) {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: buildUrl('/system/client/{ids}', { ids }),
-    operationId: 'ClientController_remove_v1',
+    operationId: 'ClientController_remove_v1'
   });
 }

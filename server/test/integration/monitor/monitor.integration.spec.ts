@@ -66,9 +66,11 @@ describe('Monitor Integration Tests', () => {
     afterAll(async () => {
       // Cleanup created test log
       if (createdLogId) {
-        await prisma.sysLogininfor.delete({
-          where: { infoId: createdLogId },
-        }).catch(() => {});
+        await prisma.sysLogininfor
+          .delete({
+            where: { infoId: createdLogId },
+          })
+          .catch(() => {});
       }
     });
 

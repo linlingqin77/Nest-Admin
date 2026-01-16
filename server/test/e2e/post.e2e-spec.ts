@@ -112,9 +112,7 @@ describe('Post E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/system/post/list`);
+      const response = await helper.getRequest().get(`${apiPrefix}/system/post/list`);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -139,10 +137,10 @@ describe('Post E2E Tests', () => {
 
       // Accept both 201 (success) and 500 (database constraint issue)
       expect([201, 500]).toContain(response.status);
-      
+
       if (response.status === 201) {
         expect(response.body.code).toBe(200);
-        
+
         // Track for cleanup
         const listResponse = await helper
           .getAuthRequest()
@@ -195,10 +193,7 @@ describe('Post E2E Tests', () => {
         postName: '未授权岗位',
       };
 
-      const response = await helper
-        .getRequest()
-        .post(`${apiPrefix}/system/post`)
-        .send(postData);
+      const response = await helper.getRequest().post(`${apiPrefix}/system/post`).send(postData);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -284,9 +279,7 @@ describe('Post E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/system/post/1`);
+      const response = await helper.getRequest().get(`${apiPrefix}/system/post/1`);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -366,10 +359,7 @@ describe('Post E2E Tests', () => {
         postName: '未授权更新',
       };
 
-      const response = await helper
-        .getRequest()
-        .put(`${apiPrefix}/system/post`)
-        .send(updateData);
+      const response = await helper.getRequest().put(`${apiPrefix}/system/post`).send(updateData);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -481,9 +471,7 @@ describe('Post E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .delete(`${apiPrefix}/system/post/1`);
+      const response = await helper.getRequest().delete(`${apiPrefix}/system/post/1`);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -547,9 +535,7 @@ describe('Post E2E Tests', () => {
     it('should not require authentication for optionselect', async () => {
       // Note: optionselect endpoint may or may not require authentication
       // depending on the system configuration
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/system/post/optionselect`);
+      const response = await helper.getRequest().get(`${apiPrefix}/system/post/optionselect`);
 
       // Accept both success and auth failure
       expect([200, 401, 403]).toContain(response.status);

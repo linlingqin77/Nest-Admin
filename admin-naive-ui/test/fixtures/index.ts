@@ -14,7 +14,7 @@ export {
   resetUserIdCounter,
   type UserInfo,
   type RoleInfo,
-  type UserFixtureOptions,
+  type UserFixtureOptions
 } from './user.fixture';
 
 // API 响应 Fixture
@@ -32,5 +32,5 @@ export {
   ResponseCode,
   type ApiResponse,
   type PaginatedData,
-  type LoginResponseData,
+  type LoginResponseData
 } from './api-response.fixture';

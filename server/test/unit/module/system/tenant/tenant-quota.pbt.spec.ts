@@ -154,11 +154,7 @@ describe('TenantQuota Property-Based Tests', () => {
   };
 
   // Helper function to get tenant quota data
-  const getTenantQuotaData = (
-    tenantId: string,
-    userUsed: number,
-    apiUsed: number,
-  ): any | null => {
+  const getTenantQuotaData = (tenantId: string, userUsed: number, apiUsed: number): any | null => {
     const tenant = tenants.get(tenantId);
     if (!tenant) return null;
 
@@ -364,11 +360,7 @@ describe('TenantQuota Property-Based Tests', () => {
             );
 
             // Property: Change should be logged with correct values
-            return (
-              logs.length === 1 &&
-              logs[0].oldValue === initialUserQuota &&
-              logs[0].newValue === newUserQuota
-            );
+            return logs.length === 1 && logs[0].oldValue === initialUserQuota && logs[0].newValue === newUserQuota;
           },
         ),
         { numRuns: 100 },
@@ -396,9 +388,7 @@ describe('TenantQuota Property-Based Tests', () => {
             updateTenantQuota(tenant.tenantId, { userQuota: quotaValue });
 
             // Check logs
-            const logs = Array.from(quotaLogs.values()).filter(
-              (log) => log.tenantId === tenant.tenantId,
-            );
+            const logs = Array.from(quotaLogs.values()).filter((log) => log.tenantId === tenant.tenantId);
 
             // Property: No log should be created
             return logs.length === 0;
@@ -496,11 +486,7 @@ describe('TenantQuota Property-Based Tests', () => {
             const quotaData = getTenantQuotaData(tenant.tenantId, userUsed, apiUsed);
 
             // Property: Unlimited quotas should have 0% usage rate
-            return (
-              quotaData !== null &&
-              quotaData.storageUsageRate === 0 &&
-              quotaData.apiUsageRate === 0
-            );
+            return quotaData !== null && quotaData.storageUsageRate === 0 && quotaData.apiUsageRate === 0;
           },
         ),
         { numRuns: 100 },
@@ -552,9 +538,7 @@ describe('TenantQuota Property-Based Tests', () => {
             const status = calculateQuotaStatus([usageRate]);
 
             // Property: Status should be warning when 80% <= rate < 100%
-            return usageRate >= 80 && usageRate < 100
-              ? status === QUOTA_STATUS_WARNING
-              : true;
+            return usageRate >= 80 && usageRate < 100 ? status === QUOTA_STATUS_WARNING : true;
           },
         ),
         { numRuns: 100 },

@@ -40,7 +40,7 @@ export const ResponseCode = {
   PARAM_INVALID: 1001,
   DATA_NOT_FOUND: 1002,
   TOKEN_INVALID: 2001,
-  TOKEN_EXPIRED: 2002,
+  TOKEN_EXPIRED: 2002
 } as const;
 
 /**
@@ -49,7 +49,7 @@ export const ResponseCode = {
 export const createSuccessResponse = <T>(data: T, msg = '操作成功'): ApiResponse<T> => ({
   code: ResponseCode.SUCCESS,
   msg,
-  data,
+  data
 });
 
 /**
@@ -59,7 +59,7 @@ export const createPageResponse = <T>(
   rows: T[],
   total: number,
   pageNum = 1,
-  pageSize = 10,
+  pageSize = 10
 ): ApiResponse<PaginatedData<T>> => ({
   code: ResponseCode.SUCCESS,
   msg: '操作成功',
@@ -68,56 +68,48 @@ export const createPageResponse = <T>(
     total,
     pageNum,
     pageSize,
-    pages: Math.ceil(total / pageSize),
-  },
+    pages: Math.ceil(total / pageSize)
+  }
 });
 
 /**
  * 创建错误响应 Fixture
  */
-export const createErrorResponse = (
-  code: number,
-  msg: string,
-): ApiResponse<null> => ({
+export const createErrorResponse = (code: number, msg: string): ApiResponse<null> => ({
   code,
   msg,
-  data: null,
+  data: null
 });
 
 /**
  * 创建未授权响应 Fixture
  */
-export const createUnauthorizedResponse = (
-  msg = '未授权，请先登录',
-): ApiResponse<null> => createErrorResponse(ResponseCode.UNAUTHORIZED, msg);
+export const createUnauthorizedResponse = (msg = '未授权，请先登录'): ApiResponse<null> =>
+  createErrorResponse(ResponseCode.UNAUTHORIZED, msg);
 
 /**
  * 创建禁止访问响应 Fixture
  */
-export const createForbiddenResponse = (
-  msg = '无权访问该资源',
-): ApiResponse<null> => createErrorResponse(ResponseCode.FORBIDDEN, msg);
+export const createForbiddenResponse = (msg = '无权访问该资源'): ApiResponse<null> =>
+  createErrorResponse(ResponseCode.FORBIDDEN, msg);
 
 /**
  * 创建参数无效响应 Fixture
  */
-export const createParamInvalidResponse = (
-  msg = '参数验证失败',
-): ApiResponse<null> => createErrorResponse(ResponseCode.PARAM_INVALID, msg);
+export const createParamInvalidResponse = (msg = '参数验证失败'): ApiResponse<null> =>
+  createErrorResponse(ResponseCode.PARAM_INVALID, msg);
 
 /**
  * 创建数据不存在响应 Fixture
  */
-export const createNotFoundResponse = (
-  msg = '数据不存在',
-): ApiResponse<null> => createErrorResponse(ResponseCode.DATA_NOT_FOUND, msg);
+export const createNotFoundResponse = (msg = '数据不存在'): ApiResponse<null> =>
+  createErrorResponse(ResponseCode.DATA_NOT_FOUND, msg);
 
 /**
  * 创建 Token 过期响应 Fixture
  */
-export const createTokenExpiredResponse = (
-  msg = 'Token 已过期，请重新登录',
-): ApiResponse<null> => createErrorResponse(ResponseCode.TOKEN_EXPIRED, msg);
+export const createTokenExpiredResponse = (msg = 'Token 已过期，请重新登录'): ApiResponse<null> =>
+  createErrorResponse(ResponseCode.TOKEN_EXPIRED, msg);
 
 /**
  * 登录响应数据类型
@@ -133,20 +125,22 @@ export interface LoginResponseData {
  */
 export const createLoginSuccessResponse = (
   token = 'mock-jwt-token-12345',
-  expiresIn = 86400,
+  expiresIn = 86400
 ): ApiResponse<LoginResponseData> =>
-  createSuccessResponse({
-    token,
-    refreshToken: 'mock-refresh-token-12345',
-    expiresIn,
-  }, '登录成功');
+  createSuccessResponse(
+    {
+      token,
+      refreshToken: 'mock-refresh-token-12345',
+      expiresIn
+    },
+    '登录成功'
+  );
 
 /**
  * 创建登录失败响应 Fixture
  */
-export const createLoginFailedResponse = (
-  msg = '用户名或密码错误',
-): ApiResponse<null> => createErrorResponse(ResponseCode.UNAUTHORIZED, msg);
+export const createLoginFailedResponse = (msg = '用户名或密码错误'): ApiResponse<null> =>
+  createErrorResponse(ResponseCode.UNAUTHORIZED, msg);
 
 export default {
   createSuccessResponse,
@@ -159,5 +153,5 @@ export default {
   createTokenExpiredResponse,
   createLoginSuccessResponse,
   createLoginFailedResponse,
-  ResponseCode,
+  ResponseCode
 };

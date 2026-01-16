@@ -113,7 +113,13 @@ export function Cacheable(CACHE_NAME: string, CACHE_KEY: string, CACHE_EXPIRESIN
 
     const originMethod = descriptor.value;
 
-    descriptor.value = async function (this: T & { redis: RedisService; metricsService?: { recordCacheHit: (name: string) => void; recordCacheMiss: (name: string) => void } }, ...args: unknown[]) {
+    descriptor.value = async function (
+      this: T & {
+        redis: RedisService;
+        metricsService?: { recordCacheHit: (name: string) => void; recordCacheMiss: (name: string) => void };
+      },
+      ...args: unknown[]
+    ) {
       const key = paramsKeyFormat(originMethod, CACHE_KEY, args);
 
       if (key === null) {

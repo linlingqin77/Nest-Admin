@@ -5,7 +5,7 @@ import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'ClientOperateDrawer',
+  name: 'ClientOperateDrawer'
 });
 
 interface Props {
@@ -24,7 +24,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
@@ -33,7 +33,7 @@ const { createRequiredRule } = useFormRules();
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
     add: $t('page.system.client.addClient'),
-    edit: $t('page.system.client.editClient'),
+    edit: $t('page.system.client.editClient')
   };
   return titles[props.operateType];
 });
@@ -50,7 +50,7 @@ function createDefaultModel(): Model {
     deviceType: undefined,
     activeTimeout: 1800,
     timeout: 604800,
-    status: '0',
+    status: '0'
   };
 }
 
@@ -66,7 +66,7 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
   grantTypeList: createRequiredRule($t('page.system.client.form.grantTypeList.required')),
   deviceType: createRequiredRule($t('page.system.client.form.deviceType.required')),
   activeTimeout: createRequiredRule($t('page.system.client.form.activeTimeout.required')),
-  timeout: createRequiredRule($t('page.system.client.form.timeout.required')),
+  timeout: createRequiredRule($t('page.system.client.form.timeout.required'))
 };
 
 function handleUpdateModelWhenEdit() {
@@ -99,7 +99,7 @@ async function handleSubmit() {
         deviceType: deviceType as any,
         activeTimeout: activeTimeout ?? undefined,
         timeout: timeout ?? undefined,
-        status: status ?? undefined,
+        status: status ?? undefined
       });
     }
 
@@ -112,7 +112,7 @@ async function handleSubmit() {
         deviceType: deviceType as any,
         activeTimeout: activeTimeout ?? undefined,
         timeout: timeout ?? undefined,
-        status: status ?? undefined,
+        status: status ?? undefined
       });
     }
 

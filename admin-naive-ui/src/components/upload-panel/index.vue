@@ -1,66 +1,13 @@
-<template>
-  <Teleport to="body">
-    <Transition name="slide-up">
-      <div v-if="show && uploadTasks.length > 0" class="upload-panel" :style="panelStyle">
-        <!-- 头部 -->
-        <div class="panel-header">
-          <span class="header-title"> 上传任务 ({{ completedCount }}/{{ uploadTasks.length }}) </span>
-          <div class="header-actions">
-            <n-button text @click="handleMinimize">
-              <template #icon>
-                <div class="i-carbon-minimize" />
-              </template>
-            </n-button>
-            <n-button text @click="handleClose">
-              <template #icon>
-                <div class="i-carbon-close" />
-              </template>
-            </n-button>
-          </div>
-        </div>
-
-        <!-- 任务列表 -->
-        <n-scrollbar v-if="uploadTasks.length <= 20" :style="{ height: contentHeight }">
-          <div class="task-list">
-            <div v-for="task in uploadTasks" :key="task.id" class="task-item">
-              <UploadTaskItem
-                :task="task"
-                @pause="handlePause(task.id)"
-                @resume="handleResume(task.id)"
-                @cancel="handleCancel(task.id)"
-                @retry="handleRetry(task.id)"
-              />
-            </div>
-          </div>
-        </n-scrollbar>
-
-        <!-- 虚拟列表（任务数 > 20 时） -->
-        <n-virtual-list v-else :item-size="UPLOAD_ITEM_HEIGHT" :items="uploadTasks" :style="{ height: contentHeight }">
-          <template #default="{ item: task }">
-            <UploadTaskItem
-              :task="task"
-              @pause="handlePause(task.id)"
-              @resume="handleResume(task.id)"
-              @cancel="handleCancel(task.id)"
-              @retry="handleRetry(task.id)"
-            />
-          </template>
-        </n-virtual-list>
-      </div>
-    </Transition>
-  </Teleport>
-</template>
-
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import { NButton, NScrollbar, NVirtualList, useThemeVars } from 'naive-ui';
-import UploadTaskItem from './upload-task-item.vue';
 import {
-  UPLOAD_PANEL_WIDTH,
-  UPLOAD_PANEL_HEIGHT,
-  UPLOAD_PANEL_HEADER_HEIGHT,
   UPLOAD_ITEM_HEIGHT,
+  UPLOAD_PANEL_HEADER_HEIGHT,
+  UPLOAD_PANEL_HEIGHT,
+  UPLOAD_PANEL_WIDTH
 } from '@/views/system/file-manager/constants';
+import UploadTaskItem from './upload-task-item.vue';
 
 export interface UploadTask {
   id: string;
@@ -88,7 +35,7 @@ interface Emits {
 
 const props = withDefaults(defineProps<Props>(), {
   show: false,
-  uploadTasks: () => [],
+  uploadTasks: () => []
 });
 
 const emit = defineEmits<Emits>();
@@ -99,7 +46,7 @@ const themeVars = useThemeVars();
 const panelStyle = computed(() => ({
   width: `${UPLOAD_PANEL_WIDTH}px`,
   height: `${UPLOAD_PANEL_HEIGHT}px`,
-  borderRadius: '12px',
+  borderRadius: '12px'
 }));
 
 // 内容区域高度
@@ -109,7 +56,7 @@ const contentHeight = computed(() => {
 
 // 已完成任务数
 const completedCount = computed(() => {
-  return props.uploadTasks.filter((t) => t.status === 'success').length;
+  return props.uploadTasks.filter(t => t.status === 'success').length;
 });
 
 // 最小化
@@ -142,6 +89,59 @@ function handleRetry(taskId: string) {
   emit('retry', taskId);
 }
 </script>
+
+<template>
+  <Teleport to="body">
+    <Transition name="slide-up">
+      <div v-if="show && uploadTasks.length > 0" class="upload-panel" :style="panelStyle">
+        <!-- 头部 -->
+        <div class="panel-header">
+          <span class="header-title">上传任务 ({{ completedCount }}/{{ uploadTasks.length }})</span>
+          <div class="header-actions">
+            <NButton text @click="handleMinimize">
+              <template #icon>
+                <div class="i-carbon-minimize" />
+              </template>
+            </NButton>
+            <NButton text @click="handleClose">
+              <template #icon>
+                <div class="i-carbon-close" />
+              </template>
+            </NButton>
+          </div>
+        </div>
+
+        <!-- 任务列表 -->
+        <NScrollbar v-if="uploadTasks.length <= 20" :style="{ height: contentHeight }">
+          <div class="task-list">
+            <div v-for="task in uploadTasks" :key="task.id" class="task-item">
+              <UploadTaskItem
+                :task="task"
+                @pause="handlePause(task.id)"
+                @resume="handleResume(task.id)"
+                @cancel="handleCancel(task.id)"
+                @retry="handleRetry(task.id)"
+              />
+            </div>
+          </div>
+        </NScrollbar>
+
+        <!-- 虚拟列表（任务数 > 20 时） -->
+        <NVirtualList v-else :item-size="UPLOAD_ITEM_HEIGHT" :items="uploadTasks" :style="{ height: contentHeight }">
+          <template #default="{ item: task }">
+            <UploadTaskItem
+              :task="task"
+              @pause="handlePause(task.id)"
+              @resume="handleResume(task.id)"
+              @cancel="handleCancel(task.id)"
+              @retry="handleRetry(task.id)"
+            />
+          </template>
+        </NVirtualList>
+      </div>
+    </Transition>
+  </Teleport>
+</template>
 
 <style scoped lang="scss">
 .upload-panel {

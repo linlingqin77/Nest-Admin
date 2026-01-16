@@ -32,10 +32,10 @@ export class CreateSmsTemplateDto {
   @IsString()
   content: string;
 
-  @ApiPropertyOptional({ 
-    description: '参数列表（JSON数组）', 
+  @ApiPropertyOptional({
+    description: '参数列表（JSON数组）',
     example: '["code", "time"]',
-    type: String 
+    type: String,
   })
   @IsOptional()
   @IsString()

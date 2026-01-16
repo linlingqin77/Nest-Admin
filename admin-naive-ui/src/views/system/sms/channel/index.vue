@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { NDivider } from 'naive-ui';
-import { fetchSmsChannelRemove, fetchSmsChannelFindAll } from '@/service/api-gen';
+import { fetchSmsChannelFindAll, fetchSmsChannelRemove } from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
@@ -12,7 +12,7 @@ import ChannelOperateDrawer from './modules/channel-operate-drawer.vue';
 import ChannelSearch from './modules/channel-search.vue';
 
 defineOptions({
-  name: 'SmsChannelList',
+  name: 'SmsChannelList'
 });
 
 useDict('sys_normal_disable');
@@ -25,7 +25,7 @@ const channelCodeMap: Record<string, string> = {
   tencent: '腾讯云',
   huawei: '华为云',
   qiniu: '七牛云',
-  yunpian: '云片',
+  yunpian: '云片'
 };
 
 const {
@@ -37,7 +37,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchSmsChannelFindAll as any,
   apiParams: {
@@ -45,19 +45,19 @@ const {
     pageSize: 10,
     name: null,
     code: null,
-    status: null,
+    status: null
   },
   columns: () => [
     {
       type: 'selection',
       align: 'center',
-      width: 48,
+      width: 48
     },
     {
       key: 'id',
       title: 'ID',
       align: 'center',
-      width: 60,
+      width: 60
     },
     {
       key: 'name',
@@ -65,8 +65,8 @@ const {
       align: 'center',
       minWidth: 120,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'code',
@@ -76,7 +76,7 @@ const {
       render(row) {
         const typedRow = row as unknown as Api.System.SmsChannel;
         return channelCodeMap[typedRow.code] || typedRow.code;
-      },
+      }
     },
     {
       key: 'signature',
@@ -84,8 +84,8 @@ const {
       align: 'center',
       minWidth: 100,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'apiKey',
@@ -93,8 +93,8 @@ const {
       align: 'center',
       minWidth: 120,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'status',
@@ -104,20 +104,20 @@ const {
       render(row) {
         const typedRow = row as unknown as Api.System.SmsChannel;
         return <DictTag size="small" value={typedRow.status} dictCode="sys_normal_disable" />;
-      },
+      }
     },
     {
       key: 'createTime',
       title: '创建时间',
       align: 'center',
-      minWidth: 160,
+      minWidth: 160
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 130,
-      render: (row) => {
+      render: row => {
         const typedRow = row as unknown as Api.System.SmsChannel;
         const divider = () => {
           if (!hasAuth('system:sms:channel:edit') || !hasAuth('system:sms:channel:remove')) {
@@ -164,9 +164,9 @@ const {
             {deleteBtn()}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedRowKeys, onBatchDeleted, onDeleted } =
@@ -221,7 +221,7 @@ async function edit(id: CommonType.IdType) {
         :scroll-x="962"
         :loading="loading"
         remote
-        :row-key="(row) => row.id"
+        :row-key="row => row.id"
         :pagination="mobilePagination"
         class="sm:h-full"
       />

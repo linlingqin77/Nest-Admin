@@ -5,7 +5,6 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
 import type { ChunkMergeFileDto } from './types';
 
@@ -17,7 +16,7 @@ export function fetchUploadSingleFileUpload() {
   return apiRequest<unknown>({
     method: 'POST',
     url: '/common/upload',
-    operationId: 'UploadController_singleFileUpload_v1',
+    operationId: 'UploadController_singleFileUpload_v1'
   });
 }
 
@@ -29,7 +28,7 @@ export function fetchUploadGetChunkUploadId() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/common/upload/chunk/uploadId',
-    operationId: 'UploadController_getChunkUploadId_v1',
+    operationId: 'UploadController_getChunkUploadId_v1'
   });
 }
 
@@ -41,7 +40,7 @@ export function fetchUploadChunkFileUpload() {
   return apiRequest<unknown>({
     method: 'POST',
     url: '/common/upload/chunk',
-    operationId: 'UploadController_chunkFileUpload_v1',
+    operationId: 'UploadController_chunkFileUpload_v1'
   });
 }
 
@@ -54,7 +53,7 @@ export function fetchUploadChunkMergeFile(data: ChunkMergeFileDto) {
     method: 'POST',
     url: '/common/upload/chunk/merge',
     data,
-    operationId: 'UploadController_chunkMergeFile_v1',
+    operationId: 'UploadController_chunkMergeFile_v1'
   });
 }
 
@@ -67,7 +66,7 @@ export function fetchUploadGetChunkUploadResult(params?: Record<string, unknown>
     method: 'GET',
     url: '/common/upload/chunk/result',
     params,
-    operationId: 'UploadController_getChunkUploadResult_v1',
+    operationId: 'UploadController_getChunkUploadResult_v1'
   });
 }
 
@@ -80,6 +79,6 @@ export function fetchUploadGetAuthorization(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/common/upload/cos/authorization',
     params,
-    operationId: 'UploadController_getAuthorization_v1',
+    operationId: 'UploadController_getAuthorization_v1'
   });
 }

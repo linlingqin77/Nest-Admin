@@ -3,7 +3,7 @@ import { useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'NotifyTemplateSearch',
+  name: 'NotifyTemplateSearch'
 });
 
 interface Emits {
@@ -19,7 +19,7 @@ const model = defineModel<Api.System.NotifyTemplateSearchParams>('model', { requ
 
 const templateTypeOptions = [
   { label: '系统通知', value: 1 },
-  { label: '业务通知', value: 2 },
+  { label: '业务通知', value: 2 }
 ];
 
 async function reset() {

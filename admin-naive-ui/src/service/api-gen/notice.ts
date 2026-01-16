@@ -5,9 +5,16 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CreateNoticeRequestDto, CreateNoticeResultResponseDto, UpdateNoticeRequestDto, UpdateNoticeResultResponseDto, NoticeListResponseDto, NoticeResponseDto, DeleteNoticeResultResponseDto } from './types';
+import type {
+  CreateNoticeRequestDto,
+  CreateNoticeResultResponseDto,
+  DeleteNoticeResultResponseDto,
+  NoticeListResponseDto,
+  NoticeResponseDto,
+  UpdateNoticeRequestDto,
+  UpdateNoticeResultResponseDto
+} from './types';
 
 /**
  * 通知公告-创建
@@ -18,7 +25,7 @@ export function fetchNoticeCreate(data: CreateNoticeRequestDto) {
     method: 'POST',
     url: '/system/notice',
     data,
-    operationId: 'NoticeController_create_v1',
+    operationId: 'NoticeController_create_v1'
   });
 }
 
@@ -31,7 +38,7 @@ export function fetchNoticeUpdate(data: UpdateNoticeRequestDto) {
     method: 'PUT',
     url: '/system/notice',
     data,
-    operationId: 'NoticeController_update_v1',
+    operationId: 'NoticeController_update_v1'
   });
 }
 
@@ -44,7 +51,7 @@ export function fetchNoticeFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/notice/list',
     params,
-    operationId: 'NoticeController_findAll_v1',
+    operationId: 'NoticeController_findAll_v1'
   });
 }
 
@@ -56,7 +63,7 @@ export function fetchNoticeFindOne(id: string | number) {
   return apiRequest<NoticeResponseDto>({
     method: 'GET',
     url: buildUrl('/system/notice/{id}', { id }),
-    operationId: 'NoticeController_findOne_v1',
+    operationId: 'NoticeController_findOne_v1'
   });
 }
 
@@ -68,6 +75,6 @@ export function fetchNoticeRemove(id: string | number) {
   return apiRequest<DeleteNoticeResultResponseDto>({
     method: 'DELETE',
     url: buildUrl('/system/notice/{id}', { id }),
-    operationId: 'NoticeController_remove_v1',
+    operationId: 'NoticeController_remove_v1'
   });
 }

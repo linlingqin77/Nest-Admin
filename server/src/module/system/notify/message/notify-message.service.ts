@@ -2,7 +2,13 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Result } from 'src/shared/response';
 import { toDtoList } from 'src/shared/utils/index';
-import { SendNotifyMessageDto, SendNotifyAllDto, ListNotifyMessageDto, ListMyNotifyMessageDto, NotifyMessageResponseDto } from './dto/index';
+import {
+  SendNotifyMessageDto,
+  SendNotifyAllDto,
+  ListNotifyMessageDto,
+  ListMyNotifyMessageDto,
+  NotifyMessageResponseDto,
+} from './dto/index';
 import { PrismaService } from 'src/infrastructure/prisma';
 import { NotifyMessageRepository } from './notify-message.repository';
 import { NotifyTemplateService } from '../template/notify-template.service';

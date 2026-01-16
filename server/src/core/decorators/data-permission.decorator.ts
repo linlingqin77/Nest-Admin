@@ -1,4 +1,13 @@
-import { SetMetadata, applyDecorators, UseInterceptors, CallHandler, ExecutionContext, Injectable, NestInterceptor, createParamDecorator } from '@nestjs/common';
+import {
+  SetMetadata,
+  applyDecorators,
+  UseInterceptors,
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+  createParamDecorator,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { Request } from 'express';
@@ -77,7 +86,8 @@ export interface DataPermissionContext {
 /**
  * 默认配置
  */
-const DEFAULT_OPTIONS: Required<Omit<DataPermissionOptions, 'includeRules' | 'excludeRules'>> & Pick<DataPermissionOptions, 'includeRules' | 'excludeRules'> = {
+const DEFAULT_OPTIONS: Required<Omit<DataPermissionOptions, 'includeRules' | 'excludeRules'>> &
+  Pick<DataPermissionOptions, 'includeRules' | 'excludeRules'> = {
   enable: true,
   deptAlias: '',
   userAlias: '',
@@ -116,10 +126,7 @@ const DEFAULT_OPTIONS: Required<Omit<DataPermissionOptions, 'includeRules' | 'ex
  */
 export function DataPermission(options: DataPermissionOptions = {}) {
   const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
-  return applyDecorators(
-    SetMetadata(DATA_PERMISSION_KEY, mergedOptions),
-    UseInterceptors(DataPermissionInterceptor),
-  );
+  return applyDecorators(SetMetadata(DATA_PERMISSION_KEY, mergedOptions), UseInterceptors(DataPermissionInterceptor));
 }
 
 /**
@@ -140,10 +147,7 @@ export class DataPermissionInterceptor implements NestInterceptor {
   constructor(private readonly reflector: Reflector) {}
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-    const options = this.reflector.get<DataPermissionOptions>(
-      DATA_PERMISSION_KEY,
-      context.getHandler(),
-    );
+    const options = this.reflector.get<DataPermissionOptions>(DATA_PERMISSION_KEY, context.getHandler());
 
     if (!options) {
       return next.handle();
@@ -154,7 +158,7 @@ export class DataPermissionInterceptor implements NestInterceptor {
 
     // 构建数据权限上下文
     const permissionContext = this.buildPermissionContext(user, options);
-    
+
     // 将上下文附加到请求对象
     (request as any)[DATA_PERMISSION_CONTEXT_KEY] = permissionContext;
 
@@ -164,10 +168,7 @@ export class DataPermissionInterceptor implements NestInterceptor {
   /**
    * 构建数据权限上下文
    */
-  private buildPermissionContext(
-    user: any,
-    options: DataPermissionOptions,
-  ): DataPermissionContext {
+  private buildPermissionContext(user: any, options: DataPermissionOptions): DataPermissionContext {
     // 如果禁用数据权限，返回全部数据范围
     if (options.enable === false) {
       return {
@@ -259,7 +260,7 @@ export class DataPermissionInterceptor implements NestInterceptor {
    */
   private getCustomDeptIds(user: any): number[] {
     const deptIds: Set<number> = new Set();
-    
+
     for (const role of user.roles || []) {
       if (role.dataScope === DataScope.DEPT_CUSTOM && role.deptIds) {
         for (const deptId of role.deptIds) {
@@ -278,7 +279,7 @@ export class DataPermissionInterceptor implements NestInterceptor {
     // 这里需要从用户对象中获取部门树信息
     // 实际实现中可能需要查询数据库获取子部门
     const deptIds: number[] = [];
-    
+
     if (user.deptId) {
       deptIds.push(user.deptId);
     }

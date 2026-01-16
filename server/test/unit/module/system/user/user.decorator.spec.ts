@@ -17,11 +17,12 @@ describe('User Decorators', () => {
       return args[Object.keys(args)[0]].factory;
     };
 
-    const createMockContext = (user: any): ExecutionContext => ({
-      switchToHttp: () => ({
-        getRequest: () => ({ user }),
-      }),
-    } as ExecutionContext);
+    const createMockContext = (user: any): ExecutionContext =>
+      ({
+        switchToHttp: () => ({
+          getRequest: () => ({ user }),
+        }),
+      }) as ExecutionContext;
 
     it('should return entire user object when no data specified', () => {
       const factory = getParamDecoratorFactory(User);
@@ -89,11 +90,12 @@ describe('User Decorators', () => {
       return args[Object.keys(args)[0]].factory;
     };
 
-    const createMockContext = (user: any): ExecutionContext => ({
-      switchToHttp: () => ({
-        getRequest: () => ({ user }),
-      }),
-    } as ExecutionContext);
+    const createMockContext = (user: any): ExecutionContext =>
+      ({
+        switchToHttp: () => ({
+          getRequest: () => ({ user }),
+        }),
+      }) as ExecutionContext;
 
     it('should return injectCreate and injectUpdate functions', () => {
       const factory = getParamDecoratorFactory(UserTool);

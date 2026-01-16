@@ -84,16 +84,13 @@ export function createSlowQueryLoggerMiddleware(
         };
 
         // 使用 Logger 记录慢查询
-        logger.warn(
-          `Slow query detected: ${slowQueryLog.query} took ${duration}ms (threshold: ${threshold}ms)`,
-          {
-            model: params.model,
-            action: params.action,
-            args: params.args,
-            duration,
-            threshold,
-          },
-        );
+        logger.warn(`Slow query detected: ${slowQueryLog.query} took ${duration}ms (threshold: ${threshold}ms)`, {
+          model: params.model,
+          action: params.action,
+          args: params.args,
+          duration,
+          threshold,
+        });
 
         // 如果提供了回调函数，调用它
         if (callback) {

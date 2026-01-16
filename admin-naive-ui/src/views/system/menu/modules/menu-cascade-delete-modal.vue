@@ -7,7 +7,7 @@ import { $t } from '@/locales';
 import MenuTree from '@/components/custom/menu-tree.vue';
 
 defineOptions({
-  name: 'MenuCascadeDeleteModal',
+  name: 'MenuCascadeDeleteModal'
 });
 
 interface Emits {
@@ -17,7 +17,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const menuTreeRef = ref<InstanceType<typeof MenuTree> | null>(null);
@@ -35,14 +35,14 @@ const model: Model = reactive(createDefaultModel());
 
 function createDefaultModel(): Model {
   return {
-    menuIds: [],
+    menuIds: []
   };
 }
 
 type RuleKey = Extract<keyof Model, 'menuIds'>;
 
 const rules: Record<RuleKey, App.Global.FormRule> = {
-  menuIds: createRequiredRule($t('page.system.menu.form.menuIds.invalid')),
+  menuIds: createRequiredRule($t('page.system.menu.form.menuIds.invalid'))
 };
 
 async function handleUpdateModelWhenEdit() {
@@ -61,7 +61,7 @@ async function handleSubmit() {
     content: $t('page.system.menu.cascadeDeleteContent'),
     positiveText: $t('common.delete'),
     positiveButtonProps: {
-      type: 'error',
+      type: 'error'
     },
     negativeText: $t('common.cancel'),
     onPositiveClick: async () => {
@@ -73,7 +73,7 @@ async function handleSubmit() {
       } catch {
         // error handled by request interceptor
       }
-    },
+    }
   });
 }
 

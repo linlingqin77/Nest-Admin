@@ -102,12 +102,9 @@ describe('RequireQuotaGuard', () => {
       const options: RequireQuotaOptions = { resource: QuotaResource.USERS };
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(options);
 
-      const result = await TenantContext.run(
-        { tenantId: '000000', isSuperTenant: true },
-        async () => {
-          return guard.canActivate(createMockContext());
-        },
-      );
+      const result = await TenantContext.run({ tenantId: '000000', isSuperTenant: true }, async () => {
+        return guard.canActivate(createMockContext());
+      });
 
       expect(result).toBe(true);
       expect(quotaService.checkQuota).not.toHaveBeenCalled();
@@ -117,12 +114,9 @@ describe('RequireQuotaGuard', () => {
       const options: RequireQuotaOptions = { resource: QuotaResource.USERS };
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(options);
 
-      const result = await TenantContext.run(
-        { tenantId: '000000', isSuperTenant: true },
-        async () => {
-          return guard.canActivate(createMockContext());
-        },
-      );
+      const result = await TenantContext.run({ tenantId: '000000', isSuperTenant: true }, async () => {
+        return guard.canActivate(createMockContext());
+      });
 
       expect(result).toBe(true);
     });
@@ -264,10 +258,7 @@ describe('RequireQuotaGuard', () => {
 
       await guard.canActivate(context);
 
-      expect(reflector.getAllAndOverride).toHaveBeenCalledWith(REQUIRE_QUOTA_KEY, [
-        handler,
-        TestController,
-      ]);
+      expect(reflector.getAllAndOverride).toHaveBeenCalledWith(REQUIRE_QUOTA_KEY, [handler, TestController]);
     });
   });
 

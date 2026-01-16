@@ -1,5 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsInt, IsString, IsEnum, Min, Max, IsDateString, ValidateNested, IsBoolean } from 'class-validator';
+import {
+  IsOptional,
+  IsInt,
+  IsString,
+  IsEnum,
+  Min,
+  Max,
+  IsDateString,
+  ValidateNested,
+  IsBoolean,
+} from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 
 /**
@@ -131,7 +141,6 @@ export class PageQueryDto {
     };
   }
 }
-
 
 /**
  * 游标分页 DTO

@@ -6,7 +6,7 @@ import { request } from '@/service/request';
 export function fetchGetTenantSelectList() {
   return request<Api.System.TenantSelectItem[]>({
     url: '/auth/tenant/select/list',
-    method: 'get',
+    method: 'get'
   });
 }
 
@@ -14,7 +14,7 @@ export function fetchGetTenantSelectList() {
 export function fetchSwitchTenant(tenantId: string) {
   return request<Api.Auth.LoginToken>({
     url: `/auth/tenant/switch/${tenantId}`,
-    method: 'get',
+    method: 'get'
   });
 }
 
@@ -22,7 +22,7 @@ export function fetchSwitchTenant(tenantId: string) {
 export function fetchChangeTenant(tenantId: string) {
   return request<Api.Auth.LoginToken>({
     url: `/auth/tenant/change/${tenantId}`,
-    method: 'get',
+    method: 'get'
   });
 }
 
@@ -30,7 +30,7 @@ export function fetchChangeTenant(tenantId: string) {
 export function fetchClearTenant() {
   return request<Api.Auth.LoginToken>({
     url: '/auth/tenant/clear',
-    method: 'get',
+    method: 'get'
   });
 }
 
@@ -38,15 +38,15 @@ export function fetchClearTenant() {
 export function fetchRestoreTenant() {
   return request<Api.Auth.LoginToken>({
     url: '/auth/tenant/restore',
-    method: 'get',
+    method: 'get'
   });
 }
 
 /** 获取租户切换状态 */
 export function fetchGetTenantSwitchStatus() {
   return request<Api.System.TenantSwitchStatus>({
-    url: '/auth/tenant/switch/status',
-    method: 'get',
+    url: '/system/tenant/switch-status',
+    method: 'get'
   });
 }
 
@@ -57,7 +57,7 @@ export function fetchGetTenantQuotaList(params?: Api.System.TenantQuotaSearchPar
   return request<Api.System.TenantQuotaList>({
     url: '/system/tenant/quota/list',
     method: 'get',
-    params,
+    params
   });
 }
 
@@ -65,7 +65,7 @@ export function fetchGetTenantQuotaList(params?: Api.System.TenantQuotaSearchPar
 export function fetchGetTenantQuotaDetail(tenantId: CommonType.IdType) {
   return request<Api.System.TenantQuota>({
     url: `/system/tenant/quota/${tenantId}`,
-    method: 'get',
+    method: 'get'
   });
 }
 
@@ -74,7 +74,7 @@ export function fetchUpdateTenantQuota(data: Api.System.UpdateTenantQuotaParams)
   return request<boolean>({
     url: '/system/tenant/quota',
     method: 'put',
-    data,
+    data
   });
 }
 
@@ -85,7 +85,7 @@ export function fetchGetTenantAuditLogList(params?: Api.System.TenantAuditLogSea
   return request<Api.System.TenantAuditLogList>({
     url: '/system/tenant/audit/list',
     method: 'get',
-    params,
+    params
   });
 }
 
@@ -93,7 +93,7 @@ export function fetchGetTenantAuditLogList(params?: Api.System.TenantAuditLogSea
 export function fetchGetTenantAuditLogDetail(auditId: CommonType.IdType) {
   return request<Api.System.TenantAuditLog>({
     url: `/system/tenant/audit/${auditId}`,
-    method: 'get',
+    method: 'get'
   });
 }
 
@@ -103,7 +103,7 @@ export function fetchExportTenantAuditLog(params?: Api.System.TenantAuditLogSear
     url: '/system/tenant/audit/export',
     method: 'post',
     data: params,
-    responseType: 'blob' as const,
+    responseType: 'blob' as const
   } as any);
 }
 
@@ -113,6 +113,6 @@ export function fetchExportTenantAuditLog(params?: Api.System.TenantAuditLogSear
 export function fetchGetDashboardData() {
   return request<Api.System.TenantDashboardData>({
     url: '/system/tenant/dashboard',
-    method: 'get',
+    method: 'get'
   });
 }

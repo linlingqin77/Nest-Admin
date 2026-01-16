@@ -249,10 +249,12 @@ export class TenantService {
       packageName: item.packageId ? packageMap.get(item.packageId) || '' : '',
     }));
 
-    return Result.ok(toDtoPage(TenantResponseDto, {
-      rows: listWithPackage,
-      total,
-    }));
+    return Result.ok(
+      toDtoPage(TenantResponseDto, {
+        rows: listWithPackage,
+        total,
+      }),
+    );
   }
 
   /**
@@ -572,7 +574,7 @@ export class TenantService {
       this.logger.log(`找到 ${configs.length} 个配置项需要同步`);
 
       let syncedCount = 0;
-      let skippedCount = 0;
+      const skippedCount = 0;
 
       // 为每个租户同步配置（使用批量操作）
       for (const tenant of tenants) {

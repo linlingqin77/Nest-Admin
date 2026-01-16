@@ -42,13 +42,7 @@ export class MetricsInterceptor implements NestInterceptor {
   /**
    * 记录请求指标
    */
-  private recordMetrics(
-    method: string,
-    path: string,
-    statusCode: number,
-    startTime: bigint,
-    tenantId?: string,
-  ): void {
+  private recordMetrics(method: string, path: string, statusCode: number, startTime: bigint, tenantId?: string): void {
     // 计算请求耗时（秒）
     const endTime = process.hrtime.bigint();
     const durationNs = Number(endTime - startTime);

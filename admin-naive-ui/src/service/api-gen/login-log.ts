@@ -5,9 +5,14 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { LoginLogListResponseDto, ClearLogResultResponseDto, UnlockUserResultResponseDto, DeleteLogResultResponseDto, ListLoginlogDto } from './types';
+import type {
+  ClearLogResultResponseDto,
+  DeleteLogResultResponseDto,
+  ListLoginlogDto,
+  LoginLogListResponseDto,
+  UnlockUserResultResponseDto
+} from './types';
 
 /**
  * 登录日志-列表
@@ -18,7 +23,7 @@ export function fetchLoginlogFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/monitor/logininfor/list',
     params,
-    operationId: 'LoginlogController_findAll_v1',
+    operationId: 'LoginlogController_findAll_v1'
   });
 }
 
@@ -30,7 +35,7 @@ export function fetchLoginlogRemoveAll() {
   return apiRequest<ClearLogResultResponseDto>({
     method: 'DELETE',
     url: '/monitor/logininfor/clean',
-    operationId: 'LoginlogController_removeAll_v1',
+    operationId: 'LoginlogController_removeAll_v1'
   });
 }
 
@@ -42,7 +47,7 @@ export function fetchLoginlogUnlock(username: string | number) {
   return apiRequest<UnlockUserResultResponseDto>({
     method: 'GET',
     url: buildUrl('/monitor/logininfor/unlock/{username}', { username }),
-    operationId: 'LoginlogController_unlock_v1',
+    operationId: 'LoginlogController_unlock_v1'
   });
 }
 
@@ -54,7 +59,7 @@ export function fetchLoginlogRemove(id: string | number) {
   return apiRequest<DeleteLogResultResponseDto>({
     method: 'DELETE',
     url: buildUrl('/monitor/logininfor/{id}', { id }),
-    operationId: 'LoginlogController_remove_v1',
+    operationId: 'LoginlogController_remove_v1'
   });
 }
 
@@ -67,6 +72,6 @@ export function fetchLoginlogExport(data: ListLoginlogDto) {
     method: 'POST',
     url: '/monitor/logininfor/export',
     data,
-    operationId: 'LoginlogController_export_v1',
+    operationId: 'LoginlogController_export_v1'
   });
 }

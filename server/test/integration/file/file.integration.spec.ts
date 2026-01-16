@@ -94,10 +94,7 @@ describe('File Integration Tests', () => {
   describe('Folder Operations Integration', () => {
     it('should create folder and verify in database', async () => {
       const folderName = `test_folder_${Date.now()}`;
-      const result = await fileManagerService.createFolder(
-        { folderName, parentId: 0 },
-        testUsername,
-      );
+      const result = await fileManagerService.createFolder({ folderName, parentId: 0 }, testUsername);
 
       expect(result.code).toBe(200);
       expect(result.data.folderName).toBe(folderName);
@@ -427,10 +424,7 @@ describe('File Integration Tests', () => {
 
     it('should rename file', async () => {
       const newName = `renamed_${Date.now()}.txt`;
-      const result = await fileManagerService.renameFile(
-        { uploadId: testFileId, newFileName: newName },
-        testUsername,
-      );
+      const result = await fileManagerService.renameFile({ uploadId: testFileId, newFileName: newName }, testUsername);
 
       expect(result.code).toBe(200);
 

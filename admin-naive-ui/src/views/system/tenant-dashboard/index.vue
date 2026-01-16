@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { useAppStore } from '@/store/modules/app';
+import { computed, onMounted, ref } from 'vue';
 import { fetchGetDashboardData } from '@/service/api/system/tenant';
+import { useAppStore } from '@/store/modules/app';
 import StatCards from './modules/stat-cards.vue';
 import TrendChart from './modules/trend-chart.vue';
 import PackagePieChart from './modules/package-pie-chart.vue';
@@ -9,7 +9,7 @@ import ExpiringList from './modules/expiring-list.vue';
 import QuotaTopList from './modules/quota-top-list.vue';
 
 defineOptions({
-  name: 'TenantDashboard',
+  name: 'TenantDashboard'
 });
 
 const appStore = useAppStore();
@@ -58,21 +58,21 @@ onMounted(() => {
           type="daterange"
           clearable
           :shortcuts="{
-            '最近7天': () => {
+            最近7天: () => {
               const end = Date.now();
               const start = end - 7 * 24 * 60 * 60 * 1000;
               return [start, end];
             },
-            '最近30天': () => {
+            最近30天: () => {
               const end = Date.now();
               const start = end - 30 * 24 * 60 * 60 * 1000;
               return [start, end];
             },
-            '最近90天': () => {
+            最近90天: () => {
               const end = Date.now();
               const start = end - 90 * 24 * 60 * 60 * 1000;
               return [start, end];
-            },
+            }
           }"
           @update:value="handleTimeRangeChange"
         />

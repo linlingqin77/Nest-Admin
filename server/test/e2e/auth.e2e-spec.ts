@@ -59,10 +59,7 @@ describe('Auth E2E Tests', () => {
 
   describe('GET /captchaImage - 验证码接口', () => {
     it('should return captcha data with uuid and img', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/captchaImage`)
-        .expect(200);
+      const response = await helper.getRequest().get(`${apiPrefix}/captchaImage`).expect(200);
 
       expect(response.body.code).toBe(200);
       expect(response.body.data).toHaveProperty('captchaEnabled');
@@ -73,10 +70,7 @@ describe('Auth E2E Tests', () => {
 
   describe('GET /auth/tenant/list - 租户列表接口', () => {
     it('should return tenant list', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/auth/tenant/list`)
-        .expect(200);
+      const response = await helper.getRequest().get(`${apiPrefix}/auth/tenant/list`).expect(200);
 
       expect(response.body.code).toBe(200);
       expect(response.body.data).toHaveProperty('tenantEnabled');
@@ -85,10 +79,7 @@ describe('Auth E2E Tests', () => {
     });
 
     it('should return tenant info with required fields', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/auth/tenant/list`)
-        .expect(200);
+      const response = await helper.getRequest().get(`${apiPrefix}/auth/tenant/list`).expect(200);
 
       if (response.body.data.tenantEnabled && response.body.data.voList.length > 0) {
         const tenant = response.body.data.voList[0];
@@ -180,10 +171,7 @@ describe('Auth E2E Tests', () => {
     });
 
     it('should handle logout without token gracefully', async () => {
-      const response = await helper
-        .getRequest()
-        .post(`${apiPrefix}/auth/logout`)
-        .expect(200);
+      const response = await helper.getRequest().post(`${apiPrefix}/auth/logout`).expect(200);
 
       expect(response.body.code).toBe(200);
     });
@@ -249,9 +237,7 @@ describe('Auth E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/getInfo`);
+      const response = await helper.getRequest().get(`${apiPrefix}/getInfo`);
 
       // API returns 403 Forbidden for unauthenticated requests
       expect([401, 403]).toContain(response.status);
@@ -301,9 +287,7 @@ describe('Auth E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/getRouters`);
+      const response = await helper.getRequest().get(`${apiPrefix}/getRouters`);
 
       // API returns 403 Forbidden for unauthenticated requests
       expect([401, 403]).toContain(response.status);
@@ -313,10 +297,7 @@ describe('Auth E2E Tests', () => {
 
   describe('GET /auth/publicKey - RSA公钥接口', () => {
     it('should return public key', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/auth/publicKey`)
-        .expect(200);
+      const response = await helper.getRequest().get(`${apiPrefix}/auth/publicKey`).expect(200);
 
       expect(response.body.code).toBe(200);
       expect(response.body.data).toHaveProperty('publicKey');
@@ -325,10 +306,7 @@ describe('Auth E2E Tests', () => {
 
   describe('GET /auth/code - 验证码接口 (Soybean API)', () => {
     it('should return captcha code data', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/auth/code`)
-        .expect(200);
+      const response = await helper.getRequest().get(`${apiPrefix}/auth/code`).expect(200);
 
       expect(response.body.code).toBe(200);
       expect(response.body.data).toHaveProperty('captchaEnabled');

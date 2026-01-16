@@ -157,7 +157,6 @@ describe('Tenant Lifecycle Integration Tests', () => {
         username: `qc${uid}`,
         password: 'Test123456',
         accountCount: 50,
-        storageQuota: 1024,
       });
 
       expect(createResult.code).toBe(200);
@@ -168,7 +167,6 @@ describe('Tenant Lifecycle Integration Tests', () => {
 
       expect(tenant).toBeDefined();
       expect(tenant!.accountCount).toBe(50);
-      expect(tenant!.storageQuota).toBe(1024);
       createdTenantIds.push(tenant!.id);
 
       const adminUser = await prisma.sysUser.findFirst({
@@ -212,7 +210,7 @@ describe('Tenant Lifecycle Integration Tests', () => {
       const updateResult = await tenantService.update({
         id: tenant!.id,
         tenantId: tenant!.tenantId,
-        status: StatusEnum.DISABLE,
+        status: StatusEnum.STOP,
       });
 
       expect(updateResult.code).toBe(200);
@@ -221,7 +219,7 @@ describe('Tenant Lifecycle Integration Tests', () => {
         where: { id: tenant!.id },
       });
 
-      expect(updatedTenant!.status).toBe(StatusEnum.DISABLE);
+      expect(updatedTenant!.status).toBe(StatusEnum.STOP);
     });
 
     it('should re-enable disabled tenant', async () => {
@@ -234,7 +232,7 @@ describe('Tenant Lifecycle Integration Tests', () => {
         contactPhone: '13500135000',
         username: `re${uid}`,
         password: 'Test123456',
-        status: StatusEnum.DISABLE,
+        status: StatusEnum.STOP,
       });
 
       const tenant = await prisma.sysTenant.findFirst({
@@ -310,7 +308,7 @@ describe('Tenant Lifecycle Integration Tests', () => {
         contactPhone: '13300133000',
         username: `di${uid}`,
         password: 'Test123456',
-        status: StatusEnum.DISABLE,
+        status: StatusEnum.STOP,
       });
 
       const tenant = await prisma.sysTenant.findFirst({

@@ -89,7 +89,7 @@ export class DataMaskingService {
     if (!email || typeof email !== 'string' || !email.includes('@')) return email;
     const [local, domain] = email.split('@');
     if (!local || !domain) return email;
-    
+
     let maskedLocal: string;
     if (local.length <= 2) {
       maskedLocal = '**';
@@ -175,14 +175,14 @@ export class DataMaskingService {
    */
   autoMask(value: string, fieldName: string): string {
     if (!value || typeof value !== 'string') return value;
-    
+
     const normalizedFieldName = fieldName.toLowerCase().replace(/[_-]/g, '');
     const fieldType = FIELD_TYPE_MAP[normalizedFieldName];
-    
+
     if (fieldType) {
       return this.maskByType(value, fieldType);
     }
-    
+
     // 尝试根据值的格式自动识别
     return this.autoDetectAndMask(value);
   }
@@ -224,22 +224,22 @@ export class DataMaskingService {
     if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
       return this.maskEmail(value);
     }
-    
+
     // 检测手机号格式 (中国大陆)
     if (/^1[3-9]\d{9}$/.test(value)) {
       return this.maskPhone(value);
     }
-    
+
     // 检测身份证格式 (18位)
     if (/^\d{17}[\dXx]$/.test(value)) {
       return this.maskIdCard(value);
     }
-    
+
     // 检测银行卡格式 (16-19位数字)
     if (/^\d{16,19}$/.test(value)) {
       return this.maskBankCard(value);
     }
-    
+
     return value;
   }
 
@@ -251,7 +251,7 @@ export class DataMaskingService {
    */
   maskObject<T extends Record<string, any>>(obj: T, fields: string[]): T {
     if (!obj || typeof obj !== 'object') return obj;
-    
+
     const masked: Record<string, any> = { ...obj };
     for (const field of fields) {
       if (field in masked && masked[field] !== null && masked[field] !== undefined) {
@@ -274,16 +274,16 @@ export class DataMaskingService {
    */
   maskObjectDeep<T extends Record<string, any>>(obj: T): T {
     if (!obj || typeof obj !== 'object') return obj;
-    
+
     if (Array.isArray(obj)) {
       return obj.map((item) => this.maskObjectDeep(item)) as unknown as T;
     }
-    
+
     const masked: Record<string, any> = { ...obj };
     for (const key of Object.keys(masked)) {
       const value = masked[key];
       if (value === null || value === undefined) continue;
-      
+
       if (typeof value === 'string') {
         masked[key] = this.autoMask(value, key);
       } else if (typeof value === 'object') {

@@ -22,7 +22,7 @@ export const GRID_COLS_BREAKPOINTS = {
   /** 手机 (≥480px) */
   480: 2,
   /** 小手机 (<480px) */
-  xs: 1,
+  xs: 1
 } as const;
 
 /** 响应式断点 (px) */
@@ -33,7 +33,7 @@ export const BREAKPOINTS = {
   lg: 1024,
   xl: 1280,
   '2xl': 1600,
-  '3xl': 1920,
+  '3xl': 1920
 } as const;
 
 /** 获取当前屏幕宽度对应的网格列数 */

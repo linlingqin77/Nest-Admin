@@ -3,7 +3,7 @@ import { ISmsClient, SmsSendParams, SmsSendResult, SmsChannelConfig } from '../s
 
 /**
  * 阿里云短信客户端
- * 
+ *
  * 注意：这是一个模拟实现，实际使用时需要安装 @alicloud/dysmsapi20170525 包
  * 并使用真实的阿里云 SDK
  */
@@ -36,7 +36,7 @@ export class AliyunSmsClient implements ISmsClient {
 
       // 模拟成功响应
       const mockBizId = `ALIYUN_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-      
+
       this.logger.log(`[Aliyun SMS] Send success, bizId: ${mockBizId}`);
 
       return {

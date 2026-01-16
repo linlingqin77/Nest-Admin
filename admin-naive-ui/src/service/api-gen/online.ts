@@ -5,9 +5,8 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { OnlineUserListResponseDto, ForceLogoutResultResponseDto } from './types';
+import type { ForceLogoutResultResponseDto, OnlineUserListResponseDto } from './types';
 
 /**
  * 在线用户-列表
@@ -18,7 +17,7 @@ export function fetchOnlineFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/monitor/online/list',
     params,
-    operationId: 'OnlineController_findAll_v1',
+    operationId: 'OnlineController_findAll_v1'
   });
 }
 
@@ -30,6 +29,6 @@ export function fetchOnlineDelete(token: string | number) {
   return apiRequest<ForceLogoutResultResponseDto>({
     method: 'DELETE',
     url: buildUrl('/monitor/online/{token}', { token }),
-    operationId: 'OnlineController_delete_v1',
+    operationId: 'OnlineController_delete_v1'
   });
 }

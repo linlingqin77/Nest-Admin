@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 
 defineOptions({
-  name: 'SmsLogDetailModal',
+  name: 'SmsLogDetailModal'
 });
 
 interface Props {
@@ -13,18 +13,18 @@ interface Props {
 const props = defineProps<Props>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const sendStatusMap: Record<number, { label: string; type: NaiveUI.ThemeColor }> = {
   0: { label: '发送中', type: 'info' },
   1: { label: '成功', type: 'success' },
-  2: { label: '失败', type: 'error' },
+  2: { label: '失败', type: 'error' }
 };
 
 const receiveStatusMap: Record<number, { label: string; type: NaiveUI.ThemeColor }> = {
   0: { label: '未接收', type: 'warning' },
-  1: { label: '已接收', type: 'success' },
+  1: { label: '已接收', type: 'success' }
 };
 
 const sendStatusInfo = computed((): { label: string; type: NaiveUI.ThemeColor } => {

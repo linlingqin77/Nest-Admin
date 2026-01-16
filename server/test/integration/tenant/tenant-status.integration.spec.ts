@@ -22,6 +22,25 @@ function uniqueId(): string {
   return Math.random().toString(36).substring(2, 8);
 }
 
+/**
+ * 辅助函数：检查租户是否可登录
+ * checkTenantCanLogin 返回 void，通过抛出异常表示不能登录
+ */
+async function checkCanLogin(
+  service: TenantLifecycleService,
+  tenantId: string,
+): Promise<{ canLogin: boolean; reason?: string }> {
+  try {
+    await service.checkTenantCanLogin(tenantId);
+    return { canLogin: true };
+  } catch (error: any) {
+    // BusinessException 的响应体是 { code, msg, data }
+    const response = error.getResponse?.();
+    const reason = typeof response === 'object' && response?.msg ? response.msg : error.message || '未知错误';
+    return { canLogin: false, reason };
+  }
+}
+
 describe('Tenant Status Integration Tests', () => {
   let app: INestApplication;
   let prisma: PrismaService;
@@ -88,7 +107,7 @@ describe('Tenant Status Integration Tests', () => {
         contactPhone: '13800138000',
         username: `dl${uid}`,
         password: 'Test123456',
-        status: StatusEnum.DISABLE,
+        status: StatusEnum.STOP,
       });
 
       const tenant = await prisma.sysTenant.findFirst({
@@ -106,9 +125,9 @@ describe('Tenant Status Integration Tests', () => {
       }
 
       // 检查租户是否可登录
-      const canLogin = await tenantLifecycleService.checkTenantCanLogin(tenant!.tenantId);
+      const canLogin = await checkCanLogin(tenantLifecycleService, tenant!.tenantId);
       expect(canLogin.canLogin).toBe(false);
-      expect(canLogin.reason).toContain('禁用');
+      expect(canLogin.reason).toContain('停用');
     });
 
     it('should allow login after re-enabling tenant', async () => {
@@ -122,7 +141,7 @@ describe('Tenant Status Integration Tests', () => {
         contactPhone: '13700137000',
         username: `re${uid}`,
         password: 'Test123456',
-        status: StatusEnum.DISABLE,
+        status: StatusEnum.STOP,
       });
 
       const tenant = await prisma.sysTenant.findFirst({
@@ -140,7 +159,7 @@ describe('Tenant Status Integration Tests', () => {
       }
 
       // 验证禁用状态不能登录
-      let canLogin = await tenantLifecycleService.checkTenantCanLogin(tenant!.tenantId);
+      let canLogin = await checkCanLogin(tenantLifecycleService, tenant!.tenantId);
       expect(canLogin.canLogin).toBe(false);
 
       // 启用租户
@@ -151,7 +170,7 @@ describe('Tenant Status Integration Tests', () => {
       });
 
       // 验证启用后可以登录
-      canLogin = await tenantLifecycleService.checkTenantCanLogin(tenant!.tenantId);
+      canLogin = await checkCanLogin(tenantLifecycleService, tenant!.tenantId);
       expect(canLogin.canLogin).toBe(true);
     });
   });
@@ -189,7 +208,7 @@ describe('Tenant Status Integration Tests', () => {
       }
 
       // 检查租户是否可登录
-      const canLogin = await tenantLifecycleService.checkTenantCanLogin(tenant!.tenantId);
+      const canLogin = await checkCanLogin(tenantLifecycleService, tenant!.tenantId);
       expect(canLogin.canLogin).toBe(false);
       expect(canLogin.reason).toContain('过期');
     });
@@ -226,7 +245,7 @@ describe('Tenant Status Integration Tests', () => {
       }
 
       // 检查租户是否可登录
-      const canLogin = await tenantLifecycleService.checkTenantCanLogin(tenant!.tenantId);
+      const canLogin = await checkCanLogin(tenantLifecycleService, tenant!.tenantId);
       expect(canLogin.canLogin).toBe(true);
     });
 
@@ -262,20 +281,21 @@ describe('Tenant Status Integration Tests', () => {
       }
 
       // 验证过期状态不能登录
-      let canLogin = await tenantLifecycleService.checkTenantCanLogin(tenant!.tenantId);
+      let canLogin = await checkCanLogin(tenantLifecycleService, tenant!.tenantId);
       expect(canLogin.canLogin).toBe(false);
 
-      // 延长过期时间
+      // 延长过期时间并重置状态为正常
       const newExpireTime = new Date();
       newExpireTime.setMonth(newExpireTime.getMonth() + 1);
       await tenantService.update({
         id: tenant!.id,
         tenantId: tenant!.tenantId,
         expireTime: newExpireTime,
+        status: StatusEnum.NORMAL, // 重置状态
       });
 
       // 验证延期后可以登录
-      canLogin = await tenantLifecycleService.checkTenantCanLogin(tenant!.tenantId);
+      canLogin = await checkCanLogin(tenantLifecycleService, tenant!.tenantId);
       expect(canLogin.canLogin).toBe(true);
     });
   });
@@ -311,7 +331,7 @@ describe('Tenant Status Integration Tests', () => {
       }
 
       // 检查租户是否可登录
-      const canLogin = await tenantLifecycleService.checkTenantCanLogin(tenant!.tenantId);
+      const canLogin = await checkCanLogin(tenantLifecycleService, tenant!.tenantId);
       expect(canLogin.canLogin).toBe(true);
     });
   });
@@ -331,7 +351,7 @@ describe('Tenant Status Integration Tests', () => {
         username: `bt${uid}`,
         password: 'Test123456',
         expireTime,
-        status: StatusEnum.DISABLE,
+        status: StatusEnum.STOP,
       });
 
       const tenant = await prisma.sysTenant.findFirst({
@@ -349,12 +369,12 @@ describe('Tenant Status Integration Tests', () => {
       }
 
       // 检查租户是否可登录
-      const canLogin = await tenantLifecycleService.checkTenantCanLogin(tenant!.tenantId);
+      const canLogin = await checkCanLogin(tenantLifecycleService, tenant!.tenantId);
       expect(canLogin.canLogin).toBe(false);
     });
 
     it('should return not found for non-existent tenant', async () => {
-      const canLogin = await tenantLifecycleService.checkTenantCanLogin('999999');
+      const canLogin = await checkCanLogin(tenantLifecycleService, '999999');
       expect(canLogin.canLogin).toBe(false);
       expect(canLogin.reason).toContain('不存在');
     });
@@ -402,7 +422,7 @@ describe('Tenant Status Integration Tests', () => {
         contactPhone: '13000130000',
         username: `un${uid}`,
         password: 'Test123456',
-        status: StatusEnum.DISABLE,
+        status: StatusEnum.STOP,
       });
 
       const tenant = await prisma.sysTenant.findFirst({

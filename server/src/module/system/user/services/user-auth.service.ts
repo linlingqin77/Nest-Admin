@@ -58,14 +58,14 @@ export class UserAuthService {
     if (!(data && bcrypt.compareSync(user.password, data.password))) {
       // 记录登录失败
       const securityStatus = await this.loginSecurityService.recordLoginFailure(user.userName);
-      
+
       if (securityStatus.isLocked) {
         return Result.fail(ResponseCode.ACCOUNT_LOCKED, `登录失败次数过多，账户已被锁定 15 分钟`);
       }
-      
+
       return Result.fail(
-        ResponseCode.BUSINESS_ERROR, 
-        `帐号或密码错误，还剩 ${securityStatus.remainingAttempts} 次尝试机会`
+        ResponseCode.BUSINESS_ERROR,
+        `帐号或密码错误，还剩 ${securityStatus.remainingAttempts} 次尝试机会`,
       );
     }
 
@@ -105,7 +105,7 @@ export class UserAuthService {
     const safeDept = userData.dept ?? null;
     const safeRoles = userData.roles ?? [];
     const safePosts = userData.posts ?? [];
-    
+
     // Build user object with deptName
     const userObj = {
       ...(userData as unknown as UserType['user']),
@@ -115,7 +115,7 @@ export class UserAuthService {
     };
     // Add deptName to user object
     Object.assign(userObj, { deptName: deptData?.deptName || '' });
-    
+
     const userInfo: Partial<UserType> = {
       browser: clientInfo.browser,
       ipaddr: clientInfo.ipaddr,

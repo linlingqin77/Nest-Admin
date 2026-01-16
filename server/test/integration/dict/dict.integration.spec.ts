@@ -30,11 +30,13 @@ describe('Dict Integration Tests', () => {
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api');
     app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1', prefix: 'v' });
-    app.useGlobalPipes(new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      transformOptions: { enableImplicitConversion: true },
-    }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        transformOptions: { enableImplicitConversion: true },
+      }),
+    );
 
     await app.init();
     redisService = app.get(RedisService);

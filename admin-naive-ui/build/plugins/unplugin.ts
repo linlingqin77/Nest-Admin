@@ -20,13 +20,13 @@ export function setupUnplugin(viteEnv: Env.ImportMeta) {
     Icons({
       compiler: 'vue3',
       customCollections: {
-        [collectionName]: FileSystemIconLoader(localIconPath, (svg) =>
-          svg.replace(/^<svg\s/, '<svg width="1em" height="1em" '),
-        ),
+        [collectionName]: FileSystemIconLoader(localIconPath, svg =>
+          svg.replace(/^<svg\s/, '<svg width="1em" height="1em" ')
+        )
       },
       scale: 1,
       defaultClass: 'inline-block',
-      autoInstall: true,
+      autoInstall: true
     }),
     Components({
       dts: 'src/typings/components.d.ts',
@@ -47,16 +47,24 @@ export function setupUnplugin(viteEnv: Env.ImportMeta) {
             'line-md',
             'ph',
             'majesticons',
-          ],
-        }),
-      ],
+            'heroicons',
+            'lucide',
+            'tabler',
+            'ri',
+            'codex',
+            'ic',
+            'ep',
+            'uil'
+          ]
+        })
+      ]
     }),
     createSvgIconsPlugin({
       iconDirs: [localIconPath],
       symbolId: `${VITE_ICON_LOCAL_PREFIX}-[dir]-[name]`,
       inject: 'body-last',
-      customDomId: '__SVG_ICON_LOCAL__',
-    }),
+      customDomId: '__SVG_ICON_LOCAL__'
+    })
   ];
 
   return plugins;

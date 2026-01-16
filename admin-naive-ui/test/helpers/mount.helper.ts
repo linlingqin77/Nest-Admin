@@ -7,10 +7,14 @@
  * @requirements 11.5, 11.6
  */
 
-import { mount, shallowMount, VueWrapper, MountingOptions } from '@vue/test-utils';
-import { createPinia, setActivePinia, Pinia } from 'pinia';
-import { createRouter, createWebHistory, Router, RouteRecordRaw } from 'vue-router';
-import { Component, h } from 'vue';
+import type { Component } from 'vue';
+import { h } from 'vue';
+import type { MountingOptions, VueWrapper } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
+import type { RouteRecordRaw, Router } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
+import type { Pinia } from 'pinia';
+import { createPinia, setActivePinia } from 'pinia';
 
 /**
  * 默认路由配置
@@ -19,23 +23,23 @@ const defaultRoutes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
-    component: { template: '<div>Home</div>' },
+    component: { template: '<div>Home</div>' }
   },
   {
     path: '/login',
     name: 'login',
-    component: { template: '<div>Login</div>' },
+    component: { template: '<div>Login</div>' }
   },
   {
     path: '/dashboard',
     name: 'dashboard',
-    component: { template: '<div>Dashboard</div>' },
+    component: { template: '<div>Dashboard</div>' }
   },
   {
     path: '/system/user',
     name: 'system-user',
-    component: { template: '<div>User Management</div>' },
-  },
+    component: { template: '<div>User Management</div>' }
+  }
 ];
 
 /**
@@ -53,7 +57,7 @@ export const createTestPinia = (): Pinia => {
 export const createTestRouter = (routes: RouteRecordRaw[] = defaultRoutes): Router => {
   return createRouter({
     history: createWebHistory(),
-    routes,
+    routes
   });
 };
 
@@ -89,7 +93,7 @@ export interface ComponentMountOptions<T = any> extends MountingOptions<T> {
  */
 export const mountComponent = async <T extends Component>(
   component: T,
-  options: ComponentMountOptions = {},
+  options: ComponentMountOptions = {}
 ): Promise<VueWrapper<any>> => {
   const {
     withPinia = false,
@@ -135,9 +139,9 @@ export const mountComponent = async <T extends Component>(
         NSpace: true,
         NIcon: true,
         NSpin: true,
-        ...stubs,
-      },
-    },
+        ...stubs
+      }
+    }
   } as any);
 
   return wrapper;
@@ -152,7 +156,7 @@ export const mountComponent = async <T extends Component>(
  */
 export const shallowMountComponent = async <T extends Component>(
   component: T,
-  options: ComponentMountOptions = {},
+  options: ComponentMountOptions = {}
 ): Promise<VueWrapper<any>> => {
   const {
     withPinia = false,
@@ -181,8 +185,8 @@ export const shallowMountComponent = async <T extends Component>(
     ...restOptions,
     global: {
       ...global,
-      plugins,
-    },
+      plugins
+    }
   } as any);
 };
 
@@ -192,12 +196,9 @@ export const shallowMountComponent = async <T extends Component>(
  * @param wrapper VueWrapper 实例
  * @param timeout 超时时间（毫秒）
  */
-export const waitForUpdate = async (
-  wrapper: VueWrapper<any>,
-  timeout = 100,
-): Promise<void> => {
+export const waitForUpdate = async (wrapper: VueWrapper<any>, timeout = 100): Promise<void> => {
   await wrapper.vm.$nextTick();
-  await new Promise((resolve) => setTimeout(resolve, timeout));
+  await new Promise(resolve => setTimeout(resolve, timeout));
 };
 
 /**
@@ -206,10 +207,7 @@ export const waitForUpdate = async (
  * @param wrapper VueWrapper 实例
  * @param formSelector 表单选择器
  */
-export const submitForm = async (
-  wrapper: VueWrapper<any>,
-  formSelector = 'form',
-): Promise<void> => {
+export const submitForm = async (wrapper: VueWrapper<any>, formSelector = 'form'): Promise<void> => {
   const form = wrapper.find(formSelector);
   await form.trigger('submit');
   await waitForUpdate(wrapper);
@@ -222,11 +220,7 @@ export const submitForm = async (
  * @param selector 输入框选择器
  * @param value 输入值
  */
-export const fillInput = async (
-  wrapper: VueWrapper<any>,
-  selector: string,
-  value: string,
-): Promise<void> => {
+export const fillInput = async (wrapper: VueWrapper<any>, selector: string, value: string): Promise<void> => {
   const input = wrapper.find(selector);
   await input.setValue(value);
   await waitForUpdate(wrapper);
@@ -238,10 +232,7 @@ export const fillInput = async (
  * @param wrapper VueWrapper 实例
  * @param selector 按钮选择器
  */
-export const clickButton = async (
-  wrapper: VueWrapper<any>,
-  selector: string,
-): Promise<void> => {
+export const clickButton = async (wrapper: VueWrapper<any>, selector: string): Promise<void> => {
   const button = wrapper.find(selector);
   await button.trigger('click');
   await waitForUpdate(wrapper);
@@ -255,5 +246,5 @@ export default {
   waitForUpdate,
   submitForm,
   fillInput,
-  clickButton,
+  clickButton
 };

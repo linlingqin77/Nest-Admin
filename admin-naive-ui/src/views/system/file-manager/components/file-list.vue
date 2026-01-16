@@ -1,31 +1,14 @@
-<template>
-  <div class="file-list-view">
-    <n-data-table
-      :columns="columns"
-      :data="fileList"
-      :loading="loading"
-      :row-key="(row: FileItem) => row.id"
-      :virtual-scroll="fileList.length > VIRTUAL_SCROLL_THRESHOLD"
-      :max-height="600"
-      v-model:checked-row-keys="checkedKeys"
-      remote
-      striped
-      @scroll="handleScroll"
-    />
-  </div>
-</template>
-
 <script setup lang="ts">
 import { computed, h } from 'vue';
-import { NDataTable, NEllipsis, NCheckbox, NIcon, useThemeVars } from 'naive-ui';
+import { NCheckbox, NDataTable, NEllipsis, NIcon, useThemeVars } from 'naive-ui';
 import type { DataTableColumns } from 'naive-ui';
 import {
+  FILE_ICON_SIZE,
   TABLE_ROW_HEIGHT,
   VIRTUAL_SCROLL_THRESHOLD,
-  FILE_ICON_SIZE,
-  formatFileSize,
   formatDate,
-  getFileIcon,
+  formatFileSize,
+  getFileIcon
 } from '../constants';
 
 export interface FileItem {
@@ -53,7 +36,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  loading: false,
+  loading: false
 });
 
 const emit = defineEmits<Emits>();
@@ -69,17 +52,17 @@ const columns = computed<DataTableColumns<FileItem>>(() => [
     type: 'selection',
     width: 48,
     cellProps: () => ({
-      class: 'checkbox-cell',
-    }),
+      class: 'checkbox-cell'
+    })
   },
   {
     title: '文件名',
     key: 'name',
     minWidth: 300,
     ellipsis: {
-      tooltip: true,
+      tooltip: true
     },
-    render: (row) => {
+    render: row => {
       const iconClass = getFileIcon(row.ext, row.type === 'folder');
       return h(
         'div',
@@ -90,33 +73,33 @@ const columns = computed<DataTableColumns<FileItem>>(() => [
           onContextmenu: (e: MouseEvent) => {
             e.preventDefault();
             emit('contextMenu', e, row);
-          },
+          }
         },
         [
           h('i', {
             class: `${iconClass} file-icon`,
             style: {
               fontSize: '24px',
-              color: row.type === 'folder' ? '#ffc107' : undefined,
-            },
+              color: row.type === 'folder' ? '#ffc107' : undefined
+            }
           }),
-          h(NEllipsis, { style: { flex: 1 } }, { default: () => row.name }),
-        ],
+          h(NEllipsis, { style: { flex: 1 } }, { default: () => row.name })
+        ]
       );
-    },
+    }
   },
   {
     title: '大小',
     key: 'size',
     width: 120,
-    render: (row) => (row.type === 'file' ? formatFileSize(row.size) : '-'),
+    render: row => (row.type === 'file' ? formatFileSize(row.size) : '-')
   },
   {
     title: '修改时间',
     key: 'updateTime',
     width: 180,
-    render: (row) => formatDate(row.updateTime || row.createTime),
-  },
+    render: row => formatDate(row.updateTime || row.createTime)
+  }
 ]);
 
 // 处理滚动
@@ -134,6 +117,23 @@ function handleScroll(event: Event) {
   }
 }
 </script>
+
+<template>
+  <div class="file-list-view">
+    <NDataTable
+      v-model:checked-row-keys="checkedKeys"
+      :columns="columns"
+      :data="fileList"
+      :loading="loading"
+      :row-key="(row: FileItem) => row.id"
+      :virtual-scroll="fileList.length > VIRTUAL_SCROLL_THRESHOLD"
+      :max-height="600"
+      remote
+      striped
+      @scroll="handleScroll"
+    />
+  </div>
+</template>
 
 <style scoped lang="scss">
 .file-list-view {

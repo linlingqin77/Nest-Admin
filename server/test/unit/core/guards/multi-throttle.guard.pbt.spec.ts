@@ -29,12 +29,14 @@ describe('MultiThrottleGuard Property-Based Tests', () => {
   // Simulated Redis storage for property testing
   let redisStorage: Map<string, { value: string; expireAt: number }>;
 
-  const createMockContext = (options: {
-    ip?: string;
-    userId?: number;
-    tenantId?: string;
-    headers?: Record<string, string>;
-  } = {}): ExecutionContext => {
+  const createMockContext = (
+    options: {
+      ip?: string;
+      userId?: number;
+      tenantId?: string;
+      headers?: Record<string, string>;
+    } = {},
+  ): ExecutionContext => {
     const { ip = '127.0.0.1', userId, tenantId, headers = {} } = options;
     return {
       switchToHttp: () => ({
@@ -413,11 +415,7 @@ describe('MultiThrottleGuard Property-Based Tests', () => {
           const result = await guard.checkLimit(key, config);
 
           // Property: Remaining time should be positive and <= TTL in seconds
-          return (
-            result.blocked === true &&
-            result.remaining > 0 &&
-            result.remaining <= ttlSeconds
-          );
+          return result.blocked === true && result.remaining > 0 && result.remaining <= ttlSeconds;
         },
       ),
       { numRuns: 100 },

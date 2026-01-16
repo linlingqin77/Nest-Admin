@@ -1,18 +1,30 @@
 import * as Lodash from 'lodash';
+
+/**
+ * NestJS Module 模板生成器
+ *
+ * 生成符合项目规范的 Module 代码
+ *
+ * Requirements: 13.2
+ */
 export const moduleTem = (options) => {
-  const { BusinessName, businessName } = options;
+  const { BusinessName, businessName, functionName, tableComment } = options;
+  const className = Lodash.upperFirst(BusinessName);
 
-  return `
-import { Global, Module } from '@nestjs/common';
-import { ${Lodash.upperFirst(BusinessName)}Service } from './${businessName}.service';
-import { ${Lodash.upperFirst(BusinessName)}Controller } from './${businessName}.controller';
+  return `import { Module } from '@nestjs/common';
+import { ${className}Service } from './${businessName}.service';
+import { ${className}Controller } from './${businessName}.controller';
 
-@Global()
+/**
+ * ${functionName || tableComment || businessName}模块
+ *
+ * @description 提供${functionName || tableComment || businessName}的相关功能
+ */
 @Module({
-  controllers: [${Lodash.upperFirst(BusinessName)}Controller],
-  providers: [${Lodash.upperFirst(BusinessName)}Service],
-  exports: [${Lodash.upperFirst(BusinessName)}Service],
+  controllers: [${className}Controller],
+  providers: [${className}Service],
+  exports: [${className}Service],
 })
-export class ${Lodash.upperFirst(BusinessName)}Module {}
-    `;
+export class ${className}Module {}
+`;
 };

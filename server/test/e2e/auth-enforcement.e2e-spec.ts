@@ -122,60 +122,56 @@ describe('Property 2: Authentication Enforcement', () => {
     );
 
     await fc.assert(
-      fc.asyncProperty(
-        endpointArbitrary,
-        invalidTokenArbitrary,
-        async (endpoint, invalidToken) => {
-          const fullPath = `${apiPrefix}${endpoint.path}`;
-          let response;
+      fc.asyncProperty(endpointArbitrary, invalidTokenArbitrary, async (endpoint, invalidToken) => {
+        const fullPath = `${apiPrefix}${endpoint.path}`;
+        let response;
 
-          // Make request based on method
-          switch (endpoint.method) {
-            case 'GET':
-              response = await helper
-                .getRequest()
-                .get(fullPath)
-                .set('Authorization', invalidToken ? `Bearer ${invalidToken}` : '');
-              break;
-            case 'POST':
-              response = await helper
-                .getRequest()
-                .post(fullPath)
-                .set('Authorization', invalidToken ? `Bearer ${invalidToken}` : '')
-                .send({});
-              break;
-            case 'PUT':
-              response = await helper
-                .getRequest()
-                .put(fullPath)
-                .set('Authorization', invalidToken ? `Bearer ${invalidToken}` : '')
-                .send({});
-              break;
-            case 'DELETE':
-              response = await helper
-                .getRequest()
-                .delete(fullPath)
-                .set('Authorization', invalidToken ? `Bearer ${invalidToken}` : '');
-              break;
-          }
+        // Make request based on method
+        switch (endpoint.method) {
+          case 'GET':
+            response = await helper
+              .getRequest()
+              .get(fullPath)
+              .set('Authorization', invalidToken ? `Bearer ${invalidToken}` : '');
+            break;
+          case 'POST':
+            response = await helper
+              .getRequest()
+              .post(fullPath)
+              .set('Authorization', invalidToken ? `Bearer ${invalidToken}` : '')
+              .send({});
+            break;
+          case 'PUT':
+            response = await helper
+              .getRequest()
+              .put(fullPath)
+              .set('Authorization', invalidToken ? `Bearer ${invalidToken}` : '')
+              .send({});
+            break;
+          case 'DELETE':
+            response = await helper
+              .getRequest()
+              .delete(fullPath)
+              .set('Authorization', invalidToken ? `Bearer ${invalidToken}` : '');
+            break;
+        }
 
-          // Property: Response should indicate authentication failure
-          // Accept both 401 (Unauthorized) and 403 (Forbidden) as valid auth failure responses
-          const isAuthFailure =
-            response.status === 401 ||
-            response.status === 403 ||
-            response.body.code === 401 ||
-            response.body.code === 403;
+        // Property: Response should indicate authentication failure
+        // Accept both 401 (Unauthorized) and 403 (Forbidden) as valid auth failure responses
+        const isAuthFailure =
+          response.status === 401 ||
+          response.status === 403 ||
+          response.body.code === 401 ||
+          response.body.code === 403;
 
-          if (!isAuthFailure) {
-            // Log failure details for debugging
-            console.log(`Auth enforcement failed for ${endpoint.method} ${fullPath}`);
-            console.log(`Status: ${response.status}, Body code: ${response.body.code}`);
-          }
+        if (!isAuthFailure) {
+          // Log failure details for debugging
+          console.log(`Auth enforcement failed for ${endpoint.method} ${fullPath}`);
+          console.log(`Status: ${response.status}, Body code: ${response.body.code}`);
+        }
 
-          return isAuthFailure;
-        },
-      ),
+        return isAuthFailure;
+      }),
       {
         numRuns: 100, // Run 100 iterations as per design requirements
         verbose: true,
@@ -190,7 +186,7 @@ describe('Property 2: Authentication Enforcement', () => {
   it('should allow access to protected endpoints with valid token', async () => {
     // Unlock account before testing
     await helper.unlockAccount('admin');
-    
+
     // Login to get a valid token
     const token = await helper.login();
     expect(token).toBeTruthy();

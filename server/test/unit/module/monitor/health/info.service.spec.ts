@@ -51,7 +51,6 @@ describe('InfoService', () => {
       expect(info.nodeVersion).toMatch(/^v\d+\.\d+\.\d+/);
     });
 
-
     it('should return valid startTime in ISO format', () => {
       const info = service.getInfo();
 

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, reactive, watch, ref } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { fetchGetTenantQuotaDetail, fetchUpdateTenantQuota } from '@/service/api/system/tenant';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'QuotaEditDrawer',
+  name: 'QuotaEditDrawer'
 });
 
 interface Props {
@@ -20,7 +20,7 @@ const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const loading = ref(false);
@@ -36,7 +36,7 @@ function createDefaultModel(): Model {
     tenantId: '',
     userQuota: 0,
     storageQuota: 0,
-    apiQuota: 0,
+    apiQuota: 0
   };
 }
 
@@ -78,7 +78,7 @@ async function handleSubmit() {
   }
 }
 
-watch(visible, (newVal) => {
+watch(visible, newVal => {
   if (newVal && props.rowData?.tenantId) {
     loadQuotaDetail(props.rowData.tenantId);
   } else {
@@ -103,12 +103,7 @@ watch(visible, (newVal) => {
           <NDivider>配额设置（-1表示不限制）</NDivider>
 
           <NFormItem label="用户数量配额" path="userQuota">
-            <NInputNumber
-              v-model:value="model.userQuota"
-              :min="-1"
-              placeholder="请输入用户数量配额"
-              class="w-full"
-            >
+            <NInputNumber v-model:value="model.userQuota" :min="-1" placeholder="请输入用户数量配额" class="w-full">
               <template #suffix>人</template>
             </NInputNumber>
           </NFormItem>
@@ -117,12 +112,7 @@ watch(visible, (newVal) => {
           </NFormItem>
 
           <NFormItem label="存储空间配额" path="storageQuota">
-            <NInputNumber
-              v-model:value="model.storageQuota"
-              :min="-1"
-              placeholder="请输入存储空间配额"
-              class="w-full"
-            >
+            <NInputNumber v-model:value="model.storageQuota" :min="-1" placeholder="请输入存储空间配额" class="w-full">
               <template #suffix>MB</template>
             </NInputNumber>
           </NFormItem>

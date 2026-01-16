@@ -191,9 +191,7 @@ describe('TenantService', () => {
       };
 
       (prisma.$transaction as jest.Mock).mockResolvedValue([[mockTenant], 1]);
-      (prisma.sysTenantPackage.findMany as jest.Mock).mockResolvedValue([
-        { packageId: 1, packageName: '基础套餐' },
-      ]);
+      (prisma.sysTenantPackage.findMany as jest.Mock).mockResolvedValue([{ packageId: 1, packageName: '基础套餐' }]);
 
       const result = await service.findAll(query as any);
 
@@ -411,9 +409,7 @@ describe('TenantService', () => {
         { tenantId: '100002', companyName: '公司2' },
       ];
 
-      const mockDictTypes = [
-        { dictId: 1, dictName: '性别', dictType: 'sys_user_sex', status: '0', remark: '' },
-      ];
+      const mockDictTypes = [{ dictId: 1, dictName: '性别', dictType: 'sys_user_sex', status: '0', remark: '' }];
 
       (prisma.sysTenant.findMany as jest.Mock).mockResolvedValue(mockTenants);
       (prisma.sysDictType.findMany as jest.Mock).mockResolvedValue(mockDictTypes);

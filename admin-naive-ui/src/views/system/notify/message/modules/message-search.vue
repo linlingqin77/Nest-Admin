@@ -3,7 +3,7 @@ import { useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'NotifyMessageSearch',
+  name: 'NotifyMessageSearch'
 });
 
 interface Emits {
@@ -19,7 +19,7 @@ const model = defineModel<Record<string, any>>('model', { required: true });
 
 const readStatusOptions = [
   { label: '未读', value: 'false' },
-  { label: '已读', value: 'true' },
+  { label: '已读', value: 'true' }
 ];
 
 async function reset() {

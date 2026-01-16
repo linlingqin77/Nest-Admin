@@ -5,9 +5,15 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CreateDeptRequestDto, CreateDeptResultResponseDto, UpdateDeptRequestDto, UpdateDeptResultResponseDto, DeptResponseDto, DeleteDeptResultResponseDto } from './types';
+import type {
+  CreateDeptRequestDto,
+  CreateDeptResultResponseDto,
+  DeleteDeptResultResponseDto,
+  DeptResponseDto,
+  UpdateDeptRequestDto,
+  UpdateDeptResultResponseDto
+} from './types';
 
 /**
  * 部门管理-创建
@@ -18,7 +24,7 @@ export function fetchDeptCreate(data: CreateDeptRequestDto) {
     method: 'POST',
     url: '/system/dept',
     data,
-    operationId: 'DeptController_create_v1',
+    operationId: 'DeptController_create_v1'
   });
 }
 
@@ -31,7 +37,7 @@ export function fetchDeptUpdate(data: UpdateDeptRequestDto) {
     method: 'PUT',
     url: '/system/dept',
     data,
-    operationId: 'DeptController_update_v1',
+    operationId: 'DeptController_update_v1'
   });
 }
 
@@ -44,7 +50,7 @@ export function fetchDeptFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/dept/list',
     params,
-    operationId: 'DeptController_findAll_v1',
+    operationId: 'DeptController_findAll_v1'
   });
 }
 
@@ -56,7 +62,7 @@ export function fetchDeptOptionselect() {
   return apiRequest<DeptResponseDto[]>({
     method: 'GET',
     url: '/system/dept/optionselect',
-    operationId: 'DeptController_optionselect_v1',
+    operationId: 'DeptController_optionselect_v1'
   });
 }
 
@@ -68,7 +74,7 @@ export function fetchDeptFindOne(id: string | number) {
   return apiRequest<DeptResponseDto>({
     method: 'GET',
     url: buildUrl('/system/dept/{id}', { id }),
-    operationId: 'DeptController_findOne_v1',
+    operationId: 'DeptController_findOne_v1'
   });
 }
 
@@ -80,7 +86,7 @@ export function fetchDeptRemove(id: string | number) {
   return apiRequest<DeleteDeptResultResponseDto>({
     method: 'DELETE',
     url: buildUrl('/system/dept/{id}', { id }),
-    operationId: 'DeptController_remove_v1',
+    operationId: 'DeptController_remove_v1'
   });
 }
 
@@ -92,6 +98,6 @@ export function fetchDeptFindListExclude(id: string | number) {
   return apiRequest<DeptResponseDto[]>({
     method: 'GET',
     url: buildUrl('/system/dept/list/exclude/{id}', { id }),
-    operationId: 'DeptController_findListExclude_v1',
+    operationId: 'DeptController_findListExclude_v1'
   });
 }

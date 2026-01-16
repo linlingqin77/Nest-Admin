@@ -5,9 +5,17 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { MenuResponseDto, CreateMenuRequestDto, CreateMenuResultResponseDto, UpdateMenuRequestDto, UpdateMenuResultResponseDto, MenuTreeResponseDto, RoleMenuTreeSelectResponseDto, DeleteMenuResultResponseDto } from './types';
+import type {
+  CreateMenuRequestDto,
+  CreateMenuResultResponseDto,
+  DeleteMenuResultResponseDto,
+  MenuResponseDto,
+  MenuTreeResponseDto,
+  RoleMenuTreeSelectResponseDto,
+  UpdateMenuRequestDto,
+  UpdateMenuResultResponseDto
+} from './types';
 
 /**
  * 菜单管理-获取路由
@@ -17,7 +25,7 @@ export function fetchMenuGetRouters() {
   return apiRequest<MenuResponseDto[]>({
     method: 'GET',
     url: '/system/menu/getRouters',
-    operationId: 'MenuController_getRouters_v1',
+    operationId: 'MenuController_getRouters_v1'
   });
 }
 
@@ -30,7 +38,7 @@ export function fetchMenuCreate(data: CreateMenuRequestDto) {
     method: 'POST',
     url: '/system/menu',
     data,
-    operationId: 'MenuController_create_v1',
+    operationId: 'MenuController_create_v1'
   });
 }
 
@@ -43,7 +51,7 @@ export function fetchMenuUpdate(data: UpdateMenuRequestDto) {
     method: 'PUT',
     url: '/system/menu',
     data,
-    operationId: 'MenuController_update_v1',
+    operationId: 'MenuController_update_v1'
   });
 }
 
@@ -56,7 +64,7 @@ export function fetchMenuFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/menu/list',
     params,
-    operationId: 'MenuController_findAll_v1',
+    operationId: 'MenuController_findAll_v1'
   });
 }
 
@@ -68,7 +76,7 @@ export function fetchMenuTreeSelect() {
   return apiRequest<MenuTreeResponseDto[]>({
     method: 'GET',
     url: '/system/menu/treeselect',
-    operationId: 'MenuController_treeSelect_v1',
+    operationId: 'MenuController_treeSelect_v1'
   });
 }
 
@@ -80,7 +88,7 @@ export function fetchMenuRoleMenuTreeselect(roleId: string | number) {
   return apiRequest<RoleMenuTreeSelectResponseDto>({
     method: 'GET',
     url: buildUrl('/system/menu/roleMenuTreeselect/{roleId}', { roleId }),
-    operationId: 'MenuController_roleMenuTreeselect_v1',
+    operationId: 'MenuController_roleMenuTreeselect_v1'
   });
 }
 
@@ -92,7 +100,7 @@ export function fetchMenuTenantPackageMenuTreeselect(packageId: string | number)
   return apiRequest<RoleMenuTreeSelectResponseDto>({
     method: 'GET',
     url: buildUrl('/system/menu/tenantPackageMenuTreeselect/{packageId}', { packageId }),
-    operationId: 'MenuController_tenantPackageMenuTreeselect_v1',
+    operationId: 'MenuController_tenantPackageMenuTreeselect_v1'
   });
 }
 
@@ -104,7 +112,7 @@ export function fetchMenuFindOne(menuId: string | number) {
   return apiRequest<MenuResponseDto>({
     method: 'GET',
     url: buildUrl('/system/menu/{menuId}', { menuId }),
-    operationId: 'MenuController_findOne_v1',
+    operationId: 'MenuController_findOne_v1'
   });
 }
 
@@ -116,7 +124,7 @@ export function fetchMenuRemove(menuId: string | number) {
   return apiRequest<DeleteMenuResultResponseDto>({
     method: 'DELETE',
     url: buildUrl('/system/menu/{menuId}', { menuId }),
-    operationId: 'MenuController_remove_v1',
+    operationId: 'MenuController_remove_v1'
   });
 }
 
@@ -128,6 +136,6 @@ export function fetchMenuCascadeRemove(menuIds: string | number) {
   return apiRequest<DeleteMenuResultResponseDto>({
     method: 'DELETE',
     url: buildUrl('/system/menu/cascade/{menuIds}', { menuIds }),
-    operationId: 'MenuController_cascadeRemove_v1',
+    operationId: 'MenuController_cascadeRemove_v1'
   });
 }

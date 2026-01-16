@@ -5,9 +5,15 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CreateTenantPackageRequestDto, UpdateTenantPackageRequestDto, TenantPackageListResponseDto, TenantPackageSelectResponseDto, TenantPackageResponseDto, ListTenantPackageRequestDto } from './types';
+import type {
+  CreateTenantPackageRequestDto,
+  ListTenantPackageRequestDto,
+  TenantPackageListResponseDto,
+  TenantPackageResponseDto,
+  TenantPackageSelectResponseDto,
+  UpdateTenantPackageRequestDto
+} from './types';
 
 /**
  * 租户套餐管理-创建
@@ -18,7 +24,7 @@ export function fetchTenantPackageCreate(data: CreateTenantPackageRequestDto) {
     method: 'POST',
     url: '/system/tenant/package',
     data,
-    operationId: 'TenantPackageController_create_v1',
+    operationId: 'TenantPackageController_create_v1'
   });
 }
 
@@ -31,7 +37,7 @@ export function fetchTenantPackageUpdate(data: UpdateTenantPackageRequestDto) {
     method: 'PUT',
     url: '/system/tenant/package',
     data,
-    operationId: 'TenantPackageController_update_v1',
+    operationId: 'TenantPackageController_update_v1'
   });
 }
 
@@ -44,7 +50,7 @@ export function fetchTenantPackageFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/tenant/package/list',
     params,
-    operationId: 'TenantPackageController_findAll_v1',
+    operationId: 'TenantPackageController_findAll_v1'
   });
 }
 
@@ -56,7 +62,7 @@ export function fetchTenantPackageSelectList() {
   return apiRequest<TenantPackageSelectResponseDto[]>({
     method: 'GET',
     url: '/system/tenant/package/selectList',
-    operationId: 'TenantPackageController_selectList_v1',
+    operationId: 'TenantPackageController_selectList_v1'
   });
 }
 
@@ -68,7 +74,7 @@ export function fetchTenantPackageFindOne(id: string | number) {
   return apiRequest<TenantPackageResponseDto>({
     method: 'GET',
     url: buildUrl('/system/tenant/package/{id}', { id }),
-    operationId: 'TenantPackageController_findOne_v1',
+    operationId: 'TenantPackageController_findOne_v1'
   });
 }
 
@@ -80,7 +86,7 @@ export function fetchTenantPackageRemove(ids: string | number) {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: buildUrl('/system/tenant/package/{ids}', { ids }),
-    operationId: 'TenantPackageController_remove_v1',
+    operationId: 'TenantPackageController_remove_v1'
   });
 }
 
@@ -93,6 +99,6 @@ export function fetchTenantPackageExport(data: ListTenantPackageRequestDto) {
     method: 'POST',
     url: '/system/tenant/package/export',
     data,
-    operationId: 'TenantPackageController_export_v1',
+    operationId: 'TenantPackageController_export_v1'
   });
 }

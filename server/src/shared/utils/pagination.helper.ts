@@ -1,5 +1,12 @@
 import { Prisma, PrismaClient } from '@prisma/client';
-import { CursorPaginationDto, CursorPaginationMeta, CursorPageResponseDto, PageQueryDto, PageResponseDto, SortOrder } from '../dto/base.dto';
+import {
+  CursorPaginationDto,
+  CursorPaginationMeta,
+  CursorPageResponseDto,
+  PageQueryDto,
+  PageResponseDto,
+  SortOrder,
+} from '../dto/base.dto';
 
 /**
  * Prisma 客户端类型（支持 PrismaClient 和 PrismaService）

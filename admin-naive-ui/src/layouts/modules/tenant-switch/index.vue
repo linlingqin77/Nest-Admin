@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import {
   fetchGetTenantSelectList,
-  fetchSwitchTenant,
-  fetchRestoreTenant,
   fetchGetTenantSwitchStatus,
+  fetchRestoreTenant,
+  fetchSwitchTenant
 } from '@/service/api/system/tenant';
 import { useAuthStore } from '@/store/modules/auth';
 
 defineOptions({
-  name: 'TenantSwitch',
+  name: 'TenantSwitch'
 });
 
 const authStore = useAuthStore();
@@ -104,13 +104,7 @@ onMounted(() => {
 <template>
   <template v-if="isSuperAdmin">
     <!-- Show current switched tenant indicator -->
-    <NTag
-      v-if="switchStatus?.isSwitched"
-      type="warning"
-      closable
-      class="mr-8px"
-      @close="handleRestoreTenant"
-    >
+    <NTag v-if="switchStatus?.isSwitched" type="warning" closable class="mr-8px" @close="handleRestoreTenant">
       <template #icon>
         <SvgIcon icon="material-symbols:swap-horiz" />
       </template>
@@ -138,13 +132,7 @@ onMounted(() => {
           切换租户
         </NTooltip>
       </template>
-      <NCard
-        size="small"
-        :bordered="false"
-        class="w-300px"
-        header-class="p-0"
-        :segmented="{ content: true }"
-      >
+      <NCard size="small" :bordered="false" class="w-300px" header-class="p-0" :segmented="{ content: true }">
         <template #header>
           <div class="flex items-center gap-8px">
             <SvgIcon icon="material-symbols:swap-horiz" />
@@ -157,16 +145,16 @@ onMounted(() => {
               <div
                 v-for="tenant in tenantList"
                 :key="tenant.tenantId"
-                class="tenant-item cursor-pointer p-12px hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-between"
+                class="tenant-item flex cursor-pointer items-center justify-between p-12px hover:bg-gray-100 dark:hover:bg-gray-800"
                 :class="{
-                  'bg-primary-50 dark:bg-primary-900': switchStatus?.currentTenantId === tenant.tenantId,
+                  'bg-primary-50 dark:bg-primary-900': switchStatus?.currentTenantId === tenant.tenantId
                 }"
                 @click="handleSwitchTenant(tenant.tenantId)"
               >
                 <div class="flex items-center gap-8px">
                   <SvgIcon icon="material-symbols:business-outline" class="text-16px text-gray-500" />
                   <div>
-                    <div class="font-medium text-14px">{{ tenant.companyName }}</div>
+                    <div class="text-14px font-medium">{{ tenant.companyName }}</div>
                     <div class="text-12px text-gray-400">{{ tenant.tenantId }}</div>
                   </div>
                 </div>

@@ -51,7 +51,6 @@ export class DeptLoader extends BaseLoader<number, SysDept> {
     return deptIds.map((id) => deptMap.get(id) ?? null);
   }
 
-
   /**
    * 批量加载部门及其子部门
    *

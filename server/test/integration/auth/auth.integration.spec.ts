@@ -195,9 +195,7 @@ describe('Auth Integration Tests', () => {
 
       // Login date should be updated
       if (beforeLogin?.loginDate) {
-        expect(afterLogin?.loginDate?.getTime()).toBeGreaterThanOrEqual(
-          beforeLogin.loginDate.getTime(),
-        );
+        expect(afterLogin?.loginDate?.getTime()).toBeGreaterThanOrEqual(beforeLogin.loginDate.getTime());
       } else {
         expect(afterLogin?.loginDate).toBeDefined();
       }

@@ -430,13 +430,47 @@ export const generatedRoutes: GeneratedRoute[] = [
       {
         name: 'tool_gen',
         path: '/tool/gen',
-        component: 'view.tool_gen',
         meta: {
           title: 'tool_gen',
           i18nKey: 'route.tool_gen',
           localIcon: 'menu-code',
           order: 2
-        }
+        },
+        children: [
+          {
+            name: 'tool_gen_datasource',
+            path: '/tool/gen/datasource',
+            component: 'view.tool_gen_datasource',
+            meta: {
+              title: 'tool_gen_datasource',
+              i18nKey: 'route.tool_gen_datasource',
+              icon: 'mdi:database-cog-outline',
+              order: 1
+            }
+          },
+          {
+            name: 'tool_gen_history',
+            path: '/tool/gen/history',
+            component: 'view.tool_gen_history',
+            meta: {
+              title: 'tool_gen_history',
+              i18nKey: 'route.tool_gen_history',
+              icon: 'mdi:history',
+              order: 3
+            }
+          },
+          {
+            name: 'tool_gen_template',
+            path: '/tool/gen/template',
+            component: 'view.tool_gen_template',
+            meta: {
+              title: 'tool_gen_template',
+              i18nKey: 'route.tool_gen_template',
+              icon: 'mdi:file-document-edit-outline',
+              order: 2
+            }
+          }
+        ]
       },
       {
         name: 'tool_swagger',

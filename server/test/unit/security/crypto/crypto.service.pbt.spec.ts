@@ -155,13 +155,10 @@ describe('CryptoService Property-Based Tests', () => {
   describe('Property 3: AES Key Generation', () => {
     it('Generated AES keys should have length 16', () => {
       fc.assert(
-        fc.property(
-          fc.constant(null),
-          () => {
-            const key = service.generateAesKey();
-            return key.length === 16;
-          },
-        ),
+        fc.property(fc.constant(null), () => {
+          const key = service.generateAesKey();
+          return key.length === 16;
+        }),
         { numRuns: 100 },
       );
     });
@@ -169,17 +166,14 @@ describe('CryptoService Property-Based Tests', () => {
     it('Generated AES keys should be unique', () => {
       const keys = new Set<string>();
       fc.assert(
-        fc.property(
-          fc.constant(null),
-          () => {
-            const key = service.generateAesKey();
-            if (keys.has(key)) {
-              return false; // Duplicate key found
-            }
-            keys.add(key);
-            return true;
-          },
-        ),
+        fc.property(fc.constant(null), () => {
+          const key = service.generateAesKey();
+          if (keys.has(key)) {
+            return false; // Duplicate key found
+          }
+          keys.add(key);
+          return true;
+        }),
         { numRuns: 100 },
       );
     });
@@ -247,7 +241,7 @@ describe('CryptoService Property-Based Tests', () => {
             if (key1 === key2) return true;
 
             const encrypted = service.aesEncrypt(plaintext, key1);
-            
+
             try {
               const decrypted = service.aesDecrypt(encrypted, key2);
               // If decryption succeeds, result should be different from original
@@ -284,15 +278,15 @@ describe('CryptoService Property-Based Tests', () => {
           (data) => {
             // Generate a key
             const aesKey = service.generateAesKey();
-            
+
             // Encrypt data
             const jsonData = JSON.stringify(data);
             const encryptedData = service.aesEncrypt(jsonData, aesKey);
-            
+
             // Decrypt data
             const decryptedJson = service.aesDecrypt(encryptedData, aesKey);
             const decrypted = JSON.parse(decryptedJson);
-            
+
             return JSON.stringify(decrypted) === JSON.stringify(data);
           },
         ),
@@ -302,21 +296,18 @@ describe('CryptoService Property-Based Tests', () => {
 
     it('RSA encrypt AES key then decrypt should preserve key for hybrid flow', () => {
       fc.assert(
-        fc.property(
-          fc.constant(null),
-          () => {
-            // Generate AES key
-            const aesKey = service.generateAesKey();
-            
-            // RSA encrypt the key
-            const encryptedKey = service.rsaEncrypt(aesKey);
-            
-            // RSA decrypt the key
-            const decryptedKey = service.rsaDecrypt(encryptedKey);
-            
-            return decryptedKey === aesKey;
-          },
-        ),
+        fc.property(fc.constant(null), () => {
+          // Generate AES key
+          const aesKey = service.generateAesKey();
+
+          // RSA encrypt the key
+          const encryptedKey = service.rsaEncrypt(aesKey);
+
+          // RSA decrypt the key
+          const decryptedKey = service.rsaDecrypt(encryptedKey);
+
+          return decryptedKey === aesKey;
+        }),
         { numRuns: 50 },
       );
     });

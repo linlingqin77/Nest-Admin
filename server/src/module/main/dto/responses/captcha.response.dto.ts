@@ -35,6 +35,10 @@ export class CaptchaCodeResponseDto {
   uuid?: string;
 
   @Expose()
-  @ApiProperty({ description: '验证码图片(Base64)', example: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...', required: false })
+  @ApiProperty({
+    description: '验证码图片(Base64)',
+    example: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...',
+    required: false,
+  })
   img?: string;
 }

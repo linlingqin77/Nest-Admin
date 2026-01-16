@@ -65,13 +65,27 @@ export class CreateUserDto {
   @IsArray()
   roleIds?: Array<number>;
 
-  @ApiProperty({ enum: StatusEnum, enumName: 'StatusEnum', enumSchema: StatusEnumSchema, required: false, description: '用户状态（0正常 1停用）', example: '0' })
+  @ApiProperty({
+    enum: StatusEnum,
+    enumName: 'StatusEnum',
+    enumSchema: StatusEnumSchema,
+    required: false,
+    description: '用户状态（0正常 1停用）',
+    example: '0',
+  })
   @IsOptional()
   @IsString()
   @IsEnum(StatusEnum)
   status?: string;
 
-  @ApiProperty({ enum: SexEnum, enumName: 'SexEnum', enumSchema: SexEnumSchema, required: false, description: '用户性别（0男 1女 2未知）', example: '0' })
+  @ApiProperty({
+    enum: SexEnum,
+    enumName: 'SexEnum',
+    enumSchema: SexEnumSchema,
+    required: false,
+    description: '用户性别（0男 1女 2未知）',
+    example: '0',
+  })
   @IsOptional()
   @IsString()
   @IsEnum(SexEnum)

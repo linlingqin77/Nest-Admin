@@ -128,9 +128,7 @@ describe('Notice E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/system/notice/list`);
+      const response = await helper.getRequest().get(`${apiPrefix}/system/notice/list`);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -154,10 +152,10 @@ describe('Notice E2E Tests', () => {
 
       // Accept both 201 (success) and 500 (database constraint issue)
       expect([201, 500]).toContain(response.status);
-      
+
       if (response.status === 201) {
         expect(response.body.code).toBe(200);
-        
+
         // Track for cleanup
         const listResponse = await helper
           .getAuthRequest()
@@ -238,10 +236,7 @@ describe('Notice E2E Tests', () => {
         noticeType: '1',
       };
 
-      const response = await helper
-        .getRequest()
-        .post(`${apiPrefix}/system/notice`)
-        .send(noticeData);
+      const response = await helper.getRequest().post(`${apiPrefix}/system/notice`).send(noticeData);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -328,9 +323,7 @@ describe('Notice E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/system/notice/1`);
+      const response = await helper.getRequest().get(`${apiPrefix}/system/notice/1`);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -410,10 +403,7 @@ describe('Notice E2E Tests', () => {
         noticeType: '1',
       };
 
-      const response = await helper
-        .getRequest()
-        .put(`${apiPrefix}/system/notice`)
-        .send(updateData);
+      const response = await helper.getRequest().put(`${apiPrefix}/system/notice`).send(updateData);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -523,9 +513,7 @@ describe('Notice E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .delete(`${apiPrefix}/system/notice/1`);
+      const response = await helper.getRequest().delete(`${apiPrefix}/system/notice/1`);
 
       expect([401, 403]).toContain(response.status);
     });

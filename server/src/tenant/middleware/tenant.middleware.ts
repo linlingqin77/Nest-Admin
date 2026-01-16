@@ -111,10 +111,7 @@ export function setTenantIdForUpsert<T extends PrismaQueryArgs>(model: string, a
  * 对于 findUnique 操作，由于无法在 where 条件中添加租户过滤，
  * 需要在查询结果返回后验证数据是否属于当前租户
  */
-export function validateTenantOwnership<T extends Record<string, unknown> | null>(
-  model: string,
-  result: T,
-): T | null {
+export function validateTenantOwnership<T extends Record<string, unknown> | null>(model: string, result: T): T | null {
   if (!result || !hasTenantField(model)) {
     return result;
   }
@@ -173,10 +170,7 @@ const CREATE_ACTIONS = ['create'] as const;
  * @returns Prisma 中间件
  */
 export function createTenantMiddleware(): Prisma.Middleware {
-  return async (
-    params: Prisma.MiddlewareParams,
-    next: (params: Prisma.MiddlewareParams) => Promise<unknown>,
-  ) => {
+  return async (params: Prisma.MiddlewareParams, next: (params: Prisma.MiddlewareParams) => Promise<unknown>) => {
     const { model, action, args } = params;
 
     if (!model) {

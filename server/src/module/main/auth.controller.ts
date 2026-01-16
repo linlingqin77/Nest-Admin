@@ -230,7 +230,10 @@ export class AuthController {
   @NotRequireAuth()
   @ApiThrottle({ ttl: 60000, limit: 5 }) // 每分钟最多 5 次注册尝试
   @ApiHeader({ name: 'tenant-id', description: '租户ID', required: false })
-  async register(@Body() registerDto: AuthRegisterRequestDto, @Headers('tenant-id') headerTenantId?: string): Promise<Result> {
+  async register(
+    @Body() registerDto: AuthRegisterRequestDto,
+    @Headers('tenant-id') headerTenantId?: string,
+  ): Promise<Result> {
     // 验证密码一致性
     if (registerDto.password !== registerDto.confirmPassword) {
       return Result.fail(ResponseCode.BAD_REQUEST, '两次输入的密码不一致');

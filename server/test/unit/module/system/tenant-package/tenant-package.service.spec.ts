@@ -38,10 +38,7 @@ describe('TenantPackageService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        TenantPackageService,
-        { provide: PrismaService, useValue: prismaMock },
-      ],
+      providers: [TenantPackageService, { provide: PrismaService, useValue: prismaMock }],
     }).compile();
 
     service = module.get<TenantPackageService>(TenantPackageService);
@@ -50,7 +47,6 @@ describe('TenantPackageService', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-
 
   describe('create', () => {
     it('should create tenant package successfully', async () => {
@@ -75,9 +71,7 @@ describe('TenantPackageService', () => {
     it('should throw error when package name exists', async () => {
       prismaMock.sysTenantPackage.findFirst.mockResolvedValue({ packageId: 1 });
 
-      await expect(
-        service.create({ packageName: 'Existing' }),
-      ).rejects.toThrow(BusinessException);
+      await expect(service.create({ packageName: 'Existing' })).rejects.toThrow(BusinessException);
     });
 
     it('should handle empty menuIds', async () => {
@@ -128,9 +122,7 @@ describe('TenantPackageService', () => {
 
   describe('selectList', () => {
     it('should return select options', async () => {
-      prismaMock.sysTenantPackage.findMany.mockResolvedValue([
-        { packageId: 1, packageName: 'Basic' },
-      ]);
+      prismaMock.sysTenantPackage.findMany.mockResolvedValue([{ packageId: 1, packageName: 'Basic' }]);
 
       const result = await service.selectList();
 
@@ -179,9 +171,7 @@ describe('TenantPackageService', () => {
     it('should throw error when package not found', async () => {
       prismaMock.sysTenantPackage.findUnique.mockResolvedValue(null);
 
-      await expect(
-        service.update({ packageId: 999 }),
-      ).rejects.toThrow(BusinessException);
+      await expect(service.update({ packageId: 999 })).rejects.toThrow(BusinessException);
     });
 
     it('should throw error when new name already exists', async () => {
@@ -194,9 +184,7 @@ describe('TenantPackageService', () => {
         packageName: 'Pro',
       });
 
-      await expect(
-        service.update({ packageId: 1, packageName: 'Pro' }),
-      ).rejects.toThrow(BusinessException);
+      await expect(service.update({ packageId: 1, packageName: 'Pro' })).rejects.toThrow(BusinessException);
     });
   });
 

@@ -83,11 +83,7 @@ export function CircuitBreakerMeta(options?: CircuitBreakerDecoratorOptions): Me
 export function CircuitBreaker(options?: CircuitBreakerDecoratorOptions): MethodDecorator {
   const injectCircuitBreaker = Inject(CircuitBreakerService);
 
-  return function (
-    target: object,
-    propertyKey: string | symbol,
-    descriptor: PropertyDescriptor,
-  ): PropertyDescriptor {
+  return function (target: object, propertyKey: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor {
     // 注入 CircuitBreakerService
     injectCircuitBreaker(target, 'circuitBreakerService');
 

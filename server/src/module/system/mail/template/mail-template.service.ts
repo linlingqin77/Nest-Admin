@@ -3,7 +3,12 @@ import { Prisma } from '@prisma/client';
 import { Result } from 'src/shared/response';
 import { DelFlagEnum } from 'src/shared/enums/index';
 import { toDtoList } from 'src/shared/utils/index';
-import { CreateMailTemplateDto, UpdateMailTemplateDto, ListMailTemplateDto, MailTemplateResponseDto } from './dto/index';
+import {
+  CreateMailTemplateDto,
+  UpdateMailTemplateDto,
+  ListMailTemplateDto,
+  MailTemplateResponseDto,
+} from './dto/index';
 import { PrismaService } from 'src/infrastructure/prisma';
 import { MailTemplateRepository } from './mail-template.repository';
 import { MailAccountRepository } from '../account/mail-account.repository';

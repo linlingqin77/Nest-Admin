@@ -83,7 +83,11 @@ describe('TokenBlacklistService Property-Based Tests', () => {
           async (userId, initialVersion, passwordChangeCount) => {
             // Setup: Set initial token version
             if (initialVersion > 0) {
-              await redisService.set(`user_token_version:${userId}`, initialVersion.toString(), 7 * 24 * 60 * 60 * 1000);
+              await redisService.set(
+                `user_token_version:${userId}`,
+                initialVersion.toString(),
+                7 * 24 * 60 * 60 * 1000,
+              );
             }
 
             // Get the initial version

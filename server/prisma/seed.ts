@@ -20,7 +20,7 @@ async function main() {
       {
         packageId: 1,
         packageName: '基础套餐',
-        menuIds: '1,2,3,4,100,101,102,103,104,105,106,107,108,109,110,112,113,114,115,116,117,118,119,120,500,501,1000,1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016,1017,1018,1019,1020,1021,1022,1023,1024,1025,1026,1027,1028,1029,1030,1031,1032,1033,1034,1035,1036,1037,1038,1039,1040,1041,1042,1043,1044,1045,1046,1047,1048,1049,1050,1051,1052,1053,1054,1055,1056,1057,1058,1059,1060,1061,1062,1063,1064,1065,1066,1067,1068,1069,1070,1071,1072,1073,1074,1075,1076,1077,1078',
+        menuIds: '1,2,3,4,100,101,102,103,104,105,106,107,108,109,110,112,113,114,115,116,117,118,119,120,500,501,1000,1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016,1017,1018,1019,1020,1021,1022,1023,1024,1025,1026,1027,1028,1029,1030,1031,1032,1033,1034,1035,1036,1037,1038,1039,1040,1041,1042,1043,1044,1045,1046,1047,1048,1049,1050,1051,1052,1053,1054,1055,1056,1057,1058,1059,1060,1061,1062,1063,1064,1065,1066,1067,1068,1069,1070,1071,1072,1073,1074,1075,1076,1077,1078,1079,1080,1081,1082,1083,1084,1085,1086,1087,1088,1089,1090,1091,1092,1093,1094,1095',
         menuCheckStrictly: true,
         status: '0',
         delFlag: '0',
@@ -3623,6 +3623,400 @@ async function main() {
         remark: '',
         delFlag: '0',
       },
+      // 数据源管理菜单
+      {
+        menuId: 1079,
+        tenantId: '000000',
+        menuName: '数据源管理',
+        parentId: 3,
+        orderNum: 4,
+        path: 'gen/datasource',
+        component: 'tool/gen/datasource/index',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'C',
+        visible: '0',
+        status: '0',
+        perms: 'tool:datasource:list',
+        icon: 'database',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '数据源管理菜单',
+        delFlag: '0',
+      },
+      {
+        menuId: 1080,
+        tenantId: '000000',
+        menuName: '数据源查询',
+        parentId: 1079,
+        orderNum: 1,
+        path: '#',
+        component: '',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'F',
+        visible: '0',
+        status: '0',
+        perms: 'tool:datasource:query',
+        icon: '#',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '',
+        delFlag: '0',
+      },
+      {
+        menuId: 1081,
+        tenantId: '000000',
+        menuName: '数据源新增',
+        parentId: 1079,
+        orderNum: 2,
+        path: '#',
+        component: '',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'F',
+        visible: '0',
+        status: '0',
+        perms: 'tool:datasource:add',
+        icon: '#',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '',
+        delFlag: '0',
+      },
+      {
+        menuId: 1082,
+        tenantId: '000000',
+        menuName: '数据源修改',
+        parentId: 1079,
+        orderNum: 3,
+        path: '#',
+        component: '',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'F',
+        visible: '0',
+        status: '0',
+        perms: 'tool:datasource:edit',
+        icon: '#',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '',
+        delFlag: '0',
+      },
+      {
+        menuId: 1083,
+        tenantId: '000000',
+        menuName: '数据源删除',
+        parentId: 1079,
+        orderNum: 4,
+        path: '#',
+        component: '',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'F',
+        visible: '0',
+        status: '0',
+        perms: 'tool:datasource:remove',
+        icon: '#',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '',
+        delFlag: '0',
+      },
+      {
+        menuId: 1084,
+        tenantId: '000000',
+        menuName: '连接测试',
+        parentId: 1079,
+        orderNum: 5,
+        path: '#',
+        component: '',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'F',
+        visible: '0',
+        status: '0',
+        perms: 'tool:datasource:test',
+        icon: '#',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '',
+        delFlag: '0',
+      },
+      // 模板管理菜单
+      {
+        menuId: 1085,
+        tenantId: '000000',
+        menuName: '模板管理',
+        parentId: 3,
+        orderNum: 5,
+        path: 'gen/template',
+        component: 'tool/gen/template/index',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'C',
+        visible: '0',
+        status: '0',
+        perms: 'tool:template:list',
+        icon: 'documentation',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '模板管理菜单',
+        delFlag: '0',
+      },
+      {
+        menuId: 1086,
+        tenantId: '000000',
+        menuName: '模板查询',
+        parentId: 1085,
+        orderNum: 1,
+        path: '#',
+        component: '',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'F',
+        visible: '0',
+        status: '0',
+        perms: 'tool:template:query',
+        icon: '#',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '',
+        delFlag: '0',
+      },
+      {
+        menuId: 1087,
+        tenantId: '000000',
+        menuName: '模板新增',
+        parentId: 1085,
+        orderNum: 2,
+        path: '#',
+        component: '',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'F',
+        visible: '0',
+        status: '0',
+        perms: 'tool:template:add',
+        icon: '#',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '',
+        delFlag: '0',
+      },
+      {
+        menuId: 1088,
+        tenantId: '000000',
+        menuName: '模板修改',
+        parentId: 1085,
+        orderNum: 3,
+        path: '#',
+        component: '',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'F',
+        visible: '0',
+        status: '0',
+        perms: 'tool:template:edit',
+        icon: '#',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '',
+        delFlag: '0',
+      },
+      {
+        menuId: 1089,
+        tenantId: '000000',
+        menuName: '模板删除',
+        parentId: 1085,
+        orderNum: 4,
+        path: '#',
+        component: '',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'F',
+        visible: '0',
+        status: '0',
+        perms: 'tool:template:remove',
+        icon: '#',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '',
+        delFlag: '0',
+      },
+      {
+        menuId: 1090,
+        tenantId: '000000',
+        menuName: '模板导入',
+        parentId: 1085,
+        orderNum: 5,
+        path: '#',
+        component: '',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'F',
+        visible: '0',
+        status: '0',
+        perms: 'tool:template:import',
+        icon: '#',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '',
+        delFlag: '0',
+      },
+      {
+        menuId: 1091,
+        tenantId: '000000',
+        menuName: '模板导出',
+        parentId: 1085,
+        orderNum: 6,
+        path: '#',
+        component: '',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'F',
+        visible: '0',
+        status: '0',
+        perms: 'tool:template:export',
+        icon: '#',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '',
+        delFlag: '0',
+      },
+      // 生成历史菜单
+      {
+        menuId: 1092,
+        tenantId: '000000',
+        menuName: '生成历史',
+        parentId: 3,
+        orderNum: 6,
+        path: 'gen/history',
+        component: 'tool/gen/history/index',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'C',
+        visible: '0',
+        status: '0',
+        perms: 'tool:history:list',
+        icon: 'time',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '生成历史菜单',
+        delFlag: '0',
+      },
+      {
+        menuId: 1093,
+        tenantId: '000000',
+        menuName: '历史查询',
+        parentId: 1092,
+        orderNum: 1,
+        path: '#',
+        component: '',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'F',
+        visible: '0',
+        status: '0',
+        perms: 'tool:history:query',
+        icon: '#',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '',
+        delFlag: '0',
+      },
+      {
+        menuId: 1094,
+        tenantId: '000000',
+        menuName: '历史删除',
+        parentId: 1092,
+        orderNum: 2,
+        path: '#',
+        component: '',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'F',
+        visible: '0',
+        status: '0',
+        perms: 'tool:history:remove',
+        icon: '#',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '',
+        delFlag: '0',
+      },
+      {
+        menuId: 1095,
+        tenantId: '000000',
+        menuName: '历史下载',
+        parentId: 1092,
+        orderNum: 3,
+        path: '#',
+        component: '',
+        query: '',
+        isFrame: '1',
+        isCache: '0',
+        menuType: 'F',
+        visible: '0',
+        status: '0',
+        perms: 'tool:history:download',
+        icon: '#',
+        createBy: 'admin',
+        createTime: new Date('2025-02-28 08:52:10'),
+        updateBy: '',
+        updateTime: null,
+        remark: '',
+        delFlag: '0',
+      },
     ],
     skipDuplicates: true,
   });
@@ -4257,6 +4651,77 @@ async function main() {
         roleId: 2,
         menuId: 1078,
       },
+      // 数据源管理菜单权限
+      {
+        roleId: 2,
+        menuId: 1079,
+      },
+      {
+        roleId: 2,
+        menuId: 1080,
+      },
+      {
+        roleId: 2,
+        menuId: 1081,
+      },
+      {
+        roleId: 2,
+        menuId: 1082,
+      },
+      {
+        roleId: 2,
+        menuId: 1083,
+      },
+      {
+        roleId: 2,
+        menuId: 1084,
+      },
+      // 模板管理菜单权限
+      {
+        roleId: 2,
+        menuId: 1085,
+      },
+      {
+        roleId: 2,
+        menuId: 1086,
+      },
+      {
+        roleId: 2,
+        menuId: 1087,
+      },
+      {
+        roleId: 2,
+        menuId: 1088,
+      },
+      {
+        roleId: 2,
+        menuId: 1089,
+      },
+      {
+        roleId: 2,
+        menuId: 1090,
+      },
+      {
+        roleId: 2,
+        menuId: 1091,
+      },
+      // 生成历史菜单权限
+      {
+        roleId: 2,
+        menuId: 1092,
+      },
+      {
+        roleId: 2,
+        menuId: 1093,
+      },
+      {
+        roleId: 2,
+        menuId: 1094,
+      },
+      {
+        roleId: 2,
+        menuId: 1095,
+      },
       {
         roleId: 3,
         menuId: 1,
@@ -4473,6 +4938,33 @@ async function main() {
         roleId: 3,
         menuId: 1076,
       },
+      // 数据源管理菜单权限 (只读)
+      {
+        roleId: 3,
+        menuId: 1079,
+      },
+      {
+        roleId: 3,
+        menuId: 1080,
+      },
+      // 模板管理菜单权限 (只读)
+      {
+        roleId: 3,
+        menuId: 1085,
+      },
+      {
+        roleId: 3,
+        menuId: 1086,
+      },
+      // 生成历史菜单权限 (只读)
+      {
+        roleId: 3,
+        menuId: 1092,
+      },
+      {
+        roleId: 3,
+        menuId: 1093,
+      },
     ],
     skipDuplicates: true,
   });
@@ -4515,7 +5007,334 @@ async function main() {
     skipDuplicates: true,
   });
 
+  // 导入代码生成器模板种子数据
+  await seedGenTemplates();
+
   console.log('种子数据导入完成!');
+}
+
+// 代码生成器模板种子数据
+async function seedGenTemplates() {
+  console.log('开始导入代码生成器模板种子数据...');
+
+  // NestJS Controller 模板
+  const nestjsControllerTemplate = `import { Controller, Get, Post, Put, Delete, Query, Body, Param } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { RequirePermission } from '@/core/decorators';
+import { \\\${className}Service } from './\\\${businessName}.service';
+import { Create\\\${className}Dto, Update\\\${className}Dto, List\\\${className}Dto } from './dto';
+
+@ApiTags('\\\${functionName}')
+@Controller('\\\${moduleName}/\\\${businessName}')
+@ApiBearerAuth('Authorization')
+export class \\\${className}Controller {
+  constructor(private readonly \\\${businessName}Service: \\\${className}Service) {}
+
+  @Get()
+  @ApiOperation({ summary: '获取\\\${functionName}列表' })
+  @RequirePermission('\\\${moduleName}:\\\${businessName}:list')
+  async list(@Query() query: List\\\${className}Dto) {
+    return this.\\\${businessName}Service.findAll(query);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: '获取\\\${functionName}详情' })
+  @RequirePermission('\\\${moduleName}:\\\${businessName}:query')
+  async getById(@Param('id') id: number) {
+    return this.\\\${businessName}Service.findById(id);
+  }
+
+  @Post()
+  @ApiOperation({ summary: '创建\\\${functionName}' })
+  @RequirePermission('\\\${moduleName}:\\\${businessName}:add')
+  async create(@Body() dto: Create\\\${className}Dto) {
+    return this.\\\${businessName}Service.create(dto);
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: '更新\\\${functionName}' })
+  @RequirePermission('\\\${moduleName}:\\\${businessName}:edit')
+  async update(@Param('id') id: number, @Body() dto: Update\\\${className}Dto) {
+    return this.\\\${businessName}Service.update(id, dto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: '删除\\\${functionName}' })
+  @RequirePermission('\\\${moduleName}:\\\${businessName}:remove')
+  async delete(@Param('id') id: number) {
+    return this.\\\${businessName}Service.delete(id);
+  }
+}`;
+
+  // NestJS Service 模板
+  const nestjsServiceTemplate = `import { Injectable, Logger } from '@nestjs/common';
+import { PrismaService } from '@/infrastructure/prisma';
+import { Result, ResponseCode } from '@/shared/response';
+import { Create\\\${className}Dto, Update\\\${className}Dto, List\\\${className}Dto } from './dto';
+
+@Injectable()
+export class \\\${className}Service {
+  private readonly logger = new Logger(\\\${className}Service.name);
+
+  constructor(private readonly prisma: PrismaService) {}
+
+  async findAll(query: List\\\${className}Dto) {
+    const { skip, take, pageNum, pageSize } = query.toPaginationParams();
+    const where = this.buildWhereCondition(query);
+
+    const [rows, total] = await Promise.all([
+      this.prisma.\\\${tableName}.findMany({ where, skip, take, orderBy: query.getOrderBy('createTime') }),
+      this.prisma.\\\${tableName}.count({ where }),
+    ]);
+
+    return Result.page(rows, total, pageNum, pageSize);
+  }
+
+  async findById(id: number) {
+    const data = await this.prisma.\\\${tableName}.findUnique({ where: { \\\${primaryKey}: id } });
+    if (!data) return Result.fail(ResponseCode.DATA_NOT_FOUND, '数据不存在');
+    return Result.ok(data);
+  }
+
+  async create(dto: Create\\\${className}Dto) {
+    try {
+      const data = await this.prisma.\\\${tableName}.create({ data: dto });
+      return Result.ok(data, '创建成功');
+    } catch (error) {
+      this.logger.error('创建失败', error);
+      return Result.fail(ResponseCode.OPERATION_FAILED, '创建失败');
+    }
+  }
+
+  async update(id: number, dto: Update\\\${className}Dto) {
+    const exists = await this.prisma.\\\${tableName}.findUnique({ where: { \\\${primaryKey}: id } });
+    if (!exists) return Result.fail(ResponseCode.DATA_NOT_FOUND, '数据不存在');
+    const data = await this.prisma.\\\${tableName}.update({ where: { \\\${primaryKey}: id }, data: dto });
+    return Result.ok(data, '更新成功');
+  }
+
+  async delete(id: number) {
+    const exists = await this.prisma.\\\${tableName}.findUnique({ where: { \\\${primaryKey}: id } });
+    if (!exists) return Result.fail(ResponseCode.DATA_NOT_FOUND, '数据不存在');
+    await this.prisma.\\\${tableName}.delete({ where: { \\\${primaryKey}: id } });
+    return Result.ok(null, '删除成功');
+  }
+
+  private buildWhereCondition(query: List\\\${className}Dto) {
+    const where: any = { delFlag: '0' };
+    return where;
+  }
+}`;
+
+  // NestJS Module 模板
+  const nestjsModuleTemplate = `import { Module } from '@nestjs/common';
+import { \\\${className}Controller } from './\\\${businessName}.controller';
+import { \\\${className}Service } from './\\\${businessName}.service';
+
+@Module({
+  controllers: [\\\${className}Controller],
+  providers: [\\\${className}Service],
+  exports: [\\\${className}Service],
+})
+export class \\\${className}Module {}`;
+
+  // NestJS DTO 模板
+  const nestjsDtoTemplate = `import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsString, IsOptional, IsNotEmpty, IsInt } from 'class-validator';
+import { Type } from 'class-transformer';
+import { PageQueryDto } from '@/shared/dto';
+
+export class List\\\${className}Dto extends PageQueryDto {}
+export class Create\\\${className}Dto {}
+export class Update\\\${className}Dto {}`;
+
+  // Vue3 Index 模板
+  const vue3IndexTemplate = `<script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue';
+import { NButton, NSpace, NPopconfirm, useMessage } from 'naive-ui';
+import { useTable, useTableOperate } from '@/hooks/common';
+import { useAuth } from '@/hooks/business';
+import { fetch\\\${className}List, delete\\\${className} } from '@/service/api';
+import \\\${className}Dialog from './dialog.vue';
+
+defineOptions({ name: '\\\${className}Management' });
+
+const message = useMessage();
+const { hasPermission } = useAuth();
+const { loading, data, pagination, handlePageChange, handlePageSizeChange, refresh } = useTable(fetch\\\${className}List);
+const { dialogVisible, dialogTitle, dialogLoading, editingId, openCreateDialog, openEditDialog, closeDialog } = useTableOperate();
+
+async function handleDelete(id: number) {
+  try {
+    await delete\\\${className}(id);
+    message.success('删除成功');
+    refresh();
+  } catch (error) {
+    message.error('删除失败');
+  }
+}
+
+onMounted(() => refresh());
+</script>
+
+<template>
+  <div class="h-full flex-col">
+    <n-card class="mb-4" size="small">
+      <n-space>
+        <n-button v-if="hasPermission('\\\${moduleName}:\\\${businessName}:add')" type="primary" @click="openCreateDialog">新增</n-button>
+      </n-space>
+    </n-card>
+    <n-card class="flex-1" size="small">
+      <n-data-table :loading="loading" :data="data" :pagination="pagination" @update:page="handlePageChange" @update:page-size="handlePageSizeChange" />
+    </n-card>
+    <\\\${className}Dialog v-model:visible="dialogVisible" :title="dialogTitle" :loading="dialogLoading" :id="editingId" @success="() => { closeDialog(); refresh(); }" />
+  </div>
+</template>`;
+
+  // Vue3 Dialog 模板
+  const vue3DialogTemplate = `<script setup lang="ts">
+import { ref, watch } from 'vue';
+import { useMessage } from 'naive-ui';
+import type { FormInst, FormRules } from 'naive-ui';
+import { fetch\\\${className}Detail, create\\\${className}, update\\\${className} } from '@/service/api';
+
+interface Props { visible: boolean; title: string; loading?: boolean; id?: number | null; }
+const props = withDefaults(defineProps<Props>(), { loading: false, id: null });
+const emit = defineEmits<{ (e: 'update:visible', value: boolean): void; (e: 'success'): void; }>();
+
+const message = useMessage();
+const formRef = ref<FormInst | null>(null);
+const submitting = ref(false);
+const formData = ref({});
+const rules: FormRules = {};
+
+watch(() => props.visible, async (val) => {
+  if (val && props.id) {
+    const { data } = await fetch\\\${className}Detail(props.id);
+    Object.assign(formData.value, data);
+  } else {
+    formData.value = {};
+  }
+});
+
+async function handleSubmit() {
+  try {
+    await formRef.value?.validate();
+    submitting.value = true;
+    if (props.id) {
+      await update\\\${className}(props.id, formData.value);
+      message.success('更新成功');
+    } else {
+      await create\\\${className}(formData.value);
+      message.success('创建成功');
+    }
+    emit('success');
+  } finally {
+    submitting.value = false;
+  }
+}
+</script>
+
+<template>
+  <n-modal :show="visible" :title="title" preset="dialog" style="width: 600px" @update:show="emit('update:visible', false)">
+    <n-form ref="formRef" :model="formData" :rules="rules" label-placement="left" label-width="100"></n-form>
+    <template #action>
+      <n-space>
+        <n-button @click="emit('update:visible', false)">取消</n-button>
+        <n-button type="primary" :loading="submitting" @click="handleSubmit">确定</n-button>
+      </n-space>
+    </template>
+  </n-modal>
+</template>`;
+
+  // Vue3 API 模板
+  const vue3ApiTemplate = `import { request } from '@/service/request';
+
+export function fetch\\\${className}List(params: any) {
+  return request.get('/\\\${moduleName}/\\\${businessName}/list', { params });
+}
+
+export function fetch\\\${className}Detail(id: number) {
+  return request.get(\\\`/\\\${moduleName}/\\\${businessName}/\\\${id}\\\`);
+}
+
+export function create\\\${className}(data: any) {
+  return request.post('/\\\${moduleName}/\\\${businessName}', data);
+}
+
+export function update\\\${className}(id: number, data: any) {
+  return request.put(\\\`/\\\${moduleName}/\\\${businessName}/\\\${id}\\\`, data);
+}
+
+export function delete\\\${className}(id: number) {
+  return request.delete(\\\`/\\\${moduleName}/\\\${businessName}/\\\${id}\\\`);
+}`;
+
+  // 菜单 SQL 模板
+  const menuSqlTemplate = `-- \\\${functionName}菜单
+INSERT INTO sys_menu (tenant_id, menu_name, parent_id, order_num, path, component, query, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, update_by, update_time, remark, del_flag)
+VALUES ('000000', '\\\${functionName}', @parentId, 1, '\\\${businessName}', '\\\${moduleName}/\\\${businessName}/index', '', '1', '0', 'C', '0', '0', '\\\${moduleName}:\\\${businessName}:list', 'list', 'admin', NOW(), '', NOW(), '\\\${functionName}菜单', '0');`;
+
+  // 创建默认模板组
+  const existingGroup = await prisma.genTemplateGroup.findFirst({
+    where: { name: '默认模板组', tenantId: null },
+  });
+
+  let templateGroupId: number;
+  if (existingGroup) {
+    templateGroupId = existingGroup.id;
+    console.log(`模板组已存在: ${existingGroup.name} (ID: ${existingGroup.id})`);
+  } else {
+    const templateGroup = await prisma.genTemplateGroup.create({
+      data: {
+        tenantId: null,
+        name: '默认模板组',
+        description: '系统默认模板组，包含 NestJS 和 Vue3 模板',
+        isDefault: true,
+        status: '0',
+        delFlag: '0',
+        createBy: 'system',
+      },
+    });
+    templateGroupId = templateGroup.id;
+    console.log(`创建模板组: ${templateGroup.name} (ID: ${templateGroup.id})`);
+  }
+
+  // 模板数据
+  const templates = [
+    { name: 'NestJS Controller', fileName: '${businessName}.controller.ts', filePath: 'server/src/module/${moduleName}/${businessName}', content: nestjsControllerTemplate, language: 'typescript', sort: 1 },
+    { name: 'NestJS Service', fileName: '${businessName}.service.ts', filePath: 'server/src/module/${moduleName}/${businessName}', content: nestjsServiceTemplate, language: 'typescript', sort: 2 },
+    { name: 'NestJS Module', fileName: '${businessName}.module.ts', filePath: 'server/src/module/${moduleName}/${businessName}', content: nestjsModuleTemplate, language: 'typescript', sort: 3 },
+    { name: 'NestJS DTO', fileName: 'dto/index.ts', filePath: 'server/src/module/${moduleName}/${businessName}', content: nestjsDtoTemplate, language: 'typescript', sort: 4 },
+    { name: 'Vue3 Index Page', fileName: 'index.vue', filePath: 'admin-naive-ui/src/views/${moduleName}/${businessName}', content: vue3IndexTemplate, language: 'vue', sort: 10 },
+    { name: 'Vue3 Dialog Component', fileName: 'dialog.vue', filePath: 'admin-naive-ui/src/views/${moduleName}/${businessName}', content: vue3DialogTemplate, language: 'vue', sort: 11 },
+    { name: 'Vue3 API Service', fileName: '${businessName}.ts', filePath: 'admin-naive-ui/src/service/api/${moduleName}', content: vue3ApiTemplate, language: 'typescript', sort: 12 },
+    { name: 'Menu SQL', fileName: '${businessName}_menu.sql', filePath: 'sql', content: menuSqlTemplate, language: 'sql', sort: 20 },
+  ];
+
+  // 检查并创建模板
+  for (const template of templates) {
+    const existing = await prisma.genTemplate.findFirst({
+      where: { groupId: templateGroupId, name: template.name },
+    });
+
+    if (!existing) {
+      await prisma.genTemplate.create({
+        data: {
+          groupId: templateGroupId,
+          ...template,
+          status: '0',
+          delFlag: '0',
+          createBy: 'system',
+        },
+      });
+      console.log(`创建模板: ${template.name}`);
+    } else {
+      console.log(`模板已存在: ${template.name}`);
+    }
+  }
+
+  console.log('代码生成器模板种子数据导入完成!');
 }
 
 main()

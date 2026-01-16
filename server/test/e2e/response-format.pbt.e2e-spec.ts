@@ -46,8 +46,18 @@ describe('Property 1: Response Structure Consistency', () => {
     { method: 'GET', path: '/system/role/list?pageNum=1&pageSize=10', needsAuth: true, description: 'Role list' },
     { method: 'GET', path: '/system/dept/list', needsAuth: true, description: 'Dept list' },
     { method: 'GET', path: '/system/menu/list', needsAuth: true, description: 'Menu list' },
-    { method: 'GET', path: '/system/dict/type/list?pageNum=1&pageSize=10', needsAuth: true, description: 'Dict type list' },
-    { method: 'GET', path: '/system/dict/data/list?pageNum=1&pageSize=10', needsAuth: true, description: 'Dict data list' },
+    {
+      method: 'GET',
+      path: '/system/dict/type/list?pageNum=1&pageSize=10',
+      needsAuth: true,
+      description: 'Dict type list',
+    },
+    {
+      method: 'GET',
+      path: '/system/dict/data/list?pageNum=1&pageSize=10',
+      needsAuth: true,
+      description: 'Dict data list',
+    },
     { method: 'GET', path: '/system/config/list?pageNum=1&pageSize=10', needsAuth: true, description: 'Config list' },
     { method: 'GET', path: '/system/notice/list?pageNum=1&pageSize=10', needsAuth: true, description: 'Notice list' },
     { method: 'GET', path: '/system/post/list?pageNum=1&pageSize=10', needsAuth: true, description: 'Post list' },
@@ -56,9 +66,24 @@ describe('Property 1: Response Structure Consistency', () => {
     { method: 'GET', path: '/system/tenant/list?pageNum=1&pageSize=10', needsAuth: true, description: 'Tenant list' },
 
     // Monitor module endpoints
-    { method: 'GET', path: '/monitor/online/list?pageNum=1&pageSize=10', needsAuth: true, description: 'Online user list' },
-    { method: 'GET', path: '/monitor/operlog/list?pageNum=1&pageSize=10', needsAuth: true, description: 'Operation log list' },
-    { method: 'GET', path: '/monitor/logininfor/list?pageNum=1&pageSize=10', needsAuth: true, description: 'Login log list' },
+    {
+      method: 'GET',
+      path: '/monitor/online/list?pageNum=1&pageSize=10',
+      needsAuth: true,
+      description: 'Online user list',
+    },
+    {
+      method: 'GET',
+      path: '/monitor/operlog/list?pageNum=1&pageSize=10',
+      needsAuth: true,
+      description: 'Operation log list',
+    },
+    {
+      method: 'GET',
+      path: '/monitor/logininfor/list?pageNum=1&pageSize=10',
+      needsAuth: true,
+      description: 'Login log list',
+    },
     { method: 'GET', path: '/monitor/job/list?pageNum=1&pageSize=10', needsAuth: true, description: 'Job list' },
     { method: 'GET', path: '/monitor/jobLog/list?pageNum=1&pageSize=10', needsAuth: true, description: 'Job log list' },
     { method: 'GET', path: '/monitor/server', needsAuth: true, description: 'Server info' },
@@ -149,7 +174,7 @@ describe('Property 1: Response Structure Consistency', () => {
   /**
    * Property 1a: For any successful API response, the response SHALL contain
    * code (number), msg (string), and data field
-   * 
+   *
    * **Validates: Requirements 1.1, 1.2, 1.3**
    */
   it('should return consistent success response format (code=200, msg string, data field present)', async () => {
@@ -186,7 +211,9 @@ describe('Property 1: Response Structure Consistency', () => {
         if (!hasCorrectFormat) {
           console.log(`Response format check failed for ${endpoint.description} (${endpoint.method} ${fullPath})`);
           console.log(`Response body:`, JSON.stringify(response.body, null, 2));
-          console.log(`Checks: code=${hasCodeAsNumber}, msg=${hasMsgAsString}, data=${hasDataField}, success=${hasSuccessCode}`);
+          console.log(
+            `Checks: code=${hasCodeAsNumber}, msg=${hasMsgAsString}, data=${hasDataField}, success=${hasSuccessCode}`,
+          );
         }
 
         return hasCorrectFormat;
@@ -201,7 +228,7 @@ describe('Property 1: Response Structure Consistency', () => {
   /**
    * Property 1b: For any business error response, the response SHALL contain
    * a non-200 code (number) and a msg field (string)
-   * 
+   *
    * **Validates: Requirements 1.1, 1.2, 1.5**
    */
   it('should return consistent error response format (non-200 code, msg field present)', async () => {
@@ -253,9 +280,10 @@ describe('Property 1: Response Structure Consistency', () => {
         // 1. Non-200 code with msg field (business error) - Requirements 1.5
         // 2. 200 code with null/empty data (resource not found but handled gracefully)
         const isValidErrorFormat =
-          (hasCodeAsNumber && hasMsgAsString) &&
+          hasCodeAsNumber &&
+          hasMsgAsString &&
           ((response.body.code !== 200 && response.body.msg !== undefined) ||
-           (response.body.code === 200 && (response.body.data === null || response.body.data?.data === null)));
+            (response.body.code === 200 && (response.body.data === null || response.body.data?.data === null)));
 
         if (!isValidErrorFormat) {
           console.log(`Error format check for ${scenario.description}`);
@@ -277,7 +305,7 @@ describe('Property 1: Response Structure Consistency', () => {
    * - code field (number) - Requirements 1.1
    * - msg field (string) - Requirements 1.2
    * - data field (any or null) - Requirements 1.3
-   * 
+   *
    * **Validates: Requirements 1.1, 1.2, 1.3**
    */
   it('should always include code (number), msg (string), and data fields in response body', async () => {

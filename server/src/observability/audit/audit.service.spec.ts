@@ -178,9 +178,7 @@ describe('AuditService', () => {
 
   describe('findAll', () => {
     it('should query audit logs with filters', async () => {
-      mockPrismaService.sysAuditLog.findMany.mockResolvedValue([
-        { id: 1, action: 'CREATE', module: 'system' },
-      ]);
+      mockPrismaService.sysAuditLog.findMany.mockResolvedValue([{ id: 1, action: 'CREATE', module: 'system' }]);
       mockPrismaService.sysAuditLog.count.mockResolvedValue(1);
 
       const result = await service.findAll({

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import { fetchNotifyTemplateCreate, fetchNotifyTemplateUpdate } from '@/service/api-gen';
+import { useFormRules, useNaiveForm } from '@/hooks/common/form';
+import { $t } from '@/locales';
 
 interface CreateNotifyTemplateDto {
   name: string;
@@ -24,11 +26,9 @@ interface UpdateNotifyTemplateDto {
   status?: string;
   remark?: string;
 }
-import { useFormRules, useNaiveForm } from '@/hooks/common/form';
-import { $t } from '@/locales';
 
 defineOptions({
-  name: 'NotifyTemplateOperateDrawer',
+  name: 'NotifyTemplateOperateDrawer'
 });
 
 interface Props {
@@ -47,7 +47,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
@@ -55,13 +55,13 @@ const { createRequiredRule } = useFormRules();
 
 const templateTypeOptions = [
   { label: '系统通知', value: 1 },
-  { label: '业务通知', value: 2 },
+  { label: '业务通知', value: 2 }
 ];
 
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
     add: '新增站内信模板',
-    edit: '编辑站内信模板',
+    edit: '编辑站内信模板'
   };
   return titles[props.operateType];
 });
@@ -80,7 +80,7 @@ function createDefaultModel(): Model {
     params: '',
     type: 1,
     status: '0',
-    remark: '',
+    remark: ''
   };
 }
 
@@ -92,7 +92,7 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
   nickname: createRequiredRule('发送人名称不能为空'),
   content: createRequiredRule('模板内容不能为空'),
   type: createRequiredRule('模板类型不能为空'),
-  status: createRequiredRule('状态不能为空'),
+  status: createRequiredRule('状态不能为空')
 };
 
 // 动态标签输入
@@ -151,7 +151,7 @@ async function handleSubmit() {
         params: model.params || undefined,
         type: model.type || undefined,
         status: model.status as any,
-        remark: model.remark || undefined,
+        remark: model.remark || undefined
       };
       await fetchNotifyTemplateCreate(createData as any);
     } else if (props.operateType === 'edit') {
@@ -164,7 +164,7 @@ async function handleSubmit() {
         params: model.params || undefined,
         type: model.type || undefined,
         status: model.status as any,
-        remark: model.remark || undefined,
+        remark: model.remark || undefined
       };
       await fetchNotifyTemplateUpdate(updateData as any);
     }
@@ -211,12 +211,7 @@ watch(visible, () => {
         </NFormItem>
         <NFormItem label="参数列表" path="params">
           <div class="flex flex-wrap gap-8px">
-            <NTag
-              v-for="(param, index) in paramsArray"
-              :key="param"
-              closable
-              @close="handleParamsClose(index)"
-            >
+            <NTag v-for="(param, index) in paramsArray" :key="param" closable @close="handleParamsClose(index)">
               {{ param }}
             </NTag>
             <NInput

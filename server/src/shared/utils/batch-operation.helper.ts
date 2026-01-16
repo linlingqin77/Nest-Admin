@@ -81,10 +81,7 @@ export class BatchOperationHelper {
    * @param config 操作配置
    * @returns 批量操作结果
    */
-  static async execute<T, R = unknown>(
-    items: T[],
-    config: BatchOperationConfig<T, R>,
-  ): Promise<BatchResult<R>> {
+  static async execute<T, R = unknown>(items: T[], config: BatchOperationConfig<T, R>): Promise<BatchResult<R>> {
     const results: BatchResultItem<R>[] = [];
     let successCount = 0;
     let failedCount = 0;
@@ -239,10 +236,7 @@ export class BatchOperationHelper {
    * @param getField 获取字段值的函数
    * @param fieldName 字段名称（用于错误信息）
    */
-  static createRequiredValidator<T>(
-    getField: (item: T) => unknown,
-    fieldName: string,
-  ): BatchValidator<T> {
+  static createRequiredValidator<T>(getField: (item: T) => unknown, fieldName: string): BatchValidator<T> {
     return {
       validate: async (item: T) => {
         const value = getField(item);

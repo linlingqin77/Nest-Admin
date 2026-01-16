@@ -74,10 +74,7 @@ export function RequireFeature(featureOrOptions: string | RequireFeatureOptions)
  * }
  * ```
  */
-export function RequireFeatureWithGuard(
-  featureOrOptions: string | RequireFeatureOptions,
-  guardClass: Type<any>,
-) {
+export function RequireFeatureWithGuard(featureOrOptions: string | RequireFeatureOptions, guardClass: Type<any>) {
   const options: RequireFeatureOptions =
     typeof featureOrOptions === 'string' ? { feature: featureOrOptions } : featureOrOptions;
 

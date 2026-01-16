@@ -51,7 +51,6 @@ export class UserLoader extends BaseLoader<number, SysUser> {
     return userIds.map((id) => userMap.get(id) ?? null);
   }
 
-
   /**
    * 批量加载用户及其部门信息
    *
@@ -89,7 +88,7 @@ export class UserLoader extends BaseLoader<number, SysUser> {
       if (user) {
         results.push({
           ...user,
-          dept: user.deptId ? deptMap.get(user.deptId) ?? null : null,
+          dept: user.deptId ? (deptMap.get(user.deptId) ?? null) : null,
         });
       }
     }

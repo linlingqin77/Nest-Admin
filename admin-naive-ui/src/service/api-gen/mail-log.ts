@@ -5,9 +5,8 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { MailLogListVo, MailLogDetailVo } from './types';
+import type { MailLogDetailVo, MailLogListVo } from './types';
 
 /**
  * 邮件日志-列表
@@ -18,7 +17,7 @@ export function fetchMailLogFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/mail/log/list',
     params,
-    operationId: 'MailLogController_findAll_v1',
+    operationId: 'MailLogController_findAll_v1'
   });
 }
 
@@ -30,7 +29,7 @@ export function fetchMailLogGetStats() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/system/mail/log/stats',
-    operationId: 'MailLogController_getStats_v1',
+    operationId: 'MailLogController_getStats_v1'
   });
 }
 
@@ -42,6 +41,6 @@ export function fetchMailLogFindOne(id: string | number) {
   return apiRequest<MailLogDetailVo>({
     method: 'GET',
     url: buildUrl('/system/mail/log/{id}', { id }),
-    operationId: 'MailLogController_findOne_v1',
+    operationId: 'MailLogController_findOne_v1'
   });
 }

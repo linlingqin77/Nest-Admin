@@ -121,14 +121,16 @@ describe('User Integration Tests', () => {
   /**
    * Helper function to create a test user
    */
-  async function createTestUser(data: Partial<{
-    userName: string;
-    nickName: string;
-    password: string;
-    deptId: number;
-    roleIds: number[];
-    postIds: number[];
-  }> = {}) {
+  async function createTestUser(
+    data: Partial<{
+      userName: string;
+      nickName: string;
+      password: string;
+      deptId: number;
+      roleIds: number[];
+      postIds: number[];
+    }> = {},
+  ) {
     const timestamp = Date.now();
     const shortTimestamp = timestamp.toString().slice(-6);
     const hashedPassword = await bcrypt.hash(data.password || '123456', 10);
@@ -182,11 +184,13 @@ describe('User Integration Tests', () => {
    * Helper function to get or create a test role
    * Uses existing roles when possible to avoid ID conflicts
    */
-  async function getOrCreateTestRole(data: Partial<{
-    roleName: string;
-    roleKey: string;
-    menuIds: number[];
-  }> = {}) {
+  async function getOrCreateTestRole(
+    data: Partial<{
+      roleName: string;
+      roleKey: string;
+      menuIds: number[];
+    }> = {},
+  ) {
     const timestamp = Date.now();
     const roleKey = data.roleKey || `test_role_${timestamp}`;
 
@@ -252,10 +256,12 @@ describe('User Integration Tests', () => {
   /**
    * Helper function to create a test department
    */
-  async function createTestDept(data: Partial<{
-    deptName: string;
-    parentId: number;
-  }> = {}) {
+  async function createTestDept(
+    data: Partial<{
+      deptName: string;
+      parentId: number;
+    }> = {},
+  ) {
     const timestamp = Date.now();
 
     const dept = await prisma.sysDept.create({
@@ -283,7 +289,7 @@ describe('User Integration Tests', () => {
     it('should create user with roles and verify association', async () => {
       // Get existing roles for testing
       const existingRoles = await getExistingRoles(1);
-      
+
       if (existingRoles.length === 0) {
         // Skip test if no roles available
         console.log('Skipping test: No existing roles available');
@@ -309,7 +315,7 @@ describe('User Integration Tests', () => {
     it('should update user roles correctly', async () => {
       // Get existing roles for testing
       const existingRoles = await getExistingRoles(2);
-      
+
       if (existingRoles.length < 2) {
         console.log('Skipping test: Not enough existing roles available');
         return;
@@ -343,7 +349,7 @@ describe('User Integration Tests', () => {
     it('should assign multiple roles to user', async () => {
       // Get existing roles for testing
       const existingRoles = await getExistingRoles(3);
-      
+
       if (existingRoles.length < 2) {
         console.log('Skipping test: Not enough existing roles available');
         return;
@@ -369,7 +375,7 @@ describe('User Integration Tests', () => {
     it('should get user role IDs correctly', async () => {
       // Get existing roles for testing
       const existingRoles = await getExistingRoles(1);
-      
+
       if (existingRoles.length === 0) {
         console.log('Skipping test: No existing roles available');
         return;
@@ -392,7 +398,7 @@ describe('User Integration Tests', () => {
     it('should remove user role association when user is deleted', async () => {
       // Get existing roles for testing
       const existingRoles = await getExistingRoles(1);
-      
+
       if (existingRoles.length === 0) {
         console.log('Skipping test: No existing roles available');
         return;
@@ -555,7 +561,7 @@ describe('User Integration Tests', () => {
     it('should create user with both role and department', async () => {
       // Create test department
       const dept = await createTestDept({ deptName: '综合部门' });
-      
+
       // Get existing role
       const existingRoles = await getExistingRoles(1);
       if (existingRoles.length === 0) {
@@ -587,7 +593,7 @@ describe('User Integration Tests', () => {
     it('should get user detail with department and roles', async () => {
       // Create test department
       const dept = await createTestDept({ deptName: '详情部门' });
-      
+
       // Get existing role
       const existingRoles = await getExistingRoles(1);
       if (existingRoles.length === 0) {

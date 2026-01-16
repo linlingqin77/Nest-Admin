@@ -2,12 +2,12 @@
 import { h, onMounted, ref } from 'vue';
 import { NCard, NDataTable, NDescriptions, NDescriptionsItem, NGrid, NGridItem, NProgress, NSpin } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { useTableProps } from '@/hooks/common/table';
 import { fetchServerGetInfo } from '@/service/api-gen/server';
 import type { DiskInfoDto, ServerInfoResponseDto } from '@/service/api-gen/types';
+import { useTableProps } from '@/hooks/common/table';
 
 defineOptions({
-  name: 'ServerMonitor',
+  name: 'ServerMonitor'
 });
 
 // 扩展类型以支持可选的 Node.js 信息
@@ -60,10 +60,10 @@ const diskColumns = [
         percentage: usage,
         status,
         indicatorPlacement: 'inside',
-        style: { width: '100px' },
+        style: { width: '100px' }
       });
-    },
-  },
+    }
+  }
 ];
 
 function getProgressStatus(value: number | string) {

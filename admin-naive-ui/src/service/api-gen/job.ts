@@ -5,9 +5,18 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { JobListResponseDto, JobResponseDto, CreateJobDto, CreateJobResultResponseDto, UpdateJobResultResponseDto, ChangeJobStatusResultResponseDto, DeleteJobResultResponseDto, RunJobResultResponseDto, ListJobDto } from './types';
+import type {
+  ChangeJobStatusResultResponseDto,
+  CreateJobDto,
+  CreateJobResultResponseDto,
+  DeleteJobResultResponseDto,
+  JobListResponseDto,
+  JobResponseDto,
+  ListJobDto,
+  RunJobResultResponseDto,
+  UpdateJobResultResponseDto
+} from './types';
 
 /**
  * 获取定时任务列表
@@ -18,7 +27,7 @@ export function fetchJobList(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/monitor/job/list',
     params,
-    operationId: 'JobController_list_v1',
+    operationId: 'JobController_list_v1'
   });
 }
 
@@ -30,7 +39,7 @@ export function fetchJobGetInfo(jobId: string | number) {
   return apiRequest<JobResponseDto>({
     method: 'GET',
     url: buildUrl('/monitor/job/{jobId}', { jobId }),
-    operationId: 'JobController_getInfo_v1',
+    operationId: 'JobController_getInfo_v1'
   });
 }
 
@@ -43,7 +52,7 @@ export function fetchJobAdd(data: CreateJobDto) {
     method: 'POST',
     url: '/monitor/job',
     data,
-    operationId: 'JobController_add_v1',
+    operationId: 'JobController_add_v1'
   });
 }
 
@@ -55,7 +64,7 @@ export function fetchJobUpdate() {
   return apiRequest<UpdateJobResultResponseDto>({
     method: 'PUT',
     url: '/monitor/job',
-    operationId: 'JobController_update_v1',
+    operationId: 'JobController_update_v1'
   });
 }
 
@@ -67,7 +76,7 @@ export function fetchJobChangeStatus() {
   return apiRequest<ChangeJobStatusResultResponseDto>({
     method: 'PUT',
     url: '/monitor/job/changeStatus',
-    operationId: 'JobController_changeStatus_v1',
+    operationId: 'JobController_changeStatus_v1'
   });
 }
 
@@ -79,7 +88,7 @@ export function fetchJobRemove(jobIds: string | number) {
   return apiRequest<DeleteJobResultResponseDto>({
     method: 'DELETE',
     url: buildUrl('/monitor/job/{jobIds}', { jobIds }),
-    operationId: 'JobController_remove_v1',
+    operationId: 'JobController_remove_v1'
   });
 }
 
@@ -91,7 +100,7 @@ export function fetchJobRun() {
   return apiRequest<RunJobResultResponseDto>({
     method: 'PUT',
     url: '/monitor/job/run',
-    operationId: 'JobController_run_v1',
+    operationId: 'JobController_run_v1'
   });
 }
 
@@ -104,6 +113,6 @@ export function fetchJobExport(data: ListJobDto) {
     method: 'POST',
     url: '/monitor/job/export',
     data,
-    operationId: 'JobController_export_v1',
+    operationId: 'JobController_export_v1'
   });
 }

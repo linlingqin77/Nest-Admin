@@ -2,7 +2,7 @@
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'QuotaSearch',
+  name: 'QuotaSearch'
 });
 
 interface Emits {
@@ -18,7 +18,7 @@ const statusOptions: any[] = [
   { label: '全部', value: null as string | null },
   { label: '正常', value: 'normal' },
   { label: '警告', value: 'warning' },
-  { label: '超限', value: 'danger' },
+  { label: '超限', value: 'danger' }
 ];
 
 function reset() {

@@ -2,14 +2,14 @@
 import { computed, reactive, ref, watch } from 'vue';
 import { useLoading } from '@sa/hooks';
 import { dataScopeOptions } from '@/constants/business';
-import { fetchRoleDeptTree, fetchRoleDataScope } from '@/service/api-gen';
-import type { RoleResponseDto, UpdateRoleRequestDto, DeptTreeNodeVo } from '@/service/api-gen/types';
+import { fetchRoleDataScope, fetchRoleDeptTree } from '@/service/api-gen';
+import type { DeptTreeNodeVo, RoleResponseDto, UpdateRoleRequestDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 import DeptTree from '@/components/custom/dept-tree.vue';
 
 defineOptions({
-  name: 'RoleDataScopeDrawer',
+  name: 'RoleDataScopeDrawer'
 });
 
 interface Props {
@@ -28,7 +28,7 @@ const emit = defineEmits<Emits>();
 const deptTreeRef = ref<InstanceType<typeof DeptTree> | null>(null);
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const deptOptions = ref<DeptTreeNodeVo[]>([]);
@@ -53,14 +53,14 @@ function createDefaultModel(): Model {
     deptIds: [],
     menuIds: [],
     deptCheckStrictly: true,
-    dataScope: '1',
+    dataScope: '1'
   };
 }
 
 type RuleKey = Extract<keyof Model, 'dataScope'>;
 
 const rules: Record<RuleKey, App.Global.FormRule> = {
-  dataScope: createRequiredRule('数据权限范围不能为空'),
+  dataScope: createRequiredRule('数据权限范围不能为空')
 };
 
 async function handleUpdateModelWhenEdit() {
@@ -102,7 +102,7 @@ async function handleSubmit() {
       roleSort: roleSort!,
       dataScope,
       deptIds: dataScope === '2' ? deptIds : [],
-      menuIds,
+      menuIds
     });
     window.$message?.success($t('common.updateSuccess'));
     closeDrawer();

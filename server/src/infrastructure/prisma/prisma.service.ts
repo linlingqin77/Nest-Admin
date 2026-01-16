@@ -2,11 +2,7 @@ import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/commo
 import { PrismaClient } from '@prisma/client';
 import { AppConfigService } from 'src/config/app-config.service';
 import { PostgresqlConfig } from 'src/config/types';
-import {
-  createSlowQueryExtension,
-  DEFAULT_SLOW_QUERY_THRESHOLD,
-  SlowQueryLog,
-} from './slow-query.extension';
+import { createSlowQueryExtension, DEFAULT_SLOW_QUERY_THRESHOLD, SlowQueryLog } from './slow-query.extension';
 import { createTenantExtension } from 'src/tenant/extensions/tenant.extension';
 
 /**
@@ -17,10 +13,7 @@ type ExtendedPrismaClient = ReturnType<typeof createExtendedPrismaClient>;
 /**
  * 创建扩展后的 Prisma 客户端
  */
-function createExtendedPrismaClient(
-  connectionString: string,
-  slowQueryLogs: SlowQueryLog[],
-) {
+function createExtendedPrismaClient(connectionString: string, slowQueryLogs: SlowQueryLog[]) {
   const baseClient = new PrismaClient({
     datasources: {
       db: {
@@ -31,24 +24,22 @@ function createExtendedPrismaClient(
   });
 
   // 使用 $extends 链式扩展替代已弃用的 $use 中间件
-  return baseClient
-    .$extends(createTenantExtension())
-    .$extends(
-      createSlowQueryExtension(
-        {
-          threshold: DEFAULT_SLOW_QUERY_THRESHOLD,
-          enabled: true,
-        },
-        (log) => {
-          // 存储慢查询日志用于监控和分析
-          slowQueryLogs.push(log);
-          // 保持最近 100 条慢查询记录
-          if (slowQueryLogs.length > 100) {
-            slowQueryLogs.shift();
-          }
-        },
-      ),
-    );
+  return baseClient.$extends(createTenantExtension()).$extends(
+    createSlowQueryExtension(
+      {
+        threshold: DEFAULT_SLOW_QUERY_THRESHOLD,
+        enabled: true,
+      },
+      (log) => {
+        // 存储慢查询日志用于监控和分析
+        slowQueryLogs.push(log);
+        // 保持最近 100 条慢查询记录
+        if (slowQueryLogs.length > 100) {
+          slowQueryLogs.shift();
+        }
+      },
+    ),
+  );
 }
 
 @Injectable()
@@ -196,6 +187,18 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
   get sysTenantQuotaLog() {
     return this._client.sysTenantQuotaLog;
   }
+  get genDataSource() {
+    return this._client.genDataSource;
+  }
+  get genTemplateGroup() {
+    return this._client.genTemplateGroup;
+  }
+  get genTemplate() {
+    return this._client.genTemplate;
+  }
+  get genHistory() {
+    return this._client.genHistory;
+  }
 
   // ============ 代理 Prisma 核心方法 ============
   /**
@@ -219,10 +222,7 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
     fn: (prisma: ExtendedPrismaClient) => Promise<T>,
     options?: { maxWait?: number; timeout?: number; isolationLevel?: any },
   ): Promise<T>;
-  $transaction<T>(
-    queries: any[],
-    options?: { isolationLevel?: any },
-  ): Promise<any[]>;
+  $transaction<T>(queries: any[], options?: { isolationLevel?: any }): Promise<any[]>;
   $transaction<T>(
     fnOrQueries: ((prisma: ExtendedPrismaClient) => Promise<T>) | any[],
     options?: any,

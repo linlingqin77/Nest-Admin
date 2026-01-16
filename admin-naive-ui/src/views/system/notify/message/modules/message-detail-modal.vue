@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import { fetchNotifyMessageFindOne } from '@/service/api-gen';
 
 defineOptions({
-  name: 'NotifyMessageDetailModal',
+  name: 'NotifyMessageDetailModal'
 });
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const loading = ref(false);
@@ -24,7 +24,7 @@ async function loadDetail() {
 
   loading.value = true;
   try {
-    const { data } = await fetchNotifyMessageFindOne(props.messageId) as any;
+    const { data } = (await fetchNotifyMessageFindOne(props.messageId)) as any;
     messageDetail.value = data;
   } catch {
     // error handled by request interceptor

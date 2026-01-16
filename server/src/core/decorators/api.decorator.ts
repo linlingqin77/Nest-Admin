@@ -254,7 +254,6 @@ function buildDataSchema(type?: Type<any>, isArray?: boolean, isPager?: boolean)
   return items;
 }
 
-
 /**
  * 统一 API 装饰器
  *

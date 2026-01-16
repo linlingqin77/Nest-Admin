@@ -5,9 +5,24 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CreateTenantRequestDto, CreateTenantResultResponseDto, UpdateTenantRequestDto, UpdateTenantResultResponseDto, TenantListResponseDto, SyncTenantDictResultResponseDto, SyncTenantPackageResultResponseDto, SyncTenantConfigResultResponseDto, TenantSelectListResponseDto, TenantSwitchStatusResponseDto, TenantSwitchResponseDto, TenantRestoreResponseDto, TenantResponseDto, DeleteTenantResultResponseDto, ListTenantRequestDto } from './types';
+import type {
+  CreateTenantRequestDto,
+  CreateTenantResultResponseDto,
+  DeleteTenantResultResponseDto,
+  ListTenantRequestDto,
+  SyncTenantConfigResultResponseDto,
+  SyncTenantDictResultResponseDto,
+  SyncTenantPackageResultResponseDto,
+  TenantListResponseDto,
+  TenantResponseDto,
+  TenantRestoreResponseDto,
+  TenantSelectListResponseDto,
+  TenantSwitchResponseDto,
+  TenantSwitchStatusResponseDto,
+  UpdateTenantRequestDto,
+  UpdateTenantResultResponseDto
+} from './types';
 
 /**
  * 租户管理-创建
@@ -18,7 +33,7 @@ export function fetchTenantCreate(data: CreateTenantRequestDto) {
     method: 'POST',
     url: '/system/tenant',
     data,
-    operationId: 'TenantController_create_v1',
+    operationId: 'TenantController_create_v1'
   });
 }
 
@@ -31,7 +46,7 @@ export function fetchTenantUpdate(data: UpdateTenantRequestDto) {
     method: 'PUT',
     url: '/system/tenant',
     data,
-    operationId: 'TenantController_update_v1',
+    operationId: 'TenantController_update_v1'
   });
 }
 
@@ -44,7 +59,7 @@ export function fetchTenantFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/tenant/list',
     params,
-    operationId: 'TenantController_findAll_v1',
+    operationId: 'TenantController_findAll_v1'
   });
 }
 
@@ -56,7 +71,7 @@ export function fetchTenantSyncTenantDict() {
   return apiRequest<SyncTenantDictResultResponseDto>({
     method: 'GET',
     url: '/system/tenant/syncTenantDict',
-    operationId: 'TenantController_syncTenantDict_v1',
+    operationId: 'TenantController_syncTenantDict_v1'
   });
 }
 
@@ -69,7 +84,7 @@ export function fetchTenantSyncTenantPackage(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/tenant/syncTenantPackage',
     params,
-    operationId: 'TenantController_syncTenantPackage_v1',
+    operationId: 'TenantController_syncTenantPackage_v1'
   });
 }
 
@@ -81,7 +96,7 @@ export function fetchTenantSyncTenantConfig() {
   return apiRequest<SyncTenantConfigResultResponseDto>({
     method: 'GET',
     url: '/system/tenant/syncTenantConfig',
-    operationId: 'TenantController_syncTenantConfig_v1',
+    operationId: 'TenantController_syncTenantConfig_v1'
   });
 }
 
@@ -93,7 +108,7 @@ export function fetchTenantGetSelectList() {
   return apiRequest<TenantSelectListResponseDto>({
     method: 'GET',
     url: '/system/tenant/select-list',
-    operationId: 'TenantController_getSelectList_v1',
+    operationId: 'TenantController_getSelectList_v1'
   });
 }
 
@@ -105,7 +120,7 @@ export function fetchTenantGetSwitchStatus() {
   return apiRequest<TenantSwitchStatusResponseDto>({
     method: 'GET',
     url: '/system/tenant/switch-status',
-    operationId: 'TenantController_getSwitchStatus_v1',
+    operationId: 'TenantController_getSwitchStatus_v1'
   });
 }
 
@@ -117,7 +132,7 @@ export function fetchTenantSwitchTenant(tenantId: string | number) {
   return apiRequest<TenantSwitchResponseDto>({
     method: 'GET',
     url: buildUrl('/system/tenant/dynamic/{tenantId}', { tenantId }),
-    operationId: 'TenantController_switchTenant_v1',
+    operationId: 'TenantController_switchTenant_v1'
   });
 }
 
@@ -129,7 +144,7 @@ export function fetchTenantRestoreTenant() {
   return apiRequest<TenantRestoreResponseDto>({
     method: 'GET',
     url: '/system/tenant/dynamic/clear',
-    operationId: 'TenantController_restoreTenant_v1',
+    operationId: 'TenantController_restoreTenant_v1'
   });
 }
 
@@ -141,7 +156,7 @@ export function fetchTenantFindOne(id: string | number) {
   return apiRequest<TenantResponseDto>({
     method: 'GET',
     url: buildUrl('/system/tenant/{id}', { id }),
-    operationId: 'TenantController_findOne_v1',
+    operationId: 'TenantController_findOne_v1'
   });
 }
 
@@ -153,7 +168,7 @@ export function fetchTenantRemove(ids: string | number) {
   return apiRequest<DeleteTenantResultResponseDto>({
     method: 'DELETE',
     url: buildUrl('/system/tenant/{ids}', { ids }),
-    operationId: 'TenantController_remove_v1',
+    operationId: 'TenantController_remove_v1'
   });
 }
 
@@ -166,6 +181,6 @@ export function fetchTenantExport(data: ListTenantRequestDto) {
     method: 'POST',
     url: '/system/tenant/export',
     data,
-    operationId: 'TenantController_export_v1',
+    operationId: 'TenantController_export_v1'
   });
 }

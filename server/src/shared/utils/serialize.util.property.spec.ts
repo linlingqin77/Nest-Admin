@@ -106,11 +106,11 @@ describe('serialize.util Property-Based Tests', () => {
             expect(dto.secretKey).toBeUndefined();
             expect(dto.delFlag).toBeUndefined();
             expect(dto.tenantId).toBeUndefined();
-            
+
             // Note: createBy and updateBy are @Expose fields in BaseResponseDto, so they should be preserved
             expect(dto.createBy).toBe(original.createBy);
             expect(dto.updateBy).toBe(original.updateBy);
-            
+
             expect((dto as any).extraField).toBeUndefined();
           });
         }),
@@ -138,7 +138,7 @@ describe('serialize.util Property-Based Tests', () => {
               expect(dto.secretKey).toBeUndefined();
               expect(dto.delFlag).toBeUndefined();
               expect(dto.tenantId).toBeUndefined();
-              
+
               // Note: createBy and updateBy are @Expose fields in BaseResponseDto, so they should be preserved
               expect(dto.createBy).toBe(original.createBy);
               expect(dto.updateBy).toBe(original.updateBy);
@@ -149,7 +149,6 @@ describe('serialize.util Property-Based Tests', () => {
       );
     });
   });
-
 
   /**
    * Property 2: 数据转换完整性属性

@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import type { JobLogResponseDto } from '@/service/api-gen/types';
 
 defineOptions({
-  name: 'JobLogDetailDrawer',
+  name: 'JobLogDetailDrawer'
 });
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 const props = defineProps<Props>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 function closeDrawer() {

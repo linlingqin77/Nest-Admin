@@ -97,10 +97,12 @@ describe('Tenant Integration Tests', () => {
 
   describe('Tenant Data Isolation', () => {
     it('should only return non-deleted tenants in queries', async () => {
-      const result = await tenantService.findAll(createListTenantDto({
-        pageNum: 1,
-        pageSize: 100,
-      }));
+      const result = await tenantService.findAll(
+        createListTenantDto({
+          pageNum: 1,
+          pageSize: 100,
+        }),
+      );
 
       expect(result.code).toBe(200);
       expect(result.data.rows).toBeDefined();
@@ -143,11 +145,13 @@ describe('Tenant Integration Tests', () => {
         }
       }
 
-      const result = await tenantService.findAll(createListTenantDto({
-        pageNum: 1,
-        pageSize: 10,
-        companyName: companyName,
-      }));
+      const result = await tenantService.findAll(
+        createListTenantDto({
+          pageNum: 1,
+          pageSize: 10,
+          companyName: companyName,
+        }),
+      );
 
       expect(result.code).toBe(200);
       expect(result.data.rows.length).toBeGreaterThan(0);
@@ -324,10 +328,12 @@ describe('Tenant Integration Tests', () => {
     });
 
     it('should list packages with pagination', async () => {
-      const result = await tenantPackageService.findAll(createListTenantPackageDto({
-        pageNum: 1,
-        pageSize: 10,
-      }));
+      const result = await tenantPackageService.findAll(
+        createListTenantPackageDto({
+          pageNum: 1,
+          pageSize: 10,
+        }),
+      );
 
       expect(result.code).toBe(200);
       expect(result.data.rows).toBeDefined();

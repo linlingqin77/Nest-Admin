@@ -132,12 +132,13 @@ describe('Tenant Isolation Integration Tests', () => {
 
     it('should isolate user data between tenants', async () => {
       // 在租户A上下文中创建用户
-      const userA = await TenantContext.run(tenantA.tenantId, async () => {
+      const userA = await TenantContext.run({ tenantId: tenantA.tenantId }, async () => {
         return await prisma.sysUser.create({
           data: {
             tenantId: tenantA.tenantId,
             userName: `userA_${uniqueId()}`,
             nickName: '租户A用户',
+            userType: '00',
             password: 'hashed_password',
             status: '0',
             delFlag: '0',
@@ -147,12 +148,13 @@ describe('Tenant Isolation Integration Tests', () => {
       createdUserIds.push(userA.userId);
 
       // 在租户B上下文中创建用户
-      const userB = await TenantContext.run(tenantB.tenantId, async () => {
+      const userB = await TenantContext.run({ tenantId: tenantB.tenantId }, async () => {
         return await prisma.sysUser.create({
           data: {
             tenantId: tenantB.tenantId,
             userName: `userB_${uniqueId()}`,
             nickName: '租户B用户',
+            userType: '00',
             password: 'hashed_password',
             status: '0',
             delFlag: '0',
@@ -162,7 +164,7 @@ describe('Tenant Isolation Integration Tests', () => {
       createdUserIds.push(userB.userId);
 
       // 在租户A上下文中查询，应该只能看到租户A的用户
-      const usersInA = await TenantContext.run(tenantA.tenantId, async () => {
+      const usersInA = await TenantContext.run({ tenantId: tenantA.tenantId }, async () => {
         return await prisma.sysUser.findMany({
           where: { delFlag: '0' },
         });
@@ -173,7 +175,7 @@ describe('Tenant Isolation Integration Tests', () => {
       expect(userBInA).toBeUndefined();
 
       // 在租户B上下文中查询，应该只能看到租户B的用户
-      const usersInB = await TenantContext.run(tenantB.tenantId, async () => {
+      const usersInB = await TenantContext.run({ tenantId: tenantB.tenantId }, async () => {
         return await prisma.sysUser.findMany({
           where: { delFlag: '0' },
         });
@@ -189,7 +191,7 @@ describe('Tenant Isolation Integration Tests', () => {
       const configKeyB = `test.config.b.${uniqueId()}`;
 
       // 在租户A上下文中创建配置
-      const configA = await TenantContext.run(tenantA.tenantId, async () => {
+      const configA = await TenantContext.run({ tenantId: tenantA.tenantId }, async () => {
         return await prisma.sysConfig.create({
           data: {
             tenantId: tenantA.tenantId,
@@ -204,7 +206,7 @@ describe('Tenant Isolation Integration Tests', () => {
       createdConfigIds.push(configA.configId);
 
       // 在租户B上下文中创建配置
-      const configB = await TenantContext.run(tenantB.tenantId, async () => {
+      const configB = await TenantContext.run({ tenantId: tenantB.tenantId }, async () => {
         return await prisma.sysConfig.create({
           data: {
             tenantId: tenantB.tenantId,
@@ -219,7 +221,7 @@ describe('Tenant Isolation Integration Tests', () => {
       createdConfigIds.push(configB.configId);
 
       // 在租户A上下文中查询，应该只能看到租户A的配置
-      const configsInA = await TenantContext.run(tenantA.tenantId, async () => {
+      const configsInA = await TenantContext.run({ tenantId: tenantA.tenantId }, async () => {
         return await prisma.sysConfig.findMany({
           where: { delFlag: '0' },
         });
@@ -229,7 +231,7 @@ describe('Tenant Isolation Integration Tests', () => {
       expect(configBInA).toBeUndefined();
 
       // 在租户B上下文中查询，应该只能看到租户B的配置
-      const configsInB = await TenantContext.run(tenantB.tenantId, async () => {
+      const configsInB = await TenantContext.run({ tenantId: tenantB.tenantId }, async () => {
         return await prisma.sysConfig.findMany({
           where: { delFlag: '0' },
         });
@@ -243,7 +245,7 @@ describe('Tenant Isolation Integration Tests', () => {
   describe('Super Tenant Cross-Tenant Access', () => {
     it('should allow super tenant to see all tenants data', async () => {
       // 超级租户上下文
-      const allTenants = await TenantContext.run(TenantContext.SUPER_TENANT_ID, async () => {
+      const allTenants = await TenantContext.run({ tenantId: TenantContext.SUPER_TENANT_ID }, async () => {
         return await prisma.sysTenant.findMany({
           where: { delFlag: '0' },
         });
@@ -281,7 +283,7 @@ describe('Tenant Isolation Integration Tests', () => {
       }
 
       // 超级租户应该能查询到这个租户
-      const result = await TenantContext.run(TenantContext.SUPER_TENANT_ID, async () => {
+      const result = await TenantContext.run({ tenantId: TenantContext.SUPER_TENANT_ID }, async () => {
         return await prisma.sysTenant.findUnique({
           where: { id: tenant!.id },
         });
@@ -320,14 +322,14 @@ describe('Tenant Isolation Integration Tests', () => {
       }
 
       // 在租户上下文中验证当前租户ID
-      await TenantContext.run(tenant!.tenantId, async () => {
+      await TenantContext.run({ tenantId: tenant!.tenantId }, async () => {
         const currentTenantId = TenantContext.getTenantId();
         expect(currentTenantId).toBe(tenant!.tenantId);
       });
 
       // 上下文结束后，应该没有租户ID
-      const afterContextTenantId = TenantContext.getTenantIdOrNull();
-      expect(afterContextTenantId).toBeNull();
+      const afterContextTenantId = TenantContext.getTenantId();
+      expect(afterContextTenantId).toBeUndefined();
     });
 
     it('should support nested tenant context', async () => {
@@ -369,11 +371,11 @@ describe('Tenant Isolation Integration Tests', () => {
       if (admin2) createdUserIds.push(admin2.userId);
 
       // 嵌套上下文测试
-      await TenantContext.run(tenant1!.tenantId, async () => {
+      await TenantContext.run({ tenantId: tenant1!.tenantId }, async () => {
         expect(TenantContext.getTenantId()).toBe(tenant1!.tenantId);
 
         // 嵌套切换到租户2
-        await TenantContext.run(tenant2!.tenantId, async () => {
+        await TenantContext.run({ tenantId: tenant2!.tenantId }, async () => {
           expect(TenantContext.getTenantId()).toBe(tenant2!.tenantId);
         });
 
@@ -384,7 +386,7 @@ describe('Tenant Isolation Integration Tests', () => {
   });
 
   describe('Ignore Tenant Filter', () => {
-    it('should skip tenant filter when using skipTenantFilter', async () => {
+    it('should skip tenant filter when using runIgnoringTenant', async () => {
       const uid = uniqueId();
       const companyName = `SkipCo${uid}`;
 
@@ -410,10 +412,10 @@ describe('Tenant Isolation Integration Tests', () => {
         createdUserIds.push(adminUser.userId);
       }
 
-      // 在另一个租户上下文中，使用 skipTenantFilter 应该能查到
+      // 在另一个租户上下文中，使用 runIgnoringTenant 应该能查到
       const anotherTenantId = '999999';
-      const result = await TenantContext.run(anotherTenantId, async () => {
-        return await TenantContext.skipTenantFilter(async () => {
+      const result = await TenantContext.run({ tenantId: anotherTenantId }, async () => {
+        return await TenantContext.runIgnoringTenant(async () => {
           return await prisma.sysTenant.findFirst({
             where: { companyName },
           });

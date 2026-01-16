@@ -225,7 +225,11 @@ describe('AuthController', () => {
 
   describe('socialCallback', () => {
     it('should return not implemented', async () => {
-      const result = await controller.socialCallback({ source: 'github', socialCode: 'auth-code', socialState: 'state' });
+      const result = await controller.socialCallback({
+        source: 'github',
+        socialCode: 'auth-code',
+        socialState: 'state',
+      });
 
       expect(result.code).toBe(ResponseCode.NOT_IMPLEMENTED);
     });

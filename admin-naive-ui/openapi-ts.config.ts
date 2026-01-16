@@ -11,7 +11,7 @@ export default defineConfig({
     // 使用 prettier 格式化输出
     format: 'prettier',
     // 生成 ESM 模块
-    lint: 'eslint',
+    lint: 'eslint'
   },
 
   // 插件配置
@@ -22,7 +22,7 @@ export default defineConfig({
       // 生成枚举类型
       enums: 'javascript',
       // 导出所有类型
-      exportInlineEnums: true,
+      exportInlineEnums: true
     },
     // SDK/服务生成插件
     {
@@ -30,10 +30,10 @@ export default defineConfig({
       // 生成函数而非类
       asClass: false,
       // 使用 operationId 作为函数名
-      operationId: true,
-    },
+      operationId: true
+    }
   ],
 
   // 不使用内置 client，我们将使用自定义的 request-adapter
-  client: false,
+  client: false
 });

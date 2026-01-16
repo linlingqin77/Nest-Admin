@@ -1,10 +1,5 @@
 import { TenantContext } from './tenant.context';
-import {
-  hasTenantField,
-  addTenantFilter,
-  setTenantId,
-  setTenantIdForMany,
-} from '../middleware/tenant.middleware';
+import { hasTenantField, addTenantFilter, setTenantId, setTenantIdForMany } from '../middleware/tenant.middleware';
 
 // 辅助函数：在租户上下文中运行测试
 const runWithTenant = <T>(tenantId: string, ignoreTenant: boolean, fn: () => T): T => {

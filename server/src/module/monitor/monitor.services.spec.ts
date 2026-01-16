@@ -455,7 +455,7 @@ describe('Monitor module services', () => {
     it('should parse array parameters correctly', async () => {
       const handler = jest.fn().mockResolvedValue(undefined);
       (service as any).taskMap.set('arrayTask', handler);
-      const result = await service.executeTask("arrayTask([1, 2, 3])");
+      const result = await service.executeTask('arrayTask([1, 2, 3])');
       expect(result).toBe(true);
       expect(handler).toHaveBeenCalledWith([1, 2, 3]);
     });

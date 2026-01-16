@@ -4,7 +4,7 @@ import { NTag } from 'naive-ui';
 import type { DataTableColumns } from 'naive-ui';
 
 defineOptions({
-  name: 'ExpiringList',
+  name: 'ExpiringList'
 });
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   data: () => [],
-  loading: false,
+  loading: false
 });
 
 const columns = computed<DataTableColumns<Api.System.ExpiringTenant>>(() => [
@@ -23,13 +23,13 @@ const columns = computed<DataTableColumns<Api.System.ExpiringTenant>>(() => [
     title: '企业名称',
     minWidth: 120,
     ellipsis: {
-      tooltip: true,
-    },
+      tooltip: true
+    }
   },
   {
     key: 'packageName',
     title: '套餐',
-    width: 100,
+    width: 100
   },
   {
     key: 'daysRemaining',
@@ -38,8 +38,12 @@ const columns = computed<DataTableColumns<Api.System.ExpiringTenant>>(() => [
     align: 'center',
     render(row) {
       const type = row.daysRemaining <= 7 ? 'error' : row.daysRemaining <= 15 ? 'warning' : 'info';
-      return <NTag type={type} size="small">{row.daysRemaining}天</NTag>;
-    },
+      return (
+        <NTag type={type} size="small">
+          {row.daysRemaining}天
+        </NTag>
+      );
+    }
   },
   {
     key: 'expireTime',
@@ -47,8 +51,8 @@ const columns = computed<DataTableColumns<Api.System.ExpiringTenant>>(() => [
     width: 120,
     render(row) {
       return row.expireTime ? new Date(row.expireTime).toLocaleDateString() : '-';
-    },
-  },
+    }
+  }
 ]);
 </script>
 

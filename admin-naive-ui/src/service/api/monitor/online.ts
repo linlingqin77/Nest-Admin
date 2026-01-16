@@ -8,7 +8,7 @@ import { request } from '@/service/request';
 export function fetchKickOutCurrentDevice(tokenId: string) {
   return request<boolean>({
     url: `/monitor/online/myself/${tokenId}`,
-    method: 'delete',
+    method: 'delete'
   });
 }
 
@@ -17,6 +17,6 @@ export function fetchGetOnlineDeviceList(params?: Api.Monitor.OnlineUserSearchPa
   return request<Api.Monitor.OnlineUserList>({
     url: '/monitor/online',
     method: 'get',
-    params,
+    params
   });
 }

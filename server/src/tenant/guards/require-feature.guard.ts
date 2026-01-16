@@ -45,9 +45,7 @@ export class RequireFeatureGuard implements CanActivate {
 
     if (!isEnabled) {
       this.logger.warn(`Feature ${options.feature} is not enabled for tenant ${tenantId}`);
-      throw new ForbiddenException(
-        options.message || `功能 ${options.feature} 未启用，请联系管理员`,
-      );
+      throw new ForbiddenException(options.message || `功能 ${options.feature} 未启用，请联系管理员`);
     }
 
     this.logger.debug(`Feature ${options.feature} is enabled for tenant ${tenantId}`);

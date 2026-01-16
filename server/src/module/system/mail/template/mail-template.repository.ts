@@ -63,9 +63,7 @@ export class MailTemplateRepository extends SoftDeleteRepository<SysMailTemplate
   /**
    * 根据模板编码查询启用的模板（包含账号信息）
    */
-  async findEnabledByCode(
-    code: string,
-  ): Promise<
+  async findEnabledByCode(code: string): Promise<
     | (SysMailTemplate & {
         account: {
           id: number;

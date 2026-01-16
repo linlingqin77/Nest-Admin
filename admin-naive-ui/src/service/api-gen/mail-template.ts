@@ -5,9 +5,8 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CreateMailTemplateDto, UpdateMailTemplateDto, MailTemplateListVo, MailTemplateDetailVo } from './types';
+import type { CreateMailTemplateDto, MailTemplateDetailVo, MailTemplateListVo, UpdateMailTemplateDto } from './types';
 
 /**
  * 邮件模板-创建
@@ -18,7 +17,7 @@ export function fetchMailTemplateCreate(data: CreateMailTemplateDto) {
     method: 'POST',
     url: '/system/mail/template',
     data,
-    operationId: 'MailTemplateController_create_v1',
+    operationId: 'MailTemplateController_create_v1'
   });
 }
 
@@ -31,7 +30,7 @@ export function fetchMailTemplateUpdate(data: UpdateMailTemplateDto) {
     method: 'PUT',
     url: '/system/mail/template',
     data,
-    operationId: 'MailTemplateController_update_v1',
+    operationId: 'MailTemplateController_update_v1'
   });
 }
 
@@ -44,7 +43,7 @@ export function fetchMailTemplateFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/mail/template/list',
     params,
-    operationId: 'MailTemplateController_findAll_v1',
+    operationId: 'MailTemplateController_findAll_v1'
   });
 }
 
@@ -56,7 +55,7 @@ export function fetchMailTemplateFindOne(id: string | number) {
   return apiRequest<MailTemplateDetailVo>({
     method: 'GET',
     url: buildUrl('/system/mail/template/{id}', { id }),
-    operationId: 'MailTemplateController_findOne_v1',
+    operationId: 'MailTemplateController_findOne_v1'
   });
 }
 
@@ -68,6 +67,6 @@ export function fetchMailTemplateRemove(id: string | number) {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: buildUrl('/system/mail/template/{id}', { id }),
-    operationId: 'MailTemplateController_remove_v1',
+    operationId: 'MailTemplateController_remove_v1'
   });
 }

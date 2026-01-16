@@ -10,7 +10,7 @@ import { $t } from '@/locales';
 import SvgIcon from '@/components/custom/svg-icon.vue';
 
 defineOptions({
-  name: 'MenuOperateDrawer',
+  name: 'MenuOperateDrawer'
 });
 
 interface Props {
@@ -35,7 +35,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const defaultIcon = import.meta.env.VITE_MENU_ICON;
@@ -48,7 +48,7 @@ const queryList = ref<{ key: string; value: string }[]>([]);
 const drawerTitle = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
     add: $t('page.system.menu.addMenu'),
-    edit: $t('page.system.menu.editMenu'),
+    edit: $t('page.system.menu.editMenu')
   };
   return titles[props.operateType];
 });
@@ -72,7 +72,7 @@ function createDefaultModel(): Model {
     status: '0',
     perms: '',
     icon: defaultIcon,
-    remark: '',
+    remark: ''
   };
 }
 
@@ -82,7 +82,7 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
   menuName: createRequiredRule($t('page.system.menu.form.menuName.invalid')),
   orderNum: createNumberRequiredRule($t('page.system.menu.form.orderNum.invalid')),
   path: createRequiredRule($t('page.system.menu.form.path.invalid')),
-  component: createRequiredRule($t('page.system.menu.form.component.invalid')),
+  component: createRequiredRule($t('page.system.menu.form.component.invalid'))
 };
 
 // 是否为目录类型
@@ -108,14 +108,14 @@ const isLocalIcon = computed(() => iconType.value === '2');
 
 // 本地图标
 const localIcons = getLocalMenuIcons();
-const localIconOptions = localIcons.map<SelectOption>((item) => ({
+const localIconOptions = localIcons.map<SelectOption>(item => ({
   label: () => (
     <div class="flex-y-center gap-16px">
       <SvgIcon localIcon={`menu-${item}`} class="text-icon" />
       <span>{item}</span>
     </div>
   ),
-  value: `local-icon-${item}`,
+  value: `local-icon-${item}`
 }));
 
 function handleInitModel() {
@@ -132,7 +132,7 @@ function handleInitModel() {
 
     if (model.isFrame === '1') {
       const queryObj: { [key: string]: string } = JSON.parse(model.queryParam || '{}');
-      queryList.value = Object.keys(queryObj).map((item) => ({ key: item, value: queryObj[item] }));
+      queryList.value = Object.keys(queryObj).map(item => ({ key: item, value: queryObj[item] }));
       return;
     }
 
@@ -205,7 +205,7 @@ async function handleSubmit() {
     perms,
     remark,
     component,
-    queryParam,
+    queryParam
   } = model;
 
   const payload = {
@@ -222,7 +222,7 @@ async function handleSubmit() {
     perms: perms ?? undefined,
     icon: icon || defaultIcon,
     component: processComponent(component),
-    remark: remark ?? undefined,
+    remark: remark ?? undefined
   };
 
   try {
@@ -242,11 +242,11 @@ async function handleSubmit() {
 
 watch(
   () => model.menuType,
-  (newType) => {
+  newType => {
     if (newType === 'M') {
       model.isFrame = '1';
     }
-  },
+  }
 );
 
 watch(visible, () => {
@@ -259,7 +259,7 @@ watch(visible, () => {
 function onCreate() {
   return {
     key: '',
-    value: '',
+    value: ''
   };
 }
 </script>
@@ -280,7 +280,7 @@ function onCreate() {
           <NFormItemGi v-if="!isBtn" :span="24" :label="$t('page.system.menu.menuType')" path="menuType">
             <NRadioGroup v-model:value="model.menuType">
               <NRadioButton
-                v-for="item in menuTypeOptions.filter((item) => item.value !== 'F')"
+                v-for="item in menuTypeOptions.filter(item => item.value !== 'F')"
                 :key="item.value"
                 :value="item.value"
                 :label="item.label"
@@ -400,7 +400,7 @@ function onCreate() {
                     :path="`query[${index}].key`"
                     :rule="{
                       ...createRequiredRule($t('page.system.menu.placeholder.queryKey')),
-                      validator: (value) => isNotNull(value),
+                      validator: value => isNotNull(value)
                     }"
                   >
                     <NInput v-model:value="queryList[index].key" placeholder="Key" @keydown.enter.prevent />
@@ -413,7 +413,7 @@ function onCreate() {
                     :path="`query[${index}].value`"
                     :rule="{
                       ...createRequiredRule($t('page.system.menu.placeholder.queryValue')),
-                      validator: (value) => isNotNull(value),
+                      validator: value => isNotNull(value)
                     }"
                   >
                     <NInput v-model:value="queryList[index].value" placeholder="Value" @keydown.enter.prevent />

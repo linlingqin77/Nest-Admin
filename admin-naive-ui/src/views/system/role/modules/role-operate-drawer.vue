@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import { useLoading } from '@sa/hooks';
-import { fetchRoleCreate, fetchRoleUpdate } from '@/service/api-gen';
-import { fetchMenuRoleMenuTreeselect } from '@/service/api-gen';
-import type { CreateRoleRequestDto, UpdateRoleRequestDto, RoleResponseDto, MenuResponseDto } from '@/service/api-gen/types';
+import { fetchMenuRoleMenuTreeselect, fetchRoleCreate, fetchRoleUpdate } from '@/service/api-gen';
+import type {
+  CreateRoleRequestDto,
+  MenuResponseDto,
+  RoleResponseDto,
+  UpdateRoleRequestDto
+} from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { useDict } from '@/hooks/business/dict';
 import { $t } from '@/locales';
 import MenuTree from '@/components/custom/menu-tree.vue';
 
 defineOptions({
-  name: 'RoleOperateDrawer',
+  name: 'RoleOperateDrawer'
 });
 
 interface Props {
@@ -31,7 +35,7 @@ const emit = defineEmits<Emits>();
 const menuTreeRef = ref<InstanceType<typeof MenuTree> | null>(null);
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const { options: sysNormalDisableOptions } = useDict('sys_normal_disable', false);
@@ -46,7 +50,7 @@ const { createRequiredRule } = useFormRules();
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
     add: '新增角色',
-    edit: '编辑角色',
+    edit: '编辑角色'
   };
   return titles[props.operateType];
 });
@@ -63,7 +67,7 @@ function createDefaultModel(): Model {
     roleSort: 1,
     menuCheckStrictly: true,
     status: '0' as any,
-    remark: '',
+    remark: ''
   };
 }
 
@@ -73,7 +77,7 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
   roleId: createRequiredRule('角色ID不能为空'),
   roleName: createRequiredRule('角色名称不能为空'),
   roleKey: createRequiredRule('角色权限字符串不能为空'),
-  status: createRequiredRule('角色状态不能为空'),
+  status: createRequiredRule('角色状态不能为空')
 };
 
 async function handleUpdateModelWhenEdit() {
@@ -122,7 +126,7 @@ async function handleSubmit() {
         menuCheckStrictly,
         status,
         remark,
-        menuIds: menuIds as any,
+        menuIds: menuIds as any
       });
     } else if (props.operateType === 'edit') {
       await fetchRoleUpdate({
@@ -133,7 +137,7 @@ async function handleSubmit() {
         menuCheckStrictly,
         status,
         remark,
-        menuIds: menuIds as any,
+        menuIds: menuIds as any
       });
     }
 

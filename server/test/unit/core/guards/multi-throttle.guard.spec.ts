@@ -16,12 +16,14 @@ describe('MultiThrottleGuard', () => {
   let reflector: Reflector;
   let redisMock: RedisMock;
 
-  const createMockContext = (options: {
-    ip?: string;
-    userId?: number;
-    tenantId?: string;
-    headers?: Record<string, string>;
-  } = {}): ExecutionContext => {
+  const createMockContext = (
+    options: {
+      ip?: string;
+      userId?: number;
+      tenantId?: string;
+      headers?: Record<string, string>;
+    } = {},
+  ): ExecutionContext => {
     const { ip = '127.0.0.1', userId, tenantId, headers = {} } = options;
     return {
       switchToHttp: () => ({
@@ -86,11 +88,7 @@ describe('MultiThrottleGuard', () => {
       const result = await guard.canActivate(context);
 
       expect(result).toBe(true);
-      expect(redisMock.set).toHaveBeenCalledWith(
-        'throttle:ip:192.168.1.1',
-        '1',
-        DEFAULT_THROTTLE_CONFIG.ip!.ttl,
-      );
+      expect(redisMock.set).toHaveBeenCalledWith('throttle:ip:192.168.1.1', '1', DEFAULT_THROTTLE_CONFIG.ip!.ttl);
     });
 
     it('should block request when IP limit exceeded', async () => {
@@ -111,16 +109,8 @@ describe('MultiThrottleGuard', () => {
       const result = await guard.canActivate(context);
 
       expect(result).toBe(true);
-      expect(redisMock.set).toHaveBeenCalledWith(
-        'throttle:ip:192.168.1.1',
-        '1',
-        DEFAULT_THROTTLE_CONFIG.ip!.ttl,
-      );
-      expect(redisMock.set).toHaveBeenCalledWith(
-        'throttle:user:1',
-        '1',
-        DEFAULT_THROTTLE_CONFIG.user!.ttl,
-      );
+      expect(redisMock.set).toHaveBeenCalledWith('throttle:ip:192.168.1.1', '1', DEFAULT_THROTTLE_CONFIG.ip!.ttl);
+      expect(redisMock.set).toHaveBeenCalledWith('throttle:user:1', '1', DEFAULT_THROTTLE_CONFIG.user!.ttl);
     });
 
     it('should block request when user limit exceeded', async () => {
@@ -147,11 +137,7 @@ describe('MultiThrottleGuard', () => {
       const result = await guard.canActivate(context);
 
       expect(result).toBe(true);
-      expect(redisMock.set).toHaveBeenCalledWith(
-        'throttle:tenant:tenant1',
-        '1',
-        DEFAULT_THROTTLE_CONFIG.tenant!.ttl,
-      );
+      expect(redisMock.set).toHaveBeenCalledWith('throttle:tenant:tenant1', '1', DEFAULT_THROTTLE_CONFIG.tenant!.ttl);
     });
 
     it('should block request when tenant limit exceeded', async () => {
@@ -199,11 +185,7 @@ describe('MultiThrottleGuard', () => {
       const result = await guard.canActivate(context);
 
       expect(result).toBe(true);
-      expect(redisMock.set).toHaveBeenCalledWith(
-        'throttle:ip:203.0.113.195',
-        '1',
-        DEFAULT_THROTTLE_CONFIG.ip!.ttl,
-      );
+      expect(redisMock.set).toHaveBeenCalledWith('throttle:ip:203.0.113.195', '1', DEFAULT_THROTTLE_CONFIG.ip!.ttl);
     });
 
     it('should increment counter for existing key', async () => {

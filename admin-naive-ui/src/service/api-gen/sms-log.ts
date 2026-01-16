@@ -5,9 +5,8 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { SmsLogListVo, SmsLogDetailVo } from './types';
+import type { SmsLogDetailVo, SmsLogListVo } from './types';
 
 /**
  * 短信日志-列表
@@ -18,7 +17,7 @@ export function fetchSmsLogFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/sms/log/list',
     params,
-    operationId: 'SmsLogController_findAll_v1',
+    operationId: 'SmsLogController_findAll_v1'
   });
 }
 
@@ -30,7 +29,7 @@ export function fetchSmsLogFindOne(id: string | number) {
   return apiRequest<SmsLogDetailVo>({
     method: 'GET',
     url: buildUrl('/system/sms/log/{id}', { id }),
-    operationId: 'SmsLogController_findOne_v1',
+    operationId: 'SmsLogController_findOne_v1'
   });
 }
 
@@ -42,6 +41,6 @@ export function fetchSmsLogFindByMobile(mobile: string | number) {
   return apiRequest<unknown>({
     method: 'GET',
     url: buildUrl('/system/sms/log/mobile/{mobile}', { mobile }),
-    operationId: 'SmsLogController_findByMobile_v1',
+    operationId: 'SmsLogController_findByMobile_v1'
   });
 }

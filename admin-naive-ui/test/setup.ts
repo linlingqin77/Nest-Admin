@@ -7,8 +7,8 @@
  * @requirements 14.1
  */
 
-import { vi, beforeAll, afterEach, afterAll } from 'vitest';
 import { config } from '@vue/test-utils';
+import { afterAll, afterEach, beforeAll, vi } from 'vitest';
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
@@ -21,8 +21,8 @@ Object.defineProperty(window, 'matchMedia', {
     removeListener: vi.fn(),
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
+    dispatchEvent: vi.fn()
+  }))
 });
 
 // Mock ResizeObserver
@@ -51,10 +51,10 @@ const localStorageMock = {
   removeItem: vi.fn(),
   clear: vi.fn(),
   length: 0,
-  key: vi.fn(),
+  key: vi.fn()
 };
 Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock,
+  value: localStorageMock
 });
 
 // Mock sessionStorage
@@ -64,10 +64,10 @@ const sessionStorageMock = {
   removeItem: vi.fn(),
   clear: vi.fn(),
   length: 0,
-  key: vi.fn(),
+  key: vi.fn()
 };
 Object.defineProperty(window, 'sessionStorage', {
-  value: sessionStorageMock,
+  value: sessionStorageMock
 });
 
 // 配置 Vue Test Utils
@@ -101,7 +101,7 @@ config.global.stubs = {
   NLayoutFooter: true,
   // 存根路由组件
   RouterLink: true,
-  RouterView: true,
+  RouterView: true
 };
 
 // 全局测试钩子

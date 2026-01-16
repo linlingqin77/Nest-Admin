@@ -16,7 +16,7 @@ import ButtonIcon from '@/components/custom/button-icon.vue';
 import OssSearch from './modules/oss-search.vue';
 import OssUploadModal from './modules/oss-upload-modal.vue';
 defineOptions({
-  name: 'OssList',
+  name: 'OssList'
 });
 
 const { routerPushByKey } = useRouterPush();
@@ -38,7 +38,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchOssFindAll,
   apiParams: {
@@ -52,25 +52,25 @@ const {
     service: null,
     isAsc: 'descending',
     orderByColumn: 'createTime',
-    params: {},
+    params: {}
   },
   columns: () => [
     {
       type: 'selection',
       align: 'center',
-      width: 48,
+      width: 48
     },
     {
       key: 'index',
       title: $t('common.index'),
       align: 'center',
-      width: 64,
+      width: 64
     },
     {
       key: 'ossId',
       title: '对象存储主键',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'fileName',
@@ -78,9 +78,9 @@ const {
       align: 'center',
       ellipsis: {
         tooltip: true,
-        lineClamp: 3,
+        lineClamp: 3
       },
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'originalName',
@@ -88,22 +88,22 @@ const {
       align: 'center',
       ellipsis: {
         tooltip: true,
-        lineClamp: 3,
+        lineClamp: 3
       },
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'fileSuffix',
       title: '文件后缀名',
       align: 'center',
-      minWidth: 100,
+      minWidth: 100
     },
     {
       key: 'url',
       title: 'URL地址',
       align: 'center',
       minWidth: 120,
-      render: (row) => {
+      render: row => {
         if (preview.value && isImage(row.fileSuffix)) {
           return <NImage class="h-40px w-40px object-contain" src={row.url} />;
         }
@@ -117,39 +117,39 @@ const {
                     {row.url}
                   </NEllipsis>
                 </div>
-              ),
+              )
             }}
           </NTooltip>
         );
-      },
+      }
     },
     {
       key: 'createTime',
       title: '创建时间',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'createByName',
       title: '上传人',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'service',
       title: '服务商',
       align: 'center',
       minWidth: 100,
-      render: (row) => {
+      render: row => {
         return <NTag type="primary">{row.service}</NTag>;
-      },
+      }
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 130,
-      render: (row) => {
+      render: row => {
         const divider = () => {
           if (!hasAuth('system:oss:download') || !hasAuth('system:oss:delete')) {
             return null;
@@ -197,9 +197,9 @@ const {
             {deleteBtn()}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const { handleAdd, checkedRowKeys, onBatchDeleted, onDeleted } = useTableOperate(data, getData);
@@ -267,7 +267,7 @@ async function handleUpdatePreview(checked: boolean) {
     },
     onNegativeClick: () => {
       setPreview(!checked);
-    },
+    }
   });
 }
 
@@ -338,7 +338,7 @@ function handleToOssConfig() {
         :scroll-x="962"
         :loading="loading"
         remote
-        :row-key="(row) => row.ossId"
+        :row-key="row => row.ossId"
         :pagination="mobilePagination"
         class="sm:h-full"
       />

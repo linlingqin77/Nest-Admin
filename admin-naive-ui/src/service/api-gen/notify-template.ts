@@ -5,9 +5,14 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CreateNotifyTemplateDto, UpdateNotifyTemplateDto, NotifyTemplateListVo, NotifyTemplateSelectVo, NotifyTemplateDetailVo } from './types';
+import type {
+  CreateNotifyTemplateDto,
+  NotifyTemplateDetailVo,
+  NotifyTemplateListVo,
+  NotifyTemplateSelectVo,
+  UpdateNotifyTemplateDto
+} from './types';
 
 /**
  * 站内信模板-创建
@@ -18,7 +23,7 @@ export function fetchNotifyTemplateCreate(data: CreateNotifyTemplateDto) {
     method: 'POST',
     url: '/system/notify/template',
     data,
-    operationId: 'NotifyTemplateController_create_v1',
+    operationId: 'NotifyTemplateController_create_v1'
   });
 }
 
@@ -31,7 +36,7 @@ export function fetchNotifyTemplateUpdate(data: UpdateNotifyTemplateDto) {
     method: 'PUT',
     url: '/system/notify/template',
     data,
-    operationId: 'NotifyTemplateController_update_v1',
+    operationId: 'NotifyTemplateController_update_v1'
   });
 }
 
@@ -44,7 +49,7 @@ export function fetchNotifyTemplateFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/notify/template/list',
     params,
-    operationId: 'NotifyTemplateController_findAll_v1',
+    operationId: 'NotifyTemplateController_findAll_v1'
   });
 }
 
@@ -56,7 +61,7 @@ export function fetchNotifyTemplateGetSelectList() {
   return apiRequest<NotifyTemplateSelectVo>({
     method: 'GET',
     url: '/system/notify/template/select',
-    operationId: 'NotifyTemplateController_getSelectList_v1',
+    operationId: 'NotifyTemplateController_getSelectList_v1'
   });
 }
 
@@ -68,7 +73,7 @@ export function fetchNotifyTemplateFindOne(id: string | number) {
   return apiRequest<NotifyTemplateDetailVo>({
     method: 'GET',
     url: buildUrl('/system/notify/template/{id}', { id }),
-    operationId: 'NotifyTemplateController_findOne_v1',
+    operationId: 'NotifyTemplateController_findOne_v1'
   });
 }
 
@@ -80,6 +85,6 @@ export function fetchNotifyTemplateRemove(id: string | number) {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: buildUrl('/system/notify/template/{id}', { id }),
-    operationId: 'NotifyTemplateController_remove_v1',
+    operationId: 'NotifyTemplateController_remove_v1'
   });
 }

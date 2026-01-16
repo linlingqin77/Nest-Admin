@@ -8,14 +8,14 @@ import { useThemeStore } from '@/store/modules/theme';
 import GlobalLogo from '../global-logo/index.vue';
 import GlobalBreadcrumb from '../global-breadcrumb/index.vue';
 import GlobalSearch from '../global-search/index.vue';
+import NotifyBell from '../notify-bell/index.vue';
+import TenantSwitch from '../tenant-switch/index.vue';
 import ThemeButton from './components/theme-button.vue';
 import UserAvatar from './components/user-avatar.vue';
 import MessageButton from './components/message-button.vue';
-import NotifyBell from '../notify-bell/index.vue';
-import TenantSwitch from '../tenant-switch/index.vue';
 
 defineOptions({
-  name: 'GlobalHeader',
+  name: 'GlobalHeader'
 });
 
 interface Props {

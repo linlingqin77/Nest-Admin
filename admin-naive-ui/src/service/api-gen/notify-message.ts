@@ -5,9 +5,14 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { SendNotifyMessageDto, SendNotifyAllDto, NotifyMessageListVo, UnreadCountVo, NotifyMessageDetailVo } from './types';
+import type {
+  NotifyMessageDetailVo,
+  NotifyMessageListVo,
+  SendNotifyAllDto,
+  SendNotifyMessageDto,
+  UnreadCountVo
+} from './types';
 
 /**
  * 站内信-发送
@@ -18,7 +23,7 @@ export function fetchNotifyMessageSend(data: SendNotifyMessageDto) {
     method: 'POST',
     url: '/system/notify/message/send',
     data,
-    operationId: 'NotifyMessageController_send_v1',
+    operationId: 'NotifyMessageController_send_v1'
   });
 }
 
@@ -31,7 +36,7 @@ export function fetchNotifyMessageSendAll(data: SendNotifyAllDto) {
     method: 'POST',
     url: '/system/notify/message/send-all',
     data,
-    operationId: 'NotifyMessageController_sendAll_v1',
+    operationId: 'NotifyMessageController_sendAll_v1'
   });
 }
 
@@ -44,7 +49,7 @@ export function fetchNotifyMessageFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/notify/message/list',
     params,
-    operationId: 'NotifyMessageController_findAll_v1',
+    operationId: 'NotifyMessageController_findAll_v1'
   });
 }
 
@@ -57,7 +62,7 @@ export function fetchNotifyMessageFindMyMessages(params?: Record<string, unknown
     method: 'GET',
     url: '/system/notify/message/my-list',
     params,
-    operationId: 'NotifyMessageController_findMyMessages_v1',
+    operationId: 'NotifyMessageController_findMyMessages_v1'
   });
 }
 
@@ -69,7 +74,7 @@ export function fetchNotifyMessageGetUnreadCount() {
   return apiRequest<UnreadCountVo>({
     method: 'GET',
     url: '/system/notify/message/unread-count',
-    operationId: 'NotifyMessageController_getUnreadCount_v1',
+    operationId: 'NotifyMessageController_getUnreadCount_v1'
   });
 }
 
@@ -82,7 +87,7 @@ export function fetchNotifyMessageGetRecentMessages(params?: Record<string, unkn
     method: 'GET',
     url: '/system/notify/message/recent',
     params,
-    operationId: 'NotifyMessageController_getRecentMessages_v1',
+    operationId: 'NotifyMessageController_getRecentMessages_v1'
   });
 }
 
@@ -94,7 +99,7 @@ export function fetchNotifyMessageFindOne(id: string | number) {
   return apiRequest<NotifyMessageDetailVo>({
     method: 'GET',
     url: buildUrl('/system/notify/message/{id}', { id }),
-    operationId: 'NotifyMessageController_findOne_v1',
+    operationId: 'NotifyMessageController_findOne_v1'
   });
 }
 
@@ -106,7 +111,7 @@ export function fetchNotifyMessageRemove(id: string | number) {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: buildUrl('/system/notify/message/{id}', { id }),
-    operationId: 'NotifyMessageController_remove_v1',
+    operationId: 'NotifyMessageController_remove_v1'
   });
 }
 
@@ -118,7 +123,7 @@ export function fetchNotifyMessageMarkAsRead(id: string | number) {
   return apiRequest<unknown>({
     method: 'PUT',
     url: buildUrl('/system/notify/message/read/{id}', { id }),
-    operationId: 'NotifyMessageController_markAsRead_v1',
+    operationId: 'NotifyMessageController_markAsRead_v1'
   });
 }
 
@@ -130,7 +135,7 @@ export function fetchNotifyMessageMarkAsReadBatch(ids: string | number) {
   return apiRequest<unknown>({
     method: 'PUT',
     url: buildUrl('/system/notify/message/read-batch/{ids}', { ids }),
-    operationId: 'NotifyMessageController_markAsReadBatch_v1',
+    operationId: 'NotifyMessageController_markAsReadBatch_v1'
   });
 }
 
@@ -142,7 +147,7 @@ export function fetchNotifyMessageMarkAllAsRead() {
   return apiRequest<unknown>({
     method: 'PUT',
     url: '/system/notify/message/read-all',
-    operationId: 'NotifyMessageController_markAllAsRead_v1',
+    operationId: 'NotifyMessageController_markAllAsRead_v1'
   });
 }
 
@@ -154,6 +159,6 @@ export function fetchNotifyMessageRemoveBatch(ids: string | number) {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: buildUrl('/system/notify/message/batch/{ids}', { ids }),
-    operationId: 'NotifyMessageController_removeBatch_v1',
+    operationId: 'NotifyMessageController_removeBatch_v1'
   });
 }

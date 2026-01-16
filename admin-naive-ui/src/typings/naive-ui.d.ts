@@ -25,10 +25,14 @@ declare namespace NaiveUI {
 
   type TableColumnWithKey<T> = SetTableColumnKey<DataTableBaseColumn<T>, T> | SetTableColumnKey<TableColumnGroup<T>, T>;
 
-  type TableColumn<T> = DataTableBaseColumn<T> | DataTableSelectionColumn<T> | DataTableExpandColumn<T> | TableColumnGroup<T>;
+  type TableColumn<T> =
+    | DataTableBaseColumn<T>
+    | DataTableSelectionColumn<T>
+    | DataTableExpandColumn<T>
+    | TableColumnGroup<T>;
 
   type TableApiFn<T = any, R = Api.Common.CommonSearchParams> = (
-    params: R,
+    params: R
   ) => Promise<FlatResponseData<{ rows: T[]; total: number } | Api.Common.PaginatingQueryRecord<T>>>;
 
   type TreeTableApiFn<T = any, R = Record<string, any>> = (params: R) => Promise<FlatResponseData<T[]>>;

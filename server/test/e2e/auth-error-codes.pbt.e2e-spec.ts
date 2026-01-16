@@ -34,21 +34,21 @@ describe('Authentication Error Codes Property Tests', () => {
 
   // Authentication error codes range (2001-2008)
   const AUTH_ERROR_CODES = [
-    ResponseCode.TOKEN_INVALID,     // 2001
-    ResponseCode.TOKEN_EXPIRED,     // 2002
+    ResponseCode.TOKEN_INVALID, // 2001
+    ResponseCode.TOKEN_EXPIRED, // 2002
     ResponseCode.TOKEN_REFRESH_EXPIRED, // 2003
-    ResponseCode.ACCOUNT_DISABLED,  // 2004
-    ResponseCode.ACCOUNT_LOCKED,    // 2005
-    ResponseCode.PASSWORD_ERROR,    // 2006
-    ResponseCode.CAPTCHA_ERROR,     // 2007
+    ResponseCode.ACCOUNT_DISABLED, // 2004
+    ResponseCode.ACCOUNT_LOCKED, // 2005
+    ResponseCode.PASSWORD_ERROR, // 2006
+    ResponseCode.CAPTCHA_ERROR, // 2007
     ResponseCode.PERMISSION_DENIED, // 2008
   ];
 
   // Also accept HTTP 401/403 status codes
   const VALID_AUTH_FAILURE_CODES = [
     ...AUTH_ERROR_CODES,
-    ResponseCode.UNAUTHORIZED,  // 401
-    ResponseCode.FORBIDDEN,     // 403
+    ResponseCode.UNAUTHORIZED, // 401
+    ResponseCode.FORBIDDEN, // 403
   ];
 
   beforeAll(async () => {
@@ -96,7 +96,7 @@ describe('Authentication Error Codes Property Tests', () => {
       const invalidTokenArbitrary = fc.oneof(
         fc.constant('invalid_token_string'),
         fc.constant('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid.payload'),
-        fc.string({ minLength: 20, maxLength: 100 }).map(s => s.replace(/[^a-zA-Z0-9]/g, '')),
+        fc.string({ minLength: 20, maxLength: 100 }).map((s) => s.replace(/[^a-zA-Z0-9]/g, '')),
         fc.constant('expired.token.here'),
         fc.constant('malformed-jwt-token'),
       );
@@ -104,42 +104,38 @@ describe('Authentication Error Codes Property Tests', () => {
       const endpointArbitrary = fc.constantFrom(...protectedEndpoints);
 
       await fc.assert(
-        fc.asyncProperty(
-          invalidTokenArbitrary,
-          endpointArbitrary,
-          async (invalidToken, endpoint) => {
-            const fullPath = `${apiPrefix}${endpoint.path}`;
+        fc.asyncProperty(invalidTokenArbitrary, endpointArbitrary, async (invalidToken, endpoint) => {
+          const fullPath = `${apiPrefix}${endpoint.path}`;
 
-            let response;
-            if (endpoint.method === 'GET') {
-              response = await helper
-                .getRequest()
-                .get(fullPath)
-                .set('Authorization', `Bearer ${invalidToken}`)
-                .set('x-tenant-id', '000000');
-            } else {
-              response = await helper
-                .getRequest()
-                .post(fullPath)
-                .set('Authorization', `Bearer ${invalidToken}`)
-                .set('x-tenant-id', '000000')
-                .send({});
-            }
+          let response;
+          if (endpoint.method === 'GET') {
+            response = await helper
+              .getRequest()
+              .get(fullPath)
+              .set('Authorization', `Bearer ${invalidToken}`)
+              .set('x-tenant-id', '000000');
+          } else {
+            response = await helper
+              .getRequest()
+              .post(fullPath)
+              .set('Authorization', `Bearer ${invalidToken}`)
+              .set('x-tenant-id', '000000')
+              .send({});
+          }
 
-            // Property: Invalid token should return appropriate error code
-            // Accept: 2001 (TOKEN_INVALID), 2002 (TOKEN_EXPIRED), 401, 403
-            const responseCode = response.body.code || response.status;
-            const isValidErrorCode = VALID_AUTH_FAILURE_CODES.includes(responseCode);
+          // Property: Invalid token should return appropriate error code
+          // Accept: 2001 (TOKEN_INVALID), 2002 (TOKEN_EXPIRED), 401, 403
+          const responseCode = response.body.code || response.status;
+          const isValidErrorCode = VALID_AUTH_FAILURE_CODES.includes(responseCode);
 
-            if (!isValidErrorCode) {
-              console.log(`Invalid token test failed for ${endpoint.method} ${fullPath}`);
-              console.log(`Token: ${invalidToken.substring(0, 30)}...`);
-              console.log(`Response code: ${responseCode}`);
-            }
+          if (!isValidErrorCode) {
+            console.log(`Invalid token test failed for ${endpoint.method} ${fullPath}`);
+            console.log(`Token: ${invalidToken.substring(0, 30)}...`);
+            console.log(`Response code: ${responseCode}`);
+          }
 
-            return isValidErrorCode;
-          },
-        ),
+          return isValidErrorCode;
+        }),
         {
           numRuns: 100,
           verbose: true,
@@ -155,10 +151,7 @@ describe('Authentication Error Codes Property Tests', () => {
           const fullPath = `${apiPrefix}${endpoint.path}`;
 
           // Test with empty/missing authorization header
-          const response = await helper
-            .getRequest()
-            .get(fullPath)
-            .set('x-tenant-id', '000000');
+          const response = await helper.getRequest().get(fullPath).set('x-tenant-id', '000000');
 
           const responseCode = response.body.code || response.status;
           const isValidErrorCode = VALID_AUTH_FAILURE_CODES.includes(responseCode);
@@ -197,13 +190,11 @@ describe('Authentication Error Codes Property Tests', () => {
         // Wrong password for existing user
         fc.record({
           username: fc.constant('admin'),
-          password: fc.stringMatching(/^[a-zA-Z0-9]{6,20}$/)
-            .filter(p => p !== 'admin123'),
+          password: fc.stringMatching(/^[a-zA-Z0-9]{6,20}$/).filter((p) => p !== 'admin123'),
         }),
         // Non-existent user with valid-looking password
         fc.record({
-          username: fc.stringMatching(/^[a-zA-Z][a-zA-Z0-9]{4,14}$/)
-            .map(s => `nonexistent_${s}`),
+          username: fc.stringMatching(/^[a-zA-Z][a-zA-Z0-9]{4,14}$/).map((s) => `nonexistent_${s}`),
           password: fc.stringMatching(/^[a-zA-Z0-9]{6,20}$/),
         }),
       );
@@ -239,19 +230,14 @@ describe('Authentication Error Codes Property Tests', () => {
 
     it('should return non-200 error for wrong password with valid username', async () => {
       // Generate wrong passwords for admin user (alphanumeric only)
-      const wrongPasswordArbitrary = fc.stringMatching(/^[a-zA-Z0-9]{6,20}$/)
-        .filter(p => p !== 'admin123');
+      const wrongPasswordArbitrary = fc.stringMatching(/^[a-zA-Z0-9]{6,20}$/).filter((p) => p !== 'admin123');
 
       await fc.assert(
         fc.asyncProperty(wrongPasswordArbitrary, async (wrongPassword) => {
-          const response = await helper
-            .getRequest()
-            .post(`${apiPrefix}/auth/login`)
-            .set('x-tenant-id', '000000')
-            .send({
-              username: 'admin',
-              password: wrongPassword,
-            });
+          const response = await helper.getRequest().post(`${apiPrefix}/auth/login`).set('x-tenant-id', '000000').send({
+            username: 'admin',
+            password: wrongPassword,
+          });
 
           const responseCode = response.body.code;
 
@@ -276,19 +262,16 @@ describe('Authentication Error Codes Property Tests', () => {
 
     it('should return non-200 error for non-existent user', async () => {
       // Generate non-existent usernames (alphanumeric only)
-      const nonExistentUserArbitrary = fc.stringMatching(/^[a-zA-Z][a-zA-Z0-9]{7,19}$/)
-        .map(s => `test_nonexistent_${s}`);
+      const nonExistentUserArbitrary = fc
+        .stringMatching(/^[a-zA-Z][a-zA-Z0-9]{7,19}$/)
+        .map((s) => `test_nonexistent_${s}`);
 
       await fc.assert(
         fc.asyncProperty(nonExistentUserArbitrary, async (username) => {
-          const response = await helper
-            .getRequest()
-            .post(`${apiPrefix}/auth/login`)
-            .set('x-tenant-id', '000000')
-            .send({
-              username,
-              password: 'somepassword123',
-            });
+          const response = await helper.getRequest().post(`${apiPrefix}/auth/login`).set('x-tenant-id', '000000').send({
+            username,
+            password: 'somepassword123',
+          });
 
           const responseCode = response.body.code;
 

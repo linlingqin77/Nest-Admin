@@ -309,8 +309,7 @@ describe('Property 3: Authorization Enforcement', () => {
 
         // Property: If response is 403, it should have proper error format
         if (response.status === 403 || response.body.code === 403) {
-          const hasProperFormat =
-            response.body.code !== undefined && response.body.msg !== undefined;
+          const hasProperFormat = response.body.code !== undefined && response.body.msg !== undefined;
 
           if (!hasProperFormat) {
             console.log(`403 response missing proper format for ${endpoint.method} ${fullPath}`);

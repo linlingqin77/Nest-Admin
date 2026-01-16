@@ -5,9 +5,8 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CreateSmsChannelDto, UpdateSmsChannelDto, SmsChannelListVo, SmsChannelDetailVo } from './types';
+import type { CreateSmsChannelDto, SmsChannelDetailVo, SmsChannelListVo, UpdateSmsChannelDto } from './types';
 
 /**
  * 短信渠道-创建
@@ -18,7 +17,7 @@ export function fetchSmsChannelCreate(data: CreateSmsChannelDto) {
     method: 'POST',
     url: '/system/sms/channel',
     data,
-    operationId: 'SmsChannelController_create_v1',
+    operationId: 'SmsChannelController_create_v1'
   });
 }
 
@@ -31,7 +30,7 @@ export function fetchSmsChannelUpdate(data: UpdateSmsChannelDto) {
     method: 'PUT',
     url: '/system/sms/channel',
     data,
-    operationId: 'SmsChannelController_update_v1',
+    operationId: 'SmsChannelController_update_v1'
   });
 }
 
@@ -44,7 +43,7 @@ export function fetchSmsChannelFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/sms/channel/list',
     params,
-    operationId: 'SmsChannelController_findAll_v1',
+    operationId: 'SmsChannelController_findAll_v1'
   });
 }
 
@@ -56,7 +55,7 @@ export function fetchSmsChannelGetEnabledChannels() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/system/sms/channel/enabled',
-    operationId: 'SmsChannelController_getEnabledChannels_v1',
+    operationId: 'SmsChannelController_getEnabledChannels_v1'
   });
 }
 
@@ -68,7 +67,7 @@ export function fetchSmsChannelFindOne(id: string | number) {
   return apiRequest<SmsChannelDetailVo>({
     method: 'GET',
     url: buildUrl('/system/sms/channel/{id}', { id }),
-    operationId: 'SmsChannelController_findOne_v1',
+    operationId: 'SmsChannelController_findOne_v1'
   });
 }
 
@@ -80,6 +79,6 @@ export function fetchSmsChannelRemove(id: string | number) {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: buildUrl('/system/sms/channel/{id}', { id }),
-    operationId: 'SmsChannelController_remove_v1',
+    operationId: 'SmsChannelController_remove_v1'
   });
 }

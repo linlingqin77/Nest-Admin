@@ -104,9 +104,7 @@ describe('Menu E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/system/menu/list`);
+      const response = await helper.getRequest().get(`${apiPrefix}/system/menu/list`);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -227,10 +225,7 @@ describe('Menu E2E Tests', () => {
         isFrame: '1',
       };
 
-      const response = await helper
-        .getRequest()
-        .post(`${apiPrefix}/system/menu`)
-        .send(menuData);
+      const response = await helper.getRequest().post(`${apiPrefix}/system/menu`).send(menuData);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -280,9 +275,7 @@ describe('Menu E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/system/menu/${testMenuId}`);
+      const response = await helper.getRequest().get(`${apiPrefix}/system/menu/${testMenuId}`);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -350,10 +343,7 @@ describe('Menu E2E Tests', () => {
         menuName: '未授权更新',
       };
 
-      const response = await helper
-        .getRequest()
-        .put(`${apiPrefix}/system/menu`)
-        .send(updateData);
+      const response = await helper.getRequest().put(`${apiPrefix}/system/menu`).send(updateData);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -399,9 +389,7 @@ describe('Menu E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .delete(`${apiPrefix}/system/menu/99999`);
+      const response = await helper.getRequest().delete(`${apiPrefix}/system/menu/99999`);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -436,9 +424,7 @@ describe('Menu E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/system/menu/treeselect`);
+      const response = await helper.getRequest().get(`${apiPrefix}/system/menu/treeselect`);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -474,9 +460,7 @@ describe('Menu E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/system/menu/roleMenuTreeselect/1`);
+      const response = await helper.getRequest().get(`${apiPrefix}/system/menu/roleMenuTreeselect/1`);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -511,9 +495,7 @@ describe('Menu E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/system/menu/getRouters`);
+      const response = await helper.getRequest().get(`${apiPrefix}/system/menu/getRouters`);
 
       expect([401, 403]).toContain(response.status);
     });

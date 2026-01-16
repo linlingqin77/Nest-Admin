@@ -6,7 +6,7 @@ import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'OssConfigOperateDrawer',
+  name: 'OssConfigOperateDrawer'
 });
 
 interface Props {
@@ -25,7 +25,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
@@ -34,7 +34,7 @@ const { createRequiredRule } = useFormRules();
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
     add: '新增OSS配置',
-    edit: '编辑OSS配置',
+    edit: '编辑OSS配置'
   };
   return titles[props.operateType];
 });
@@ -55,7 +55,7 @@ function createDefaultModel(): Model {
     isHttps: 'N',
     region: '',
     accessPolicy: '1',
-    remark: '',
+    remark: ''
   };
 }
 
@@ -71,7 +71,7 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
   secretKey: createRequiredRule('secretKey不能为空'),
   bucketName: createRequiredRule('桶名称不能为空'),
   endpoint: createRequiredRule('访问站点不能为空'),
-  accessPolicy: createRequiredRule('桶权限类型不能为空'),
+  accessPolicy: createRequiredRule('桶权限类型不能为空')
 };
 
 function handleUpdateModelWhenEdit() {
@@ -105,7 +105,7 @@ async function handleSubmit() {
       isHttps,
       region,
       accessPolicy,
-      remark,
+      remark
     } = model;
     try {
       await fetchOssConfigCreate({
@@ -119,7 +119,7 @@ async function handleSubmit() {
         isHttps: isHttps ?? undefined,
         region: region ?? undefined,
         accessPolicy: accessPolicy ?? undefined,
-        remark: remark ?? undefined,
+        remark: remark ?? undefined
       });
     } catch {
       return;
@@ -139,7 +139,7 @@ async function handleSubmit() {
       isHttps,
       region,
       accessPolicy,
-      remark,
+      remark
     } = model;
     try {
       await fetchOssConfigUpdate({
@@ -154,7 +154,7 @@ async function handleSubmit() {
         isHttps: isHttps ?? undefined,
         region: region ?? undefined,
         accessPolicy: accessPolicy ?? undefined,
-        remark: remark ?? undefined,
+        remark: remark ?? undefined
       });
     } catch {
       return;

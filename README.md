@@ -2,13 +2,17 @@
 
 <div align="center">
 
-![Nest-Admin-Soybean Logo](https://img.shields.io/badge/Nest--Admin--Soybean-2.2.0-blue)
+![Nest-Admin-Soybean Logo](https://img.shields.io/badge/Nest--Admin--Soybean-2.3.0-blue)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Node Version](https://img.shields.io/badge/node-%3E%3D20.19.0-brightgreen)](https://nodejs.org)
+[![pnpm Version](https://img.shields.io/badge/pnpm-%3E%3D10.5.0-orange)](https://pnpm.io)
 [![NestJS](https://img.shields.io/badge/NestJS-10.x-red)](https://nestjs.com/)
-[![Vue3](https://img.shields.io/badge/Vue-3.x-brightgreen)](https://vuejs.org/)
+[![Vue3](https://img.shields.io/badge/Vue-3.5-brightgreen)](https://vuejs.org/)
+[![Vite](https://img.shields.io/badge/Vite-7.x-646CFF)](https://vitejs.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6)](https://www.typescriptlang.org/)
 [![Project Grade](https://img.shields.io/badge/Grade-A%20(91%2F100)-brightgreen)](server/docs/OPTIMIZATION_README.md)
 [![Production Ready](https://img.shields.io/badge/Production-Ready-success)](server/docs/OPTIMIZATION_README.md)
+[![Test Coverage](https://img.shields.io/badge/Coverage-80%25-green)](server/coverage/)
 
 **基于 Vue3 + NestJS 的现代化企业级后台管理系统**
 
@@ -45,23 +49,25 @@
 #### 后端技术
 - **框架**: NestJS 10.x - 企业级 Node.js 框架
 - **ORM**: Prisma 5.x - 类型安全的现代 ORM
-- **数据库**: PostgreSQL - 强大的关系型数据库
-- **缓存**: Redis - 高性能缓存与会话存储
+- **数据库**: PostgreSQL 14+ - 强大的关系型数据库
+- **缓存**: Redis 7+ - 高性能缓存与会话存储
 - **认证**: JWT + Passport - 安全的身份验证
-- **日志**: Pino - 高性能结构化日志
-- **调度**: @nestjs/schedule - 定时任务
+- **日志**: Pino + Winston - 高性能结构化日志
+- **调度**: @nestjs/schedule + Bull - 定时任务与队列
 - **监控**: Prometheus + Terminus - 健康检查与指标采集
-- **文档**: Swagger - 自动生成 API 文档
+- **文档**: Swagger/OpenAPI - 自动生成 API 文档
+- **测试**: Jest + fast-check - 单元测试与属性测试
 
 #### 前端技术
-- **框架**: Vue 3.x - 渐进式 JavaScript 框架
+- **框架**: Vue 3.5+ - 渐进式 JavaScript 框架
 - **构建工具**: Vite 7.x - 新一代前端构建工具
-- **UI 框架**: Naive UI - 轻量级 Vue 3 组件库
-- **状态管理**: Pinia - Vue 3 官方状态管理
+- **UI 框架**: Naive UI 2.43+ - 轻量级 Vue 3 组件库
+- **状态管理**: Pinia 3.x - Vue 3 官方状态管理
 - **路由**: Vue Router 4 + Elegant Router - 文件路由
 - **CSS**: UnoCSS - 原子化 CSS 引擎
 - **请求**: Axios - HTTP 客户端
-- **类型**: TypeScript - 类型安全
+- **类型**: TypeScript 5.x - 类型安全
+- **测试**: Vitest + Cypress + fast-check - 单元/E2E/属性测试
 
 ---
 
@@ -298,7 +304,7 @@ sequenceDiagram
 - **Node.js**: >= 20.19.0
 - **pnpm**: >= 10.5.0
 - **PostgreSQL**: >= 14.0
-- **Redis**: >= 6.0
+- **Redis**: >= 7.0
 
 ### 1. 克隆项目
 
@@ -387,69 +393,84 @@ npx ts-node scripts/verify-demo-permissions.ts
 Nest-Admin-Soybean/
 ├── server/                      # 后端项目
 │   ├── src/
-│   │   ├── common/             # 公共模块
+│   │   ├── config/            # 配置文件
+│   │   ├── core/              # 核心功能
 │   │   │   ├── decorators/    # 装饰器
 │   │   │   ├── filters/       # 异常过滤器
 │   │   │   ├── guards/        # 守卫（认证、权限、租户）
 │   │   │   ├── interceptors/  # 拦截器（日志、加密、转换）
-│   │   │   ├── logger/        # 日志配置
-│   │   │   ├── pipes/         # 管道
-│   │   │   └── tenant/        # 租户上下文
-│   │   ├── config/            # 配置文件
+│   │   │   └── middleware/    # 中间件
+│   │   ├── infrastructure/    # 基础设施
+│   │   │   ├── cache/         # 缓存服务
+│   │   │   ├── prisma/        # Prisma 配置
+│   │   │   └── repository/    # 仓储层
 │   │   ├── module/            # 业务模块
-│   │   │   ├── admin/        # 管理端
-│   │   │   │   ├── system/   # 系统管理
-│   │   │   │   ├── monitor/  # 系统监控
-│   │   │   │   └── tool/     # 系统工具
-│   │   │   └── common/       # 公共业务
-│   │   ├── prisma/           # Prisma 配置
-│   │   └── main.ts           # 入口文件
+│   │   │   ├── main/          # 主模块（认证）
+│   │   │   ├── system/        # 系统管理
+│   │   │   ├── monitor/       # 系统监控
+│   │   │   └── upload/        # 文件上传
+│   │   ├── observability/     # 可观测性
+│   │   ├── resilience/        # 弹性模块
+│   │   ├── security/          # 安全模块
+│   │   ├── shared/            # 共享模块
+│   │   ├── tenant/            # 多租户模块
+│   │   └── main.ts            # 入口文件
+│   ├── test/                  # 测试文件（统一存放）
+│   │   ├── unit/              # 单元测试
+│   │   ├── integration/       # 集成测试
+│   │   ├── e2e/               # E2E 测试
+│   │   ├── fixtures/          # 测试数据工厂
+│   │   ├── helpers/           # 测试辅助函数
+│   │   └── mocks/             # Mock 实现
 │   ├── prisma/
-│   │   ├── schema.prisma     # 数据库模型
-│   │   └── seed.ts           # 种子数据
-│   ├── keys/                 # RSA 密钥
-│   ├── sql/                  # SQL 脚本
-│   │   └── demo-account-init.sql  # 演示账户初始化
-│   ├── scripts/              # 脚本工具
-│   │   ├── init-demo.sh          # 演示账户快速设置
-│   │   ├── init-demo-account.ts  # 演示账户初始化脚本
-│   │   ├── deploy.cjs            # 部署脚本
-│   │   └── ecosystem.config.cjs  # PM2 配置
-│   └── docs/                 # 后端文档
-│       ├── DEMO_ACCOUNT_GUIDE.md               # 演示账户指南
-│       ├── DEMO_ACCOUNT_IMPLEMENTATION_COMPLETE.md  # 实施总结
-│       ├── OPTIMIZATION_README.md              # 优化报告
-│       └── ...
+│   │   ├── schema.prisma      # 数据库模型
+│   │   └── seed.ts            # 种子数据
+│   ├── keys/                  # RSA 密钥
+│   ├── scripts/               # 脚本工具
+│   │   ├── init-demo.sh       # 演示账户快速设置
+│   │   ├── deploy.cjs         # 部署脚本
+│   │   └── ecosystem.config.cjs # PM2 配置
+│   └── docs/                  # 后端文档
 │
 ├── admin-naive-ui/              # 前端项目
 │   ├── src/
-│   │   ├── assets/           # 静态资源
-│   │   ├── components/       # 组件
-│   │   │   ├── common/      # 公共组件
-│   │   │   ├── advanced/    # 高级组件
-│   │   │   └── custom/      # 自定义组件
-│   │   ├── layouts/          # 布局
-│   │   ├── locales/          # 国际化
-│   │   ├── router/           # 路由
-│   │   ├── service/          # API 服务
-│   │   ├── store/            # 状态管理
-│   │   ├── theme/            # 主题配置
-│   │   ├── utils/            # 工具函数
-│   │   └── views/            # 页面视图
-│   │       ├── _builtin/    # 内置页面（登录、404 等）
-│   │       ├── home/        # 首页
-│   │       ├── system/      # 系统管理页面
-│   │       ├── monitor/     # 监控页面
-│   │       └── tool/        # 工具页面
-│   ├── packages/             # 内部包
-│   │   ├── axios/           # HTTP 请求
-│   │   ├── hooks/           # 钩子函数
-│   │   ├── materials/       # 组件库
-│   │   ├── utils/           # 工具库
-│   │   └── uno-preset/      # UnoCSS 预设
-│   └── build/                # 构建配置
+│   │   ├── assets/            # 静态资源
+│   │   ├── components/        # 组件
+│   │   │   ├── common/        # 公共组件
+│   │   │   ├── advanced/      # 高级组件
+│   │   │   └── custom/        # 自定义组件
+│   │   ├── layouts/           # 布局
+│   │   ├── locales/           # 国际化
+│   │   ├── router/            # 路由
+│   │   ├── service/           # API 服务
+│   │   ├── store/             # 状态管理
+│   │   ├── theme/             # 主题配置
+│   │   ├── utils/             # 工具函数
+│   │   └── views/             # 页面视图
+│   │       ├── _builtin/      # 内置页面（登录、404 等）
+│   │       ├── home/          # 首页
+│   │       ├── system/        # 系统管理页面
+│   │       ├── monitor/       # 监控页面
+│   │       └── tool/          # 工具页面
+│   ├── test/                  # 测试文件
+│   │   ├── unit/              # 单元测试
+│   │   ├── components/        # 组件测试
+│   │   ├── fixtures/          # 测试数据
+│   │   └── mocks/             # Mock 实现
+│   ├── cypress/               # Cypress E2E 测试
+│   │   ├── e2e/               # E2E 测试用例
+│   │   └── support/           # 支持文件
+│   ├── packages/              # 内部包
+│   │   ├── axios/             # HTTP 请求
+│   │   ├── hooks/             # 钩子函数
+│   │   ├── materials/         # 组件库
+│   │   ├── utils/             # 工具库
+│   │   └── uno-preset/        # UnoCSS 预设
+│   └── build/                 # 构建配置
 │
 └── docs/                        # 文档
+    ├── guide/                  # 使用指南
+    ├── development/            # 开发文档
     └── deploy-online/          # 部署文档
 ```
 
@@ -672,16 +693,22 @@ pnpm build:dev              # 开发构建
 pnpm build:prod             # 生产构建
 
 # 测试
+pnpm test                   # 运行单元测试
+pnpm test:watch             # 监听模式运行测试
+pnpm test:cov               # 运行测试并生成覆盖率报告
+pnpm test:e2e               # 运行 E2E 测试
+pnpm test:integration       # 运行集成测试
+pnpm test:all               # 运行所有测试
 
 # 演示账户
 ./scripts/init-demo.sh      # 初始化演示账户
 pnpm exec ts-node scripts/init-demo-account.ts  # 直接执行初始化脚本
-pnpm test                   # 单元测试
-pnpm test:e2e              # E2E 测试
 
 # 工具
 pnpm generate:keys          # 生成 RSA 密钥对
 pnpm redis:flush            # 清空 Redis
+pnpm logs:view              # 查看日志
+pnpm logs:error             # 查看错误日志
 ```
 
 ### 前端命令
@@ -699,9 +726,20 @@ pnpm build:test            # 测试构建
 # 代码质量
 pnpm lint                  # ESLint 检查
 pnpm typecheck             # TypeScript 类型检查
+pnpm format                # 代码格式化
+
+# 测试
+pnpm test                  # 运行单元测试
+pnpm test:watch            # 监听模式运行测试
+pnpm test:cov              # 运行测试并生成覆盖率报告
+pnpm test:ui               # 可视化测试界面
+pnpm cypress:open          # 打开 Cypress 交互界面
+pnpm cypress:run           # 运行 Cypress E2E 测试
+pnpm test:all              # 运行所有测试
 
 # 工具
 pnpm gen-route             # 生成路由
+pnpm gen:api               # 生成 API 类型
 pnpm cleanup               # 清理依赖
 ```
 

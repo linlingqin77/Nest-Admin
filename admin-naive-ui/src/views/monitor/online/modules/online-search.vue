@@ -3,7 +3,7 @@ import { useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'LoginInforSearch',
+  name: 'LoginInforSearch'
 });
 
 /** 在线用户搜索参数接口 */

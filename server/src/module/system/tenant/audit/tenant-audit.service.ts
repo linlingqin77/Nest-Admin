@@ -4,11 +4,7 @@ import { Result, ResponseCode } from 'src/shared/response';
 import { BusinessException } from 'src/shared/exceptions';
 import { IgnoreTenant } from 'src/tenant/decorators/tenant.decorator';
 import { toDtoList } from 'src/shared/utils/index';
-import {
-  ListTenantAuditLogDto,
-  CreateTenantAuditLogDto,
-  ExportTenantAuditLogDto,
-} from './dto/tenant-audit.dto';
+import { ListTenantAuditLogDto, CreateTenantAuditLogDto, ExportTenantAuditLogDto } from './dto/tenant-audit.dto';
 import { TenantAuditLogResponseDto } from './dto/tenant-audit.response.dto';
 import {
   TenantAuditLogVo,
@@ -117,12 +113,13 @@ export class TenantAuditService {
 
     // 获取租户名称
     const tenantIds: string[] = [...new Set(logs.map((log) => log.tenantId))];
-    const tenants = tenantIds.length > 0
-      ? await this.prisma.sysTenant.findMany({
-          where: { tenantId: { in: tenantIds } },
-          select: { tenantId: true, companyName: true },
-        })
-      : [];
+    const tenants =
+      tenantIds.length > 0
+        ? await this.prisma.sysTenant.findMany({
+            where: { tenantId: { in: tenantIds } },
+            select: { tenantId: true, companyName: true },
+          })
+        : [];
     const tenantMap = new Map(tenants.map((t) => [t.tenantId, t.companyName]));
 
     // 构建VO列表
@@ -222,7 +219,6 @@ export class TenantAuditService {
 
     return Result.ok({ id: Number(log.id) });
   }
-
 
   /**
    * 获取审计日志统计
@@ -343,12 +339,13 @@ export class TenantAuditService {
 
     // 获取租户名称
     const tenantIds: string[] = [...new Set(logs.map((log) => log.tenantId))];
-    const tenants = tenantIds.length > 0
-      ? await this.prisma.sysTenant.findMany({
-          where: { tenantId: { in: tenantIds } },
-          select: { tenantId: true, companyName: true },
-        })
-      : [];
+    const tenants =
+      tenantIds.length > 0
+        ? await this.prisma.sysTenant.findMany({
+            where: { tenantId: { in: tenantIds } },
+            select: { tenantId: true, companyName: true },
+          })
+        : [];
     const tenantMap = new Map(tenants.map((t) => [t.tenantId, t.companyName]));
 
     // 构建导出数据

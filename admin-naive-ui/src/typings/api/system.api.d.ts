@@ -1117,7 +1117,10 @@ declare namespace Api {
 
     /** 短信渠道操作参数 */
     type SmsChannelOperateParams = CommonType.RecordNullable<
-      Pick<SmsChannel, 'id' | 'code' | 'name' | 'signature' | 'apiKey' | 'apiSecret' | 'callbackUrl' | 'status' | 'remark'>
+      Pick<
+        SmsChannel,
+        'id' | 'code' | 'name' | 'signature' | 'apiKey' | 'apiSecret' | 'callbackUrl' | 'status' | 'remark'
+      >
     >;
 
     /** 短信渠道列表 */

@@ -8,7 +8,7 @@ import { useAppStore } from '@/store/modules/app';
 import { useThemeStore } from '@/store/modules/theme';
 
 defineOptions({
-  name: 'UmoDocEditor',
+  name: 'UmoDocEditor'
 });
 
 const attrs: UmoEditorOptions = useAttrs();
@@ -31,15 +31,15 @@ watch(
     });
   },
   {
-    immediate: true,
-  },
+    immediate: true
+  }
 );
 
 watch(
   () => appStore.locale,
   () => {
     umoEditorRef.value?.setLocale(appStore.locale);
-  },
+  }
 );
 
 async function handleSave(content: { html: string }) {
@@ -55,7 +55,7 @@ async function handleFileUpload(file: File) {
     const { data } = await fetchUploadFile(formData);
     return {
       id: data?.ossId,
-      url: data?.url,
+      url: data?.url
     };
   } catch (error: any) {
     throw new Error(error.message || '上传失败');
@@ -74,13 +74,13 @@ function handleFileDelete(id: CommonType.IdType) {
       } catch (error: any) {
         throw new Error(error.message || '文件删除失败');
       }
-    },
+    }
   });
   return true;
 }
 
 defineExpose({
-  saveContent: () => umoEditorRef.value?.saveContent(),
+  saveContent: () => umoEditorRef.value?.saveContent()
 });
 </script>
 

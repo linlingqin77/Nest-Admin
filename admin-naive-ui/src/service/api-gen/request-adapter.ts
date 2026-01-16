@@ -81,7 +81,7 @@ export async function apiRequest<T>(config: RequestConfig): Promise<FlatResponse
     url,
     data,
     params,
-    headers: Object.keys(mergedHeaders).length > 0 ? mergedHeaders : undefined,
+    headers: Object.keys(mergedHeaders).length > 0 ? mergedHeaders : undefined
   });
 
   return result as FlatResponseData<T>;

@@ -18,7 +18,7 @@ export class SmsClientFactory implements ISmsClientFactory {
   getClient(channelCode: string, config: SmsChannelConfig): ISmsClient {
     // 使用渠道编码和配置生成缓存key
     const cacheKey = `${channelCode}_${config.apiKey}`;
-    
+
     // 检查缓存
     if (this.clientCache.has(cacheKey)) {
       return this.clientCache.get(cacheKey)!;
@@ -27,7 +27,7 @@ export class SmsClientFactory implements ISmsClientFactory {
     // 创建新客户端
     const client = this.createClient(channelCode, config);
     this.clientCache.set(cacheKey, client);
-    
+
     return client;
   }
 

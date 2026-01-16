@@ -192,10 +192,7 @@ describe('Result Boundary Condition Tests', () => {
     });
 
     it('should handle rejected promise with custom fail code', async () => {
-      const result = await Result.fromPromise(
-        Promise.reject(new Error('test')),
-        ResponseCode.USER_NOT_FOUND,
-      );
+      const result = await Result.fromPromise(Promise.reject(new Error('test')), ResponseCode.USER_NOT_FOUND);
       expect(result.code).toBe(ResponseCode.USER_NOT_FOUND);
     });
   });

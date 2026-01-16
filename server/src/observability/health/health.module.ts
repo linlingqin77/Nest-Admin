@@ -7,7 +7,7 @@ import { RedisHealthIndicator } from './redis.health';
 /**
  * 健康检查模块
  * 提供 Prisma 和 Redis 健康检查指示器
- * 
+ *
  * 使用方式:
  * 1. 在需要健康检查的模块中导入 HealthModule
  * 2. 注入 PrismaHealthIndicator 和 RedisHealthIndicator

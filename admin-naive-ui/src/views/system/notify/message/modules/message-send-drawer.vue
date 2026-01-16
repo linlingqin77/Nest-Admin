@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch, onMounted } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { fetchNotifyMessageSend, fetchNotifyMessageSendAll, fetchNotifyTemplateGetSelectList } from '@/service/api-gen';
+import { useFormRules, useNaiveForm } from '@/hooks/common/form';
+import { $t } from '@/locales';
 
 interface SendNotifyMessageDto {
   userIds: number[];
@@ -12,11 +14,9 @@ interface SendNotifyAllDto {
   templateCode: string;
   params?: Record<string, string>;
 }
-import { useFormRules, useNaiveForm } from '@/hooks/common/form';
-import { $t } from '@/locales';
 
 defineOptions({
-  name: 'NotifyMessageSendDrawer',
+  name: 'NotifyMessageSendDrawer'
 });
 
 interface Emits {
@@ -26,7 +26,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
@@ -37,10 +37,10 @@ const sendType = ref<'single' | 'all'>('single');
 
 async function loadTemplateOptions() {
   try {
-    const { data } = await fetchNotifyTemplateGetSelectList() as any;
+    const { data } = (await fetchNotifyTemplateGetSelectList()) as any;
     templateOptions.value = (data || []).map((item: any) => ({
       label: `${item.name} (${item.code})`,
-      value: item.code,
+      value: item.code
     }));
   } catch {
     // error handled by request interceptor
@@ -67,7 +67,7 @@ function createDefaultModel(): Model {
   return {
     userIds: [],
     templateCode: '',
-    params: {},
+    params: {}
   };
 }
 
@@ -81,8 +81,8 @@ const rules = {
       }
       return true;
     },
-    trigger: 'blur',
-  },
+    trigger: 'blur'
+  }
 };
 
 // 动态参数输入
@@ -99,7 +99,7 @@ function removeParam(index: number) {
 
 function updateModelParams() {
   const params: Record<string, string> = {};
-  paramsArray.value.forEach((item) => {
+  paramsArray.value.forEach(item => {
     if (item.key) {
       params[item.key] = item.value;
     }
@@ -113,8 +113,8 @@ const userIdsInput = ref('');
 function parseUserIds() {
   const ids = userIdsInput.value
     .split(/[,，\s]+/)
-    .map((id) => parseInt(id.trim(), 10))
-    .filter((id) => !isNaN(id));
+    .map(id => Number.parseInt(id.trim(), 10))
+    .filter(id => !isNaN(id));
   model.userIds = ids;
 }
 
@@ -138,13 +138,13 @@ async function handleSubmit() {
       const sendData: SendNotifyMessageDto = {
         userIds: model.userIds,
         templateCode: model.templateCode,
-        params: Object.keys(model.params).length > 0 ? model.params : undefined,
+        params: Object.keys(model.params).length > 0 ? model.params : undefined
       };
       await fetchNotifyMessageSend(sendData);
     } else {
       const sendAllData: SendNotifyAllDto = {
         templateCode: model.templateCode,
-        params: Object.keys(model.params).length > 0 ? model.params : undefined,
+        params: Object.keys(model.params).length > 0 ? model.params : undefined
       };
       await fetchNotifyMessageSendAll(sendAllData);
     }
@@ -176,11 +176,7 @@ watch(visible, () => {
           </NRadioGroup>
         </NFormItem>
         <NFormItem v-if="sendType === 'single'" label="接收用户ID" path="userIds">
-          <NInput
-            v-model:value="userIdsInput"
-            placeholder="请输入用户ID，多个用逗号分隔"
-            @blur="parseUserIds"
-          />
+          <NInput v-model:value="userIdsInput" placeholder="请输入用户ID，多个用逗号分隔" @blur="parseUserIds" />
         </NFormItem>
         <NFormItem label="消息模板" path="templateCode">
           <NSelect
@@ -192,19 +188,9 @@ watch(visible, () => {
         </NFormItem>
         <NFormItem label="模板参数">
           <div class="w-full">
-            <div v-for="(param, index) in paramsArray" :key="index" class="flex gap-8px mb-8px">
-              <NInput
-                v-model:value="param.key"
-                placeholder="参数名"
-                class="flex-1"
-                @blur="updateModelParams"
-              />
-              <NInput
-                v-model:value="param.value"
-                placeholder="参数值"
-                class="flex-1"
-                @blur="updateModelParams"
-              />
+            <div v-for="(param, index) in paramsArray" :key="index" class="mb-8px flex gap-8px">
+              <NInput v-model:value="param.key" placeholder="参数名" class="flex-1" @blur="updateModelParams" />
+              <NInput v-model:value="param.value" placeholder="参数值" class="flex-1" @blur="updateModelParams" />
               <NButton type="error" text @click="removeParam(index)">
                 <template #icon>
                   <icon-material-symbols:delete-outline />

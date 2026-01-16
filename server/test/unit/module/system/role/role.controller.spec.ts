@@ -48,7 +48,6 @@ describe('RoleController', () => {
       authUserSelectAll: jest.fn().mockResolvedValue(Result.ok()),
     };
 
-
     const module: TestingModule = await Test.createTestingModule({
       controllers: [RoleController],
       providers: [

@@ -1,6 +1,11 @@
 <script setup lang="tsx">
 import { NDivider } from 'naive-ui';
-import { fetchLoginlogFindAll, fetchLoginlogRemove, fetchLoginlogRemoveAll, fetchLoginlogUnlock } from '@/service/api-gen';
+import {
+  fetchLoginlogFindAll,
+  fetchLoginlogRemove,
+  fetchLoginlogRemoveAll,
+  fetchLoginlogUnlock
+} from '@/service/api-gen';
 import type { LoginLogResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
@@ -16,7 +21,7 @@ import LoginInforSearch from './modules/login-infor-search.vue';
 import LoginInforViewDrawer from './modules/login-infor-view-drawer.vue';
 
 defineOptions({
-  name: 'LoginInforList',
+  name: 'LoginInforList'
 });
 
 /** 搜索参数接口 */
@@ -47,7 +52,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchLoginlogFindAll as any,
   apiParams: {
@@ -58,25 +63,25 @@ const {
     userName: null,
     ipaddr: null,
     status: null,
-    params: {},
+    params: {}
   } as SearchParams,
   columns: (() => [
     {
       type: 'selection',
       align: 'center',
-      width: 48,
+      width: 48
     },
     {
       key: 'index',
       title: $t('common.index'),
       align: 'center',
-      width: 64,
+      width: 64
     },
     {
       key: 'userName',
       title: '用户账号',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'deviceType',
@@ -85,19 +90,19 @@ const {
       minWidth: 120,
       render: (row: LoginLogResponseDto) => {
         return <DictTag size="small" value={(row as any).deviceType} dict-code="sys_device_type" />;
-      },
+      }
     },
     {
       key: 'ipaddr',
       title: '登录IP地址',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'loginLocation',
       title: '登录地点',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'browser',
@@ -111,14 +116,14 @@ const {
             {row.browser}
           </div>
         );
-      },
+      }
     },
     {
       key: 'os',
       title: '操作系统',
       align: 'center',
       ellipsis: {
-        tooltip: true,
+        tooltip: true
       },
       minWidth: 120,
       render: (row: LoginLogResponseDto) => {
@@ -129,7 +134,7 @@ const {
             {osName}
           </div>
         );
-      },
+      }
     },
     {
       key: 'status',
@@ -138,16 +143,16 @@ const {
       minWidth: 120,
       render: (row: LoginLogResponseDto) => {
         return <DictTag size="small" value={row.status} dict-code="sys_common_status" />;
-      },
+      }
     },
     {
       key: 'loginTime',
       title: '访问时间',
       align: 'center',
       ellipsis: {
-        tooltip: true,
+        tooltip: true
       },
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'operate',
@@ -188,12 +193,15 @@ const {
             {unlockBtn()}
           </div>
         );
-      },
-    },
-  ]) as any,
+      }
+    }
+  ]) as any
 });
 
-const { drawerVisible, editingData, handleEdit, checkedRowKeys, onBatchDeleted } = useTableOperate(data as any, getData);
+const { drawerVisible, editingData, handleEdit, checkedRowKeys, onBatchDeleted } = useTableOperate(
+  data as any,
+  getData
+);
 
 async function handleBatchDelete() {
   // request
@@ -227,7 +235,7 @@ async function handleCleanLoginInfor() {
       } catch {
         // error handled by request interceptor
       }
-    },
+    }
   });
 }
 
@@ -283,7 +291,7 @@ async function handleUnlockLoginInfor(username: string) {
         :scroll-x="962"
         :loading="loading"
         remote
-        :row-key="(row) => row.infoId"
+        :row-key="row => row.infoId"
         :pagination="mobilePagination"
         class="sm:h-full"
       />

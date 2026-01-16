@@ -83,10 +83,12 @@ export class TenantPackageService {
       this.prisma.sysTenantPackage.count({ where }),
     ]);
 
-    return Result.ok(toDtoPage(TenantPackageResponseDto, {
-      rows: list,
-      total,
-    }));
+    return Result.ok(
+      toDtoPage(TenantPackageResponseDto, {
+        rows: list,
+        total,
+      }),
+    );
   }
 
   /**

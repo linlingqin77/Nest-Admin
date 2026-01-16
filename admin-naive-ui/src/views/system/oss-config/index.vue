@@ -1,11 +1,7 @@
 <script setup lang="tsx">
 import { NDivider, NTag } from 'naive-ui';
 import type { OssConfigResponseDto } from '@/service/api-gen';
-import {
-  fetchOssConfigFindAll,
-  fetchOssConfigRemove,
-  fetchOssConfigChangeStatus,
-} from '@/service/api-gen';
+import { fetchOssConfigChangeStatus, fetchOssConfigFindAll, fetchOssConfigRemove } from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
@@ -17,7 +13,7 @@ import OssConfigOperateDrawer from './modules/oss-config-operate-drawer.vue';
 import OssConfigSearch from './modules/oss-config-search.vue';
 
 defineOptions({
-  name: 'OssConfigList',
+  name: 'OssConfigList'
 });
 
 useDict('sys_yes_no');
@@ -34,7 +30,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchOssConfigFindAll,
   apiParams: {
@@ -45,43 +41,43 @@ const {
     configKey: null,
     bucketName: null,
     region: null,
-    status: null,
+    status: null
   },
   columns: () => [
     {
       type: 'selection',
       align: 'center',
-      width: 48,
+      width: 48
     },
     {
       key: 'index',
       title: $t('common.index'),
       align: 'center',
-      width: 64,
+      width: 64
     },
     {
       key: 'configKey',
       title: '配置名称',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'bucketName',
       title: '桶名称',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'endpoint',
       title: '访问站点',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'region',
       title: '域',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'accessPolicy',
@@ -99,7 +95,7 @@ const {
           return <NTag type="warning">自定义</NTag>;
         }
         return null;
-      },
+      }
     },
     {
       key: 'status',
@@ -114,20 +110,20 @@ const {
             onSubmitted={(value, callback) => handleStatusChange(row, value, callback)}
           />
         );
-      },
+      }
     },
     {
       key: 'remark',
       title: '备注',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 130,
-      render: (row) => {
+      render: row => {
         const divider = () => {
           if (!hasAuth('system:ossConfig:edit') || !hasAuth('system:ossConfig:remove')) {
             return null;
@@ -173,9 +169,9 @@ const {
             {deleteBtn()}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedRowKeys, onBatchDeleted, onDeleted } =
@@ -209,12 +205,12 @@ async function edit(ossConfigId: CommonType.IdType) {
 async function handleStatusChange(
   row: OssConfigResponseDto,
   value: Api.Common.EnableStatus,
-  callback: (flag: boolean) => void,
+  callback: (flag: boolean) => void
 ) {
   try {
     await fetchOssConfigChangeStatus({
       ossConfigId: row.ossConfigId!,
-      status: value,
+      status: value
     });
     callback(true);
     window.$message?.success('状态修改成功');
@@ -252,7 +248,7 @@ async function handleStatusChange(
         :scroll-x="962"
         :loading="loading"
         remote
-        :row-key="(row) => row.ossConfigId"
+        :row-key="row => row.ossConfigId"
         :pagination="mobilePagination"
         class="sm:h-full"
       />

@@ -144,11 +144,7 @@ describe('TenantDashboard Property-Based Tests', () => {
     startDate.setDate(startDate.getDate() - days);
     const activeTenantIds = new Set<string>();
     loginLogs.forEach((log) => {
-      if (
-        log.tenantId !== SUPER_TENANT_ID &&
-        log.status === '0' &&
-        log.loginTime >= startDate
-      ) {
+      if (log.tenantId !== SUPER_TENANT_ID && log.status === '0' && log.loginTime >= startDate) {
         activeTenantIds.add(log.tenantId);
       }
     });

@@ -329,9 +329,7 @@ export class TenantQuotaService {
         where: { tenantId: dto.tenantId },
         data: updateData,
       }),
-      ...quotaLogs.map((log) =>
-        this.prisma.sysTenantQuotaLog.create({ data: log }),
-      ),
+      ...quotaLogs.map((log) => this.prisma.sysTenantQuotaLog.create({ data: log })),
     ]);
 
     return Result.ok();

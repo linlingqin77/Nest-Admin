@@ -53,7 +53,6 @@ describe('FileAccessService', () => {
       );
     });
 
-
     it('should set expiration to 30 minutes', () => {
       const now = Math.floor(Date.now() / 1000);
       service.generateAccessToken('file-123', 'tenant-001');

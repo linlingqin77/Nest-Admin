@@ -1,49 +1,15 @@
-<template>
-  <div class="sidebar-menu" :style="{ width: `${totalWidth}px` }">
-    <!-- 一级菜单 -->
-    <div class="primary-menu" :style="{ width: `${SIDEBAR_PRIMARY_WIDTH}px` }">
-      <div
-        v-for="item in primaryMenuItems"
-        :key="item.key"
-        class="primary-menu-item"
-        :class="{ active: activeMenu === item.key }"
-        @click="handlePrimaryMenuClick(item.key)"
-      >
-        <div :class="item.icon" :style="iconStyle(item.key)" />
-        <div class="menu-text" :style="textStyle(item.key)">
-          {{ item.label }}
-        </div>
-      </div>
-    </div>
-
-    <!-- 二级菜单 -->
-    <Transition name="slide">
-      <div v-if="showSecondaryMenu" class="secondary-menu" :style="{ width: `${SIDEBAR_SECONDARY_WIDTH}px` }">
-        <n-menu
-          v-model:value="activeSecondaryMenu"
-          :options="secondaryMenuOptions"
-          :indent="MENU_INDENT"
-          :root-indent="12"
-          @update:value="handleSecondaryMenuClick"
-        />
-      </div>
-    </Transition>
-  </div>
-</template>
-
 <script setup lang="ts">
-import { ref, computed, h } from 'vue';
-import { NMenu } from 'naive-ui';
+import { computed, h, ref } from 'vue';
+import { NMenu, useThemeVars } from 'naive-ui';
 import type { MenuOption } from 'naive-ui';
-import { useThemeVars } from 'naive-ui';
 import {
-  SIDEBAR_PRIMARY_WIDTH,
-  SIDEBAR_SECONDARY_WIDTH,
   FILE_ICON_SIZE,
-  MENU_ITEM_HEIGHT,
-  MENU_ITEM_BORDER_RADIUS,
   MENU_INDENT,
+  MENU_ITEM_BORDER_RADIUS,
+  MENU_ITEM_HEIGHT,
   PRIMARY_MENU_SPACING,
+  SIDEBAR_PRIMARY_WIDTH,
+  SIDEBAR_SECONDARY_WIDTH
 } from '../constants';
 
 interface PrimaryMenuItem {
@@ -69,8 +35,8 @@ const primaryMenuItems = ref<PrimaryMenuItem[]>([
     icon: 'i-carbon-folder',
     children: [
       { key: 'all-files', label: '全部文件' },
-      { key: 'recent', label: '最近使用' },
-    ],
+      { key: 'recent', label: '最近使用' }
+    ]
   },
   {
     key: 'category',
@@ -83,19 +49,19 @@ const primaryMenuItems = ref<PrimaryMenuItem[]>([
       { key: 'audio', label: '音频' },
       { key: 'archive', label: '压缩包' },
       { key: 'code', label: '代码' },
-      { key: 'other', label: '其他' },
-    ],
+      { key: 'other', label: '其他' }
+    ]
   },
   {
     key: 'share',
     label: '分享',
-    icon: 'i-carbon-share',
+    icon: 'i-carbon-share'
   },
   {
     key: 'recycle',
     label: '回收站',
-    icon: 'i-carbon-trash-can',
-  },
+    icon: 'i-carbon-trash-can'
+  }
 ]);
 
 // 当前激活的一级菜单
@@ -111,33 +77,33 @@ const totalWidth = computed(() => {
 
 // 是否显示二级菜单
 const showSecondaryMenu = computed(() => {
-  const currentItem = primaryMenuItems.value.find((item) => item.key === activeMenu.value);
-  return !!(currentItem?.children && currentItem.children.length > 0);
+  const currentItem = primaryMenuItems.value.find(item => item.key === activeMenu.value);
+  return Boolean(currentItem?.children && currentItem.children.length > 0);
 });
 
 // 二级菜单选项
 const secondaryMenuOptions = computed<MenuOption[]>(() => {
-  const currentItem = primaryMenuItems.value.find((item) => item.key === activeMenu.value);
+  const currentItem = primaryMenuItems.value.find(item => item.key === activeMenu.value);
   if (!currentItem?.children) return [];
 
-  return currentItem.children.map((child) => ({
+  return currentItem.children.map(child => ({
     key: child.key,
     label: child.label,
-    icon: child.icon ? () => h('div', { class: child.icon }) : undefined,
+    icon: child.icon ? () => h('div', { class: child.icon }) : undefined
   }));
 });
 
 // 图标样式
 const iconStyle = computed(() => (key: string) => ({
   fontSize: `${FILE_ICON_SIZE}px`,
-  color: activeMenu.value === key ? themeVars.value.primaryColor : themeVars.value.textColor2,
+  color: activeMenu.value === key ? themeVars.value.primaryColor : themeVars.value.textColor2
 }));
 
 // 文字样式
 const textStyle = computed(() => (key: string) => ({
   fontSize: '12px',
   color: activeMenu.value === key ? themeVars.value.primaryColor : themeVars.value.textColor2,
-  fontWeight: activeMenu.value === key ? 700 : 400,
+  fontWeight: activeMenu.value === key ? 700 : 400
 }));
 
 // Emit
@@ -151,7 +117,7 @@ function handlePrimaryMenuClick(key: string) {
   activeMenu.value = key;
 
   // 如果有二级菜单，默认选中第一个
-  const item = primaryMenuItems.value.find((i) => i.key === key);
+  const item = primaryMenuItems.value.find(i => i.key === key);
   if (item?.children && item.children.length > 0) {
     activeSecondaryMenu.value = item.children[0].key;
     emit('secondaryMenuChange', item.children[0].key);
@@ -174,9 +140,42 @@ defineExpose({
   },
   setActiveSecondaryMenu: (key: string) => {
     activeSecondaryMenu.value = key;
-  },
+  }
 });
 </script>
+
+<template>
+  <div class="sidebar-menu" :style="{ width: `${totalWidth}px` }">
+    <!-- 一级菜单 -->
+    <div class="primary-menu" :style="{ width: `${SIDEBAR_PRIMARY_WIDTH}px` }">
+      <div
+        v-for="item in primaryMenuItems"
+        :key="item.key"
+        class="primary-menu-item"
+        :class="{ active: activeMenu === item.key }"
+        @click="handlePrimaryMenuClick(item.key)"
+      >
+        <div :class="item.icon" :style="iconStyle(item.key)" />
+        <div class="menu-text" :style="textStyle(item.key)">
+          {{ item.label }}
+        </div>
+      </div>
+    </div>
+
+    <!-- 二级菜单 -->
+    <Transition name="slide">
+      <div v-if="showSecondaryMenu" class="secondary-menu" :style="{ width: `${SIDEBAR_SECONDARY_WIDTH}px` }">
+        <NMenu
+          v-model:value="activeSecondaryMenu"
+          :options="secondaryMenuOptions"
+          :indent="MENU_INDENT"
+          :root-indent="12"
+          @update:value="handleSecondaryMenuClick"
+        />
+      </div>
+    </Transition>
+  </div>
+</template>
 
 <style scoped lang="scss">
 .sidebar-menu {

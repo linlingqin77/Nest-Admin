@@ -5,7 +5,6 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
 
 /**
@@ -15,7 +14,7 @@ export function fetchHealthCheck() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/health',
-    operationId: 'HealthController_check_v1',
+    operationId: 'HealthController_check_v1'
   });
 }
 
@@ -26,7 +25,7 @@ export function fetchHealthCheckLive() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/health/live',
-    operationId: 'HealthController_checkLive_v1',
+    operationId: 'HealthController_checkLive_v1'
   });
 }
 
@@ -37,7 +36,7 @@ export function fetchHealthCheckLiveness() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/health/liveness',
-    operationId: 'HealthController_checkLiveness_v1',
+    operationId: 'HealthController_checkLiveness_v1'
   });
 }
 
@@ -48,7 +47,7 @@ export function fetchHealthCheckReady() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/health/ready',
-    operationId: 'HealthController_checkReady_v1',
+    operationId: 'HealthController_checkReady_v1'
   });
 }
 
@@ -59,7 +58,7 @@ export function fetchHealthCheckReadiness() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/health/readiness',
-    operationId: 'HealthController_checkReadiness_v1',
+    operationId: 'HealthController_checkReadiness_v1'
   });
 }
 
@@ -70,6 +69,6 @@ export function fetchHealthGetInfo() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/health/info',
-    operationId: 'HealthController_getInfo_v1',
+    operationId: 'HealthController_getInfo_v1'
   });
 }

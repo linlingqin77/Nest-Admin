@@ -148,7 +148,7 @@ describe('IdempotentInterceptor Property-Based Tests', () => {
           });
 
           const context = createMockContext({ body: requestBody });
-          
+
           // Create handler that tracks execution count
           const createHandler = (): CallHandler => ({
             handle: () => {
@@ -185,9 +185,11 @@ describe('IdempotentInterceptor Property-Based Tests', () => {
 
           // Property: Method should execute only once for duplicate requests
           // First call executes, second call returns cached result
-          return methodExecutionCount === 1 && 
-                 JSON.stringify(result1) === JSON.stringify(resultData) &&
-                 JSON.stringify(result2) === JSON.stringify(resultData);
+          return (
+            methodExecutionCount === 1 &&
+            JSON.stringify(result1) === JSON.stringify(resultData) &&
+            JSON.stringify(result2) === JSON.stringify(resultData)
+          );
         },
       ),
       { numRuns: 100 },
@@ -249,9 +251,11 @@ describe('IdempotentInterceptor Property-Based Tests', () => {
             return false;
           } catch (error) {
             // Property: Should throw HttpException with TOO_MANY_REQUESTS status
-            return error instanceof HttpException && 
-                   error.getStatus() === HttpStatus.TOO_MANY_REQUESTS &&
-                   error.message === customMessage;
+            return (
+              error instanceof HttpException &&
+              error.getStatus() === HttpStatus.TOO_MANY_REQUESTS &&
+              error.message === customMessage
+            );
           }
         },
       ),
@@ -281,10 +285,10 @@ describe('IdempotentInterceptor Property-Based Tests', () => {
           // Reset state
           redisKeyDeleted = false;
           storedKeys.clear();
-          
+
           // Create a promise that resolves when del is called
           let delResolve: () => void;
-          const delCalledPromise = new Promise<void>(resolve => {
+          const delCalledPromise = new Promise<void>((resolve) => {
             delResolve = resolve;
           });
 
@@ -299,7 +303,7 @@ describe('IdempotentInterceptor Property-Based Tests', () => {
             const data = storedKeys.get(key);
             return data ? data.value : null;
           });
-          
+
           // Override del mock to track when it's called
           mockRedisService.del.mockImplementation(async (key: string) => {
             redisKeyDeleted = true;
@@ -328,13 +332,10 @@ describe('IdempotentInterceptor Property-Based Tests', () => {
           } catch (error: any) {
             caughtError = error;
           }
-          
+
           // Wait for del to be called (with timeout)
-          await Promise.race([
-            delCalledPromise,
-            new Promise(resolve => setTimeout(resolve, 100)),
-          ]);
-          
+          await Promise.race([delCalledPromise, new Promise((resolve) => setTimeout(resolve, 100))]);
+
           // Property: When error occurs with deleteOnError=true, key should be deleted
           return redisKeyDeleted && caughtError?.message === errorMessage;
         },
@@ -376,7 +377,7 @@ describe('IdempotentInterceptor Property-Based Tests', () => {
             const data = storedKeys.get(key);
             return data ? data.value : null;
           });
-          
+
           // Override del mock to track if it's called (it shouldn't be)
           mockRedisService.del.mockImplementation(async (key: string) => {
             redisKeyDeleted = true;
@@ -404,10 +405,10 @@ describe('IdempotentInterceptor Property-Based Tests', () => {
           } catch (error: any) {
             caughtError = error;
           }
-          
+
           // Wait a bit to ensure del would have been called if it was going to be
-          await new Promise(resolve => setTimeout(resolve, 50));
-          
+          await new Promise((resolve) => setTimeout(resolve, 50));
+
           // Property: When error occurs with deleteOnError=false, key should NOT be deleted
           return !redisKeyDeleted && caughtError?.message === errorMessage;
         },

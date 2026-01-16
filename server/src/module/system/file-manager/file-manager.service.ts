@@ -84,7 +84,11 @@ export class FileManagerService {
       const parent = await this.prisma.sysFileFolder.findUnique({
         where: { folderId: parentId },
       });
-      BusinessException.throwIf(!parent || parent.delFlag === DelFlagEnum.DELETE, '父文件夹不存在', ResponseCode.DATA_NOT_FOUND);
+      BusinessException.throwIf(
+        !parent || parent.delFlag === DelFlagEnum.DELETE,
+        '父文件夹不存在',
+        ResponseCode.DATA_NOT_FOUND,
+      );
       folderPath = `${parent.folderPath}${parent.folderName}/`;
     }
 
@@ -259,10 +263,12 @@ export class FileManagerService {
     const buildTree = (parentId: number = 0): FolderTreeNodeResponseDto[] => {
       return folders
         .filter((f) => f.parentId === parentId)
-        .map((folder) => toDto(FolderTreeNodeResponseDto, {
-          ...folder,
-          children: buildTree(folder.folderId),
-        }));
+        .map((folder) =>
+          toDto(FolderTreeNodeResponseDto, {
+            ...folder,
+            children: buildTree(folder.folderId),
+          }),
+        );
     };
 
     return Result.ok(buildTree());
@@ -498,12 +504,14 @@ export class FileManagerService {
       },
     });
 
-    return Result.ok(toDto(CreateShareResultResponseDto, {
-      shareId: share.shareId,
-      shareUrl: `/share/${share.shareId}`,
-      shareCode: share.shareCode,
-      expireTime: share.expireTime,
-    }));
+    return Result.ok(
+      toDto(CreateShareResultResponseDto, {
+        shareId: share.shareId,
+        shareUrl: `/share/${share.shareId}`,
+        shareCode: share.shareCode,
+        expireTime: share.expireTime,
+      }),
+    );
   }
 
   /**
@@ -851,10 +859,12 @@ export class FileManagerService {
 
     this.logger.log(`恢复版本: 从版本${targetVersion.version}创建新版本${newVersion}`);
 
-    return Result.ok(toDto(RestoreVersionResultResponseDto, {
-      newVersion,
-      uploadId: newUploadId,
-    }));
+    return Result.ok(
+      toDto(RestoreVersionResultResponseDto, {
+        newVersion,
+        uploadId: newUploadId,
+      }),
+    );
   }
 
   // ==================== 文件下载 ====================
@@ -875,10 +885,12 @@ export class FileManagerService {
 
     const token = this.fileAccessService.generateAccessToken(uploadId, tenantId);
 
-    return Result.ok(toDto(AccessTokenResponseDto, {
-      token,
-      expiresIn: 1800, // 30分钟
-    }));
+    return Result.ok(
+      toDto(AccessTokenResponseDto, {
+        token,
+        expiresIn: 1800, // 30分钟
+      }),
+    );
   }
 
   /**
@@ -1010,12 +1022,14 @@ export class FileManagerService {
     const { storageQuota, storageUsed, companyName } = tenant;
     const percentage = storageQuota > 0 ? (storageUsed / storageQuota) * 100 : 0;
 
-    return Result.ok(toDto(StorageStatsResponseDto, {
-      used: storageUsed,
-      quota: storageQuota,
-      percentage: parseFloat(percentage.toFixed(2)),
-      remaining: storageQuota - storageUsed,
-      companyName,
-    }));
+    return Result.ok(
+      toDto(StorageStatsResponseDto, {
+        used: storageUsed,
+        quota: storageQuota,
+        percentage: parseFloat(percentage.toFixed(2)),
+        remaining: storageQuota - storageUsed,
+        companyName,
+      }),
+    );
   }
 }

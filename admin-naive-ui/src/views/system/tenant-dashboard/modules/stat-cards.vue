@@ -4,7 +4,7 @@ import { createReusableTemplate } from '@vueuse/core';
 import { useThemeStore } from '@/store/modules/theme';
 
 defineOptions({
-  name: 'StatCards',
+  name: 'StatCards'
 });
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   stats: null,
-  loading: false,
+  loading: false
 });
 
 const themeStore = useThemeStore();
@@ -39,9 +39,9 @@ const cardData = computed<CardData[]>(() => [
     unit: '',
     color: {
       start: '#ec4786',
-      end: '#b955a4',
+      end: '#b955a4'
     },
-    icon: 'material-symbols:business-outline',
+    icon: 'material-symbols:business-outline'
   },
   {
     key: 'activeTenants',
@@ -50,9 +50,9 @@ const cardData = computed<CardData[]>(() => [
     unit: '',
     color: {
       start: '#865ec0',
-      end: '#5144b4',
+      end: '#5144b4'
     },
-    icon: 'material-symbols:trending-up',
+    icon: 'material-symbols:trending-up'
   },
   {
     key: 'newTenants',
@@ -61,9 +61,9 @@ const cardData = computed<CardData[]>(() => [
     unit: '',
     color: {
       start: '#56cdf3',
-      end: '#719de3',
+      end: '#719de3'
     },
-    icon: 'material-symbols:add-business-outline',
+    icon: 'material-symbols:add-business-outline'
   },
   {
     key: 'totalUsers',
@@ -72,9 +72,9 @@ const cardData = computed<CardData[]>(() => [
     unit: '',
     color: {
       start: '#fcbc25',
-      end: '#f68057',
+      end: '#f68057'
     },
-    icon: 'material-symbols:group-outline',
+    icon: 'material-symbols:group-outline'
   },
   {
     key: 'onlineUsers',
@@ -83,9 +83,9 @@ const cardData = computed<CardData[]>(() => [
     unit: '',
     color: {
       start: '#26deca',
-      end: '#1abc9c',
+      end: '#1abc9c'
     },
-    icon: 'material-symbols:person-check-outline',
+    icon: 'material-symbols:person-check-outline'
   },
   {
     key: 'todayLoginUsers',
@@ -94,9 +94,9 @@ const cardData = computed<CardData[]>(() => [
     unit: '',
     color: {
       start: '#8e9dff',
-      end: '#6366f1',
+      end: '#6366f1'
     },
-    icon: 'material-symbols:login',
+    icon: 'material-symbols:login'
   },
   {
     key: 'totalStorageUsed',
@@ -105,9 +105,9 @@ const cardData = computed<CardData[]>(() => [
     unit: 'MB',
     color: {
       start: '#f472b6',
-      end: '#ec4899',
+      end: '#ec4899'
     },
-    icon: 'material-symbols:cloud-outline',
+    icon: 'material-symbols:cloud-outline'
   },
   {
     key: 'totalApiCalls',
@@ -116,10 +116,10 @@ const cardData = computed<CardData[]>(() => [
     unit: '',
     color: {
       start: '#a78bfa',
-      end: '#8b5cf6',
+      end: '#8b5cf6'
     },
-    icon: 'material-symbols:api',
-  },
+    icon: 'material-symbols:api'
+  }
 ]);
 
 interface GradientBgProps {

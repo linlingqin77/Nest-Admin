@@ -136,10 +136,7 @@ export class RoleService {
       roleSort: 'asc',
     });
 
-    return Result.page(
-      toDtoPage(RoleResponseDto, { rows: list, total }).rows,
-      total,
-    );
+    return Result.page(toDtoPage(RoleResponseDto, { rows: list, total }).rows, total);
   }
 
   /**

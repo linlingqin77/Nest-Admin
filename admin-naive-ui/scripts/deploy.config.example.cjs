@@ -21,7 +21,7 @@ module.exports = {
     distPath: 'dist', // 本地打包目录（相对路径）
     remotePath: '/var/www/html/admin', // 远程部署目录
     backupPath: '/var/www/backup/admin', // 远程备份目录
-    isBackup: true, // 是否备份旧文件
+    isBackup: true // 是否备份旧文件
   },
 
   // 测试环境
@@ -36,7 +36,7 @@ module.exports = {
     distPath: 'dist',
     remotePath: '/var/www/html/admin',
     backupPath: '/var/www/backup/admin',
-    isBackup: true,
+    isBackup: true
   },
 
   // 生产环境
@@ -51,6 +51,6 @@ module.exports = {
     distPath: 'dist',
     remotePath: '/var/www/html/admin',
     backupPath: '/var/www/backup/admin',
-    isBackup: true,
-  },
+    isBackup: true
+  }
 };

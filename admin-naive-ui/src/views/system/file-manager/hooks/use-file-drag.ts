@@ -3,9 +3,9 @@
  * 实现高性能文件拖拽功能
  */
 
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import type { Ref } from 'vue';
-import { MAX_DRAG_FILES, DRAG_PREVIEW_MAX_ITEMS } from '../constants';
+import { DRAG_PREVIEW_MAX_ITEMS, MAX_DRAG_FILES } from '../constants';
 
 export interface DragItem {
   id: string | number;
@@ -133,10 +133,10 @@ export function useFileDrag(selectedItems: Ref<DragItem[]>, options: UseDragOpti
     // 设置拖拽数据
     const data = {
       type: 'file-manager-items',
-      items: dragItems.value.map((item) => ({
+      items: dragItems.value.map(item => ({
         id: item.id,
-        type: item.type,
-      })),
+        type: item.type
+      }))
     };
     event.dataTransfer!.setData('application/json', JSON.stringify(data));
     event.dataTransfer!.effectAllowed = 'move';
@@ -165,13 +165,13 @@ export function useFileDrag(selectedItems: Ref<DragItem[]>, options: UseDragOpti
 
   const dragHandlers: DragHandlers = {
     onDragStart,
-    onDragEnd,
+    onDragEnd
   };
 
   return {
     isDragging,
     dragItems,
-    dragHandlers,
+    dragHandlers
   };
 }
 
@@ -228,11 +228,11 @@ export function useDropTarget(onDrop: (items: DragItem[]) => void | Promise<void
     onDragEnter,
     onDragOver,
     onDragLeave,
-    onDrop: handleDrop,
+    onDrop: handleDrop
   };
 
   return {
     isDraggingOver,
-    dropHandlers,
+    dropHandlers
   };
 }

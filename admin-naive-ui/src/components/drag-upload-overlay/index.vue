@@ -1,19 +1,5 @@
-<template>
-  <Teleport to="body">
-    <Transition name="fade">
-      <div v-if="show" class="drag-upload-overlay" @drop.prevent="handleDrop" @dragover.prevent>
-        <div class="overlay-content">
-          <div class="i-carbon-upload upload-icon" />
-          <p class="upload-text">拖拽文件到此处上传</p>
-          <p class="upload-hint">支持批量上传</p>
-        </div>
-      </div>
-    </Transition>
-  </Teleport>
-</template>
-
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useThemeVars } from 'naive-ui';
 
 interface Emits {
@@ -99,6 +85,20 @@ onUnmounted(() => {
   window.removeEventListener('dragend', handleWindowDragEnd);
 });
 </script>
+
+<template>
+  <Teleport to="body">
+    <Transition name="fade">
+      <div v-if="show" class="drag-upload-overlay" @drop.prevent="handleDrop" @dragover.prevent>
+        <div class="overlay-content">
+          <div class="i-carbon-upload upload-icon" />
+          <p class="upload-text">拖拽文件到此处上传</p>
+          <p class="upload-hint">支持批量上传</p>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
+</template>
 
 <style scoped lang="scss">
 .drag-upload-overlay {

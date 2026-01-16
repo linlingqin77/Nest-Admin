@@ -6,7 +6,7 @@ import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'DictTypeOperateDrawer',
+  name: 'DictTypeOperateDrawer'
 });
 
 interface Props {
@@ -25,7 +25,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
@@ -34,7 +34,7 @@ const { createRequiredRule } = useFormRules();
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
     add: $t('page.system.dict.addDictType'),
-    edit: $t('page.system.dict.editDictType'),
+    edit: $t('page.system.dict.editDictType')
   };
   return titles[props.operateType];
 });
@@ -52,7 +52,7 @@ function createDefaultModel(): Model {
   return {
     dictName: '',
     dictType: '',
-    remark: '',
+    remark: ''
   };
 }
 
@@ -61,7 +61,7 @@ type RuleKey = Extract<keyof Model, 'dictId' | 'dictName' | 'dictType'>;
 const rules: Record<RuleKey, App.Global.FormRule> = {
   dictId: createRequiredRule($t('page.system.dict.form.dictValue.invalid')),
   dictName: createRequiredRule($t('page.system.dict.form.dictName.invalid')),
-  dictType: createRequiredRule($t('page.system.dict.form.dictType.invalid')),
+  dictType: createRequiredRule($t('page.system.dict.form.dictType.invalid'))
 };
 
 function handleUpdateModelWhenEdit() {

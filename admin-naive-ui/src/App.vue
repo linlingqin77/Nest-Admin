@@ -8,7 +8,7 @@ import { useAuthStore } from './store/modules/auth';
 import { naiveDateLocales, naiveLocales } from './locales/naive';
 
 defineOptions({
-  name: 'App',
+  name: 'App'
 });
 
 const appStore = useAppStore();
@@ -43,7 +43,7 @@ const watermarkProps = computed<WatermarkProps>(() => {
     xOffset: 12,
     yOffset: 60,
     rotate: -18,
-    zIndex: 9999,
+    zIndex: 9999
   };
 });
 </script>

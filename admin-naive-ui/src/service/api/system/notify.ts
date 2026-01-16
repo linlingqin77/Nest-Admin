@@ -5,7 +5,7 @@ export function fetchGetNotifyList(params?: Api.System.NotifyMessageSearchParams
   return request<Api.System.NotifyMessageList>({
     url: '/system/notify/message/list',
     method: 'get',
-    params,
+    params
   });
 }
 
@@ -13,7 +13,7 @@ export function fetchGetNotifyList(params?: Api.System.NotifyMessageSearchParams
 export function fetchGetRecentMessages() {
   return request<Api.System.NotifyMessage[]>({
     url: '/system/notify/message/recent',
-    method: 'get',
+    method: 'get'
   });
 }
 
@@ -21,7 +21,7 @@ export function fetchGetRecentMessages() {
 export function fetchGetUnreadCount() {
   return request<number>({
     url: '/system/notify/message/unread-count',
-    method: 'get',
+    method: 'get'
   });
 }
 
@@ -30,7 +30,7 @@ export function fetchMarkAsRead(ids: CommonType.IdType[]) {
   return request<boolean>({
     url: '/system/notify/message/read',
     method: 'put',
-    data: { ids },
+    data: { ids }
   });
 }
 
@@ -38,6 +38,6 @@ export function fetchMarkAsRead(ids: CommonType.IdType[]) {
 export function fetchMarkAllAsRead() {
   return request<boolean>({
     url: '/system/notify/message/read-all',
-    method: 'put',
+    method: 'put'
   });
 }

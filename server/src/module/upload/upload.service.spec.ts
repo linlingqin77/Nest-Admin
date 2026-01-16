@@ -206,9 +206,7 @@ describe('UploadService', () => {
       });
       prismaMock.sysUpload.findFirst.mockResolvedValue(null);
       prismaMock.sysConfig.findFirst.mockResolvedValue({ configValue: 'version' });
-      prismaMock.sysUpload.findMany.mockResolvedValue([
-        { uploadId: 'v1', version: 1, parentFileId: null },
-      ]);
+      prismaMock.sysUpload.findMany.mockResolvedValue([{ uploadId: 'v1', version: 1, parentFileId: null }]);
       prismaMock.sysUpload.create.mockResolvedValue({
         uploadId: 'test-uuid-123',
       });

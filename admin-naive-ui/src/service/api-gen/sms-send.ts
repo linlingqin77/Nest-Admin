@@ -5,9 +5,8 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { SendSmsDto, BatchSendSmsDto } from './types';
+import type { BatchSendSmsDto, SendSmsDto } from './types';
 
 /**
  * 短信发送-单发
@@ -18,7 +17,7 @@ export function fetchSmsSendSend(data: SendSmsDto) {
     method: 'POST',
     url: '/system/sms/send',
     data,
-    operationId: 'SmsSendController_send_v1',
+    operationId: 'SmsSendController_send_v1'
   });
 }
 
@@ -31,7 +30,7 @@ export function fetchSmsSendBatchSend(data: BatchSendSmsDto) {
     method: 'POST',
     url: '/system/sms/send/batch',
     data,
-    operationId: 'SmsSendController_batchSend_v1',
+    operationId: 'SmsSendController_batchSend_v1'
   });
 }
 
@@ -43,6 +42,6 @@ export function fetchSmsSendResend(logId: string | number) {
   return apiRequest<unknown>({
     method: 'POST',
     url: buildUrl('/system/sms/send/resend/{logId}', { logId }),
-    operationId: 'SmsSendController_resend_v1',
+    operationId: 'SmsSendController_resend_v1'
   });
 }

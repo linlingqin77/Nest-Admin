@@ -65,6 +65,9 @@ declare module "@elegant-router/types" {
     "tool": "/tool";
     "tool_build": "/tool/build";
     "tool_gen": "/tool/gen";
+    "tool_gen_datasource": "/tool/gen/datasource";
+    "tool_gen_history": "/tool/gen/history";
+    "tool_gen_template": "/tool/gen/template";
     "tool_swagger": "/tool/swagger";
     "user-center": "/user-center";
   };
@@ -169,7 +172,10 @@ declare module "@elegant-router/types" {
     | "system_tenant"
     | "system_user"
     | "tool_build"
+    | "tool_gen_datasource"
+    | "tool_gen_history"
     | "tool_gen"
+    | "tool_gen_template"
     | "tool_swagger"
   >;
 

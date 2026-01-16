@@ -1,20 +1,11 @@
 import { Controller, Get, Put, Post, Query, Body, Param } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { TenantQuotaService } from './tenant-quota.service';
-import {
-  ListTenantQuotaDto,
-  UpdateTenantQuotaDto,
-  CheckQuotaDto,
-} from './dto/tenant-quota.dto';
+import { ListTenantQuotaDto, UpdateTenantQuotaDto, CheckQuotaDto } from './dto/tenant-quota.dto';
 import { RequirePermission } from 'src/core/decorators/require-premission.decorator';
 import { Api } from 'src/core/decorators/api.decorator';
 import { User } from 'src/module/system/user/user.decorator';
-import {
-  TenantQuotaVo,
-  TenantQuotaDetailVo,
-  QuotaCheckResultVo,
-  TenantQuotaListVo,
-} from './vo/tenant-quota.vo';
+import { TenantQuotaVo, TenantQuotaDetailVo, QuotaCheckResultVo, TenantQuotaListVo } from './vo/tenant-quota.vo';
 
 /**
  * 租户配额管理控制器
@@ -56,10 +47,7 @@ export class TenantQuotaController {
   })
   @RequirePermission('system:tenant:quota:edit')
   @Put('/')
-  update(
-    @Body() dto: UpdateTenantQuotaDto,
-    @User('user.userName') userName: string,
-  ) {
+  update(@Body() dto: UpdateTenantQuotaDto, @User('user.userName') userName: string) {
     return this.quotaService.update(dto, userName || 'system');
   }
 

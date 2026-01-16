@@ -3,8 +3,8 @@ import { NDivider, NTag } from 'naive-ui';
 import { jsonClone } from '@sa/utils';
 import { useBoolean } from '@sa/hooks';
 import { dataScopeRecord } from '@/constants/business';
-import { fetchRoleFindAll, fetchRoleRemove, fetchRoleChangeStatus } from '@/service/api-gen';
-import type { RoleResponseDto, ChangeRoleStatusRequestDto, ListRoleRequestDto } from '@/service/api-gen/types';
+import { fetchRoleChangeStatus, fetchRoleFindAll, fetchRoleRemove } from '@/service/api-gen';
+import type { ChangeRoleStatusRequestDto, ListRoleRequestDto, RoleResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useDownload } from '@/hooks/business/download';
@@ -19,7 +19,7 @@ import RoleDataScopeDrawer from './modules/role-data-scope-drawer.vue';
 import RoleAuthUserDrawer from './modules/role-auth-user-drawer.vue';
 
 defineOptions({
-  name: 'RoleList',
+  name: 'RoleList'
 });
 
 const appStore = useAppStore();
@@ -41,7 +41,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchRoleFindAll,
   apiParams: {
@@ -52,46 +52,46 @@ const {
     roleName: null,
     roleKey: null,
     status: null,
-    params: {},
+    params: {}
   },
   columns: () => [
     {
       type: 'selection',
       align: 'center',
-      width: 48,
+      width: 48
     },
     {
       key: 'index',
       title: $t('common.index'),
       align: 'center',
-      width: 64,
+      width: 64
     },
     {
       key: 'roleName',
       title: '角色名称',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'roleKey',
       title: '角色权限字符串',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'roleSort',
       title: '显示顺序',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'dataScope',
       title: '数据范围',
       align: 'center',
       minWidth: 180,
-      render: (row) => {
+      render: row => {
         return <NTag type="info">{dataScopeRecord[row.dataScope]}</NTag>;
-      },
+      }
     },
     {
       key: 'status',
@@ -107,20 +107,20 @@ const {
             onSubmitted={(value, callback) => handleStatusChange(row, value, callback)}
           />
         );
-      },
+      }
     },
     {
       key: 'createTime',
       title: '创建时间',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 230,
-      render: (row) => {
+      render: row => {
         if (row.roleId === 1) return null;
 
         const editBtn = () => {
@@ -190,9 +190,9 @@ const {
             ))}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedRowKeys, onBatchDeleted, onDeleted } =
@@ -227,15 +227,11 @@ async function handleExport() {
 }
 
 /** 处理状态切换 */
-async function handleStatusChange(
-  row: RoleResponseDto,
-  value: string,
-  callback: (flag: boolean) => void,
-) {
+async function handleStatusChange(row: RoleResponseDto, value: string, callback: (flag: boolean) => void) {
   try {
     const data: ChangeRoleStatusRequestDto = {
       roleId: row.roleId,
-      status: value as '0' | '1',
+      status: value as '0' | '1'
     };
     await fetchRoleChangeStatus(data);
     callback(true);
@@ -248,13 +244,13 @@ async function handleStatusChange(
 }
 
 function handleDataScope(row: RoleResponseDto) {
-  const findItem = data.value.find((item) => item.roleId === row.roleId) || null;
+  const findItem = data.value.find(item => item.roleId === row.roleId) || null;
   editingData.value = jsonClone(findItem);
   openDataScopeDrawer();
 }
 
 function handleAuthUser(row: RoleResponseDto) {
-  const findItem = data.value.find((item) => item.roleId === row.roleId) || null;
+  const findItem = data.value.find(item => item.roleId === row.roleId) || null;
   editingData.value = jsonClone(findItem);
   openAuthUserDrawer();
 }
@@ -287,7 +283,7 @@ function handleAuthUser(row: RoleResponseDto) {
         :scroll-x="1200"
         :loading="loading"
         remote
-        :row-key="(row) => row.roleId"
+        :row-key="row => row.roleId"
         :pagination="mobilePagination"
         class="sm:h-full"
       />

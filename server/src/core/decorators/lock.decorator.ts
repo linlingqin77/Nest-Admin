@@ -1,4 +1,14 @@
-import { SetMetadata, applyDecorators, UseInterceptors, CallHandler, ExecutionContext, Injectable, NestInterceptor, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  SetMetadata,
+  applyDecorators,
+  UseInterceptors,
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable, from, throwError } from 'rxjs';
 import { catchError, finalize, switchMap } from 'rxjs/operators';
@@ -68,10 +78,7 @@ export class LockAcquireException extends HttpException {
  */
 export function Lock(options: LockOptions) {
   const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
-  return applyDecorators(
-    SetMetadata(LOCK_KEY, mergedOptions),
-    UseInterceptors(LockInterceptor),
-  );
+  return applyDecorators(SetMetadata(LOCK_KEY, mergedOptions), UseInterceptors(LockInterceptor));
 }
 
 /**
@@ -85,10 +92,7 @@ export class LockInterceptor implements NestInterceptor {
   ) {}
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-    const options = this.reflector.get<Required<LockOptions>>(
-      LOCK_KEY,
-      context.getHandler(),
-    );
+    const options = this.reflector.get<Required<LockOptions>>(LOCK_KEY, context.getHandler());
 
     if (!options || !options.key) {
       return next.handle();
@@ -100,7 +104,7 @@ export class LockInterceptor implements NestInterceptor {
 
     // 尝试获取锁
     const acquired = await this.tryAcquireLock(lockKey, lockValue, options);
-    
+
     if (!acquired) {
       throw new LockAcquireException(options.message);
     }
@@ -116,11 +120,7 @@ export class LockInterceptor implements NestInterceptor {
   /**
    * 尝试获取锁
    */
-  private async tryAcquireLock(
-    key: string,
-    value: string,
-    options: Required<LockOptions>,
-  ): Promise<boolean> {
+  private async tryAcquireLock(key: string, value: string, options: Required<LockOptions>): Promise<boolean> {
     const client = this.redisService.getClient();
     const startTime = Date.now();
     const waitTimeMs = options.waitTime * 1000;
@@ -129,7 +129,7 @@ export class LockInterceptor implements NestInterceptor {
     // 尝试获取锁
     while (true) {
       const result = await client.set(key, value, 'EX', leaseTimeSeconds, 'NX');
-      
+
       if (result === 'OK') {
         return true;
       }
@@ -156,7 +156,7 @@ export class LockInterceptor implements NestInterceptor {
    */
   private async releaseLock(key: string, value: string): Promise<boolean> {
     const client = this.redisService.getClient();
-    
+
     // Lua脚本：只有当锁的值匹配时才删除
     const script = `
       if redis.call("get", KEYS[1]) == ARGV[1] then
@@ -197,7 +197,7 @@ export class LockInterceptor implements NestInterceptor {
    */
   private resolveKey(template: string, request: Request): string {
     let result = template;
-    
+
     // 替换 {body.xxx} 占位符
     const bodyMatches = template.match(/\{body\.(\w+)\}/g);
     if (bodyMatches) {
@@ -236,6 +236,6 @@ export class LockInterceptor implements NestInterceptor {
    * 休眠指定毫秒数
    */
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

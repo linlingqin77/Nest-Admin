@@ -144,13 +144,7 @@ describe('PermissionGuard', () => {
       });
 
       it('should match any three-segment permission with super admin', () => {
-        const testCases = [
-          'system:user:add',
-          'system:role:edit',
-          'monitor:online:list',
-          'tool:gen:code',
-          'a:b:c',
-        ];
+        const testCases = ['system:user:add', 'system:role:edit', 'monitor:online:list', 'tool:gen:code', 'a:b:c'];
 
         testCases.forEach((permission) => {
           const result = guard.hasPermission(permission, ['*:*:*']);
@@ -284,21 +278,13 @@ describe('PermissionGuard', () => {
 
       describe('多个通配符权限组合', () => {
         it('should match when one of multiple wildcard permissions matches', () => {
-          const result = guard.hasPermission('system:user:add', [
-            'monitor:*:*',
-            'system:user:*',
-            'tool:gen:code',
-          ]);
+          const result = guard.hasPermission('system:user:add', ['monitor:*:*', 'system:user:*', 'tool:gen:code']);
 
           expect(result).toBe(true);
         });
 
         it('should return false when no wildcard permission matches', () => {
-          const result = guard.hasPermission('system:user:add', [
-            'monitor:*:*',
-            'system:role:*',
-            'tool:gen:code',
-          ]);
+          const result = guard.hasPermission('system:user:add', ['monitor:*:*', 'system:role:*', 'tool:gen:code']);
 
           expect(result).toBe(false);
         });

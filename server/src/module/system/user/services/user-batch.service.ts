@@ -5,12 +5,7 @@ import { Transactional } from 'src/core/decorators/transactional.decorator';
 import { Idempotent } from 'src/core/decorators/idempotent.decorator';
 import { SYS_USER_TYPE } from 'src/shared/constants/index';
 import { Result } from 'src/shared/response';
-import {
-  BatchCreateUserDto,
-  BatchDeleteUserDto,
-  BatchResultDto,
-  BatchResultItem,
-} from '../dto/index';
+import { BatchCreateUserDto, BatchDeleteUserDto, BatchResultDto, BatchResultItem } from '../dto/index';
 
 import { PrismaService } from 'src/infrastructure/prisma';
 import { UserRepository } from '../user.repository';
@@ -137,7 +132,11 @@ export class UserBatchService {
       try {
         const user = await this.userRepo.findById(userId);
         if (!user) {
-          results.push({ index: batchDeleteDto.userIds.indexOf(userId), success: false, error: `用户ID ${userId} 不存在` });
+          results.push({
+            index: batchDeleteDto.userIds.indexOf(userId),
+            success: false,
+            error: `用户ID ${userId} 不存在`,
+          });
           failedCount++;
           continue;
         }
@@ -152,7 +151,11 @@ export class UserBatchService {
         results.push({ index: batchDeleteDto.userIds.indexOf(userId), success: true, userId });
         successCount++;
       } catch (error) {
-        results.push({ index: batchDeleteDto.userIds.indexOf(userId), success: false, error: error instanceof Error ? error.message : '删除失败' });
+        results.push({
+          index: batchDeleteDto.userIds.indexOf(userId),
+          success: false,
+          error: error instanceof Error ? error.message : '删除失败',
+        });
         failedCount++;
       }
     }

@@ -27,7 +27,6 @@ export class FolderResponseDto extends BaseResponseDto {
   @Expose()
   @ApiProperty({ description: '排序' })
   orderNum: number;
-
 }
 
 /**

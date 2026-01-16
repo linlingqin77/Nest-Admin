@@ -55,7 +55,12 @@ export class BusinessException extends HttpException {
   /**
    * 条件抛出异常
    */
-  static throwIf(condition: boolean, message?: string, code?: ResponseCode | number, data?: BusinessExceptionData): void {
+  static throwIf(
+    condition: boolean,
+    message?: string,
+    code?: ResponseCode | number,
+    data?: BusinessExceptionData,
+  ): void {
     if (condition) {
       throw new BusinessException(code ?? ResponseCode.BUSINESS_ERROR, message, data);
     }

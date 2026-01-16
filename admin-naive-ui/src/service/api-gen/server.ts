@@ -5,7 +5,6 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
 import type { ServerInfoResponseDto } from './types';
 
@@ -17,6 +16,6 @@ export function fetchServerGetInfo() {
   return apiRequest<ServerInfoResponseDto>({
     method: 'GET',
     url: '/monitor/server',
-    operationId: 'ServerController_getInfo_v1',
+    operationId: 'ServerController_getInfo_v1'
   });
 }

@@ -6,7 +6,7 @@ import {
   fetchTenantRemove,
   fetchTenantSyncTenantConfig,
   fetchTenantSyncTenantDict,
-  fetchTenantSyncTenantPackage,
+  fetchTenantSyncTenantPackage
 } from '@/service/api-gen';
 import type { TenantResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
@@ -22,7 +22,7 @@ import TenantOperateDrawer from './modules/tenant-operate-drawer.vue';
 import TenantSearch from './modules/tenant-search.vue';
 
 defineOptions({
-  name: 'TenantList',
+  name: 'TenantList'
 });
 
 useDict('sys_normal_disable');
@@ -46,7 +46,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchTenantFindAll as any,
   apiParams: {
@@ -57,49 +57,49 @@ const {
     tenantId: null,
     contactUserName: null,
     contactPhone: null,
-    companyName: null,
+    companyName: null
   },
   columns: () => [
     {
       type: 'selection',
       align: 'center',
-      width: 48,
+      width: 48
     },
     {
       key: 'index',
       title: $t('common.index'),
       align: 'center',
-      width: 64,
+      width: 64
     },
     {
       key: 'tenantId',
       title: '租户编号',
       align: 'center',
-      minWidth: 80,
+      minWidth: 80
     },
     {
       key: 'contactUserName',
       title: '联系人',
       align: 'center',
-      minWidth: 80,
+      minWidth: 80
     },
     {
       key: 'contactPhone',
       title: '联系电话',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'companyName',
       title: '企业名称',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'expireTime',
       title: '过期时间',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'status',
@@ -109,14 +109,14 @@ const {
       render(row) {
         const typedRow = row as unknown as TenantResponseDto;
         return <DictTag size="small" value={typedRow.status} dictCode="sys_normal_disable" />;
-      },
+      }
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 180,
-      render: (row) => {
+      render: row => {
         const typedRow = row as unknown as TenantResponseDto;
         if (typedRow.tenantId === '000000') return null;
 
@@ -174,9 +174,9 @@ const {
             ))}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedRowKeys, onBatchDeleted, onDeleted } =
@@ -220,7 +220,7 @@ async function handleSyncTenantDict() {
       } catch {
         // error handled by request interceptor
       }
-    },
+    }
   });
 }
 
@@ -238,14 +238,14 @@ async function handleSyncTenantConfig() {
       } catch {
         // error handled by request interceptor
       }
-    },
+    }
   });
 }
 
 async function handleSyncTenantPackage(row: TenantResponseDto) {
   const params = {
     tenantId: row.tenantId,
-    packageId: row.packageId,
+    packageId: row.packageId
   };
   try {
     await fetchTenantSyncTenantPackage(params);
@@ -303,7 +303,7 @@ async function handleExport() {
         :scroll-x="962"
         :loading="loading"
         remote
-        :row-key="(row) => row.id"
+        :row-key="row => row.id"
         :pagination="mobilePagination"
         class="sm:h-full"
       />

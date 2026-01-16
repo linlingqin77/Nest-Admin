@@ -149,7 +149,7 @@ describe('LockInterceptor Property-Based Tests', () => {
           });
 
           // Wait a bit for lock to be acquired
-          await new Promise(resolve => setTimeout(resolve, 5));
+          await new Promise((resolve) => setTimeout(resolve, 5));
 
           // Second request with same resource - should fail
           const handler2: CallHandler = {
@@ -295,7 +295,7 @@ describe('LockInterceptor Property-Based Tests', () => {
           });
 
           // Wait a tick for finalize to complete
-          await new Promise(resolve => setTimeout(resolve, 10));
+          await new Promise((resolve) => setTimeout(resolve, 10));
 
           // Property: Lock should be released after execution
           return lockReleased;
@@ -314,7 +314,7 @@ describe('LockInterceptor Property-Based Tests', () => {
    */
   it('Property 21b: For any method error, lock should still be released', async () => {
     const { throwError: rxThrowError } = await import('rxjs');
-    
+
     await fc.assert(
       fc.asyncProperty(
         // Generate random resource IDs
@@ -351,7 +351,7 @@ describe('LockInterceptor Property-Based Tests', () => {
           }
 
           // Wait a tick for finalize to complete
-          await new Promise(resolve => setTimeout(resolve, 10));
+          await new Promise((resolve) => setTimeout(resolve, 10));
 
           // Property: Lock should be released even after error
           return lockReleased;
@@ -381,19 +381,21 @@ describe('LockInterceptor Property-Based Tests', () => {
           lockedKeys.clear();
 
           // Track lock values
-          mockRedisClient.set.mockImplementation(async (key: string, value: string, ex: string, timeout: number, nx: string) => {
-            if (nx === 'NX' && lockedKeys.has(key)) {
-              return null;
-            }
-            lockedKeys.set(key, value);
-            
-            // Check uniqueness
-            if (lockValues.has(value)) {
-              return 'DUPLICATE'; // Signal duplicate value
-            }
-            lockValues.add(value);
-            return 'OK';
-          });
+          mockRedisClient.set.mockImplementation(
+            async (key: string, value: string, ex: string, timeout: number, nx: string) => {
+              if (nx === 'NX' && lockedKeys.has(key)) {
+                return null;
+              }
+              lockedKeys.set(key, value);
+
+              // Check uniqueness
+              if (lockValues.has(value)) {
+                return 'DUPLICATE'; // Signal duplicate value
+              }
+              lockValues.add(value);
+              return 'OK';
+            },
+          );
 
           // Configure lock options
           jest.spyOn(reflector, 'get').mockReturnValue({
@@ -416,7 +418,7 @@ describe('LockInterceptor Property-Based Tests', () => {
           });
 
           // Property: No duplicate lock values should exist
-          return !Array.from(lockedKeys.values()).some(v => v === 'DUPLICATE');
+          return !Array.from(lockedKeys.values()).some((v) => v === 'DUPLICATE');
         },
       ),
       { numRuns: 100 },

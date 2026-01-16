@@ -3,7 +3,7 @@ import { useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'SmsChannelSearch',
+  name: 'SmsChannelSearch'
 });
 
 interface Emits {
@@ -22,7 +22,7 @@ const channelCodeOptions = [
   { label: '腾讯云', value: 'tencent' },
   { label: '华为云', value: 'huawei' },
   { label: '七牛云', value: 'qiniu' },
-  { label: '云片', value: 'yunpian' },
+  { label: '云片', value: 'yunpian' }
 ];
 
 async function reset() {

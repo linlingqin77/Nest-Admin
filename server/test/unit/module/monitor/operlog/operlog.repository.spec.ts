@@ -30,10 +30,7 @@ describe('OperlogRepository', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        OperlogRepository,
-        { provide: PrismaService, useValue: prismaMock },
-      ],
+      providers: [OperlogRepository, { provide: PrismaService, useValue: prismaMock }],
     }).compile();
 
     repository = module.get<OperlogRepository>(OperlogRepository);
@@ -42,7 +39,6 @@ describe('OperlogRepository', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-
 
   describe('findPageWithFilter', () => {
     it('should return paginated operation logs', async () => {
@@ -68,9 +64,7 @@ describe('OperlogRepository', () => {
     it('should truncate operation logs table', async () => {
       await repository.truncate();
 
-      expect(prismaMock.$executeRawUnsafe).toHaveBeenCalledWith(
-        'TRUNCATE TABLE "SysOperLog" RESTART IDENTITY CASCADE'
-      );
+      expect(prismaMock.$executeRawUnsafe).toHaveBeenCalledWith('TRUNCATE TABLE "SysOperLog" RESTART IDENTITY CASCADE');
     });
   });
 

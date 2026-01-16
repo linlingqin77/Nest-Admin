@@ -4,22 +4,23 @@ import { ClientInfo } from '@/core/decorators/common.decorator';
 
 describe('Common Decorators', () => {
   describe('ClientInfo', () => {
-    const createMockContext = (userAgent: string, ip: string, user?: any): ExecutionContext => ({
-      switchToHttp: () => ({
-        getRequest: () => ({
-          headers: { 'user-agent': userAgent },
-          ip,
-          user,
+    const createMockContext = (userAgent: string, ip: string, user?: any): ExecutionContext =>
+      ({
+        switchToHttp: () => ({
+          getRequest: () => ({
+            headers: { 'user-agent': userAgent },
+            ip,
+            user,
+          }),
         }),
-      }),
-      getHandler: () => jest.fn(),
-      getClass: () => jest.fn(),
-      getType: () => 'http',
-      getArgs: () => [],
-      getArgByIndex: () => ({}),
-      switchToRpc: () => ({} as any),
-      switchToWs: () => ({} as any),
-    } as unknown as ExecutionContext);
+        getHandler: () => jest.fn(),
+        getClass: () => jest.fn(),
+        getType: () => 'http',
+        getArgs: () => [],
+        getArgByIndex: () => ({}),
+        switchToRpc: () => ({}) as any,
+        switchToWs: () => ({}) as any,
+      }) as unknown as ExecutionContext;
 
     // Helper to get the decorator factory
     const getDecoratorFactory = () => {
@@ -34,7 +35,8 @@ describe('Common Decorators', () => {
     };
 
     it('should extract client info from Chrome on Windows', () => {
-      const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+      const userAgent =
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
       const ctx = createMockContext(userAgent, '192.168.1.1');
       const factory = getDecoratorFactory();
 
@@ -47,7 +49,8 @@ describe('Common Decorators', () => {
     });
 
     it('should extract client info from Safari on iOS', () => {
-      const userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
+      const userAgent =
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
       const ctx = createMockContext(userAgent, '10.0.0.1');
       const factory = getDecoratorFactory();
 
@@ -59,7 +62,8 @@ describe('Common Decorators', () => {
     });
 
     it('should extract client info from Android device', () => {
-      const userAgent = 'Mozilla/5.0 (Linux; Android 13; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36';
+      const userAgent =
+        'Mozilla/5.0 (Linux; Android 13; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36';
       const ctx = createMockContext(userAgent, '172.16.0.1');
       const factory = getDecoratorFactory();
 

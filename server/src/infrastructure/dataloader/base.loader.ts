@@ -29,15 +29,12 @@ export abstract class BaseLoader<K, V> implements OnModuleDestroy {
   protected loader: DataLoader<K, V | null>;
 
   constructor() {
-    this.loader = new DataLoader<K, V | null>(
-      (keys) => this.batchLoad(keys),
-      {
-        // 缓存配置
-        cache: true,
-        // 最大批量大小
-        maxBatchSize: 100,
-      },
-    );
+    this.loader = new DataLoader<K, V | null>((keys) => this.batchLoad(keys), {
+      // 缓存配置
+      cache: true,
+      // 最大批量大小
+      maxBatchSize: 100,
+    });
   }
 
   /**

@@ -51,7 +51,6 @@ describe('HealthController', () => {
       }),
     };
 
-
     const module: TestingModule = await Test.createTestingModule({
       controllers: [HealthController],
       providers: [

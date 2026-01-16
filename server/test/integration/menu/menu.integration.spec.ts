@@ -83,7 +83,7 @@ describe('Menu Integration Tests', () => {
 
       expect(result.code).toBe(200);
       expect(Array.isArray(result.data)).toBe(true);
-      
+
       // Tree nodes should have id and label
       if (result.data.length > 0) {
         const node = result.data[0];
@@ -97,7 +97,7 @@ describe('Menu Integration Tests', () => {
 
       expect(result.code).toBe(200);
       expect(Array.isArray(result.data)).toBe(true);
-      
+
       // Menus should have required fields
       if (result.data.length > 0) {
         const menu = result.data[0];
@@ -219,7 +219,7 @@ describe('Menu Integration Tests', () => {
       const roleMenus = await menuRepo.findRoleMenus(testRoleId);
 
       expect(Array.isArray(roleMenus)).toBe(true);
-      
+
       // If we associated a menu, it should be found
       if (existingMenuId) {
         expect(roleMenus.length).toBeGreaterThan(0);

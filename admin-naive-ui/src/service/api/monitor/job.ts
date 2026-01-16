@@ -5,7 +5,7 @@ export function fetchUpdateJob(data: Api.Monitor.JobOperateParams) {
   return request<boolean>({
     url: '/monitor/job',
     method: 'put',
-    data,
+    data
   });
 }
 
@@ -14,7 +14,7 @@ export function fetchChangeJobStatus(jobId: CommonType.IdType, status: Api.Commo
   return request<boolean>({
     url: '/monitor/job/changeStatus',
     method: 'put',
-    data: { jobId, status },
+    data: { jobId, status }
   });
 }
 
@@ -23,6 +23,6 @@ export function fetchRunJob(jobId: CommonType.IdType, jobGroup: string) {
   return request<boolean>({
     url: '/monitor/job/run',
     method: 'put',
-    data: { jobId, jobGroup },
+    data: { jobId, jobGroup }
   });
 }

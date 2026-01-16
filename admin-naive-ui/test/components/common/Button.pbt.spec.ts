@@ -8,9 +8,9 @@
  * **Validates: Requirements 11.3, 11.4, 11.7**
  */
 
-import { describe, it, expect } from 'vitest';
-import { mount } from '@vue/test-utils';
 import { defineComponent, h } from 'vue';
+import { mount } from '@vue/test-utils';
+import { describe, expect, it } from 'vitest';
 import * as fc from 'fast-check';
 
 // 创建一个简单的 Button 组件用于测试
@@ -19,20 +19,20 @@ const TestButton = defineComponent({
   props: {
     label: {
       type: String,
-      default: '按钮',
+      default: '按钮'
     },
     disabled: {
       type: Boolean,
-      default: false,
+      default: false
     },
     type: {
       type: String as () => 'default' | 'primary' | 'success' | 'warning' | 'error',
-      default: 'default',
+      default: 'default'
     },
     loading: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   emits: ['click'],
   setup(props, { emit }) {
@@ -50,14 +50,14 @@ const TestButton = defineComponent({
             'test-button',
             `test-button--${props.type}`,
             { 'test-button--disabled': props.disabled },
-            { 'test-button--loading': props.loading },
+            { 'test-button--loading': props.loading }
           ],
           disabled: props.disabled || props.loading,
-          onClick: handleClick,
+          onClick: handleClick
         },
-        props.loading ? '加载中...' : props.label,
+        props.loading ? '加载中...' : props.label
       );
-  },
+  }
 });
 
 describe('Button 组件 - 属性测试', () => {
@@ -69,16 +69,16 @@ describe('Button 组件 - 属性测试', () => {
     it('任意非空标签都应该正确渲染', () => {
       // 使用字母数字字符串避免 HTML 空格压缩问题
       fc.assert(
-        fc.property(fc.stringMatching(/^[a-zA-Z0-9\u4e00-\u9fa5]{1,50}$/), (label) => {
+        fc.property(fc.stringMatching(/^[a-zA-Z0-9\u4E00-\u9FA5]{1,50}$/), label => {
           const wrapper = mount(TestButton, {
-            props: { label },
+            props: { label }
           });
 
           // 非 loading 状态下应该显示标签
           expect(wrapper.text()).toBe(label);
           return true;
         }),
-        { numRuns: 50 },
+        { numRuns: 50 }
       );
     });
   });
@@ -92,15 +92,15 @@ describe('Button 组件 - 属性测试', () => {
       const validTypes = ['default', 'primary', 'success', 'warning', 'error'] as const;
 
       fc.assert(
-        fc.property(fc.constantFrom(...validTypes), (type) => {
+        fc.property(fc.constantFrom(...validTypes), type => {
           const wrapper = mount(TestButton, {
-            props: { type },
+            props: { type }
           });
 
           expect(wrapper.classes()).toContain(`test-button--${type}`);
           return true;
         }),
-        { numRuns: 20 },
+        { numRuns: 20 }
       );
     });
   });
@@ -112,9 +112,9 @@ describe('Button 组件 - 属性测试', () => {
      */
     it('禁用状态下点击不应触发事件', async () => {
       await fc.assert(
-        fc.asyncProperty(fc.boolean(), async (disabled) => {
+        fc.asyncProperty(fc.boolean(), async disabled => {
           const wrapper = mount(TestButton, {
-            props: { disabled },
+            props: { disabled }
           });
 
           await wrapper.trigger('click');
@@ -128,7 +128,7 @@ describe('Button 组件 - 属性测试', () => {
           }
           return true;
         }),
-        { numRuns: 20 },
+        { numRuns: 20 }
       );
     });
   });
@@ -141,31 +141,27 @@ describe('Button 组件 - 属性测试', () => {
     it('loading 状态下应显示加载文本', () => {
       // 使用字母数字字符串避免 HTML 空格压缩问题
       fc.assert(
-        fc.property(
-          fc.boolean(),
-          fc.stringMatching(/^[a-zA-Z0-9\u4e00-\u9fa5]{1,50}$/),
-          (loading, label) => {
-            const wrapper = mount(TestButton, {
-              props: { loading, label },
-            });
+        fc.property(fc.boolean(), fc.stringMatching(/^[a-zA-Z0-9\u4E00-\u9FA5]{1,50}$/), (loading, label) => {
+          const wrapper = mount(TestButton, {
+            props: { loading, label }
+          });
 
-            if (loading) {
-              expect(wrapper.text()).toBe('加载中...');
-            } else {
-              expect(wrapper.text()).toBe(label);
-            }
-            return true;
-          },
-        ),
-        { numRuns: 30 },
+          if (loading) {
+            expect(wrapper.text()).toBe('加载中...');
+          } else {
+            expect(wrapper.text()).toBe(label);
+          }
+          return true;
+        }),
+        { numRuns: 30 }
       );
     });
 
     it('loading 状态下点击不应触发事件', async () => {
       await fc.assert(
-        fc.asyncProperty(fc.boolean(), async (loading) => {
+        fc.asyncProperty(fc.boolean(), async loading => {
           const wrapper = mount(TestButton, {
-            props: { loading },
+            props: { loading }
           });
 
           await wrapper.trigger('click');
@@ -177,7 +173,7 @@ describe('Button 组件 - 属性测试', () => {
           }
           return true;
         }),
-        { numRuns: 20 },
+        { numRuns: 20 }
       );
     });
   });
@@ -198,7 +194,7 @@ describe('Button 组件 - 属性测试', () => {
           expect(wrapper.props('loading')).toBe(false);
           return true;
         }),
-        { numRuns: 5 },
+        { numRuns: 5 }
       );
     });
   });
@@ -212,7 +208,7 @@ describe('Button 组件 - 属性测试', () => {
       await fc.assert(
         fc.asyncProperty(fc.boolean(), fc.boolean(), async (disabled, loading) => {
           const wrapper = mount(TestButton, {
-            props: { disabled, loading },
+            props: { disabled, loading }
           });
 
           await wrapper.trigger('click');
@@ -225,7 +221,7 @@ describe('Button 组件 - 属性测试', () => {
           }
           return true;
         }),
-        { numRuns: 20 },
+        { numRuns: 20 }
       );
     });
   });
@@ -239,31 +235,26 @@ describe('Button 组件 - 属性测试', () => {
       const validTypes = ['default', 'primary', 'success', 'warning', 'error'] as const;
 
       fc.assert(
-        fc.property(
-          fc.constantFrom(...validTypes),
-          fc.boolean(),
-          fc.boolean(),
-          (type, disabled, loading) => {
-            const wrapper = mount(TestButton, {
-              props: { type, disabled, loading },
-            });
+        fc.property(fc.constantFrom(...validTypes), fc.boolean(), fc.boolean(), (type, disabled, loading) => {
+          const wrapper = mount(TestButton, {
+            props: { type, disabled, loading }
+          });
 
-            // 始终应该有基础类名
-            expect(wrapper.classes()).toContain('test-button');
-            expect(wrapper.classes()).toContain(`test-button--${type}`);
+          // 始终应该有基础类名
+          expect(wrapper.classes()).toContain('test-button');
+          expect(wrapper.classes()).toContain(`test-button--${type}`);
 
-            // 根据状态应该有对应的类名
-            if (disabled) {
-              expect(wrapper.classes()).toContain('test-button--disabled');
-            }
-            if (loading) {
-              expect(wrapper.classes()).toContain('test-button--loading');
-            }
+          // 根据状态应该有对应的类名
+          if (disabled) {
+            expect(wrapper.classes()).toContain('test-button--disabled');
+          }
+          if (loading) {
+            expect(wrapper.classes()).toContain('test-button--loading');
+          }
 
-            return true;
-          },
-        ),
-        { numRuns: 30 },
+          return true;
+        }),
+        { numRuns: 30 }
       );
     });
   });

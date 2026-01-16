@@ -3,8 +3,8 @@ import { computed, ref } from 'vue';
 import { NAvatar, NButton, NDivider, NEllipsis } from 'naive-ui';
 import { useBoolean, useLoading } from '@sa/hooks';
 import { jsonClone } from '@sa/utils';
-import { fetchUserFindAll, fetchUserRemove, fetchUserDeptTree, fetchUserChangeStatus } from '@/service/api-gen';
-import type { UserResponseDto, DeptTreeNodeVo, ChangeUserStatusDto, ListUserDto } from '@/service/api-gen/types';
+import { fetchUserChangeStatus, fetchUserDeptTree, fetchUserFindAll, fetchUserRemove } from '@/service/api-gen';
+import type { ChangeUserStatusDto, DeptTreeNodeVo, ListUserDto, UserResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
 import { useDict } from '@/hooks/business/dict';
@@ -20,7 +20,7 @@ import UserPasswordDrawer from './modules/user-password-drawer.vue';
 import UserSearch from './modules/user-search.vue';
 
 defineOptions({
-  name: 'UserList',
+  name: 'UserList'
 });
 
 useDict('sys_user_sex');
@@ -44,7 +44,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchUserFindAll,
   apiParams: {
@@ -57,19 +57,19 @@ const {
     nickName: null,
     phonenumber: null,
     status: null,
-    params: {},
+    params: {}
   },
   columns: () => [
     {
       type: 'selection',
       align: 'center',
-      width: 48,
+      width: 48
     },
     {
       key: 'index',
       title: $t('common.index'),
       align: 'center',
-      width: 48,
+      width: 48
     },
     {
       key: 'userName',
@@ -77,7 +77,7 @@ const {
       align: 'left',
       width: 200,
       ellipsis: true,
-      render: (row) => {
+      render: row => {
         return (
           <div class="flex items-center justify-center gap-2">
             <NAvatar src={row.avatar} class="bg-primary">
@@ -89,7 +89,7 @@ const {
             </div>
           </div>
         );
-      },
+      }
     },
     {
       key: 'sex',
@@ -99,28 +99,28 @@ const {
       ellipsis: true,
       render(row) {
         return <DictTag value={row.sex} dictCode="sys_user_sex" />;
-      },
+      }
     },
     {
       key: 'deptName',
       title: $t('page.system.user.deptName'),
       align: 'center',
       width: 120,
-      ellipsis: true,
+      ellipsis: true
     },
     {
       key: 'email',
       title: $t('page.system.user.email'),
       align: 'center',
       width: 120,
-      ellipsis: true,
+      ellipsis: true
     },
     {
       key: 'phonenumber',
       title: $t('page.system.user.phonenumber'),
       align: 'center',
       width: 120,
-      ellipsis: true,
+      ellipsis: true
     },
     {
       key: 'status',
@@ -136,20 +136,20 @@ const {
             onSubmitted={(value, callback) => handleStatusChange(row, value, callback)}
           />
         );
-      },
+      }
     },
     {
       key: 'createTime',
       title: $t('page.system.user.createTime'),
       align: 'center',
-      width: 120,
+      width: 120
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 150,
-      render: (row) => {
+      render: row => {
         if (row.userId === 1) return null;
 
         const editBtn = () => {
@@ -204,9 +204,9 @@ const {
             ))}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedRowKeys, onBatchDeleted, onDeleted } =
@@ -237,7 +237,7 @@ async function edit(userId: CommonType.IdType) {
 }
 
 async function handleResetPwd(userId: CommonType.IdType) {
-  const findItem = data.value.find((item) => item.userId === userId) || null;
+  const findItem = data.value.find(item => item.userId === userId) || null;
   editingData.value = jsonClone(findItem);
   openPasswordDrawer();
 }
@@ -277,15 +277,11 @@ function handleImport() {
 }
 
 /** 处理状态切换 */
-async function handleStatusChange(
-  row: UserResponseDto,
-  value: string,
-  callback: (flag: boolean) => void,
-) {
+async function handleStatusChange(row: UserResponseDto, value: string, callback: (flag: boolean) => void) {
   try {
     const data: ChangeUserStatusDto = {
       userId: row.userId,
-      status: value as '0' | '1',
+      status: value as '0' | '1'
     };
     await fetchUserChangeStatus(data);
     callback(true);
@@ -382,7 +378,7 @@ function handleResetSearch() {
           :scroll-x="1200"
           :loading="loading"
           remote
-          :row-key="(row) => row.userId"
+          :row-key="row => row.userId"
           :pagination="mobilePagination"
           class="h-full"
         />

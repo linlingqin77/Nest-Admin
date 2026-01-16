@@ -7,10 +7,10 @@
  *
  * @requirements 1.4, 1.5, 1.7
  */
-import { defineConfig } from 'vitest/config';
+import { resolve } from 'node:path';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
-import { resolve } from 'path';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [vue(), vueJsx()],
@@ -22,40 +22,25 @@ export default defineConfig({
     environment: 'jsdom',
 
     // 测试文件匹配模式
-    include: [
-      'src/**/*.{test,spec}.{js,ts}',
-      'test/**/*.{test,spec}.{js,ts}',
-    ],
+    include: ['src/**/*.{test,spec}.{js,ts}', 'test/**/*.{test,spec}.{js,ts}'],
 
     // 排除的文件
-    exclude: [
-      'node_modules/**',
-      'dist/**',
-      '**/*.d.ts',
-    ],
+    exclude: ['node_modules/**', 'dist/**', '**/*.d.ts'],
 
     // 覆盖率配置
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
-      exclude: [
-        'node_modules/',
-        'dist/',
-        '**/*.d.ts',
-        'test/**',
-        '**/*.config.*',
-        '**/types/**',
-        '**/typings/**',
-      ],
+      exclude: ['node_modules/', 'dist/', '**/*.d.ts', 'test/**', '**/*.config.*', '**/types/**', '**/typings/**'],
       // 企业级覆盖率阈值
       thresholds: {
         global: {
           branches: 60,
           functions: 70,
           lines: 70,
-          statements: 70,
-        },
-      },
+          statements: 70
+        }
+      }
     },
 
     // 测试设置文件
@@ -67,14 +52,14 @@ export default defineConfig({
     // 服务器配置
     server: {
       deps: {
-        inline: ['naive-ui', '@vueuse/core'],
-      },
-    },
+        inline: ['naive-ui', '@vueuse/core']
+      }
+    }
   },
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
-      '~': resolve(__dirname, 'src'),
-    },
-  },
+      '~': resolve(__dirname, 'src')
+    }
+  }
 });

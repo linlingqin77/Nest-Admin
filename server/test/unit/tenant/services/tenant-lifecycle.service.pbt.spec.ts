@@ -56,28 +56,25 @@ describe('TenantLifecycleService - Property Tests', () => {
      */
     it('生成的租户ID应该是有效的数字字符串', async () => {
       await fc.assert(
-        fc.asyncProperty(
-          fc.integer({ min: 100001, max: 999999 }),
-          async (lastTenantId) => {
-            mockPrismaService.sysTenant.findFirst.mockResolvedValue({
-              tenantId: lastTenantId.toString(),
-            });
+        fc.asyncProperty(fc.integer({ min: 100001, max: 999999 }), async (lastTenantId) => {
+          mockPrismaService.sysTenant.findFirst.mockResolvedValue({
+            tenantId: lastTenantId.toString(),
+          });
 
-            const newTenantId = await service.generateTenantId();
+          const newTenantId = await service.generateTenantId();
 
-            // 验证是数字字符串
-            const parsed = parseInt(newTenantId, 10);
-            expect(isNaN(parsed)).toBe(false);
+          // 验证是数字字符串
+          const parsed = parseInt(newTenantId, 10);
+          expect(isNaN(parsed)).toBe(false);
 
-            // 验证大于等于 100001
-            expect(parsed).toBeGreaterThanOrEqual(100001);
+          // 验证大于等于 100001
+          expect(parsed).toBeGreaterThanOrEqual(100001);
 
-            // 验证是上一个ID加1
-            expect(parsed).toBe(lastTenantId + 1);
+          // 验证是上一个ID加1
+          expect(parsed).toBe(lastTenantId + 1);
 
-            return true;
-          },
-        ),
+          return true;
+        }),
         PBT_CONFIG,
       );
     });
@@ -234,7 +231,7 @@ describe('TenantLifecycleService - Property Tests', () => {
           async (tenantIdNum, daysAgo) => {
             const tenantId = tenantIdNum.toString();
             const pastDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
-            
+
             mockPrismaService.sysTenant.findUnique.mockResolvedValue({
               status: '0',
               delFlag: '0',

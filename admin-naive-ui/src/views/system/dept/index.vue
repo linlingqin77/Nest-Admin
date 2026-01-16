@@ -2,7 +2,7 @@
 import { NButton, NDivider } from 'naive-ui';
 import { jsonClone } from '@sa/utils';
 import { type TableDataWithIndex } from '@sa/hooks';
-import { fetchDeptRemove, fetchDeptFindAll } from '@/service/api-gen';
+import { fetchDeptFindAll, fetchDeptRemove } from '@/service/api-gen';
 import type { DeptResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
@@ -16,7 +16,7 @@ import DeptOperateDrawer from './modules/dept-operate-drawer.vue';
 import DeptSearch from './modules/dept-search.vue';
 
 defineOptions({
-  name: 'DeptList',
+  name: 'DeptList'
 });
 
 useDict('sys_normal_disable');
@@ -37,12 +37,12 @@ const {
   expandedRowKeys,
   isCollapse,
   expandAll,
-  collapseAll,
+  collapseAll
 } = useTreeTable({
   apiFn: fetchDeptFindAll,
   apiParams: {
     deptName: null,
-    status: null,
+    status: null
   },
   idField: 'deptId',
   columns: () => [
@@ -50,19 +50,19 @@ const {
       key: 'deptName',
       title: $t('page.system.dept.deptName'),
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'deptCategory',
       title: $t('page.system.dept.deptCategory'),
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'orderNum',
       title: $t('page.system.dept.sort'),
       align: 'center',
-      minWidth: 60,
+      minWidth: 60
     },
     {
       key: 'status',
@@ -71,20 +71,20 @@ const {
       minWidth: 120,
       render(row) {
         return <DictTag size="small" value={row.status} dictCode="sys_normal_disable" />;
-      },
+      }
     },
     {
       key: 'createTime',
       title: $t('page.system.dept.createTime'),
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 150,
-      render: (row) => {
+      render: row => {
         const addBtn = () => {
           return (
             <ButtonIcon
@@ -137,14 +137,14 @@ const {
             ))}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const { drawerVisible, operateType, editingData, handleAdd, handleEdit, onDeleted } = useTreeTableOperate(
   data,
-  getData,
+  getData
 );
 
 async function handleDelete(deptId: CommonType.IdType) {
@@ -210,7 +210,7 @@ async function handleAddOperate() {
         :flex-height="!appStore.isMobile"
         :scroll-x="962"
         :loading="loading"
-        :row-key="(row) => row.deptId"
+        :row-key="row => row.deptId"
         class="sm:h-full"
       />
       <DeptOperateDrawer

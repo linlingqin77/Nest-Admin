@@ -5,9 +5,25 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CreateFolderRequestDto, FolderResponseDto, UpdateFolderRequestDto, FolderTreeNodeResponseDto, FileListResponseDto, MoveFileRequestDto, RenameFileRequestDto, FileResponseDto, CreateShareRequestDto, CreateShareResultResponseDto, ShareInfoResponseDto, ShareListResponseDto, FileVersionListResponseDto, RestoreVersionResultResponseDto, AccessTokenResponseDto, StorageStatsResponseDto } from './types';
+import type {
+  AccessTokenResponseDto,
+  CreateFolderRequestDto,
+  CreateShareRequestDto,
+  CreateShareResultResponseDto,
+  FileListResponseDto,
+  FileResponseDto,
+  FileVersionListResponseDto,
+  FolderResponseDto,
+  FolderTreeNodeResponseDto,
+  MoveFileRequestDto,
+  RenameFileRequestDto,
+  RestoreVersionResultResponseDto,
+  ShareInfoResponseDto,
+  ShareListResponseDto,
+  StorageStatsResponseDto,
+  UpdateFolderRequestDto
+} from './types';
 
 /**
  * 创建文件夹
@@ -17,7 +33,7 @@ export function fetchFileManagerCreateFolder(data: CreateFolderRequestDto) {
     method: 'POST',
     url: '/system/file-manager/folder',
     data,
-    operationId: 'FileManagerController_createFolder_v1',
+    operationId: 'FileManagerController_createFolder_v1'
   });
 }
 
@@ -29,7 +45,7 @@ export function fetchFileManagerUpdateFolder(data: UpdateFolderRequestDto) {
     method: 'PUT',
     url: '/system/file-manager/folder',
     data,
-    operationId: 'FileManagerController_updateFolder_v1',
+    operationId: 'FileManagerController_updateFolder_v1'
   });
 }
 
@@ -40,7 +56,7 @@ export function fetchFileManagerDeleteFolder(folderId: string | number) {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: buildUrl('/system/file-manager/folder/{folderId}', { folderId }),
-    operationId: 'FileManagerController_deleteFolder_v1',
+    operationId: 'FileManagerController_deleteFolder_v1'
   });
 }
 
@@ -52,7 +68,7 @@ export function fetchFileManagerListFolders(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/file-manager/folder/list',
     params,
-    operationId: 'FileManagerController_listFolders_v1',
+    operationId: 'FileManagerController_listFolders_v1'
   });
 }
 
@@ -63,7 +79,7 @@ export function fetchFileManagerGetFolderTree() {
   return apiRequest<FolderTreeNodeResponseDto[]>({
     method: 'GET',
     url: '/system/file-manager/folder/tree',
-    operationId: 'FileManagerController_getFolderTree_v1',
+    operationId: 'FileManagerController_getFolderTree_v1'
   });
 }
 
@@ -75,7 +91,7 @@ export function fetchFileManagerListFiles(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/file-manager/file/list',
     params,
-    operationId: 'FileManagerController_listFiles_v1',
+    operationId: 'FileManagerController_listFiles_v1'
   });
 }
 
@@ -87,7 +103,7 @@ export function fetchFileManagerMoveFiles(data: MoveFileRequestDto) {
     method: 'POST',
     url: '/system/file-manager/file/move',
     data,
-    operationId: 'FileManagerController_moveFiles_v1',
+    operationId: 'FileManagerController_moveFiles_v1'
   });
 }
 
@@ -99,7 +115,7 @@ export function fetchFileManagerRenameFile(data: RenameFileRequestDto) {
     method: 'POST',
     url: '/system/file-manager/file/rename',
     data,
-    operationId: 'FileManagerController_renameFile_v1',
+    operationId: 'FileManagerController_renameFile_v1'
   });
 }
 
@@ -110,7 +126,7 @@ export function fetchFileManagerDeleteFiles() {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: '/system/file-manager/file',
-    operationId: 'FileManagerController_deleteFiles_v1',
+    operationId: 'FileManagerController_deleteFiles_v1'
   });
 }
 
@@ -121,7 +137,7 @@ export function fetchFileManagerGetFileDetail(uploadId: string | number) {
   return apiRequest<FileResponseDto>({
     method: 'GET',
     url: buildUrl('/system/file-manager/file/{uploadId}', { uploadId }),
-    operationId: 'FileManagerController_getFileDetail_v1',
+    operationId: 'FileManagerController_getFileDetail_v1'
   });
 }
 
@@ -133,7 +149,7 @@ export function fetchFileManagerCreateShare(data: CreateShareRequestDto) {
     method: 'POST',
     url: '/system/file-manager/share',
     data,
-    operationId: 'FileManagerController_createShare_v1',
+    operationId: 'FileManagerController_createShare_v1'
   });
 }
 
@@ -145,7 +161,7 @@ export function fetchFileManagerGetShare(shareId: string | number, params?: Reco
     method: 'GET',
     url: buildUrl('/system/file-manager/share/{shareId}', { shareId }),
     params,
-    operationId: 'FileManagerController_getShare_v1',
+    operationId: 'FileManagerController_getShare_v1'
   });
 }
 
@@ -156,7 +172,7 @@ export function fetchFileManagerCancelShare(shareId: string | number) {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: buildUrl('/system/file-manager/share/{shareId}', { shareId }),
-    operationId: 'FileManagerController_cancelShare_v1',
+    operationId: 'FileManagerController_cancelShare_v1'
   });
 }
 
@@ -167,7 +183,7 @@ export function fetchFileManagerDownloadShare(shareId: string | number) {
   return apiRequest<unknown>({
     method: 'POST',
     url: buildUrl('/system/file-manager/share/{shareId}/download', { shareId }),
-    operationId: 'FileManagerController_downloadShare_v1',
+    operationId: 'FileManagerController_downloadShare_v1'
   });
 }
 
@@ -178,7 +194,7 @@ export function fetchFileManagerMyShares() {
   return apiRequest<ShareListResponseDto>({
     method: 'GET',
     url: '/system/file-manager/share/my/list',
-    operationId: 'FileManagerController_myShares_v1',
+    operationId: 'FileManagerController_myShares_v1'
   });
 }
 
@@ -190,7 +206,7 @@ export function fetchFileManagerGetRecycleList(params?: Record<string, unknown>)
     method: 'GET',
     url: '/system/file-manager/recycle/list',
     params,
-    operationId: 'FileManagerController_getRecycleList_v1',
+    operationId: 'FileManagerController_getRecycleList_v1'
   });
 }
 
@@ -201,7 +217,7 @@ export function fetchFileManagerRestoreFiles() {
   return apiRequest<unknown>({
     method: 'PUT',
     url: '/system/file-manager/recycle/restore',
-    operationId: 'FileManagerController_restoreFiles_v1',
+    operationId: 'FileManagerController_restoreFiles_v1'
   });
 }
 
@@ -212,7 +228,7 @@ export function fetchFileManagerClearRecycle() {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: '/system/file-manager/recycle/clear',
-    operationId: 'FileManagerController_clearRecycle_v1',
+    operationId: 'FileManagerController_clearRecycle_v1'
   });
 }
 
@@ -223,7 +239,7 @@ export function fetchFileManagerGetFileVersions(uploadId: string | number) {
   return apiRequest<FileVersionListResponseDto>({
     method: 'GET',
     url: buildUrl('/system/file-manager/file/{uploadId}/versions', { uploadId }),
-    operationId: 'FileManagerController_getFileVersions_v1',
+    operationId: 'FileManagerController_getFileVersions_v1'
   });
 }
 
@@ -234,7 +250,7 @@ export function fetchFileManagerRestoreVersion() {
   return apiRequest<RestoreVersionResultResponseDto>({
     method: 'POST',
     url: '/system/file-manager/file/restore-version',
-    operationId: 'FileManagerController_restoreVersion_v1',
+    operationId: 'FileManagerController_restoreVersion_v1'
   });
 }
 
@@ -245,7 +261,7 @@ export function fetchFileManagerGetAccessToken(uploadId: string | number) {
   return apiRequest<AccessTokenResponseDto>({
     method: 'GET',
     url: buildUrl('/system/file-manager/file/{uploadId}/access-token', { uploadId }),
-    operationId: 'FileManagerController_getAccessToken_v1',
+    operationId: 'FileManagerController_getAccessToken_v1'
   });
 }
 
@@ -257,7 +273,7 @@ export function fetchFileManagerDownloadFile(uploadId: string | number, params?:
     method: 'GET',
     url: buildUrl('/system/file-manager/file/{uploadId}/download', { uploadId }),
     params,
-    operationId: 'FileManagerController_downloadFile_v1',
+    operationId: 'FileManagerController_downloadFile_v1'
   });
 }
 
@@ -268,7 +284,7 @@ export function fetchFileManagerBatchDownload() {
   return apiRequest<unknown>({
     method: 'POST',
     url: '/system/file-manager/file/batch-download',
-    operationId: 'FileManagerController_batchDownload_v1',
+    operationId: 'FileManagerController_batchDownload_v1'
   });
 }
 
@@ -279,6 +295,6 @@ export function fetchFileManagerGetStorageStats() {
   return apiRequest<StorageStatsResponseDto>({
     method: 'GET',
     url: '/system/file-manager/storage/stats',
-    operationId: 'FileManagerController_getStorageStats_v1',
+    operationId: 'FileManagerController_getStorageStats_v1'
   });
 }

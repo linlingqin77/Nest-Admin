@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue';
-import { NModal, NCard, NForm, NFormItem, NInput, NInputNumber, NSwitch, NButton, NSpace, useMessage } from 'naive-ui';
+import { computed, reactive, ref } from 'vue';
+import { NButton, NCard, NForm, NFormItem, NInput, NInputNumber, NModal, NSpace, NSwitch, useMessage } from 'naive-ui';
 import { fetchFileManagerCreateShare } from '@/service/api-gen';
 import type { CreateShareRequestDto } from '@/service/api-gen/types';
 import { $t } from '@/locales';
@@ -18,7 +18,7 @@ const formModel = reactive({
   shareCode: '',
   expireHours: 24,
   maxDownload: -1,
-  needPassword: false,
+  needPassword: false
 });
 
 const shareUrl = computed(() => {
@@ -47,7 +47,7 @@ function openModal(data: any) {
     shareCode: '',
     expireHours: 24,
     maxDownload: -1,
-    needPassword: false,
+    needPassword: false
   });
 }
 
@@ -56,7 +56,7 @@ async function handleCreate() {
 
   try {
     const params: CreateShareRequestDto = {
-      uploadId: formModel.uploadId,
+      uploadId: formModel.uploadId
     };
 
     if (formModel.needPassword && formModel.shareCode) {
@@ -89,7 +89,7 @@ function handleClose() {
 }
 
 defineExpose({
-  openModal,
+  openModal
 });
 </script>
 
@@ -120,13 +120,13 @@ defineExpose({
 
       <NSpace justify="end" class="mt-4">
         <NButton @click="handleClose">取消</NButton>
-        <NButton type="primary" :loading="loading" @click="handleCreate"> 创建分享 </NButton>
+        <NButton type="primary" :loading="loading" @click="handleCreate">创建分享</NButton>
       </NSpace>
     </div>
 
     <div v-else class="share-result">
       <div class="mb-4">
-        <div class="text-14px text-gray mb-2">分享链接：</div>
+        <div class="mb-2 text-14px text-gray">分享链接：</div>
         <div class="flex items-center gap-2">
           <NInput :value="shareUrl" readonly />
           <NButton @click="copyToClipboard(shareUrl)">复制</NButton>
@@ -134,7 +134,7 @@ defineExpose({
       </div>
 
       <div v-if="shareResult.shareCode" class="mb-4">
-        <div class="text-14px text-gray mb-2">提取码：</div>
+        <div class="mb-2 text-14px text-gray">提取码：</div>
         <div class="flex items-center gap-2">
           <NInput :value="shareResult.shareCode" readonly />
           <NButton @click="copyToClipboard(shareResult.shareCode)">复制</NButton>
@@ -145,7 +145,7 @@ defineExpose({
         <div class="text-14px text-gray">有效期至：{{ shareResult.expireTime }}</div>
       </div>
 
-      <NButton type="primary" block @click="handleClose" class="mt-4"> 完成 </NButton>
+      <NButton type="primary" block class="mt-4" @click="handleClose">完成</NButton>
     </div>
   </NModal>
 </template>

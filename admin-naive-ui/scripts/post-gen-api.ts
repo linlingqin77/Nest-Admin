@@ -9,9 +9,9 @@
  * 5. 按 tags 分组生成 API 文件
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import { fileURLToPath } from 'url';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 // ES 模块中获取 __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -124,8 +124,10 @@ function parseOpenAPISpec(spec: OpenAPISpec): ApiInfo[] {
       // 解析请求体
       let requestBodyRef: string | undefined;
       if (operation.requestBody?.content?.['application/json']?.schema?.$ref) {
-        requestBodyRef = operation.requestBody.content['application/json'].schema.$ref
-          .replace('#/components/schemas/', '');
+        requestBodyRef = operation.requestBody.content['application/json'].schema.$ref.replace(
+          '#/components/schemas/',
+          ''
+        );
       }
 
       // 解析响应数据类型
@@ -141,7 +143,7 @@ function parseOpenAPISpec(spec: OpenAPISpec): ApiInfo[] {
               if (dataSchema.$ref) {
                 responseDataRef = dataSchema.$ref.replace('#/components/schemas/', '');
               } else if (dataSchema.type === 'array' && dataSchema.items?.$ref) {
-                responseDataRef = dataSchema.items.$ref.replace('#/components/schemas/', '') + '[]';
+                responseDataRef = `${dataSchema.items.$ref.replace('#/components/schemas/', '')}[]`;
               }
             }
           }
@@ -159,11 +161,11 @@ function parseOpenAPISpec(spec: OpenAPISpec): ApiInfo[] {
         tag: operation.tags?.[0] || 'default',
         hasPathParams: pathParams.length > 0,
         hasQueryParams: queryParams.length > 0,
-        hasBody: !!requestBodyRef,
+        hasBody: Boolean(requestBodyRef),
         pathParams,
         queryParams,
         requestBodyRef,
-        responseDataRef,
+        responseDataRef
       });
     }
   }
@@ -176,73 +178,73 @@ function parseOpenAPISpec(spec: OpenAPISpec): ApiInfo[] {
  */
 const TAG_NAME_MAP: Record<string, string> = {
   // 基础模块
-  '根目录': 'main',
-  '认证模块': 'auth',
+  根目录: 'main',
+  认证模块: 'auth',
   'API 文档': 'api-doc',
 
   // 系统管理
-  '用户管理': 'user',
-  '角色管理': 'role',
-  '菜单管理': 'menu',
-  '部门管理': 'dept',
-  '岗位管理': 'post',
-  '字典管理': 'dict',
-  '参数设置': 'config',
-  '通知公告': 'notice',
+  用户管理: 'user',
+  角色管理: 'role',
+  菜单管理: 'menu',
+  部门管理: 'dept',
+  岗位管理: 'post',
+  字典管理: 'dict',
+  参数设置: 'config',
+  通知公告: 'notice',
 
   // 租户管理
-  '租户管理': 'tenant',
-  '租户套餐管理': 'tenant-package',
-  '租户仪表盘': 'tenant-dashboard',
-  '租户审计日志': 'tenant-audit',
-  '租户配额管理': 'tenant-quota',
+  租户管理: 'tenant',
+  租户套餐管理: 'tenant-package',
+  租户仪表盘: 'tenant-dashboard',
+  租户审计日志: 'tenant-audit',
+  租户配额管理: 'tenant-quota',
 
   // 文件管理
   '通用-文件上传': 'upload',
   '系统-文件管理': 'file',
 
   // 监控模块
-  '缓存管理': 'cache',
+  缓存管理: 'cache',
   '系统监控-在线用户': 'online',
   '系统监控-服务监控': 'server',
-  '登录日志': 'login-log',
-  '操作日志': 'oper-log',
-  '系统健康检查': 'health',
-  '应用信息': 'app-info',
+  登录日志: 'login-log',
+  操作日志: 'oper-log',
+  系统健康检查: 'health',
+  应用信息: 'app-info',
 
   // 定时任务
-  '定时任务管理': 'job',
-  '定时任务日志管理': 'job-log',
+  定时任务管理: 'job',
+  定时任务日志管理: 'job-log',
 
   // 短信模块
-  '短信发送': 'sms-send',
-  '短信日志': 'sms-log',
-  '短信模板管理': 'sms-template',
-  '短信渠道管理': 'sms-channel',
+  短信发送: 'sms-send',
+  短信日志: 'sms-log',
+  短信模板管理: 'sms-template',
+  短信渠道管理: 'sms-channel',
 
   // 邮件模块
-  '邮件发送': 'mail-send',
-  '邮件日志': 'mail-log',
-  '邮件模板管理': 'mail-template',
-  '邮箱账号管理': 'mail-account',
+  邮件发送: 'mail-send',
+  邮件日志: 'mail-log',
+  邮件模板管理: 'mail-template',
+  邮箱账号管理: 'mail-account',
 
   // 站内信模块
-  '站内信模板管理': 'notify-template',
-  '站内信消息管理': 'notify-message',
+  站内信模板管理: 'notify-template',
+  站内信消息管理: 'notify-message',
 
   // 系统工具
-  '系统工具': 'tool',
+  系统工具: 'tool',
 
   // 其他
-  'SSE消息推送': 'sse',
-  'Prometheus': 'prometheus',
+  SSE消息推送: 'sse',
+  Prometheus: 'prometheus',
 
   // OSS 管理
-  'OSS配置管理': 'oss-config',
-  'OSS文件管理': 'oss',
+  OSS配置管理: 'oss-config',
+  OSS文件管理: 'oss',
 
   // 客户端管理
-  '客户端管理': 'client',
+  客户端管理: 'client'
 };
 
 /**
@@ -255,12 +257,14 @@ function tagToFileName(tag: string): string {
   }
 
   // 如果没有映射，尝试转换
-  return tag
-    .toLowerCase()
-    .replace(/[\s\/]+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '') || 'default';
+  return (
+    tag
+      .toLowerCase()
+      .replace(/[\s\/]+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '') || 'default'
+  );
 }
 
 /**
@@ -268,13 +272,11 @@ function tagToFileName(tag: string): string {
  */
 function operationIdToFunctionName(operationId: string): string {
   // 移除 Controller 和 _v1 后缀
-  let name = operationId
-    .replace(/Controller_/g, '_')
-    .replace(/_v\d+$/, '');
+  const name = operationId.replace(/Controller_/g, '_').replace(/_v\d+$/, '');
 
   // 转换为 camelCase
   const parts = name.split('_');
-  return 'fetch' + parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('');
+  return `fetch${parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('')}`;
 }
 
 /**
@@ -475,9 +477,7 @@ function generateTypeDefinition(name: string, schema: Record<string, unknown>): 
 
   // 处理枚举
   if (schema.enum) {
-    const enumValues = (schema.enum as string[])
-      .map(v => typeof v === 'string' ? `'${v}'` : v)
-      .join(' | ');
+    const enumValues = (schema.enum as string[]).map(v => (typeof v === 'string' ? `'${v}'` : v)).join(' | ');
     lines.push(`export type ${name} = ${enumValues};`);
     return lines.join('\n');
   }
@@ -486,7 +486,7 @@ function generateTypeDefinition(name: string, schema: Record<string, unknown>): 
   if (schema.type === 'object' || schema.properties) {
     lines.push(`export interface ${name} {`);
 
-    const properties = schema.properties as Record<string, Record<string, unknown>> || {};
+    const properties = (schema.properties as Record<string, Record<string, unknown>>) || {};
     const required = (schema.required as string[]) || [];
 
     for (const [propName, propSchema] of Object.entries(properties)) {

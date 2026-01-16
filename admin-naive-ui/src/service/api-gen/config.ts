@@ -5,9 +5,15 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { CreateConfigRequestDto, UpdateConfigRequestDto, ConfigListResponseDto, ConfigResponseDto, ConfigValueResponseDto, ListConfigRequestDto } from './types';
+import type {
+  ConfigListResponseDto,
+  ConfigResponseDto,
+  ConfigValueResponseDto,
+  CreateConfigRequestDto,
+  ListConfigRequestDto,
+  UpdateConfigRequestDto
+} from './types';
 
 /**
  * 参数设置-创建
@@ -18,7 +24,7 @@ export function fetchConfigCreate(data: CreateConfigRequestDto) {
     method: 'POST',
     url: '/system/config',
     data,
-    operationId: 'ConfigController_create_v1',
+    operationId: 'ConfigController_create_v1'
   });
 }
 
@@ -31,7 +37,7 @@ export function fetchConfigUpdate(data: UpdateConfigRequestDto) {
     method: 'PUT',
     url: '/system/config',
     data,
-    operationId: 'ConfigController_update_v1',
+    operationId: 'ConfigController_update_v1'
   });
 }
 
@@ -44,7 +50,7 @@ export function fetchConfigFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/system/config/list',
     params,
-    operationId: 'ConfigController_findAll_v1',
+    operationId: 'ConfigController_findAll_v1'
   });
 }
 
@@ -56,7 +62,7 @@ export function fetchConfigFindOne(id: string | number) {
   return apiRequest<ConfigResponseDto>({
     method: 'GET',
     url: buildUrl('/system/config/{id}', { id }),
-    operationId: 'ConfigController_findOne_v1',
+    operationId: 'ConfigController_findOne_v1'
   });
 }
 
@@ -68,7 +74,7 @@ export function fetchConfigRemove(id: string | number) {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: buildUrl('/system/config/{id}', { id }),
-    operationId: 'ConfigController_remove_v1',
+    operationId: 'ConfigController_remove_v1'
   });
 }
 
@@ -80,7 +86,7 @@ export function fetchConfigFindOneByconfigKey(id: string | number) {
   return apiRequest<ConfigValueResponseDto>({
     method: 'GET',
     url: buildUrl('/system/config/configKey/{id}', { id }),
-    operationId: 'ConfigController_findOneByconfigKey_v1',
+    operationId: 'ConfigController_findOneByconfigKey_v1'
   });
 }
 
@@ -93,7 +99,7 @@ export function fetchConfigUpdateByKey(data: UpdateConfigRequestDto) {
     method: 'PUT',
     url: '/system/config/updateByKey',
     data,
-    operationId: 'ConfigController_updateByKey_v1',
+    operationId: 'ConfigController_updateByKey_v1'
   });
 }
 
@@ -105,7 +111,7 @@ export function fetchConfigRefreshCache() {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: '/system/config/refreshCache',
-    operationId: 'ConfigController_refreshCache_v1',
+    operationId: 'ConfigController_refreshCache_v1'
   });
 }
 
@@ -118,6 +124,6 @@ export function fetchConfigExport(data: ListConfigRequestDto) {
     method: 'POST',
     url: '/system/config/export',
     data,
-    operationId: 'ConfigController_export_v1',
+    operationId: 'ConfigController_export_v1'
   });
 }

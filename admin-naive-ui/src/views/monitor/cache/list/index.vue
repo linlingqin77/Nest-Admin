@@ -3,18 +3,18 @@ import { h, ref } from 'vue';
 import { NButton, NCard, NDataTable, NForm, NFormItem, NGi, NGrid, NInput, NSpin } from 'naive-ui';
 import type { DataTableColumns } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { useTableProps } from '@/hooks/common/table';
 import {
   fetchCacheClearCacheAll,
   fetchCacheClearCacheKey,
   fetchCacheClearCacheName,
   fetchCacheGetKeys,
   fetchCacheGetNames,
-  fetchCacheGetValue,
+  fetchCacheGetValue
 } from '@/service/api-gen';
+import { useTableProps } from '@/hooks/common/table';
 
 defineOptions({
-  name: 'CacheList',
+  name: 'CacheList'
 });
 
 const { loading: namesLoading, startLoading: startNamesLoading, endLoading: endNamesLoading } = useLoading();
@@ -32,7 +32,7 @@ const currentCacheName = ref('');
 const cacheForm = ref({
   cacheName: '',
   cacheKey: '',
-  cacheValue: '',
+  cacheValue: ''
 });
 
 /** 获取缓存名称列表 */
@@ -88,7 +88,7 @@ async function handleCacheValue(cacheKey: string) {
       cacheForm.value = {
         cacheName: data.cacheName || '',
         cacheKey: data.cacheKey || '',
-        cacheValue: data.cacheValue || '',
+        cacheValue: data.cacheValue || ''
       };
     }
   } catch {
@@ -126,7 +126,7 @@ async function handleClearCacheAll() {
     cacheForm.value = {
       cacheName: '',
       cacheKey: '',
-      cacheValue: '',
+      cacheValue: ''
     };
     cacheKeys.value = [];
   } catch {
@@ -151,27 +151,27 @@ const nameColumns: DataTableColumns<Api.Monitor.CacheName> = [
     key: 'index',
     width: 60,
     align: 'center',
-    render: (_row, index) => index + 1,
+    render: (_row, index) => index + 1
   },
   {
     title: '缓存名称',
     key: 'cacheName',
     align: 'center',
     ellipsis: { tooltip: true },
-    render: (row) => nameFormatter(row.cacheName),
+    render: row => nameFormatter(row.cacheName)
   },
   {
     title: '备注',
     key: 'remark',
     align: 'center',
-    ellipsis: { tooltip: true },
+    ellipsis: { tooltip: true }
   },
   {
     title: '操作',
     key: 'actions',
     width: 60,
     align: 'center',
-    render: (row) =>
+    render: row =>
       h(
         NButton,
         {
@@ -180,11 +180,11 @@ const nameColumns: DataTableColumns<Api.Monitor.CacheName> = [
           onClick: (e: MouseEvent) => {
             e.stopPropagation();
             handleClearCacheName(row.cacheName);
-          },
+          }
         },
-        { default: () => '删除' },
-      ),
-  },
+        { default: () => '删除' }
+      )
+  }
 ];
 
 // 缓存键名列配置
@@ -194,21 +194,21 @@ const keyColumns: DataTableColumns<{ key: string }> = [
     key: 'index',
     width: 60,
     align: 'center',
-    render: (_row, index) => index + 1,
+    render: (_row, index) => index + 1
   },
   {
     title: '缓存键名',
     key: 'key',
     align: 'center',
     ellipsis: { tooltip: true },
-    render: (row) => keyFormatter(row.key),
+    render: row => keyFormatter(row.key)
   },
   {
     title: '操作',
     key: 'actions',
     width: 60,
     align: 'center',
-    render: (row) =>
+    render: row =>
       h(
         NButton,
         {
@@ -217,11 +217,11 @@ const keyColumns: DataTableColumns<{ key: string }> = [
           onClick: (e: MouseEvent) => {
             e.stopPropagation();
             handleClearCacheKey(row.key);
-          },
+          }
         },
-        { default: () => '删除' },
-      ),
-  },
+        { default: () => '删除' }
+      )
+  }
 ];
 
 // 处理缓存名称行点击
@@ -240,7 +240,7 @@ function handleNameRowProps(row: Api.Monitor.CacheName) {
     style: 'cursor: pointer;',
     onClick: () => {
       handleNameRowClick(row);
-    },
+    }
   };
 }
 
@@ -249,7 +249,7 @@ function handleKeyRowProps(row: { key: string }) {
     style: 'cursor: pointer;',
     onClick: () => {
       handleKeyRowClick(row);
-    },
+    }
   };
 }
 

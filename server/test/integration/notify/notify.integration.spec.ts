@@ -126,10 +126,12 @@ describe('Notify Integration Tests', () => {
     });
 
     it('should list notify templates with pagination', async () => {
-      const result = await notifyTemplateService.findAll(createListNotifyTemplateDto({
-        pageNum: 1,
-        pageSize: 10,
-      }));
+      const result = await notifyTemplateService.findAll(
+        createListNotifyTemplateDto({
+          pageNum: 1,
+          pageSize: 10,
+        }),
+      );
 
       expect(result.code).toBe(200);
       expect(result.data.rows).toBeDefined();
@@ -158,11 +160,13 @@ describe('Notify Integration Tests', () => {
         createdTemplateIds.push(template.id);
       }
 
-      const result = await notifyTemplateService.findAll(createListNotifyTemplateDto({
-        pageNum: 1,
-        pageSize: 10,
-        name: '筛选站内信',
-      }));
+      const result = await notifyTemplateService.findAll(
+        createListNotifyTemplateDto({
+          pageNum: 1,
+          pageSize: 10,
+          name: '筛选站内信',
+        }),
+      );
 
       expect(result.code).toBe(200);
       expect(result.data.rows.length).toBeGreaterThan(0);
@@ -288,10 +292,12 @@ describe('Notify Integration Tests', () => {
     });
 
     it('should list notify messages with pagination', async () => {
-      const result = await notifyMessageService.findAll(createListNotifyMessageDto({
-        pageNum: 1,
-        pageSize: 10,
-      }));
+      const result = await notifyMessageService.findAll(
+        createListNotifyMessageDto({
+          pageNum: 1,
+          pageSize: 10,
+        }),
+      );
 
       expect(result.code).toBe(200);
       expect(result.data.rows).toBeDefined();
@@ -300,11 +306,13 @@ describe('Notify Integration Tests', () => {
     });
 
     it('should filter notify messages by user', async () => {
-      const result = await notifyMessageService.findAll(createListNotifyMessageDto({
-        pageNum: 1,
-        pageSize: 10,
-        userId: testUserId,
-      }));
+      const result = await notifyMessageService.findAll(
+        createListNotifyMessageDto({
+          pageNum: 1,
+          pageSize: 10,
+          userId: testUserId,
+        }),
+      );
 
       expect(result.code).toBe(200);
       result.data.rows.forEach((row: any) => {

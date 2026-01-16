@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import {
-  fetchGetUnreadCount,
   fetchGetRecentMessages,
-  fetchMarkAsRead,
+  fetchGetUnreadCount,
   fetchMarkAllAsRead,
+  fetchMarkAsRead
 } from '@/service/api/system/notify';
 
 defineOptions({
-  name: 'NotifyBell',
+  name: 'NotifyBell'
 });
 
 const router = useRouter();
@@ -57,7 +57,7 @@ async function handleMarkAsRead(message: Api.System.NotifyMessage) {
 async function handleMarkAllAsRead() {
   try {
     await fetchMarkAllAsRead();
-    recentMessages.value.forEach((msg) => {
+    recentMessages.value.forEach(msg => {
       msg.readStatus = true;
     });
     unreadCount.value = 0;
@@ -137,7 +137,7 @@ function handlePopoverShow(visible: boolean) {
           <NButton quaternary class="bell-button h-36px text-icon" :focusable="false">
             <NBadge :value="displayCount" :max="99" :offset="[2, -2]" :show="unreadCount > 0">
               <div class="bell-icon flex-center gap-8px">
-                <SvgIcon local-icon="bell" />
+                <SvgIcon local-icon="bell" class="text-18px" />
               </div>
             </NBadge>
           </NButton>
@@ -186,15 +186,15 @@ function handlePopoverShow(visible: boolean) {
               @click="handleMarkAsRead(message)"
             >
               <div class="flex items-start justify-between gap-8px">
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-8px mb-4px">
-                    <span class="font-medium text-14px">{{ message.templateNickname }}</span>
+                <div class="min-w-0 flex-1">
+                  <div class="mb-4px flex items-center gap-8px">
+                    <span class="text-14px font-medium">{{ message.templateNickname }}</span>
                     <NTag v-if="!message.readStatus" type="error" size="tiny">未读</NTag>
                   </div>
                   <NEllipsis :line-clamp="2" class="text-13px text-gray-600 dark:text-gray-400">
                     {{ message.templateContent }}
                   </NEllipsis>
-                  <div class="text-12px text-gray-400 mt-4px">
+                  <div class="mt-4px text-12px text-gray-400">
                     {{ formatTime(message.createTime) }}
                   </div>
                 </div>

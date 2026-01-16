@@ -1,60 +1,15 @@
-<template>
-  <n-modal v-model:show="modalVisible" preset="card" :title="title" class="w-800px" :segmented="{ content: true }">
-    <n-spin :show="loading">
-      <n-empty v-if="!loading && versions.length === 0" description="暂无历史版本" />
-
-      <n-timeline v-else>
-        <n-timeline-item
-          v-for="version in versions"
-          :key="version.uploadId"
-          :type="version.isLatest ? 'success' : 'default'"
-          :title="`版本 ${version.version}`"
-        >
-          <template #icon>
-            <icon-carbon-version v-if="version.isLatest" />
-            <icon-carbon-document v-else />
-          </template>
-
-          <n-space vertical :size="8">
-            <n-text>
-              <n-tag v-if="version.isLatest" type="success" size="small">当前版本</n-tag>
-              {{ version.fileName }}
-            </n-text>
-            <n-text depth="3" class="text-sm">
-              大小: {{ formatFileSize(version.size) }} | 创建时间: {{ formatDateTime((version as any).createTime) }} | 创建人:
-              {{ version.createBy }}
-            </n-text>
-
-            <n-space>
-              <n-button
-                v-if="!version.isLatest"
-                :size="themeStore.componentSize"
-                type="primary"
-                @click="handleRestore(version)"
-              >
-                恢复此版本
-              </n-button>
-              <n-button :size="themeStore.componentSize" @click="handleDownload(version)"> 下载 </n-button>
-            </n-space>
-          </n-space>
-        </n-timeline-item>
-      </n-timeline>
-    </n-spin>
-  </n-modal>
-</template>
-
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useMessage, useDialog } from 'naive-ui';
-import { useThemeStore } from '@/store/modules/theme';
+import { useDialog, useMessage } from 'naive-ui';
 import {
-  fetchFileManagerGetFileVersions,
-  fetchFileManagerRestoreVersion,
-  fetchFileManagerGetAccessToken,
   fetchFileManagerDownloadFile,
+  fetchFileManagerGetAccessToken,
+  fetchFileManagerGetFileVersions,
+  fetchFileManagerRestoreVersion
 } from '@/service/api-gen';
 import type { FileVersionResponseDto } from '@/service/api-gen/types';
-import { formatFileSize, formatDateTime } from '@/utils/common';
+import { useThemeStore } from '@/store/modules/theme';
+import { formatDateTime, formatFileSize } from '@/utils/common';
 import { $t } from '@/locales';
 
 interface Props {
@@ -113,7 +68,7 @@ function handleRestore(version: FileVersionResponseDto) {
 
         if (data) {
           message.success(
-            $t('page.fileManager.restoreVersionSuccess', { version: version.version, newVersion: data.newVersion }),
+            $t('page.fileManager.restoreVersionSuccess', { version: version.version, newVersion: data.newVersion })
           );
           emit('success');
           modalVisible.value = false;
@@ -125,7 +80,7 @@ function handleRestore(version: FileVersionResponseDto) {
           message.error($t('page.fileManager.restoreVersionFailed'));
         }
       }
-    },
+    }
   });
 }
 
@@ -145,6 +100,52 @@ async function handleDownload(version: FileVersionResponseDto) {
 }
 
 defineExpose({
-  open,
+  open
 });
 </script>
+
+<template>
+  <NModal v-model:show="modalVisible" preset="card" :title="title" class="w-800px" :segmented="{ content: true }">
+    <NSpin :show="loading">
+      <NEmpty v-if="!loading && versions.length === 0" description="暂无历史版本" />
+
+      <NTimeline v-else>
+        <NTimelineItem
+          v-for="version in versions"
+          :key="version.uploadId"
+          :type="version.isLatest ? 'success' : 'default'"
+          :title="`版本 ${version.version}`"
+        >
+          <template #icon>
+            <icon-carbon-version v-if="version.isLatest" />
+            <icon-carbon-document v-else />
+          </template>
+
+          <NSpace vertical :size="8">
+            <NText>
+              <NTag v-if="version.isLatest" type="success" size="small">当前版本</NTag>
+              {{ version.fileName }}
+            </NText>
+            <NText depth="3" class="text-sm">
+              大小: {{ formatFileSize(version.size) }} | 创建时间: {{ formatDateTime((version as any).createTime) }} |
+              创建人:
+              {{ version.createBy }}
+            </NText>
+
+            <NSpace>
+              <NButton
+                v-if="!version.isLatest"
+                :size="themeStore.componentSize"
+                type="primary"
+                @click="handleRestore(version)"
+              >
+                恢复此版本
+              </NButton>
+              <NButton :size="themeStore.componentSize" @click="handleDownload(version)">下载</NButton>
+            </NSpace>
+          </NSpace>
+        </NTimelineItem>
+      </NTimeline>
+    </NSpin>
+  </NModal>
+</template>

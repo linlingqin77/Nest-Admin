@@ -5,7 +5,6 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
 
 /**
@@ -16,7 +15,7 @@ export function fetchDocsGetErrorCodes() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/system/docs/error-codes',
-    operationId: 'DocsController_getErrorCodes_v1',
+    operationId: 'DocsController_getErrorCodes_v1'
   });
 }
 
@@ -28,7 +27,7 @@ export function fetchDocsGetErrorCodesByCategory() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/system/docs/error-codes/by-category',
-    operationId: 'DocsController_getErrorCodesByCategory_v1',
+    operationId: 'DocsController_getErrorCodesByCategory_v1'
   });
 }
 
@@ -40,7 +39,7 @@ export function fetchDocsGetErrorCodesMarkdown() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/system/docs/error-codes/markdown',
-    operationId: 'DocsController_getErrorCodesMarkdown_v1',
+    operationId: 'DocsController_getErrorCodesMarkdown_v1'
   });
 }
 
@@ -52,6 +51,6 @@ export function fetchDocsGetErrorCodesJson() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/system/docs/error-codes/json',
-    operationId: 'DocsController_getErrorCodesJson_v1',
+    operationId: 'DocsController_getErrorCodesJson_v1'
   });
 }

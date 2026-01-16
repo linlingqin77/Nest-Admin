@@ -60,10 +60,12 @@ export class ConfigService {
 
     const { list, total } = await this.configRepo.findPageWithFilter(where, query.skip, query.take);
 
-    return Result.ok(toDtoPage(ConfigResponseDto, {
-      rows: list,
-      total,
-    }));
+    return Result.ok(
+      toDtoPage(ConfigResponseDto, {
+        rows: list,
+        total,
+      }),
+    );
   }
 
   async findOne(configId: number) {

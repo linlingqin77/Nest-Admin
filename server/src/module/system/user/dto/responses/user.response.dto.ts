@@ -107,7 +107,12 @@ export class UserResponseDto extends BaseResponseDto {
   avatar?: string;
 
   @Expose()
-  @ApiPropertyOptional({ description: '帐号状态', enum: StatusEnum, enumName: 'StatusEnum', enumSchema: StatusEnumSchema })
+  @ApiPropertyOptional({
+    description: '帐号状态',
+    enum: StatusEnum,
+    enumName: 'StatusEnum',
+    enumSchema: StatusEnumSchema,
+  })
   status?: string;
 
   @Expose()

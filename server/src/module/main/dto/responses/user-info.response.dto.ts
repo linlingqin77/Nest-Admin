@@ -72,7 +72,13 @@ export class UserProfileResponseDto {
   phonenumber: string;
 
   @Expose()
-  @ApiProperty({ description: '用户性别（0男 1女 2未知）', enum: SexEnum, enumName: 'SexEnum', enumSchema: SexEnumSchema, example: '0' })
+  @ApiProperty({
+    description: '用户性别（0男 1女 2未知）',
+    enum: SexEnum,
+    enumName: 'SexEnum',
+    enumSchema: SexEnumSchema,
+    example: '0',
+  })
   sex: string;
 
   @Expose()
@@ -80,7 +86,13 @@ export class UserProfileResponseDto {
   avatar: string;
 
   @Expose()
-  @ApiProperty({ description: '帐号状态（0正常 1停用）', enum: StatusEnum, enumName: 'StatusEnum', enumSchema: StatusEnumSchema, example: '0' })
+  @ApiProperty({
+    description: '帐号状态（0正常 1停用）',
+    enum: StatusEnum,
+    enumName: 'StatusEnum',
+    enumSchema: StatusEnumSchema,
+    example: '0',
+  })
   status: string;
 
   @Expose()

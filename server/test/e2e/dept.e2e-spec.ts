@@ -27,11 +27,13 @@ describe('Dept E2E Tests', () => {
         // Sort by ID descending to delete children first
         const sortedIds = [...createdDeptIds].sort((a, b) => b - a);
         for (const deptId of sortedIds) {
-          await prisma.sysDept.delete({
-            where: { deptId },
-          }).catch(() => {
-            // Ignore if already deleted
-          });
+          await prisma.sysDept
+            .delete({
+              where: { deptId },
+            })
+            .catch(() => {
+              // Ignore if already deleted
+            });
         }
       }
     } catch (error) {
@@ -47,18 +49,20 @@ describe('Dept E2E Tests', () => {
   /**
    * Helper to create test department directly in database
    */
-  async function createTestDept(data: Partial<{
-    deptName: string;
-    parentId: number;
-    ancestors: string;
-    orderNum: number;
-    leader: string;
-    phone: string;
-    email: string;
-    status: string;
-  }> = {}) {
+  async function createTestDept(
+    data: Partial<{
+      deptName: string;
+      parentId: number;
+      ancestors: string;
+      orderNum: number;
+      leader: string;
+      phone: string;
+      email: string;
+      status: string;
+    }> = {},
+  ) {
     // Add small delay to avoid race conditions
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 10));
     const ts = Date.now();
     deptCounter++;
     const uniqueSuffix = `${ts}_${deptCounter}_${Math.random().toString(36).substring(7)}`;
@@ -84,7 +88,8 @@ describe('Dept E2E Tests', () => {
 
   describe('GET /system/dept/list', () => {
     it('should return department list', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/dept/list`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -99,7 +104,8 @@ describe('Dept E2E Tests', () => {
       const uniqueName = `过滤测试_${Date.now()}`;
       await createTestDept({ deptName: uniqueName });
 
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/dept/list`)
         .query({ deptName: uniqueName })
         .set('Authorization', `Bearer ${token}`)
@@ -112,7 +118,8 @@ describe('Dept E2E Tests', () => {
     });
 
     it('should filter departments by status', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/dept/list`)
         .query({ status: '0' })
         .set('Authorization', `Bearer ${token}`)
@@ -141,7 +148,8 @@ describe('Dept E2E Tests', () => {
         status: '0',
       };
 
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .post(`${apiPrefix}/system/dept`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -173,7 +181,8 @@ describe('Dept E2E Tests', () => {
         status: '0',
       };
 
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .post(`${apiPrefix}/system/dept`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -202,7 +211,8 @@ describe('Dept E2E Tests', () => {
         status: '0',
       };
 
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .post(`${apiPrefix}/system/dept`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -227,7 +237,8 @@ describe('Dept E2E Tests', () => {
     });
 
     it('should return department detail by ID', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/dept/${testDeptId}`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -240,7 +251,8 @@ describe('Dept E2E Tests', () => {
     });
 
     it('should return null for non-existent department', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/dept/999999`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -263,7 +275,8 @@ describe('Dept E2E Tests', () => {
     });
 
     it('should update department successfully', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .put(`${apiPrefix}/system/dept`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -297,7 +310,8 @@ describe('Dept E2E Tests', () => {
         ancestors: '0',
       });
 
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .put(`${apiPrefix}/system/dept`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -327,7 +341,8 @@ describe('Dept E2E Tests', () => {
         deptName: `E2E删除部门_${Date.now()}`,
       });
 
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .delete(`${apiPrefix}/system/dept/${dept.deptId}`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -351,7 +366,8 @@ describe('Dept E2E Tests', () => {
 
   describe('GET /system/dept/optionselect', () => {
     it('should return department option list', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/dept/optionselect`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -374,7 +390,8 @@ describe('Dept E2E Tests', () => {
         status: '1',
       });
 
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/dept/optionselect`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -415,7 +432,8 @@ describe('Dept E2E Tests', () => {
     });
 
     it('should return department list excluding specified node', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/dept/list/exclude/${parentDeptId}`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -441,7 +459,8 @@ describe('Dept E2E Tests', () => {
         ancestors: '0',
       });
 
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/dept/list/exclude/${parentDeptId}`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -449,7 +468,7 @@ describe('Dept E2E Tests', () => {
 
       expect(response.body.code).toBe(200);
       expect(Array.isArray(response.body.data)).toBe(true);
-      
+
       // The list should contain departments that are not the excluded one or its children
       // Independent department should be in the list since it has no relation to parentDeptId
       const independentInList = response.body.data.find((d: any) => d.deptId === independentDept.deptId);
@@ -475,7 +494,8 @@ describe('Dept E2E Tests', () => {
         orderNum: 1,
       });
 
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/dept/list`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -496,16 +516,15 @@ describe('Dept E2E Tests', () => {
 
   describe('Authorization Tests', () => {
     it('should reject request without token', async () => {
-      const response = await helper.getRequest()
-        .get(`${apiPrefix}/system/dept/list`)
-        .set('x-tenant-id', '000000');
+      const response = await helper.getRequest().get(`${apiPrefix}/system/dept/list`).set('x-tenant-id', '000000');
 
       // Should return 401 or 403 for unauthorized access
       expect([401, 403]).toContain(response.status);
     });
 
     it('should reject request with invalid token', async () => {
-      const response = await helper.getRequest()
+      const response = await helper
+        .getRequest()
         .get(`${apiPrefix}/system/dept/list`)
         .set('Authorization', 'Bearer invalid_token')
         .set('x-tenant-id', '000000');

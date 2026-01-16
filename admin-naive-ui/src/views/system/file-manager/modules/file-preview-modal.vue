@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { NModal, NCard, NImage, NButton, NSpace } from 'naive-ui';
+import { computed, ref } from 'vue';
+import { NButton, NCard, NImage, NModal, NSpace } from 'naive-ui';
 
 const visible = ref(false);
 const fileData = ref<any>(null);
@@ -48,7 +48,7 @@ function handleClose() {
 }
 
 defineExpose({
-  openModal,
+  openModal
 });
 </script>
 
@@ -63,29 +63,29 @@ defineExpose({
     <div v-if="fileData" class="preview-container">
       <!-- 图片预览 -->
       <div v-if="isImage" class="text-center">
-        <NImage :src="fileData.url" :alt="fileData.fileName" class="max-w-full max-h-600px" />
+        <NImage :src="fileData.url" :alt="fileData.fileName" class="max-h-600px max-w-full" />
       </div>
 
       <!-- PDF预览 -->
       <div v-else-if="isPdf" class="h-600px">
-        <iframe :src="fileData.url" class="w-full h-full border-none" />
+        <iframe :src="fileData.url" class="h-full w-full border-none" />
       </div>
 
       <!-- 视频预览 -->
       <div v-else-if="isVideo" class="text-center">
-        <video :src="fileData.url" controls class="max-w-full max-h-600px" />
+        <video :src="fileData.url" controls class="max-h-600px max-w-full" />
       </div>
 
       <!-- 文本预览 -->
       <div v-else-if="isText" class="h-600px overflow-auto">
-        <iframe :src="fileData.url" class="w-full h-full border-none" />
+        <iframe :src="fileData.url" class="h-full w-full border-none" />
       </div>
 
       <!-- 不支持预览 -->
-      <div v-else class="text-center py-20">
-        <icon-material-symbols-draft-outline class="text-64px text-gray mb-4" />
+      <div v-else class="py-20 text-center">
+        <icon-material-symbols-draft-outline class="mb-4 text-64px text-gray" />
         <div class="text-gray">该文件类型暂不支持预览</div>
-        <NButton type="primary" class="mt-4" @click="handleDownload"> 下载文件 </NButton>
+        <NButton type="primary" class="mt-4" @click="handleDownload">下载文件</NButton>
       </div>
     </div>
 

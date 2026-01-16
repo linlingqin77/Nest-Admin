@@ -92,9 +92,7 @@ describe('Monitor E2E Tests', () => {
       };
       await redisService.set(`${CacheEnum.LOGIN_TOKEN_KEY}${testToken}`, sessionData);
 
-      const response = await helper
-        .authDelete(`${apiPrefix}/monitor/online/${testToken}`)
-        .expect(200);
+      const response = await helper.authDelete(`${apiPrefix}/monitor/online/${testToken}`).expect(200);
 
       expect(response.body.code).toBe(200);
 
@@ -104,9 +102,7 @@ describe('Monitor E2E Tests', () => {
     });
 
     it('should handle non-existent token gracefully', async () => {
-      const response = await helper
-        .authDelete(`${apiPrefix}/monitor/online/non_existent_token_xyz`)
-        .expect(200);
+      const response = await helper.authDelete(`${apiPrefix}/monitor/online/non_existent_token_xyz`).expect(200);
 
       expect(response.body.code).toBe(200);
     });
@@ -167,9 +163,7 @@ describe('Monitor E2E Tests', () => {
       if (listResponse.body.data.rows.length > 0) {
         const operId = listResponse.body.data.rows[0].operId;
 
-        const response = await helper
-          .authGet(`${apiPrefix}/monitor/operlog/${operId}`)
-          .expect(200);
+        const response = await helper.authGet(`${apiPrefix}/monitor/operlog/${operId}`).expect(200);
 
         expect(response.body.code).toBe(200);
         expect(response.body.data).toHaveProperty('operId');
@@ -178,9 +172,7 @@ describe('Monitor E2E Tests', () => {
     });
 
     it('should return null for non-existent log', async () => {
-      const response = await helper
-        .authGet(`${apiPrefix}/monitor/operlog/999999999`)
-        .expect(200);
+      const response = await helper.authGet(`${apiPrefix}/monitor/operlog/999999999`).expect(200);
 
       expect(response.body.code).toBe(200);
       expect(response.body.data).toBeNull();
@@ -216,9 +208,7 @@ describe('Monitor E2E Tests', () => {
     });
 
     it('should delete operation log by id', async () => {
-      const response = await helper
-        .authDelete(`${apiPrefix}/monitor/operlog/${testLogId}`)
-        .expect(200);
+      const response = await helper.authDelete(`${apiPrefix}/monitor/operlog/${testLogId}`).expect(200);
 
       expect(response.body.code).toBe(200);
 
@@ -254,9 +244,7 @@ describe('Monitor E2E Tests', () => {
         },
       });
 
-      const response = await helper
-        .authDelete(`${apiPrefix}/monitor/operlog/clean`)
-        .expect(200);
+      const response = await helper.authDelete(`${apiPrefix}/monitor/operlog/clean`).expect(200);
 
       expect(response.body.code).toBe(200);
 
@@ -265,7 +253,6 @@ describe('Monitor E2E Tests', () => {
       expect(count).toBe(0);
     });
   });
-
 
   describe('GET /monitor/logininfor/list - 登录日志列表', () => {
     it('should return login log list', async () => {
@@ -332,9 +319,7 @@ describe('Monitor E2E Tests', () => {
     });
 
     it('should delete login log by id', async () => {
-      const response = await helper
-        .authDelete(`${apiPrefix}/monitor/logininfor/${testLogId}`)
-        .expect(200);
+      const response = await helper.authDelete(`${apiPrefix}/monitor/logininfor/${testLogId}`).expect(200);
 
       expect(response.body.code).toBe(200);
 
@@ -382,9 +367,7 @@ describe('Monitor E2E Tests', () => {
 
   describe('GET /monitor/logininfor/unlock/:username - 解锁用户', () => {
     it('should unlock user by username', async () => {
-      const response = await helper
-        .authGet(`${apiPrefix}/monitor/logininfor/unlock/test_locked_user`)
-        .expect(200);
+      const response = await helper.authGet(`${apiPrefix}/monitor/logininfor/unlock/test_locked_user`).expect(200);
 
       expect(response.body.code).toBe(200);
     });
@@ -392,9 +375,7 @@ describe('Monitor E2E Tests', () => {
 
   describe('GET /monitor/server - 服务器信息', () => {
     it('should return server info', async () => {
-      const response = await helper
-        .authGet(`${apiPrefix}/monitor/server`)
-        .expect(200);
+      const response = await helper.authGet(`${apiPrefix}/monitor/server`).expect(200);
 
       expect(response.body.code).toBe(200);
       expect(response.body.data).toHaveProperty('cpu');
@@ -404,9 +385,7 @@ describe('Monitor E2E Tests', () => {
     });
 
     it('should return CPU info with required fields', async () => {
-      const response = await helper
-        .authGet(`${apiPrefix}/monitor/server`)
-        .expect(200);
+      const response = await helper.authGet(`${apiPrefix}/monitor/server`).expect(200);
 
       const cpu = response.body.data.cpu;
       expect(cpu).toHaveProperty('cpuNum');
@@ -415,9 +394,7 @@ describe('Monitor E2E Tests', () => {
     });
 
     it('should return memory info with required fields', async () => {
-      const response = await helper
-        .authGet(`${apiPrefix}/monitor/server`)
-        .expect(200);
+      const response = await helper.authGet(`${apiPrefix}/monitor/server`).expect(200);
 
       const mem = response.body.data.mem;
       expect(mem).toHaveProperty('total');
@@ -427,9 +404,7 @@ describe('Monitor E2E Tests', () => {
     });
 
     it('should return system info with required fields', async () => {
-      const response = await helper
-        .authGet(`${apiPrefix}/monitor/server`)
-        .expect(200);
+      const response = await helper.authGet(`${apiPrefix}/monitor/server`).expect(200);
 
       const sys = response.body.data.sys;
       expect(sys).toHaveProperty('computerName');
@@ -438,9 +413,7 @@ describe('Monitor E2E Tests', () => {
     });
 
     it('should return disk info as array', async () => {
-      const response = await helper
-        .authGet(`${apiPrefix}/monitor/server`)
-        .expect(200);
+      const response = await helper.authGet(`${apiPrefix}/monitor/server`).expect(200);
 
       expect(Array.isArray(response.body.data.sysFiles)).toBe(true);
       if (response.body.data.sysFiles.length > 0) {
@@ -455,9 +428,7 @@ describe('Monitor E2E Tests', () => {
 
   describe('GET /monitor/cache - 缓存信息', () => {
     it('should return cache info', async () => {
-      const response = await helper
-        .authGet(`${apiPrefix}/monitor/cache`)
-        .expect(200);
+      const response = await helper.authGet(`${apiPrefix}/monitor/cache`).expect(200);
 
       expect(response.body.code).toBe(200);
       expect(response.body.data).toHaveProperty('dbSize');
@@ -466,17 +437,13 @@ describe('Monitor E2E Tests', () => {
     });
 
     it('should return Redis info object', async () => {
-      const response = await helper
-        .authGet(`${apiPrefix}/monitor/cache`)
-        .expect(200);
+      const response = await helper.authGet(`${apiPrefix}/monitor/cache`).expect(200);
 
       expect(response.body.data.info).toBeDefined();
     });
 
     it('should return command stats', async () => {
-      const response = await helper
-        .authGet(`${apiPrefix}/monitor/cache`)
-        .expect(200);
+      const response = await helper.authGet(`${apiPrefix}/monitor/cache`).expect(200);
 
       expect(response.body.data.commandStats).toBeDefined();
     });
@@ -484,9 +451,7 @@ describe('Monitor E2E Tests', () => {
 
   describe('GET /monitor/cache/getNames - 缓存名称列表', () => {
     it('should return cache names list', async () => {
-      const response = await helper
-        .authGet(`${apiPrefix}/monitor/cache/getNames`)
-        .expect(200);
+      const response = await helper.authGet(`${apiPrefix}/monitor/cache/getNames`).expect(200);
 
       expect(response.body.code).toBe(200);
       expect(Array.isArray(response.body.data)).toBe(true);
@@ -494,9 +459,7 @@ describe('Monitor E2E Tests', () => {
     });
 
     it('should return cache names with required fields', async () => {
-      const response = await helper
-        .authGet(`${apiPrefix}/monitor/cache/getNames`)
-        .expect(200);
+      const response = await helper.authGet(`${apiPrefix}/monitor/cache/getNames`).expect(200);
 
       const cacheItem = response.body.data[0];
       expect(cacheItem).toHaveProperty('cacheName');
@@ -506,9 +469,7 @@ describe('Monitor E2E Tests', () => {
 
   describe('GET /monitor/cache/getKeys/:id - 缓存键名列表', () => {
     it('should return cache keys by name', async () => {
-      const response = await helper
-        .authGet(`${apiPrefix}/monitor/cache/getKeys/sys_config:`)
-        .expect(200);
+      const response = await helper.authGet(`${apiPrefix}/monitor/cache/getKeys/sys_config:`).expect(200);
 
       expect(response.body.code).toBe(200);
       expect(Array.isArray(response.body.data)).toBe(true);
@@ -522,9 +483,7 @@ describe('Monitor E2E Tests', () => {
       await redisService.set(`${prefix}key1`, 'value1');
       await redisService.set(`${prefix}key2`, 'value2');
 
-      const response = await helper
-        .authDelete(`${apiPrefix}/monitor/cache/clearCacheName/${prefix}`)
-        .expect(200);
+      const response = await helper.authDelete(`${apiPrefix}/monitor/cache/clearCacheName/${prefix}`).expect(200);
 
       expect(response.body.code).toBe(200);
 
@@ -542,9 +501,7 @@ describe('Monitor E2E Tests', () => {
       const testKey = 'e2e_test_single_cache_key';
       await redisService.set(testKey, 'test_value');
 
-      const response = await helper
-        .authDelete(`${apiPrefix}/monitor/cache/clearCacheKey/${testKey}`)
-        .expect(200);
+      const response = await helper.authDelete(`${apiPrefix}/monitor/cache/clearCacheKey/${testKey}`).expect(200);
 
       expect(response.body.code).toBe(200);
 
@@ -556,41 +513,31 @@ describe('Monitor E2E Tests', () => {
 
   describe('Authentication and Authorization', () => {
     it('should require authentication for online list', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/monitor/online/list`);
+      const response = await helper.getRequest().get(`${apiPrefix}/monitor/online/list`);
 
       expect([401, 403]).toContain(response.status);
     });
 
     it('should require authentication for operlog list', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/monitor/operlog/list`);
+      const response = await helper.getRequest().get(`${apiPrefix}/monitor/operlog/list`);
 
       expect([401, 403]).toContain(response.status);
     });
 
     it('should require authentication for logininfor list', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/monitor/logininfor/list`);
+      const response = await helper.getRequest().get(`${apiPrefix}/monitor/logininfor/list`);
 
       expect([401, 403]).toContain(response.status);
     });
 
     it('should require authentication for server info', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/monitor/server`);
+      const response = await helper.getRequest().get(`${apiPrefix}/monitor/server`);
 
       expect([401, 403]).toContain(response.status);
     });
 
     it('should require authentication for cache info', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/monitor/cache`);
+      const response = await helper.getRequest().get(`${apiPrefix}/monitor/cache`);
 
       expect([401, 403]).toContain(response.status);
     });

@@ -15,7 +15,7 @@ export {
   submitForm,
   fillInput,
   clickButton,
-  type ComponentMountOptions,
+  type ComponentMountOptions
 } from './mount.helper';
 
 // 断言辅助函数
@@ -38,5 +38,5 @@ export {
   expectLoading,
   expectNotLoading,
   expectErrorMessage,
-  expectFormError,
+  expectFormError
 } from './assertion.helper';

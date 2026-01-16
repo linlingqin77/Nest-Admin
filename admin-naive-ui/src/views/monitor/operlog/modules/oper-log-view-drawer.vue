@@ -6,7 +6,7 @@ import { $t } from '@/locales';
 import DictTag from '@/components/custom/dict-tag.vue';
 
 defineOptions({
-  name: 'OperLogViewDrawer',
+  name: 'OperLogViewDrawer'
 });
 
 interface Props {
@@ -16,7 +16,7 @@ interface Props {
 
 const props = defineProps<Props>();
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 const title = '操作日志详情';
 

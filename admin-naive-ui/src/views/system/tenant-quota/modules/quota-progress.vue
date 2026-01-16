@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 
 defineOptions({
-  name: 'QuotaProgress',
+  name: 'QuotaProgress'
 });
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  unit: '',
+  unit: ''
 });
 
 const isUnlimited = computed(() => props.quota === -1);
@@ -51,7 +51,7 @@ const displayText = computed(() => {
     >
       <span class="text-12px">{{ isUnlimited ? '不限' : `${percentage}%` }}</span>
     </NProgress>
-    <div class="text-12px text-gray-500 mt-4px">{{ displayText }}</div>
+    <div class="mt-4px text-12px text-gray-500">{{ displayText }}</div>
   </div>
 </template>
 

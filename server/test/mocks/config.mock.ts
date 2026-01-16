@@ -126,9 +126,7 @@ const setNestedValue = (obj: Record<string, any>, path: string, value: any): voi
  * const mockConfig = createMockConfig({ 'jwt.expiresIn': '1h' });
  * ```
  */
-export const createMockConfig = (
-  overrides: Record<string, any> = {},
-): MockConfigService => {
+export const createMockConfig = (overrides: Record<string, any> = {}): MockConfigService => {
   // 深拷贝默认配置
   const config = JSON.parse(JSON.stringify(defaultConfig));
 

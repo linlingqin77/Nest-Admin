@@ -12,12 +12,7 @@ import { Idempotent } from 'src/core/decorators/idempotent.decorator';
 import { Lock } from 'src/core/decorators/lock.decorator';
 import { SYS_USER_TYPE } from 'src/shared/constants/index';
 import { Result, ResponseCode } from 'src/shared/response';
-import {
-  CreateUserDto,
-  UpdateUserDto,
-  ListUserDto,
-  ChangeUserStatusDto,
-} from '../dto/index';
+import { CreateUserDto, UpdateUserDto, ListUserDto, ChangeUserStatusDto } from '../dto/index';
 
 import { DeptService } from '../../dept/dept.service';
 import { UserType } from '../dto/user';

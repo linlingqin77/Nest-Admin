@@ -192,7 +192,6 @@ describe('MenuService', () => {
     });
   });
 
-
   describe('cascadeRemove', () => {
     it('should cascade delete multiple menus', async () => {
       // Mock findMany to return empty array (no children)

@@ -29,7 +29,7 @@ describe('SmsSendService Log Completeness Property-Based Tests', () => {
 
   // Helper function to simulate log update
   const updateLog = (id: bigint, data: any) => {
-    const log = createdLogs.find(l => l.id === id);
+    const log = createdLogs.find((l) => l.id === id);
     if (log) {
       // Create a copy of the updated log to track changes
       const updatedLog = { ...log, ...data };
@@ -135,9 +135,16 @@ describe('SmsSendService Log Completeness Property-Based Tests', () => {
           const hasParams = typeof createdLog.params === 'string';
           const hasSendStatus = typeof createdLog.sendStatus === 'number';
 
-          return hasChannelId && hasChannelCode && hasTemplateId && 
-                 hasTemplateCode && hasMobile && hasContent && 
-                 hasParams && hasSendStatus;
+          return (
+            hasChannelId &&
+            hasChannelCode &&
+            hasTemplateId &&
+            hasTemplateCode &&
+            hasMobile &&
+            hasContent &&
+            hasParams &&
+            hasSendStatus
+          );
         },
       ),
       { numRuns: 100 },
@@ -292,8 +299,7 @@ describe('SmsSendService Log Completeness Property-Based Tests', () => {
         // Generate random param values - filter out strings containing $ or { to avoid false positives
         fc.record({
           code: fc.stringMatching(/^[0-9]{4,6}$/),
-          name: fc.string({ minLength: 2, maxLength: 20 })
-            .filter(s => !s.includes('$') && !s.includes('{')),
+          name: fc.string({ minLength: 2, maxLength: 20 }).filter((s) => !s.includes('$') && !s.includes('{')),
         }),
         async (mobile, params) => {
           // Reset state

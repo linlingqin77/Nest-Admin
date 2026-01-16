@@ -3,11 +3,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, CallHandler } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { of } from 'rxjs';
-import { 
-  DataPermissionInterceptor, 
-  DATA_PERMISSION_KEY, 
+import {
+  DataPermissionInterceptor,
+  DATA_PERMISSION_KEY,
   DATA_PERMISSION_CONTEXT_KEY,
-  DataPermissionOptions, 
+  DataPermissionOptions,
   DataScope,
   DataPermissionContext,
   DataPermissionSqlBuilder,
@@ -38,7 +38,7 @@ describe('DataPermissionInterceptor Property-Based Tests', () => {
       params: {},
       user,
     };
-    
+
     return {
       switchToHttp: () => ({
         getRequest: () => request,
@@ -278,10 +278,7 @@ describe('DataPermissionInterceptor Property-Based Tests', () => {
           const permissionContext: DataPermissionContext = request[DATA_PERMISSION_CONTEXT_KEY];
 
           // Property: When enable=false, permission should be disabled and scope should be ALL
-          return (
-            permissionContext.enabled === false &&
-            permissionContext.dataScope === DataScope.ALL
-          );
+          return permissionContext.enabled === false && permissionContext.dataScope === DataScope.ALL;
         },
       ),
       { numRuns: 100 },
@@ -301,7 +298,13 @@ describe('DataPermissionInterceptor Property-Based Tests', () => {
         // Generate random dept IDs
         fc.array(fc.integer({ min: 1, max: 1000 }), { minLength: 1, maxLength: 5 }),
         // Generate random data scopes
-        fc.constantFrom(DataScope.ALL, DataScope.SELF, DataScope.DEPT_ONLY, DataScope.DEPT_CUSTOM, DataScope.DEPT_AND_CHILD),
+        fc.constantFrom(
+          DataScope.ALL,
+          DataScope.SELF,
+          DataScope.DEPT_ONLY,
+          DataScope.DEPT_CUSTOM,
+          DataScope.DEPT_AND_CHILD,
+        ),
         async (userId, deptIds, dataScope) => {
           const context: DataPermissionContext = {
             enabled: true,
@@ -321,20 +324,12 @@ describe('DataPermissionInterceptor Property-Based Tests', () => {
           // Property: SQL conditions should match the data scope
           switch (dataScope) {
             case DataScope.ALL:
-              return (
-                Object.keys(prismaWhere).length === 0 &&
-                sql === '1=1' &&
-                params.length === 0
-              );
+              return Object.keys(prismaWhere).length === 0 && sql === '1=1' && params.length === 0;
 
             case DataScope.SELF:
               // Prisma uses the configured column name (userId by default)
               const userIdKey = defaultOptions.userIdColumn || 'userId';
-              return (
-                prismaWhere[userIdKey] === userId &&
-                sql.includes(userIdKey) &&
-                params.includes(userId)
-              );
+              return prismaWhere[userIdKey] === userId && sql.includes(userIdKey) && params.includes(userId);
 
             case DataScope.DEPT_ONLY:
             case DataScope.DEPT_CUSTOM:
@@ -342,18 +337,18 @@ describe('DataPermissionInterceptor Property-Based Tests', () => {
               // Prisma uses the configured column name (deptId by default)
               const deptIdKey = defaultOptions.deptIdColumn || 'deptId';
               const deptCondition = prismaWhere[deptIdKey];
-              
+
               // Check Prisma condition
-              const prismaValid = deptCondition !== undefined &&
+              const prismaValid =
+                deptCondition !== undefined &&
                 deptCondition.in !== undefined &&
                 Array.isArray(deptCondition.in) &&
                 deptCondition.in.length === context.deptIds.length;
-              
+
               // Check SQL condition - uses the column name from options
-              const sqlValid = sql.includes(deptIdKey) &&
-                sql.includes('IN') &&
-                params.length === context.deptIds.length;
-              
+              const sqlValid =
+                sql.includes(deptIdKey) && sql.includes('IN') && params.length === context.deptIds.length;
+
               return prismaValid && sqlValid;
 
             default:
@@ -394,11 +389,7 @@ describe('DataPermissionInterceptor Property-Based Tests', () => {
           const { sql, params } = DataPermissionSqlBuilder.buildRawSqlCondition(context);
 
           // Property: Disabled context should generate no filtering
-          return (
-            Object.keys(prismaWhere).length === 0 &&
-            sql === '1=1' &&
-            params.length === 0
-          );
+          return Object.keys(prismaWhere).length === 0 && sql === '1=1' && params.length === 0;
         },
       ),
       { numRuns: 100 },

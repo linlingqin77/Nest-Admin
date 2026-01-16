@@ -66,7 +66,6 @@ describe('File Manager E2E Tests', () => {
     await helper.close();
   });
 
-
   // ==================== 文件夹管理测试 ====================
 
   describe('POST /system/file-manager/folder - 创建文件夹', () => {
@@ -164,7 +163,6 @@ describe('File Manager E2E Tests', () => {
     });
   });
 
-
   // ==================== 文件上传测试 ====================
 
   describe('POST /common/upload - 上传文件', () => {
@@ -182,7 +180,7 @@ describe('File Manager E2E Tests', () => {
 
       // Allow both 200 and 500 status codes (500 may occur due to storage configuration)
       expect([200, 500]).toContain(response.status);
-      
+
       if (response.body.code === 200) {
         expect(response.body.data).toHaveProperty('uploadId');
         expect(response.body.data).toHaveProperty('url');
@@ -245,7 +243,6 @@ describe('File Manager E2E Tests', () => {
       expect(response.body.code).toBe(200);
     });
   });
-
 
   // ==================== 文件操作测试 ====================
 
@@ -375,7 +372,6 @@ describe('File Manager E2E Tests', () => {
     });
   });
 
-
   // ==================== 回收站测试 ====================
 
   describe('Recycle Bin Operations', () => {
@@ -421,7 +417,7 @@ describe('File Manager E2E Tests', () => {
 
         // Allow both 200 and 500 status codes
         expect([200, 500]).toContain(response.status);
-        
+
         if (response.body.code === 200) {
           // Verify file is in recycle bin
           const dbFile = await prisma.sysUpload.findUnique({
@@ -451,10 +447,12 @@ describe('File Manager E2E Tests', () => {
     describe('PUT /system/file-manager/recycle/restore - 恢复文件', () => {
       it('should restore file from recycle bin', async () => {
         // First ensure file is in recycle bin
-        await prisma.sysUpload.update({
-          where: { uploadId: recycleFileId },
-          data: { delFlag: DelFlagEnum.DELETE },
-        }).catch(() => {});
+        await prisma.sysUpload
+          .update({
+            where: { uploadId: recycleFileId },
+            data: { delFlag: DelFlagEnum.DELETE },
+          })
+          .catch(() => {});
 
         const response = await helper
           .getAuthRequest()
@@ -473,10 +471,12 @@ describe('File Manager E2E Tests', () => {
     describe('DELETE /system/file-manager/recycle/clear - 彻底删除', () => {
       it('should permanently delete file', async () => {
         // First ensure file is in recycle bin
-        await prisma.sysUpload.update({
-          where: { uploadId: recycleFileId },
-          data: { delFlag: DelFlagEnum.DELETE },
-        }).catch(() => {});
+        await prisma.sysUpload
+          .update({
+            where: { uploadId: recycleFileId },
+            data: { delFlag: DelFlagEnum.DELETE },
+          })
+          .catch(() => {});
 
         // Then permanently delete
         const response = await helper
@@ -495,7 +495,6 @@ describe('File Manager E2E Tests', () => {
       });
     });
   });
-
 
   // ==================== 文件分享测试 ====================
 
@@ -630,9 +629,7 @@ describe('File Manager E2E Tests', () => {
         });
         const beforeCount = beforeShare?.downloadCount || 0;
 
-        const response = await helper
-          .getRequest()
-          .post(`${apiPrefix}/system/file-manager/share/${shareId}/download`);
+        const response = await helper.getRequest().post(`${apiPrefix}/system/file-manager/share/${shareId}/download`);
 
         expect([200, 201]).toContain(response.status);
         expect(response.body.code).toBe(200);
@@ -682,7 +679,6 @@ describe('File Manager E2E Tests', () => {
       });
     });
   });
-
 
   // ==================== 文件版本和下载测试 ====================
 
@@ -766,7 +762,7 @@ describe('File Manager E2E Tests', () => {
 
       // Allow both 200 and 500 status codes
       expect([200, 500]).toContain(response.status);
-      
+
       if (response.body.code === 200) {
         expect(response.body.data).toHaveProperty('used');
         expect(response.body.data).toHaveProperty('quota');
@@ -833,7 +829,7 @@ describe('File Manager E2E Tests', () => {
           .set('x-tenant-id', '000000');
 
         expect([200, 500]).toContain(response.status);
-        
+
         if (response.body.code === 200) {
           // Remove from tracking
           const index = createdFolderIds.indexOf(updateFolderId);

@@ -112,10 +112,7 @@ describe('TenantExtension', () => {
 
     it('应该不覆盖数组中已有的租户ID', () => {
       TenantContext.run({ tenantId: '100001' }, () => {
-        const result = setTenantIdForMany([
-          { userName: 'test1' },
-          { userName: 'test2', tenantId: '100002' },
-        ]);
+        const result = setTenantIdForMany([{ userName: 'test1' }, { userName: 'test2', tenantId: '100002' }]);
         expect(result).toEqual([
           { userName: 'test1', tenantId: '100001' },
           { userName: 'test2', tenantId: '100002' },

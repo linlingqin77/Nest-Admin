@@ -24,10 +24,7 @@ describe('CryptoService', () => {
     });
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        CryptoService,
-        { provide: AppConfigService, useValue: configMock },
-      ],
+      providers: [CryptoService, { provide: AppConfigService, useValue: configMock }],
     }).compile();
 
     service = module.get<CryptoService>(CryptoService);
@@ -189,7 +186,7 @@ describe('CryptoService', () => {
     it('should decrypt request with encrypted key and data', () => {
       const originalData = { username: 'test', password: 'secret' };
       const aesKey = service.generateAesKey();
-      
+
       // 模拟前端加密流程
       const aesKeyBase64 = Buffer.from(aesKey).toString('base64');
       const encryptedKey = service.rsaEncrypt(aesKeyBase64);
@@ -227,7 +224,7 @@ describe('CryptoService', () => {
     it('should complete full encryption/decryption cycle', () => {
       // 1. 前端生成 AES 密钥
       const clientAesKey = service.generateAesKey();
-      
+
       // 2. 前端加密请求
       const requestData = { action: 'login', credentials: { user: 'admin' } };
       const aesKeyBase64 = Buffer.from(clientAesKey).toString('base64');

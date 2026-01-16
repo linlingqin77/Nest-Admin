@@ -36,7 +36,8 @@ describe('User E2E Tests', () => {
 
   describe('GET /system/user/list', () => {
     it('should return paginated user list', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/user/list`)
         .query({ pageNum: 1, pageSize: 10 })
         .set('Authorization', `Bearer ${token}`)
@@ -48,7 +49,8 @@ describe('User E2E Tests', () => {
     });
 
     it('should filter users by userName', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/user/list`)
         .query({ pageNum: 1, pageSize: 10, userName: 'admin' })
         .set('Authorization', `Bearer ${token}`)
@@ -73,7 +75,8 @@ describe('User E2E Tests', () => {
         roleIds: [],
         postIds: [],
       };
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .post(`${apiPrefix}/system/user`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -99,7 +102,8 @@ describe('User E2E Tests', () => {
         postIds: [],
       };
       // Create first user
-      const firstResponse = await helper.getAuthRequest()
+      const firstResponse = await helper
+        .getAuthRequest()
         .post(`${apiPrefix}/system/user`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -107,10 +111,11 @@ describe('User E2E Tests', () => {
       expect([200, 201]).toContain(firstResponse.status);
       const user = await prisma.sysUser.findFirst({ where: { userName: userData.userName } });
       if (user) createdUserIds.push(user.userId);
-      
+
       // Try to create with same userName - API should respond (either success or error)
       const duplicateData = { ...userData, email: `dup2_${ts}@test.com`, phonenumber: `138${ts}01` };
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .post(`${apiPrefix}/system/user`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -119,8 +124,8 @@ describe('User E2E Tests', () => {
       expect(response.status).toBeDefined();
       // If it creates a second user, track it for cleanup
       if (response.body.code === 200) {
-        const secondUser = await prisma.sysUser.findFirst({ 
-          where: { userName: userData.userName, email: duplicateData.email } 
+        const secondUser = await prisma.sysUser.findFirst({
+          where: { userName: userData.userName, email: duplicateData.email },
         });
         if (secondUser) createdUserIds.push(secondUser.userId);
       }
@@ -131,7 +136,8 @@ describe('User E2E Tests', () => {
     it('should return user detail by ID', async () => {
       const adminUser = await prisma.sysUser.findFirst({ where: { userName: 'admin' } });
       if (!adminUser) return;
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/user/${adminUser.userId}`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -141,7 +147,8 @@ describe('User E2E Tests', () => {
     });
 
     it('should return null for non-existent user', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/user/999999`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -157,10 +164,19 @@ describe('User E2E Tests', () => {
       const ts = Date.now().toString().slice(-6);
       const user = await prisma.sysUser.create({
         data: {
-          tenantId: '000000', userName: `upd_${ts}`, nickName: '更新测试',
-          password: '$2a$10$test', deptId: 100, email: `upd${ts}@test.com`,
-          phonenumber: `137${ts}00`, sex: '0', status: '0', delFlag: '0',
-          userType: '01', createBy: 'test', updateBy: 'test',
+          tenantId: '000000',
+          userName: `upd_${ts}`,
+          nickName: '更新测试',
+          password: '$2a$10$test',
+          deptId: 100,
+          email: `upd${ts}@test.com`,
+          phonenumber: `137${ts}00`,
+          sex: '0',
+          status: '0',
+          delFlag: '0',
+          userType: '01',
+          createBy: 'test',
+          updateBy: 'test',
         },
       });
       testUserId = user.userId;
@@ -168,7 +184,8 @@ describe('User E2E Tests', () => {
     });
 
     it('should update user successfully', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .put(`${apiPrefix}/system/user`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -186,17 +203,27 @@ describe('User E2E Tests', () => {
       const ts = Date.now().toString().slice(-6);
       const user = await prisma.sysUser.create({
         data: {
-          tenantId: '000000', userName: `del_${ts}`, nickName: '删除测试',
-          password: '$2a$10$test', deptId: 100, email: `del${ts}@test.com`,
-          phonenumber: `136${ts}00`, sex: '0', status: '0', delFlag: '0',
-          userType: '01', createBy: 'test', updateBy: 'test',
+          tenantId: '000000',
+          userName: `del_${ts}`,
+          nickName: '删除测试',
+          password: '$2a$10$test',
+          deptId: 100,
+          email: `del${ts}@test.com`,
+          phonenumber: `136${ts}00`,
+          sex: '0',
+          status: '0',
+          delFlag: '0',
+          userType: '01',
+          createBy: 'test',
+          updateBy: 'test',
         },
       });
       deleteUserId = user.userId;
     });
 
     it('should delete user (soft delete)', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .delete(`${apiPrefix}/system/user/${deleteUserId}`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -213,10 +240,19 @@ describe('User E2E Tests', () => {
       const ts = Date.now().toString().slice(-6);
       const user = await prisma.sysUser.create({
         data: {
-          tenantId: '000000', userName: `rst_${ts}`, nickName: '重置密码',
-          password: '$2a$10$test', deptId: 100, email: `rst${ts}@test.com`,
-          phonenumber: `134${ts}00`, sex: '0', status: '0', delFlag: '0',
-          userType: '01', createBy: 'test', updateBy: 'test',
+          tenantId: '000000',
+          userName: `rst_${ts}`,
+          nickName: '重置密码',
+          password: '$2a$10$test',
+          deptId: 100,
+          email: `rst${ts}@test.com`,
+          phonenumber: `134${ts}00`,
+          sex: '0',
+          status: '0',
+          delFlag: '0',
+          userType: '01',
+          createBy: 'test',
+          updateBy: 'test',
         },
       });
       resetUserId = user.userId;
@@ -224,7 +260,8 @@ describe('User E2E Tests', () => {
     });
 
     it('should reset password', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .put(`${apiPrefix}/system/user/resetPwd`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -240,10 +277,19 @@ describe('User E2E Tests', () => {
       const ts = Date.now().toString().slice(-6);
       const user = await prisma.sysUser.create({
         data: {
-          tenantId: '000000', userName: `sts_${ts}`, nickName: '状态测试',
-          password: '$2a$10$test', deptId: 100, email: `sts${ts}@test.com`,
-          phonenumber: `133${ts}00`, sex: '0', status: '0', delFlag: '0',
-          userType: '01', createBy: 'test', updateBy: 'test',
+          tenantId: '000000',
+          userName: `sts_${ts}`,
+          nickName: '状态测试',
+          password: '$2a$10$test',
+          deptId: 100,
+          email: `sts${ts}@test.com`,
+          phonenumber: `133${ts}00`,
+          sex: '0',
+          status: '0',
+          delFlag: '0',
+          userType: '01',
+          createBy: 'test',
+          updateBy: 'test',
         },
       });
       statusUserId = user.userId;
@@ -251,7 +297,8 @@ describe('User E2E Tests', () => {
     });
 
     it('should change status to disabled', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .put(`${apiPrefix}/system/user/changeStatus`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -263,7 +310,8 @@ describe('User E2E Tests', () => {
     });
 
     it('should change status to enabled', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .put(`${apiPrefix}/system/user/changeStatus`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -280,10 +328,19 @@ describe('User E2E Tests', () => {
       const ts = Date.now().toString().slice(-6);
       const user = await prisma.sysUser.create({
         data: {
-          tenantId: '000000', userName: `aur_${ts}`, nickName: '角色分配',
-          password: '$2a$10$test', deptId: 100, email: `aur${ts}@test.com`,
-          phonenumber: `132${ts}00`, sex: '0', status: '0', delFlag: '0',
-          userType: '01', createBy: 'test', updateBy: 'test',
+          tenantId: '000000',
+          userName: `aur_${ts}`,
+          nickName: '角色分配',
+          password: '$2a$10$test',
+          deptId: 100,
+          email: `aur${ts}@test.com`,
+          phonenumber: `132${ts}00`,
+          sex: '0',
+          status: '0',
+          delFlag: '0',
+          userType: '01',
+          createBy: 'test',
+          updateBy: 'test',
         },
       });
       authUserId = user.userId;
@@ -296,7 +353,8 @@ describe('User E2E Tests', () => {
 
     it('should assign role to user', async () => {
       if (!testRoleId) return;
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .put(`${apiPrefix}/system/user/authRole`)
         .query({ userId: authUserId.toString(), roleIds: testRoleId.toString() })
         .set('Authorization', `Bearer ${token}`)
@@ -306,7 +364,8 @@ describe('User E2E Tests', () => {
     });
 
     it('should get user auth role info', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/user/authRole/${authUserId}`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -319,7 +378,8 @@ describe('User E2E Tests', () => {
 
   describe('POST /system/user/export', () => {
     it('should export users as Excel', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .post(`${apiPrefix}/system/user/export`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -333,7 +393,8 @@ describe('User E2E Tests', () => {
 
   describe('GET /system/user/deptTree', () => {
     it('should return department tree', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/user/deptTree`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -345,7 +406,8 @@ describe('User E2E Tests', () => {
 
   describe('GET /system/user', () => {
     it('should return roles and posts list', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/user`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -358,7 +420,8 @@ describe('User E2E Tests', () => {
 
   describe('GET /system/user/optionselect', () => {
     it('should return user option list', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/user/optionselect`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')
@@ -370,7 +433,8 @@ describe('User E2E Tests', () => {
 
   describe('GET /system/user/list/dept/:deptId', () => {
     it('should return users by department', async () => {
-      const response = await helper.getAuthRequest()
+      const response = await helper
+        .getAuthRequest()
         .get(`${apiPrefix}/system/user/list/dept/100`)
         .set('Authorization', `Bearer ${token}`)
         .set('x-tenant-id', '000000')

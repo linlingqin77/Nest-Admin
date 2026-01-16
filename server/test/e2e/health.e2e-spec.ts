@@ -57,15 +57,13 @@ describe('Health Check E2E Tests', () => {
 
   describe('GET /health - 综合健康检查', () => {
     it('should return health status response', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health`);
+      const response = await helper.getRequest().get(`${apiPrefix}/health`);
 
       // Health check returns 200 (ok) or 503 (service unavailable)
       expect(isValidHealthResponse(response.status)).toBe(true);
-      
+
       const healthData = getHealthData(response.body);
-      
+
       if (response.status === 200 && healthData) {
         // Success response should have terminus format
         expect(healthData).toHaveProperty('status');
@@ -80,14 +78,12 @@ describe('Health Check E2E Tests', () => {
     });
 
     it('should include database health check when healthy', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health`);
+      const response = await helper.getRequest().get(`${apiPrefix}/health`);
 
       expect(isValidHealthResponse(response.status)).toBe(true);
-      
+
       const healthData = getHealthData(response.body);
-      
+
       if (healthData) {
         // Database check should be present in info or error
         const hasDatabase = healthData.info?.database || healthData.error?.database;
@@ -97,14 +93,12 @@ describe('Health Check E2E Tests', () => {
     });
 
     it('should include redis health check when healthy', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health`);
+      const response = await helper.getRequest().get(`${apiPrefix}/health`);
 
       expect(isValidHealthResponse(response.status)).toBe(true);
-      
+
       const healthData = getHealthData(response.body);
-      
+
       if (healthData) {
         // Redis check should be present in info or error
         const hasRedis = healthData.info?.redis || healthData.error?.redis;
@@ -113,14 +107,12 @@ describe('Health Check E2E Tests', () => {
     });
 
     it('should include memory health check when healthy', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health`);
+      const response = await helper.getRequest().get(`${apiPrefix}/health`);
 
       expect(isValidHealthResponse(response.status)).toBe(true);
-      
+
       const healthData = getHealthData(response.body);
-      
+
       if (healthData) {
         // Memory check should be present in info or error
         const hasMemory = healthData.info?.memory_heap || healthData.error?.memory_heap;
@@ -129,14 +121,12 @@ describe('Health Check E2E Tests', () => {
     });
 
     it('should include disk health check when healthy', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health`);
+      const response = await helper.getRequest().get(`${apiPrefix}/health`);
 
       expect(isValidHealthResponse(response.status)).toBe(true);
-      
+
       const healthData = getHealthData(response.body);
-      
+
       if (healthData) {
         // Disk check should be present in info or error
         const hasDisk = healthData.info?.disk || healthData.error?.disk;
@@ -146,9 +136,7 @@ describe('Health Check E2E Tests', () => {
 
     it('should not require authentication', async () => {
       // Health check should be accessible without token
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health`);
+      const response = await helper.getRequest().get(`${apiPrefix}/health`);
 
       // Should not return 401 or 403
       expect([401, 403]).not.toContain(response.status);
@@ -157,15 +145,13 @@ describe('Health Check E2E Tests', () => {
 
   describe('GET /health/live - 存活探针', () => {
     it('should return liveness status response', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health/live`);
+      const response = await helper.getRequest().get(`${apiPrefix}/health/live`);
 
       // Liveness check returns 200 (ok) or 503 (service unavailable)
       expect(isValidHealthResponse(response.status)).toBe(true);
-      
+
       const healthData = getHealthData(response.body);
-      
+
       if (response.status === 200 && healthData) {
         expect(healthData).toHaveProperty('status');
         expect(['ok', 'error']).toContain(healthData.status);
@@ -175,14 +161,12 @@ describe('Health Check E2E Tests', () => {
     });
 
     it('should include memory check when healthy', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health/live`);
+      const response = await helper.getRequest().get(`${apiPrefix}/health/live`);
 
       expect(isValidHealthResponse(response.status)).toBe(true);
-      
+
       const healthData = getHealthData(response.body);
-      
+
       if (healthData) {
         // Memory check should be present in info or error
         const hasMemory = healthData.info?.memory || healthData.error?.memory;
@@ -191,9 +175,7 @@ describe('Health Check E2E Tests', () => {
     });
 
     it('should not require authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health/live`);
+      const response = await helper.getRequest().get(`${apiPrefix}/health/live`);
 
       expect([401, 403]).not.toContain(response.status);
     });
@@ -201,14 +183,12 @@ describe('Health Check E2E Tests', () => {
 
   describe('GET /health/liveness - 存活探针别名', () => {
     it('should return liveness status response', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health/liveness`);
+      const response = await helper.getRequest().get(`${apiPrefix}/health/liveness`);
 
       expect(isValidHealthResponse(response.status)).toBe(true);
-      
+
       const healthData = getHealthData(response.body);
-      
+
       if (response.status === 200 && healthData) {
         expect(healthData).toHaveProperty('status');
         expect(['ok', 'error']).toContain(healthData.status);
@@ -220,15 +200,13 @@ describe('Health Check E2E Tests', () => {
 
   describe('GET /health/ready - 就绪探针', () => {
     it('should return readiness status response', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health/ready`);
+      const response = await helper.getRequest().get(`${apiPrefix}/health/ready`);
 
       // Readiness check returns 200 (ok) or 503 (service unavailable)
       expect(isValidHealthResponse(response.status)).toBe(true);
-      
+
       const healthData = getHealthData(response.body);
-      
+
       if (response.status === 200 && healthData) {
         expect(healthData).toHaveProperty('status');
         expect(['ok', 'error']).toContain(healthData.status);
@@ -238,14 +216,12 @@ describe('Health Check E2E Tests', () => {
     });
 
     it('should include database check when healthy', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health/ready`);
+      const response = await helper.getRequest().get(`${apiPrefix}/health/ready`);
 
       expect(isValidHealthResponse(response.status)).toBe(true);
-      
+
       const healthData = getHealthData(response.body);
-      
+
       if (healthData) {
         // Database check should be present in info or error
         const hasDatabase = healthData.info?.database || healthData.error?.database;
@@ -254,14 +230,12 @@ describe('Health Check E2E Tests', () => {
     });
 
     it('should include redis check when healthy', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health/ready`);
+      const response = await helper.getRequest().get(`${apiPrefix}/health/ready`);
 
       expect(isValidHealthResponse(response.status)).toBe(true);
-      
+
       const healthData = getHealthData(response.body);
-      
+
       if (healthData) {
         // Redis check should be present in info or error
         const hasRedis = healthData.info?.redis || healthData.error?.redis;
@@ -270,9 +244,7 @@ describe('Health Check E2E Tests', () => {
     });
 
     it('should not require authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health/ready`);
+      const response = await helper.getRequest().get(`${apiPrefix}/health/ready`);
 
       expect([401, 403]).not.toContain(response.status);
     });
@@ -280,14 +252,12 @@ describe('Health Check E2E Tests', () => {
 
   describe('GET /health/readiness - 就绪探针别名', () => {
     it('should return readiness status response', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health/readiness`);
+      const response = await helper.getRequest().get(`${apiPrefix}/health/readiness`);
 
       expect(isValidHealthResponse(response.status)).toBe(true);
-      
+
       const healthData = getHealthData(response.body);
-      
+
       if (response.status === 200 && healthData) {
         expect(healthData).toHaveProperty('status');
         expect(['ok', 'error']).toContain(healthData.status);
@@ -299,19 +269,14 @@ describe('Health Check E2E Tests', () => {
 
   describe('GET /health/info - 应用信息', () => {
     it('should return application info', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health/info`)
-        .expect(200);
+      const response = await helper.getRequest().get(`${apiPrefix}/health/info`).expect(200);
 
       // Info endpoint should return application metadata
       expect(response.body).toBeDefined();
     });
 
     it('should not require authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/health/info`);
+      const response = await helper.getRequest().get(`${apiPrefix}/health/info`);
 
       expect([401, 403]).not.toContain(response.status);
     });
@@ -319,10 +284,7 @@ describe('Health Check E2E Tests', () => {
 
   describe('GET /metrics - Prometheus指标', () => {
     it('should return Prometheus metrics', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/metrics`)
-        .expect(200);
+      const response = await helper.getRequest().get(`${apiPrefix}/metrics`).expect(200);
 
       // Prometheus metrics are returned as plain text
       expect(response.text).toBeDefined();
@@ -330,10 +292,7 @@ describe('Health Check E2E Tests', () => {
     });
 
     it('should contain default Node.js metrics', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/metrics`)
-        .expect(200);
+      const response = await helper.getRequest().get(`${apiPrefix}/metrics`).expect(200);
 
       // Check for common Prometheus metrics
       expect(response.text).toContain('process_cpu');
@@ -341,28 +300,20 @@ describe('Health Check E2E Tests', () => {
     });
 
     it('should contain HTTP request metrics', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/metrics`)
-        .expect(200);
+      const response = await helper.getRequest().get(`${apiPrefix}/metrics`).expect(200);
 
       // Check for HTTP metrics (may vary based on configuration)
       expect(response.text).toContain('http_');
     });
 
     it('should not require authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/metrics`);
+      const response = await helper.getRequest().get(`${apiPrefix}/metrics`);
 
       expect([401, 403]).not.toContain(response.status);
     });
 
     it('should return content-type text/plain', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/metrics`)
-        .expect(200);
+      const response = await helper.getRequest().get(`${apiPrefix}/metrics`).expect(200);
 
       expect(response.headers['content-type']).toContain('text/plain');
     });

@@ -66,10 +66,7 @@ export const ResponseCode = {
  * expectSuccessResponse(response.body, { userId: 1 });
  * ```
  */
-export const expectSuccessResponse = <T = any>(
-  response: ApiResponse<T>,
-  expectedData?: T,
-): void => {
+export const expectSuccessResponse = <T = any>(response: ApiResponse<T>, expectedData?: T): void => {
   expect(response).toBeDefined();
   expect(response.code).toBe(ResponseCode.SUCCESS);
   expect(typeof response.msg).toBe('string');
@@ -209,15 +206,8 @@ export const expectForbiddenResponse = (response: ApiResponse): void => {
  * @param response API 响应对象
  * @param fieldName 无效字段名（可选）
  */
-export const expectParamInvalidResponse = (
-  response: ApiResponse,
-  fieldName?: string,
-): void => {
-  expectErrorResponse(
-    response,
-    ResponseCode.PARAM_INVALID,
-    fieldName ? new RegExp(fieldName) : undefined,
-  );
+export const expectParamInvalidResponse = (response: ApiResponse, fieldName?: string): void => {
+  expectErrorResponse(response, ResponseCode.PARAM_INVALID, fieldName ? new RegExp(fieldName) : undefined);
 };
 
 /**
@@ -278,10 +268,7 @@ export const expectArrayResponse = <T = any>(
  * @param response API 响应对象
  * @param requiredFields 必需字段列表
  */
-export const expectResponseHasFields = (
-  response: ApiResponse<Record<string, any>>,
-  requiredFields: string[],
-): void => {
+export const expectResponseHasFields = (response: ApiResponse<Record<string, any>>, requiredFields: string[]): void => {
   expectSuccessResponse(response);
   expect(response.data).toBeDefined();
 

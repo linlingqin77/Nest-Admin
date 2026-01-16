@@ -5,9 +5,14 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { ClearLogResultResponseDto, OperLogListResponseDto, OperLogResponseDto, DeleteLogResultResponseDto, QueryOperLogDto } from './types';
+import type {
+  ClearLogResultResponseDto,
+  DeleteLogResultResponseDto,
+  OperLogListResponseDto,
+  OperLogResponseDto,
+  QueryOperLogDto
+} from './types';
 
 /**
  * 操作日志-清除全部日志
@@ -17,7 +22,7 @@ export function fetchOperlogRemoveAll() {
   return apiRequest<ClearLogResultResponseDto>({
     method: 'DELETE',
     url: '/monitor/operlog/clean',
-    operationId: 'OperlogController_removeAll_v1',
+    operationId: 'OperlogController_removeAll_v1'
   });
 }
 
@@ -30,7 +35,7 @@ export function fetchOperlogFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/monitor/operlog/list',
     params,
-    operationId: 'OperlogController_findAll_v1',
+    operationId: 'OperlogController_findAll_v1'
   });
 }
 
@@ -42,7 +47,7 @@ export function fetchOperlogFindOne(operId: string | number) {
   return apiRequest<OperLogResponseDto>({
     method: 'GET',
     url: buildUrl('/monitor/operlog/{operId}', { operId }),
-    operationId: 'OperlogController_findOne_v1',
+    operationId: 'OperlogController_findOne_v1'
   });
 }
 
@@ -54,7 +59,7 @@ export function fetchOperlogRemove(operId: string | number) {
   return apiRequest<DeleteLogResultResponseDto>({
     method: 'DELETE',
     url: buildUrl('/monitor/operlog/{operId}', { operId }),
-    operationId: 'OperlogController_remove_v1',
+    operationId: 'OperlogController_remove_v1'
   });
 }
 
@@ -67,6 +72,6 @@ export function fetchOperlogExportData(data: QueryOperLogDto) {
     method: 'POST',
     url: '/monitor/operlog/export',
     data,
-    operationId: 'OperlogController_exportData_v1',
+    operationId: 'OperlogController_exportData_v1'
   });
 }

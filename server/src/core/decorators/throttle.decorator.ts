@@ -1,8 +1,5 @@
 import { SetMetadata, applyDecorators } from '@nestjs/common';
-import {
-  Throttle as NestThrottle,
-  SkipThrottle as NestSkipThrottle,
-} from '@nestjs/throttler';
+import { Throttle as NestThrottle, SkipThrottle as NestSkipThrottle } from '@nestjs/throttler';
 import { MultiThrottleConfig, THROTTLE_KEY, SKIP_THROTTLE_KEY } from 'src/core/guards/multi-throttle.guard';
 
 /**

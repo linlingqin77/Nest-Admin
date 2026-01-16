@@ -53,9 +53,13 @@ describe('TenantContext', () => {
 
     it('应该支持忽略租户选项', () => {
       TenantContext.run({ tenantId: '111111' }, () => {
-        TenantContext.runWithTenant('222222', () => {
-          expect(TenantContext.isIgnoreTenant()).toBe(true);
-        }, { ignoreTenant: true });
+        TenantContext.runWithTenant(
+          '222222',
+          () => {
+            expect(TenantContext.isIgnoreTenant()).toBe(true);
+          },
+          { ignoreTenant: true },
+        );
       });
     });
 

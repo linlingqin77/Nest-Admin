@@ -110,7 +110,7 @@ export class TenantJobExecutor {
   ): Promise<TenantJobResult[]> {
     const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
     const tenants = await this.getActiveTenants();
-    
+
     this.logger.log(`Starting tenant job for ${tenants.length} tenants`);
 
     if (mergedOptions.parallel) {
@@ -197,7 +197,7 @@ export class TenantJobExecutor {
     // 分批执行
     for (let i = 0; i < tenants.length; i += maxConcurrency) {
       const batch = tenants.slice(i, i + maxConcurrency);
-      
+
       const batchPromises = batch.map(async (tenant) => {
         const startTime = Date.now();
         const context: TenantJobContext = {
@@ -227,7 +227,7 @@ export class TenantJobExecutor {
       results.push(...batchResults);
 
       // 检查是否需要停止
-      if (!continueOnError && batchResults.some(r => !r.success)) {
+      if (!continueOnError && batchResults.some((r) => !r.success)) {
         this.logger.warn('Stopping execution due to error in batch');
         break;
       }
@@ -247,8 +247,8 @@ export class TenantJobExecutor {
     averageDuration: number;
   } {
     const total = results.length;
-    const success = results.filter(r => r.success).length;
-    const failed = results.filter(r => !r.success).length;
+    const success = results.filter((r) => r.success).length;
+    const failed = results.filter((r) => !r.success).length;
     const totalDuration = results.reduce((sum, r) => sum + r.duration, 0);
     const averageDuration = total > 0 ? totalDuration / total : 0;
 

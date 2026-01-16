@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { NButton, NDivider, NTag } from 'naive-ui';
-import { fetchGetTenantAuditLogList, fetchExportTenantAuditLog } from '@/service/api/system/tenant';
+import { fetchExportTenantAuditLog, fetchGetTenantAuditLogList } from '@/service/api/system/tenant';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
@@ -10,7 +10,7 @@ import AuditSearch from './modules/audit-search.vue';
 import AuditDetailModal from './modules/audit-detail-modal.vue';
 
 defineOptions({
-  name: 'TenantAuditLogList',
+  name: 'TenantAuditLogList'
 });
 
 const appStore = useAppStore();
@@ -26,7 +26,7 @@ const actionTypeMap: Record<string, { label: string; type: NaiveUI.ThemeColor }>
   permission_change: { label: '权限变更', type: 'warning' },
   config_change: { label: '配置修改', type: 'info' },
   export: { label: '导出', type: 'default' },
-  other: { label: '其他', type: 'default' },
+  other: { label: '其他', type: 'default' }
 };
 
 const {
@@ -38,7 +38,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchGetTenantAuditLogList,
   apiParams: {
@@ -49,14 +49,14 @@ const {
     actionType: null,
     module: null,
     beginTime: null,
-    endTime: null,
+    endTime: null
   },
   columns: () => [
     {
       key: 'index',
       title: $t('common.index'),
       align: 'center',
-      width: 64,
+      width: 64
     },
     {
       key: 'operateTime',
@@ -65,7 +65,7 @@ const {
       width: 160,
       render(row) {
         return row.operateTime ? new Date(row.operateTime).toLocaleString() : '-';
-      },
+      }
     },
     {
       key: 'companyName',
@@ -73,14 +73,14 @@ const {
       align: 'center',
       width: 120,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'operatorName',
       title: '操作人',
       align: 'center',
-      width: 100,
+      width: 100
     },
     {
       key: 'actionType',
@@ -89,14 +89,18 @@ const {
       width: 100,
       render(row) {
         const config = actionTypeMap[row.actionType] || actionTypeMap.other;
-        return <NTag type={config.type} size="small">{config.label}</NTag>;
-      },
+        return (
+          <NTag type={config.type} size="small">
+            {config.label}
+          </NTag>
+        );
+      }
     },
     {
       key: 'module',
       title: '操作模块',
       align: 'center',
-      width: 100,
+      width: 100
     },
     {
       key: 'actionDesc',
@@ -104,21 +108,21 @@ const {
       align: 'center',
       minWidth: 150,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'ipAddress',
       title: 'IP地址',
       align: 'center',
-      width: 130,
+      width: 130
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 80,
-      render: (row) => {
+      render: row => {
         return (
           <ButtonIcon
             type="primary"
@@ -128,9 +132,9 @@ const {
             onClick={() => viewDetail(row)}
           />
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const { drawerVisible, editingData, handleEdit } = useTableOperate(data, getData);
@@ -180,7 +184,7 @@ async function handleExport() {
         :scroll-x="1100"
         :loading="loading"
         remote
-        :row-key="(row) => row.id"
+        :row-key="row => row.id"
         :pagination="mobilePagination"
         class="sm:h-full"
       />

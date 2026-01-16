@@ -4,7 +4,10 @@ import { Reflector } from '@nestjs/core';
 import { RequireFeatureGuard } from '../../../../src/tenant/guards/require-feature.guard';
 import { FeatureToggleService } from '../../../../src/tenant/services/feature-toggle.service';
 import { TenantContext } from '../../../../src/tenant/context/tenant.context';
-import { REQUIRE_FEATURE_KEY, RequireFeatureOptions } from '../../../../src/tenant/decorators/require-feature.decorator';
+import {
+  REQUIRE_FEATURE_KEY,
+  RequireFeatureOptions,
+} from '../../../../src/tenant/decorators/require-feature.decorator';
 
 describe('RequireFeatureGuard', () => {
   let guard: RequireFeatureGuard;
@@ -81,9 +84,7 @@ describe('RequireFeatureGuard', () => {
       const options: RequireFeatureOptions = { feature: 'test-feature' };
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(options);
 
-      await expect(guard.canActivate(createMockContext())).rejects.toThrow(
-        '功能 test-feature 需要租户上下文',
-      );
+      await expect(guard.canActivate(createMockContext())).rejects.toThrow('功能 test-feature 需要租户上下文');
     });
 
     it('当没有租户上下文时应使用自定义错误消息', async () => {
@@ -174,22 +175,12 @@ describe('RequireFeatureGuard', () => {
 
       await guard.canActivate(context);
 
-      expect(reflector.getAllAndOverride).toHaveBeenCalledWith(REQUIRE_FEATURE_KEY, [
-        handler,
-        TestController,
-      ]);
+      expect(reflector.getAllAndOverride).toHaveBeenCalledWith(REQUIRE_FEATURE_KEY, [handler, TestController]);
     });
   });
 
   describe('canActivate - 不同功能名称', () => {
-    const testCases = [
-      'advanced-analytics',
-      'export',
-      'import',
-      'api-access',
-      'custom-reports',
-      'multi-language',
-    ];
+    const testCases = ['advanced-analytics', 'export', 'import', 'api-access', 'custom-reports', 'multi-language'];
 
     testCases.forEach((feature) => {
       it(`应正确检查功能: ${feature}`, async () => {
@@ -213,12 +204,9 @@ describe('RequireFeatureGuard', () => {
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(options);
       featureToggleService.isEnabled.mockResolvedValue(true);
 
-      const result = await TenantContext.run(
-        { tenantId: '000000', isSuperTenant: true },
-        async () => {
-          return guard.canActivate(createMockContext());
-        },
-      );
+      const result = await TenantContext.run({ tenantId: '000000', isSuperTenant: true }, async () => {
+        return guard.canActivate(createMockContext());
+      });
 
       expect(result).toBe(true);
       expect(featureToggleService.isEnabled).toHaveBeenCalledWith('000000', 'test-feature');

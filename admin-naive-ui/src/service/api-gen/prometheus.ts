@@ -5,7 +5,6 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
 
 /**
@@ -14,6 +13,6 @@ export function fetchPrometheusIndex() {
   return apiRequest<unknown>({
     method: 'GET',
     url: '/metrics',
-    operationId: 'PrometheusController_index_v1',
+    operationId: 'PrometheusController_index_v1'
   });
 }

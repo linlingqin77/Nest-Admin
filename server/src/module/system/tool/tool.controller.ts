@@ -1,12 +1,15 @@
-import { Controller, Get, Post, Body, Param, Delete, Request, Query, Put, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Request, Query, Put, Res, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ToolService } from './tool.service';
 import { TableName, GenDbTableList, GenTableList, GenTableUpdate } from './dto/create-genTable-dto';
+import { GenerateCodeDto, BatchGenCodeDto } from './dto';
 import { Response } from 'express';
 import { User, UserDto } from 'src/module/system/user/user.decorator';
 import { Api } from 'src/core/decorators/api.decorator';
 import { Operlog } from 'src/core/decorators/operlog.decorator';
 import { BusinessType } from 'src/shared/constants/business.constant';
+import { MultiThrottleGuard } from 'src/core/guards/multi-throttle.guard';
+import { MultiThrottle } from 'src/core/decorators/throttle.decorator';
 
 @ApiTags('系统工具')
 @Controller('tool')
@@ -96,20 +99,52 @@ export class ToolController {
   }
 
   @Api({
-    summary: '批量生成代码',
-    description: '生成代码并下载为zip压缩包',
+    summary: '批量生成代码（通过表名）',
+    description: '根据表名生成代码并下载为zip压缩包，文件名格式：{projectName}_{timestamp}.zip',
     produces: ['application/zip'],
   })
   @Operlog({ businessType: BusinessType.GENCODE })
+  @UseGuards(MultiThrottleGuard)
+  @MultiThrottle({
+    ip: { ttl: 60000, limit: 10 }, // 每分钟每IP最多10次代码生成
+    user: { ttl: 60000, limit: 20 }, // 每分钟每用户最多20次代码生成
+    tenant: { ttl: 60000, limit: 100 }, // 每分钟每租户最多100次代码生成
+  })
   @Get('/gen/batchGenCode/zip')
-  batchGenCode(@Query() tables: TableName, @Res() res: Response) {
-    return this.toolService.batchGenCode(tables, res);
+  batchGenCode(@Query() query: BatchGenCodeDto, @Res() res: Response) {
+    // 兼容旧的 TableName 格式
+    const tables = { tableNames: query.tableNames } as TableName;
+    return this.toolService.batchGenCode(tables, res, query.projectName);
+  }
+
+  @Api({
+    summary: '批量生成代码（通过表ID）',
+    description: '根据表ID列表生成代码并下载为zip压缩包，文件名格式：{projectName}_{timestamp}.zip',
+    produces: ['application/zip'],
+  })
+  @Operlog({ businessType: BusinessType.GENCODE })
+  @UseGuards(MultiThrottleGuard)
+  @MultiThrottle({
+    ip: { ttl: 60000, limit: 10 }, // 每分钟每IP最多10次代码生成
+    user: { ttl: 60000, limit: 20 }, // 每分钟每用户最多20次代码生成
+    tenant: { ttl: 60000, limit: 100 }, // 每分钟每租户最多100次代码生成
+  })
+  @Post('/gen/batchGenCode')
+  batchGenCodeByIds(@Body() dto: GenerateCodeDto, @Res() res: Response) {
+    return this.toolService.batchGenCodeByIds(dto.tableIds, res, dto.projectName);
   }
 
   @Api({
     summary: '预览生成代码',
     description: '在线预览生成的代码内容',
     params: [{ name: 'id', description: '表ID', type: 'number' }],
+  })
+  @Operlog({ businessType: BusinessType.OTHER })
+  @UseGuards(MultiThrottleGuard)
+  @MultiThrottle({
+    ip: { ttl: 60000, limit: 30 }, // 每分钟每IP最多30次预览
+    user: { ttl: 60000, limit: 60 }, // 每分钟每用户最多60次预览
+    tenant: { ttl: 60000, limit: 300 }, // 每分钟每租户最多300次预览
   })
   @Get('/gen/preview/:id')
   preview(@Param('id') id: string) {

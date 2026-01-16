@@ -32,7 +32,6 @@ describe('UserProfileService', () => {
     token: 'test-token',
   };
 
-
   beforeEach(async () => {
     prismaMock = {
       sysUser: {

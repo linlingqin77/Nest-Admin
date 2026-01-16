@@ -217,16 +217,13 @@ describe('TenantGuard', () => {
     it('超级租户使用 @IgnoreTenant 时应正常工作', () => {
       jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(true);
 
-      const testResult = TenantContext.run(
-        { tenantId: '000000', ignoreTenant: false, isSuperTenant: true },
-        () => {
-          guard.canActivate(createMockContext());
-          return {
-            ignoreTenant: TenantContext.isIgnoreTenant(),
-            isSuperTenant: TenantContext.isSuperTenant(),
-          };
-        },
-      );
+      const testResult = TenantContext.run({ tenantId: '000000', ignoreTenant: false, isSuperTenant: true }, () => {
+        guard.canActivate(createMockContext());
+        return {
+          ignoreTenant: TenantContext.isIgnoreTenant(),
+          isSuperTenant: TenantContext.isSuperTenant(),
+        };
+      });
 
       expect(testResult.ignoreTenant).toBe(true);
       expect(testResult.isSuperTenant).toBe(true);
@@ -265,14 +262,173 @@ describe('TenantGuard', () => {
       guard.canActivate(createMockContext(handler1, Controller1));
       guard.canActivate(createMockContext(handler2, Controller2));
 
-      expect(reflector.getAllAndOverride).toHaveBeenNthCalledWith(1, IGNORE_TENANT_KEY, [
-        handler1,
-        Controller1,
-      ]);
-      expect(reflector.getAllAndOverride).toHaveBeenNthCalledWith(2, IGNORE_TENANT_KEY, [
-        handler2,
-        Controller2,
-      ]);
+      expect(reflector.getAllAndOverride).toHaveBeenNthCalledWith(1, IGNORE_TENANT_KEY, [handler1, Controller1]);
+      expect(reflector.getAllAndOverride).toHaveBeenNthCalledWith(2, IGNORE_TENANT_KEY, [handler2, Controller2]);
+    });
+
+    it('当 reflector 抛出异常时应正确处理', () => {
+      jest.spyOn(reflector, 'getAllAndOverride').mockImplementation(() => {
+        throw new Error('Reflector error');
+      });
+
+      expect(() => guard.canActivate(createMockContext())).toThrow('Reflector error');
+    });
+
+    it('空 handler 和 class 应正确处理', () => {
+      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(false);
+
+      const context = {
+        switchToHttp: () => ({
+          getRequest: () => ({}),
+        }),
+        getHandler: () => undefined,
+        getClass: () => undefined,
+      } as unknown as ExecutionContext;
+
+      const result = guard.canActivate(context);
+
+      expect(result).toBe(true);
+      expect(reflector.getAllAndOverride).toHaveBeenCalledWith(IGNORE_TENANT_KEY, [undefined, undefined]);
+    });
+  });
+
+  describe('多守卫链测试', () => {
+    it('TenantGuard 应该总是返回 true 不阻止后续守卫', () => {
+      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(false);
+
+      const result = TenantContext.run({ tenantId: '123456' }, () => {
+        return guard.canActivate(createMockContext());
+      });
+
+      expect(result).toBe(true);
+    });
+
+    it('TenantGuard 设置 ignoreTenant 后不应影响后续守卫的执行', () => {
+      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(true);
+
+      const testResult = TenantContext.run({ tenantId: '123456', ignoreTenant: false }, () => {
+        const guardResult = guard.canActivate(createMockContext());
+        const ignoreTenantAfter = TenantContext.isIgnoreTenant();
+        const tenantIdAfter = TenantContext.getTenantId();
+
+        return { guardResult, ignoreTenantAfter, tenantIdAfter };
+      });
+
+      expect(testResult.guardResult).toBe(true);
+      expect(testResult.ignoreTenantAfter).toBe(true);
+      expect(testResult.tenantIdAfter).toBe('123456');
+    });
+
+    it('多个请求应该独立处理 ignoreTenant 状态', () => {
+      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(true);
+
+      // 第一个请求
+      const result1 = TenantContext.run({ tenantId: '111111', ignoreTenant: false }, () => {
+        guard.canActivate(createMockContext());
+        return TenantContext.isIgnoreTenant();
+      });
+
+      // 第二个请求（新的上下文）
+      const result2 = TenantContext.run({ tenantId: '222222', ignoreTenant: false }, () => {
+        // 在调用 guard 之前应该是 false
+        const beforeGuard = TenantContext.isIgnoreTenant();
+        guard.canActivate(createMockContext());
+        const afterGuard = TenantContext.isIgnoreTenant();
+        return { beforeGuard, afterGuard };
+      });
+
+      expect(result1).toBe(true);
+      expect(result2.beforeGuard).toBe(false);
+      expect(result2.afterGuard).toBe(true);
+    });
+
+    it('嵌套上下文中 TenantGuard 应该正确工作', () => {
+      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(true);
+
+      const testResult = TenantContext.run({ tenantId: '111111', ignoreTenant: false }, () => {
+        guard.canActivate(createMockContext());
+        const outerIgnore = TenantContext.isIgnoreTenant();
+
+        // 嵌套上下文
+        const innerResult = TenantContext.run({ tenantId: '222222', ignoreTenant: false }, () => {
+          guard.canActivate(createMockContext());
+          return TenantContext.isIgnoreTenant();
+        });
+
+        // 外层上下文应该保持不变
+        const outerIgnoreAfter = TenantContext.isIgnoreTenant();
+
+        return { outerIgnore, innerResult, outerIgnoreAfter };
+      });
+
+      expect(testResult.outerIgnore).toBe(true);
+      expect(testResult.innerResult).toBe(true);
+      expect(testResult.outerIgnoreAfter).toBe(true);
+    });
+
+    it('当 @IgnoreTenant 在 class 级别设置时应该对所有方法生效', () => {
+      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(true);
+
+      class IgnoredController {}
+      const handler1 = jest.fn();
+      const handler2 = jest.fn();
+
+      const result1 = TenantContext.run({ tenantId: '123456', ignoreTenant: false }, () => {
+        guard.canActivate(createMockContext(handler1, IgnoredController));
+        return TenantContext.isIgnoreTenant();
+      });
+
+      const result2 = TenantContext.run({ tenantId: '123456', ignoreTenant: false }, () => {
+        guard.canActivate(createMockContext(handler2, IgnoredController));
+        return TenantContext.isIgnoreTenant();
+      });
+
+      expect(result1).toBe(true);
+      expect(result2).toBe(true);
+    });
+  });
+
+  describe('配置变更场景', () => {
+    it('运行时禁用多租户应立即生效', () => {
+      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(true);
+
+      // 首先启用多租户
+      mockConfigService.tenant.enabled = true;
+      const result1 = TenantContext.run({ tenantId: '123456', ignoreTenant: false }, () => {
+        guard.canActivate(createMockContext());
+        return TenantContext.isIgnoreTenant();
+      });
+
+      // 禁用多租户
+      mockConfigService.tenant.enabled = false;
+      const result2 = TenantContext.run({ tenantId: '123456', ignoreTenant: false }, () => {
+        guard.canActivate(createMockContext());
+        return TenantContext.isIgnoreTenant();
+      });
+
+      expect(result1).toBe(true); // 启用时设置了 ignoreTenant
+      expect(result2).toBe(false); // 禁用时不处理
+    });
+
+    it('运行时启用多租户应立即生效', () => {
+      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(true);
+
+      // 首先禁用多租户
+      mockConfigService.tenant.enabled = false;
+      const result1 = TenantContext.run({ tenantId: '123456', ignoreTenant: false }, () => {
+        guard.canActivate(createMockContext());
+        return TenantContext.isIgnoreTenant();
+      });
+
+      // 启用多租户
+      mockConfigService.tenant.enabled = true;
+      const result2 = TenantContext.run({ tenantId: '123456', ignoreTenant: false }, () => {
+        guard.canActivate(createMockContext());
+        return TenantContext.isIgnoreTenant();
+      });
+
+      expect(result1).toBe(false); // 禁用时不处理
+      expect(result2).toBe(true); // 启用时设置了 ignoreTenant
     });
   });
 });

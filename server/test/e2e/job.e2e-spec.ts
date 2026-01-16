@@ -23,7 +23,7 @@ describe('Job E2E Tests', () => {
   let helper: TestHelper;
   let prisma: PrismaService;
   const apiPrefix = '/api/v1';
-  let createdJobIds: number[] = [];
+  const createdJobIds: number[] = [];
 
   beforeAll(async () => {
     helper = new TestHelper();
@@ -35,9 +35,11 @@ describe('Job E2E Tests', () => {
   afterAll(async () => {
     // Cleanup created test jobs
     if (createdJobIds.length > 0) {
-      await prisma.sysJob.deleteMany({
-        where: { jobId: { in: createdJobIds } },
-      }).catch(() => {});
+      await prisma.sysJob
+        .deleteMany({
+          where: { jobId: { in: createdJobIds } },
+        })
+        .catch(() => {});
     }
     await helper.cleanup();
     await helper.close();
@@ -102,17 +104,15 @@ describe('Job E2E Tests', () => {
   describe('POST /monitor/job - 创建任务', () => {
     it('should create a new job', async () => {
       const jobName = `E2E_Test_Job_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-      const response = await helper
-        .authPost(`${apiPrefix}/monitor/job`)
-        .send({
-          jobName,
-          jobGroup: 'DEFAULT',
-          invokeTarget: 'task.noParams',
-          cronExpression: '0 0 * * * *',
-          status: '1', // Create as stopped
-          misfirePolicy: '1',
-          concurrent: '1',
-        });
+      const response = await helper.authPost(`${apiPrefix}/monitor/job`).send({
+        jobName,
+        jobGroup: 'DEFAULT',
+        invokeTarget: 'task.noParams',
+        cronExpression: '0 0 * * * *',
+        status: '1', // Create as stopped
+        misfirePolicy: '1',
+        concurrent: '1',
+      });
 
       // Accept 200 (success), 201 (created), or 500 (unique constraint - database state issue)
       expect([200, 201, 500]).toContain(response.status);
@@ -131,27 +131,22 @@ describe('Job E2E Tests', () => {
     });
 
     it('should fail to create job without required fields', async () => {
-      const response = await helper
-        .authPost(`${apiPrefix}/monitor/job`)
-        .send({
-          jobName: 'Test Job',
-          // Missing required fields
-        });
+      const response = await helper.authPost(`${apiPrefix}/monitor/job`).send({
+        jobName: 'Test Job',
+        // Missing required fields
+      });
 
       expect([400, 500]).toContain(response.status);
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .post(`${apiPrefix}/monitor/job`)
-        .send({
-          jobName: 'Test Job',
-          jobGroup: 'DEFAULT',
-          invokeTarget: 'task.noParams',
-          cronExpression: '0 0 * * * *',
-          status: '1',
-        });
+      const response = await helper.getRequest().post(`${apiPrefix}/monitor/job`).send({
+        jobName: 'Test Job',
+        jobGroup: 'DEFAULT',
+        invokeTarget: 'task.noParams',
+        cronExpression: '0 0 * * * *',
+        status: '1',
+      });
 
       expect([401, 403]).toContain(response.status);
     });
@@ -176,9 +171,7 @@ describe('Job E2E Tests', () => {
         return;
       }
 
-      const response = await helper
-        .authGet(`${apiPrefix}/monitor/job/${testJobId}`)
-        .expect(200);
+      const response = await helper.authGet(`${apiPrefix}/monitor/job/${testJobId}`).expect(200);
 
       expect(response.body.code).toBe(200);
       expect(response.body.data).toHaveProperty('jobId');
@@ -191,9 +184,7 @@ describe('Job E2E Tests', () => {
         return;
       }
 
-      const response = await helper
-        .authGet(`${apiPrefix}/monitor/job/${testJobId}`)
-        .expect(200);
+      const response = await helper.authGet(`${apiPrefix}/monitor/job/${testJobId}`).expect(200);
 
       expect(response.body.data).toHaveProperty('jobName');
       expect(response.body.data).toHaveProperty('jobGroup');
@@ -203,8 +194,7 @@ describe('Job E2E Tests', () => {
     });
 
     it('should fail for non-existent job', async () => {
-      const response = await helper
-        .authGet(`${apiPrefix}/monitor/job/999999999`);
+      const response = await helper.authGet(`${apiPrefix}/monitor/job/999999999`);
 
       // Should return error or null data
       expect([200, 404, 500]).toContain(response.status);
@@ -213,9 +203,7 @@ describe('Job E2E Tests', () => {
     it('should fail without authentication', async () => {
       if (!testJobId) return;
 
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/monitor/job/${testJobId}`);
+      const response = await helper.getRequest().get(`${apiPrefix}/monitor/job/${testJobId}`);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -275,13 +263,10 @@ describe('Job E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .put(`${apiPrefix}/monitor/job`)
-        .send({
-          jobId: testJobId,
-          cronExpression: '0 0 * * * *',
-        });
+      const response = await helper.getRequest().put(`${apiPrefix}/monitor/job`).send({
+        jobId: testJobId,
+        cronExpression: '0 0 * * * *',
+      });
 
       expect([401, 403]).toContain(response.status);
     });
@@ -347,13 +332,10 @@ describe('Job E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .put(`${apiPrefix}/monitor/job/changeStatus`)
-        .send({
-          jobId: testJobId,
-          status: '0',
-        });
+      const response = await helper.getRequest().put(`${apiPrefix}/monitor/job/changeStatus`).send({
+        jobId: testJobId,
+        status: '0',
+      });
 
       expect([401, 403]).toContain(response.status);
     });
@@ -394,12 +376,9 @@ describe('Job E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .put(`${apiPrefix}/monitor/job/run`)
-        .send({
-          jobId: testJobId,
-        });
+      const response = await helper.getRequest().put(`${apiPrefix}/monitor/job/run`).send({
+        jobId: testJobId,
+      });
 
       expect([401, 403]).toContain(response.status);
     });
@@ -423,9 +402,7 @@ describe('Job E2E Tests', () => {
         },
       });
 
-      const response = await helper
-        .authDelete(`${apiPrefix}/monitor/job/${job.jobId}`)
-        .expect(200);
+      const response = await helper.authDelete(`${apiPrefix}/monitor/job/${job.jobId}`).expect(200);
 
       expect(response.body.code).toBe(200);
 
@@ -461,17 +438,13 @@ describe('Job E2E Tests', () => {
         },
       });
 
-      const response = await helper
-        .authDelete(`${apiPrefix}/monitor/job/${job1.jobId},${job2.jobId}`)
-        .expect(200);
+      const response = await helper.authDelete(`${apiPrefix}/monitor/job/${job1.jobId},${job2.jobId}`).expect(200);
 
       expect(response.body.code).toBe(200);
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .delete(`${apiPrefix}/monitor/job/1`);
+      const response = await helper.getRequest().delete(`${apiPrefix}/monitor/job/1`);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -559,9 +532,7 @@ describe('Job E2E Tests', () => {
     });
 
     it('should clean all job logs', async () => {
-      const response = await helper
-        .authDelete(`${apiPrefix}/monitor/jobLog/clean`)
-        .expect(200);
+      const response = await helper.authDelete(`${apiPrefix}/monitor/jobLog/clean`).expect(200);
 
       expect(response.body.code).toBe(200);
 
@@ -571,9 +542,7 @@ describe('Job E2E Tests', () => {
     });
 
     it('should fail without authentication', async () => {
-      const response = await helper
-        .getRequest()
-        .delete(`${apiPrefix}/monitor/jobLog/clean`);
+      const response = await helper.getRequest().delete(`${apiPrefix}/monitor/jobLog/clean`);
 
       expect([401, 403]).toContain(response.status);
     });
@@ -581,49 +550,37 @@ describe('Job E2E Tests', () => {
 
   describe('Authentication and Authorization', () => {
     it('should require authentication for job list', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/monitor/job/list`);
+      const response = await helper.getRequest().get(`${apiPrefix}/monitor/job/list`);
 
       expect([401, 403]).toContain(response.status);
     });
 
     it('should require authentication for job creation', async () => {
-      const response = await helper
-        .getRequest()
-        .post(`${apiPrefix}/monitor/job`);
+      const response = await helper.getRequest().post(`${apiPrefix}/monitor/job`);
 
       expect([401, 403]).toContain(response.status);
     });
 
     it('should require authentication for job update', async () => {
-      const response = await helper
-        .getRequest()
-        .put(`${apiPrefix}/monitor/job`);
+      const response = await helper.getRequest().put(`${apiPrefix}/monitor/job`);
 
       expect([401, 403]).toContain(response.status);
     });
 
     it('should require authentication for job deletion', async () => {
-      const response = await helper
-        .getRequest()
-        .delete(`${apiPrefix}/monitor/job/1`);
+      const response = await helper.getRequest().delete(`${apiPrefix}/monitor/job/1`);
 
       expect([401, 403]).toContain(response.status);
     });
 
     it('should require authentication for job log list', async () => {
-      const response = await helper
-        .getRequest()
-        .get(`${apiPrefix}/monitor/jobLog/list`);
+      const response = await helper.getRequest().get(`${apiPrefix}/monitor/jobLog/list`);
 
       expect([401, 403]).toContain(response.status);
     });
 
     it('should require authentication for job log cleanup', async () => {
-      const response = await helper
-        .getRequest()
-        .delete(`${apiPrefix}/monitor/jobLog/clean`);
+      const response = await helper.getRequest().delete(`${apiPrefix}/monitor/jobLog/clean`);
 
       expect([401, 403]).toContain(response.status);
     });

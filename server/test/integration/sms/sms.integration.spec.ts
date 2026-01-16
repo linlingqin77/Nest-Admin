@@ -133,10 +133,12 @@ describe('SMS Integration Tests', () => {
     });
 
     it('should list SMS channels with pagination', async () => {
-      const result = await smsChannelService.findAll(createListSmsChannelDto({
-        pageNum: 1,
-        pageSize: 10,
-      }));
+      const result = await smsChannelService.findAll(
+        createListSmsChannelDto({
+          pageNum: 1,
+          pageSize: 10,
+        }),
+      );
 
       expect(result.code).toBe(200);
       expect(result.data.rows).toBeDefined();
@@ -165,11 +167,13 @@ describe('SMS Integration Tests', () => {
         createdChannelIds.push(channel.id);
       }
 
-      const result = await smsChannelService.findAll(createListSmsChannelDto({
-        pageNum: 1,
-        pageSize: 10,
-        name: '筛选渠道',
-      }));
+      const result = await smsChannelService.findAll(
+        createListSmsChannelDto({
+          pageNum: 1,
+          pageSize: 10,
+          name: '筛选渠道',
+        }),
+      );
 
       expect(result.code).toBe(200);
       expect(result.data.rows.length).toBeGreaterThan(0);
@@ -312,10 +316,12 @@ describe('SMS Integration Tests', () => {
     });
 
     it('should list SMS templates with pagination', async () => {
-      const result = await smsTemplateService.findAll(createListSmsTemplateDto({
-        pageNum: 1,
-        pageSize: 10,
-      }));
+      const result = await smsTemplateService.findAll(
+        createListSmsTemplateDto({
+          pageNum: 1,
+          pageSize: 10,
+        }),
+      );
 
       expect(result.code).toBe(200);
       expect(result.data.rows).toBeDefined();
@@ -323,11 +329,13 @@ describe('SMS Integration Tests', () => {
     });
 
     it('should filter SMS templates by channel', async () => {
-      const result = await smsTemplateService.findAll(createListSmsTemplateDto({
-        pageNum: 1,
-        pageSize: 10,
-        channelId: testChannelId,
-      }));
+      const result = await smsTemplateService.findAll(
+        createListSmsTemplateDto({
+          pageNum: 1,
+          pageSize: 10,
+          channelId: testChannelId,
+        }),
+      );
 
       expect(result.code).toBe(200);
       result.data.rows.forEach((row: any) => {
@@ -372,10 +380,12 @@ describe('SMS Integration Tests', () => {
 
   describe('SMS Log Query Operations', () => {
     it('should list SMS logs with pagination', async () => {
-      const result = await smsLogService.findAll(createListSmsLogDto({
-        pageNum: 1,
-        pageSize: 10,
-      }));
+      const result = await smsLogService.findAll(
+        createListSmsLogDto({
+          pageNum: 1,
+          pageSize: 10,
+        }),
+      );
 
       expect(result.code).toBe(200);
       expect(result.data.rows).toBeDefined();
@@ -397,11 +407,13 @@ describe('SMS Integration Tests', () => {
         },
       });
 
-      const result = await smsLogService.findAll(createListSmsLogDto({
-        pageNum: 1,
-        pageSize: 10,
-        mobile: '13800138000',
-      }));
+      const result = await smsLogService.findAll(
+        createListSmsLogDto({
+          pageNum: 1,
+          pageSize: 10,
+          mobile: '13800138000',
+        }),
+      );
 
       expect(result.code).toBe(200);
       result.data.rows.forEach((row: any) => {
@@ -410,11 +422,13 @@ describe('SMS Integration Tests', () => {
     });
 
     it('should filter SMS logs by send status', async () => {
-      const result = await smsLogService.findAll(createListSmsLogDto({
-        pageNum: 1,
-        pageSize: 10,
-        sendStatus: 1,
-      }));
+      const result = await smsLogService.findAll(
+        createListSmsLogDto({
+          pageNum: 1,
+          pageSize: 10,
+          sendStatus: 1,
+        }),
+      );
 
       expect(result.code).toBe(200);
       result.data.rows.forEach((row: any) => {

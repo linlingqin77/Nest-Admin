@@ -10,7 +10,8 @@ export class LoginResponseDto {
   @Expose()
   @ApiProperty({
     description: 'JWT访问令牌',
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJOYW1lIjoiYWRtaW4iLCJpYXQiOjE3MDk4ODg4ODgsImV4cCI6MTcwOTk3NTI4OH0.xxxxx',
+    example:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJOYW1lIjoiYWRtaW4iLCJpYXQiOjE3MDk4ODg4ODgsImV4cCI6MTcwOTk3NTI4OH0.xxxxx',
   })
   token: string;
 }

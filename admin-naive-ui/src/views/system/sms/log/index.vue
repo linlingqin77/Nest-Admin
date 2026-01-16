@@ -11,7 +11,7 @@ import LogSearch from './modules/log-search.vue';
 import LogDetailModal from './modules/log-detail-modal.vue';
 
 defineOptions({
-  name: 'SmsLogList',
+  name: 'SmsLogList'
 });
 
 const appStore = useAppStore();
@@ -21,12 +21,12 @@ const tableProps = useTableProps();
 const sendStatusMap: Record<number, { label: string; type: NaiveUI.ThemeColor }> = {
   0: { label: '发送中', type: 'info' },
   1: { label: '成功', type: 'success' },
-  2: { label: '失败', type: 'error' },
+  2: { label: '失败', type: 'error' }
 };
 
 const receiveStatusMap: Record<number, { label: string; type: NaiveUI.ThemeColor }> = {
   0: { label: '未接收', type: 'warning' },
-  1: { label: '已接收', type: 'success' },
+  1: { label: '已接收', type: 'success' }
 };
 
 const detailModalVisible = ref(false);
@@ -41,7 +41,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchSmsLogFindAll as any,
   apiParams: {
@@ -50,26 +50,26 @@ const {
     mobile: null,
     channelId: null,
     templateId: null,
-    sendStatus: null,
+    sendStatus: null
   },
   columns: () => [
     {
       key: 'id',
       title: 'ID',
       align: 'center',
-      width: 80,
+      width: 80
     },
     {
       key: 'mobile',
       title: '手机号',
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'channelCode',
       title: '渠道编码',
       align: 'center',
-      minWidth: 100,
+      minWidth: 100
     },
     {
       key: 'templateCode',
@@ -77,8 +77,8 @@ const {
       align: 'center',
       minWidth: 120,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'content',
@@ -86,8 +86,8 @@ const {
       align: 'center',
       minWidth: 200,
       ellipsis: {
-        tooltip: true,
-      },
+        tooltip: true
+      }
     },
     {
       key: 'sendStatus',
@@ -97,8 +97,12 @@ const {
       render(row) {
         const typedRow = row as unknown as Api.System.SmsLog;
         const statusInfo = sendStatusMap[typedRow.sendStatus] || { label: '未知', type: 'default' };
-        return <NTag size="small" type={statusInfo.type}>{statusInfo.label}</NTag>;
-      },
+        return (
+          <NTag size="small" type={statusInfo.type}>
+            {statusInfo.label}
+          </NTag>
+        );
+      }
     },
     {
       key: 'receiveStatus',
@@ -111,21 +115,25 @@ const {
           return '-';
         }
         const statusInfo = receiveStatusMap[typedRow.receiveStatus] || { label: '未知', type: 'default' };
-        return <NTag size="small" type={statusInfo.type}>{statusInfo.label}</NTag>;
-      },
+        return (
+          <NTag size="small" type={statusInfo.type}>
+            {statusInfo.label}
+          </NTag>
+        );
+      }
     },
     {
       key: 'sendTime',
       title: '发送时间',
       align: 'center',
-      minWidth: 160,
+      minWidth: 160
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 130,
-      render: (row) => {
+      render: row => {
         const typedRow = row as unknown as Api.System.SmsLog;
         const viewBtn = () => {
           if (!hasAuth('system:sms:log:query')) {
@@ -164,9 +172,9 @@ const {
             {resendBtn()}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 function handleViewDetail(row: Api.System.SmsLog) {
@@ -207,7 +215,7 @@ async function handleResend(logId: CommonType.IdType) {
         :scroll-x="1200"
         :loading="loading"
         remote
-        :row-key="(row) => row.id"
+        :row-key="row => row.id"
         :pagination="mobilePagination"
         class="sm:h-full"
       />

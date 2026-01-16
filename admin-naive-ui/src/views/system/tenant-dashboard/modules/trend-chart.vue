@@ -3,7 +3,7 @@ import { watch } from 'vue';
 import { useEcharts } from '@/hooks/common/echarts';
 
 defineOptions({
-  name: 'TrendChart',
+  name: 'TrendChart'
 });
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   data: () => [],
-  loading: false,
+  loading: false
 });
 
 const { domRef, updateOptions } = useEcharts(() => ({
@@ -22,37 +22,37 @@ const { domRef, updateOptions } = useEcharts(() => ({
     axisPointer: {
       type: 'cross',
       label: {
-        backgroundColor: '#6a7985',
-      },
-    },
+        backgroundColor: '#6a7985'
+      }
+    }
   },
   legend: {
     data: ['新增租户', '累计租户'],
-    top: '0',
+    top: '0'
   },
   grid: {
     left: '3%',
     right: '4%',
     bottom: '3%',
     top: '15%',
-    containLabel: true,
+    containLabel: true
   },
   xAxis: {
     type: 'category',
     boundaryGap: false,
-    data: [] as string[],
+    data: [] as string[]
   },
   yAxis: [
     {
       type: 'value',
       name: '新增',
-      position: 'left',
+      position: 'left'
     },
     {
       type: 'value',
       name: '累计',
-      position: 'right',
-    },
+      position: 'right'
+    }
   ],
   series: [
     {
@@ -60,7 +60,7 @@ const { domRef, updateOptions } = useEcharts(() => ({
       name: '新增租户',
       type: 'bar',
       yAxisIndex: 0,
-      data: [] as number[],
+      data: [] as number[]
     },
     {
       color: '#26deca',
@@ -78,36 +78,36 @@ const { domRef, updateOptions } = useEcharts(() => ({
           colorStops: [
             {
               offset: 0.25,
-              color: '#26deca',
+              color: '#26deca'
             },
             {
               offset: 1,
-              color: '#fff',
-            },
-          ],
-        },
+              color: '#fff'
+            }
+          ]
+        }
       },
       emphasis: {
-        focus: 'series',
+        focus: 'series'
       },
-      data: [] as number[],
-    },
-  ],
+      data: [] as number[]
+    }
+  ]
 }));
 
 watch(
   () => props.data,
-  (newData) => {
+  newData => {
     if (newData && newData.length > 0) {
-      updateOptions((opts) => {
-        opts.xAxis.data = newData.map((item) => item.date);
-        opts.series[0].data = newData.map((item) => item.newTenants);
-        opts.series[1].data = newData.map((item) => item.totalTenants);
+      updateOptions(opts => {
+        opts.xAxis.data = newData.map(item => item.date);
+        opts.series[0].data = newData.map(item => item.newTenants);
+        opts.series[1].data = newData.map(item => item.totalTenants);
         return opts;
       });
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 </script>
 

@@ -20,9 +20,7 @@ describe('InfoController', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [InfoController],
-      providers: [
-        { provide: InfoService, useValue: infoServiceMock },
-      ],
+      providers: [{ provide: InfoService, useValue: infoServiceMock }],
     }).compile();
 
     controller = module.get<InfoController>(InfoController);

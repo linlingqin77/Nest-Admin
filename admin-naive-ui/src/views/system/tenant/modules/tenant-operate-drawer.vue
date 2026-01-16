@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import { useLoading } from '@sa/hooks';
-import { fetchTenantCreate, fetchTenantUpdate } from '@/service/api-gen';
-import { fetchTenantPackageSelectList } from '@/service/api-gen';
-import type { TenantResponseDto, CreateTenantRequestDto, UpdateTenantRequestDto } from '@/service/api-gen/types';
+import { fetchTenantCreate, fetchTenantPackageSelectList, fetchTenantUpdate } from '@/service/api-gen';
+import type { CreateTenantRequestDto, TenantResponseDto, UpdateTenantRequestDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'TenantOperateDrawer',
+  name: 'TenantOperateDrawer'
 });
 
 interface Props {
@@ -27,7 +26,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
@@ -36,7 +35,7 @@ const { loading: packageLoading, startLoading: startPackageLoading, endLoading: 
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
     add: '新增租户',
-    edit: '编辑租户',
+    edit: '编辑租户'
   };
   return titles[props.operateType];
 });
@@ -64,7 +63,7 @@ function createDefaultModel(): Model {
     accountCount: undefined,
     status: '0',
     username: '',
-    password: '',
+    password: ''
   };
 }
 
@@ -86,8 +85,8 @@ const rules: Record<RuleKey, App.Global.FormRule | App.Global.FormRule[]> = {
       min: 2,
       max: 20,
       message: '账号长度必须介于2-20之间',
-      trigger: ['blur', 'change'],
-    },
+      trigger: ['blur', 'change']
+    }
   ],
   password: [
     createRequiredRule('管理员密码不能为空'),
@@ -95,9 +94,9 @@ const rules: Record<RuleKey, App.Global.FormRule | App.Global.FormRule[]> = {
       min: 5,
       max: 20,
       message: '密码长度必须介于5-20之间',
-      trigger: ['blur', 'change'],
-    },
-  ],
+      trigger: ['blur', 'change']
+    }
+  ]
 };
 /** the enabled package options */
 const packageOptions = ref<CommonType.Option<CommonType.IdType>[]>([]);
@@ -108,9 +107,9 @@ async function getPackageOptions() {
     if (!data) {
       return;
     }
-    packageOptions.value = data.map((item) => ({
+    packageOptions.value = data.map(item => ({
       label: item.packageName,
-      value: item.packageId,
+      value: item.packageId
     }));
   } catch {
     // error handled by request interceptor
@@ -153,7 +152,7 @@ async function handleSubmit() {
         accountCount,
         status,
         username,
-        password,
+        password
       } = model;
       await fetchTenantCreate({
         contactUserName,
@@ -169,7 +168,7 @@ async function handleSubmit() {
         packageId,
         expireTime,
         accountCount,
-        status,
+        status
       } as CreateTenantRequestDto);
     } else if (props.operateType === 'edit') {
       const {
@@ -186,7 +185,7 @@ async function handleSubmit() {
         packageId,
         expireTime,
         accountCount,
-        status,
+        status
       } = model;
       await fetchTenantUpdate({
         id: id!,
@@ -202,7 +201,7 @@ async function handleSubmit() {
         packageId,
         expireTime,
         accountCount,
-        status,
+        status
       } as UpdateTenantRequestDto);
     }
 

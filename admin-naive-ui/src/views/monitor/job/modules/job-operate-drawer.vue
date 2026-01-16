@@ -3,12 +3,12 @@ import { computed, reactive, watch } from 'vue';
 import { useLoading } from '@sa/hooks';
 import { fetchJobAdd } from '@/service/api-gen';
 import { fetchUpdateJob } from '@/service/api/monitor/job';
-import type { JobResponseDto, CreateJobDto } from '@/service/api-gen/types';
+import type { CreateJobDto, JobResponseDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'JobOperateDrawer',
+  name: 'JobOperateDrawer'
 });
 
 interface Props {
@@ -28,7 +28,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const { loading, startLoading, endLoading } = useLoading();
@@ -38,7 +38,7 @@ const { createRequiredRule } = useFormRules();
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
     add: '新增任务',
-    edit: '编辑任务',
+    edit: '编辑任务'
   };
   return titles[props.operateType];
 });
@@ -65,7 +65,7 @@ function createDefaultModel(): Model {
     cronExpression: '',
     misfirePolicy: '1' as Api.Monitor.MisfirePolicy,
     concurrent: '1' as Api.Monitor.Concurrent,
-    status: '0' as Api.Common.EnableStatus,
+    status: '0' as Api.Common.EnableStatus
   };
 }
 
@@ -74,7 +74,7 @@ type RuleKey = Extract<keyof Model, 'jobName' | 'invokeTarget' | 'cronExpression
 const rules: Record<RuleKey, App.Global.FormRule[]> = {
   jobName: [createRequiredRule('请输入任务名称')],
   invokeTarget: [createRequiredRule('请输入调用目标')],
-  cronExpression: [createRequiredRule('请输入cron表达式')],
+  cronExpression: [createRequiredRule('请输入cron表达式')]
 };
 
 function handleUpdateModelWhenEdit() {
@@ -113,7 +113,7 @@ async function handleSubmit() {
         cronExpression: model.cronExpression,
         misfirePolicy: model.misfirePolicy as string | undefined,
         concurrent: model.concurrent as string | undefined,
-        status: model.status || '0',
+        status: model.status || '0'
       };
       await fetchJobAdd(createData);
     } else if (props.operateType === 'edit') {
@@ -125,7 +125,7 @@ async function handleSubmit() {
         cronExpression: model.cronExpression,
         misfirePolicy: model.misfirePolicy,
         concurrent: model.concurrent,
-        status: model.status,
+        status: model.status
       });
     }
 
@@ -148,7 +148,7 @@ watch(visible, () => {
 
 // 暴露方法供父组件调用
 defineExpose({
-  handleCronChange,
+  handleCronChange
 });
 </script>
 

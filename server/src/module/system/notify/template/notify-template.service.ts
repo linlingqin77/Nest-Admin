@@ -3,7 +3,12 @@ import { Prisma } from '@prisma/client';
 import { Result } from 'src/shared/response';
 import { DelFlagEnum } from 'src/shared/enums/index';
 import { toDtoList } from 'src/shared/utils/index';
-import { CreateNotifyTemplateDto, UpdateNotifyTemplateDto, ListNotifyTemplateDto, NotifyTemplateResponseDto } from './dto/index';
+import {
+  CreateNotifyTemplateDto,
+  UpdateNotifyTemplateDto,
+  ListNotifyTemplateDto,
+  NotifyTemplateResponseDto,
+} from './dto/index';
 import { PrismaService } from 'src/infrastructure/prisma';
 import { NotifyTemplateRepository } from './notify-template.repository';
 import { Transactional } from 'src/core/decorators/transactional.decorator';

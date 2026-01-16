@@ -5,7 +5,6 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
 import type { OssListResponseDto, OssResponseDto } from './types';
 
@@ -18,7 +17,7 @@ export function fetchOssFindAll(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/resource/oss/list',
     params,
-    operationId: 'OssController_findAll_v1',
+    operationId: 'OssController_findAll_v1'
   });
 }
 
@@ -30,7 +29,7 @@ export function fetchOssFindByIds(ids: string | number) {
   return apiRequest<OssListResponseDto>({
     method: 'GET',
     url: buildUrl('/resource/oss/listByIds/{ids}', { ids }),
-    operationId: 'OssController_findByIds_v1',
+    operationId: 'OssController_findByIds_v1'
   });
 }
 
@@ -42,7 +41,7 @@ export function fetchOssFindOne(id: string | number) {
   return apiRequest<OssResponseDto>({
     method: 'GET',
     url: buildUrl('/resource/oss/{id}', { id }),
-    operationId: 'OssController_findOne_v1',
+    operationId: 'OssController_findOne_v1'
   });
 }
 
@@ -54,7 +53,7 @@ export function fetchOssUpload() {
   return apiRequest<OssResponseDto>({
     method: 'POST',
     url: '/resource/oss/upload',
-    operationId: 'OssController_upload_v1',
+    operationId: 'OssController_upload_v1'
   });
 }
 
@@ -66,6 +65,6 @@ export function fetchOssRemove(ids: string | number) {
   return apiRequest<unknown>({
     method: 'DELETE',
     url: buildUrl('/resource/oss/{ids}', { ids }),
-    operationId: 'OssController_remove_v1',
+    operationId: 'OssController_remove_v1'
   });
 }

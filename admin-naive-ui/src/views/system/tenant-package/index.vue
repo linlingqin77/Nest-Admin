@@ -16,7 +16,7 @@ import TenantPackageSearch from './modules/tenant-package-search.vue';
 import TenantPackageOperateDrawer from './modules/tenant-package-operate-drawer.vue';
 
 defineOptions({
-  name: 'TenantPackageList',
+  name: 'TenantPackageList'
 });
 
 /** 本地搜索参数接口 */
@@ -43,7 +43,7 @@ const {
   loading,
   mobilePagination,
   searchParams,
-  resetSearchParams,
+  resetSearchParams
 } = useTable({
   apiFn: fetchTenantPackageFindAll as any,
   apiParams: {
@@ -53,32 +53,32 @@ const {
     // the value can not be undefined, otherwise the property in Form will not be reactive
     packageName: null,
     status: null,
-    params: {},
+    params: {}
   } as TenantPackageSearchParams,
   columns: () => [
     {
       type: 'selection',
       align: 'center',
-      width: 48,
+      width: 48
     },
     {
       key: 'index',
       title: $t('common.index'),
       align: 'center',
-      width: 64,
+      width: 64
     },
     {
       key: 'packageName',
       title: $t('page.system.tenantPackage.packageName'),
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'status',
       title: $t('page.system.tenantPackage.status'),
       align: 'center',
       minWidth: 120,
-      render: (row) => {
+      render: row => {
         const typedRow = row as unknown as TenantPackageResponseDto;
         return (
           <StatusSwitch
@@ -87,20 +87,20 @@ const {
             onSubmitted={(value, callback) => handleStatusChange(typedRow, value, callback)}
           />
         );
-      },
+      }
     },
     {
       key: 'remark',
       title: $t('page.system.tenantPackage.remark'),
       align: 'center',
-      minWidth: 120,
+      minWidth: 120
     },
     {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 130,
-      render: (row) => {
+      render: row => {
         const typedRow = row as unknown as TenantPackageResponseDto;
         const divider = () => {
           if (!hasAuth('system:tenantPackage:edit') || !hasAuth('system:tenantPackage:remove')) {
@@ -147,9 +147,9 @@ const {
             {deleteBtn()}
           </div>
         );
-      },
-    },
-  ],
+      }
+    }
+  ]
 });
 
 const { drawerVisible, operateType, editingData, handleAdd, handleEdit, checkedRowKeys, onBatchDeleted, onDeleted } =
@@ -183,20 +183,16 @@ function handleExport() {
   download(
     '/system/tenant/package/export',
     searchParams,
-    `${$t('page.system.tenantPackage.title')}_${new Date().getTime()}.xlsx`,
+    `${$t('page.system.tenantPackage.title')}_${new Date().getTime()}.xlsx`
   );
 }
 
 /** 处理状态切换 */
-async function handleStatusChange(
-  row: TenantPackageResponseDto,
-  value: string,
-  callback: (flag: boolean) => void,
-) {
+async function handleStatusChange(row: TenantPackageResponseDto, value: string, callback: (flag: boolean) => void) {
   try {
     await fetchUpdateTenantPackageStatus({
       packageId: row.packageId,
-      status: value as '0' | '1',
+      status: value as '0' | '1'
     });
     callback(true);
     window.$message?.success($t('page.system.tenantPackage.statusChangeSuccess'));
@@ -238,7 +234,7 @@ async function handleStatusChange(
         :scroll-x="962"
         :loading="loading"
         remote
-        :row-key="(row) => row.packageId"
+        :row-key="row => row.packageId"
         :pagination="mobilePagination"
         class="sm:h-full"
       />

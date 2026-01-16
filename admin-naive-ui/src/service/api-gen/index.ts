@@ -5,7 +5,6 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 // 导出请求适配器
 export * from './request-adapter';
 export * from './api-config';
@@ -55,5 +54,8 @@ export * from './tenant-dashboard';
 export * from './tenant-package';
 export * from './tenant-quota';
 export * from './tool';
+export * from './datasource';
+export * from './template';
+export * from './history';
 export * from './upload';
 export * from './user';

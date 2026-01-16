@@ -64,8 +64,11 @@ const getMeunTree = async () => {
         menuId: 0,
         menuName: $t('page.system.menu.rootName'),
         icon: 'material-symbols:home-outline-rounded',
-        children: handleTree(data as unknown as Api.System.MenuList, { idField: 'menuId', filterFn: (item) => item.menuType !== 'F' }),
-      },
+        children: handleTree(data as unknown as Api.System.MenuList, {
+          idField: 'menuId',
+          filterFn: item => item.menuType !== 'F'
+        })
+      }
     ] as Api.System.Menu[];
   } catch {
     // 错误消息已在请求工具中显示
@@ -108,7 +111,7 @@ async function handleDeleteMenu(id?: CommonType.IdType) {
       getBtnMenuList();
       return;
     }
-    expandedKeys.value.filter((item) => !checkedKeys.value.includes(item));
+    expandedKeys.value.filter(item => !checkedKeys.value.includes(item));
     currentMenu.value = undefined;
     checkedKeys.value = [];
     getMeunTree();
@@ -177,7 +180,7 @@ function reset() {
 }
 
 function handleClickTree(option: Array<TreeOption | null>) {
-  checkedKeys.value = option?.map((item) => item?.menuId as CommonType.IdType);
+  checkedKeys.value = option?.map(item => item?.menuId as CommonType.IdType);
 
   const menu = option[0] as Api.System.Menu;
   if (menu?.menuId === 0) {
@@ -190,7 +193,7 @@ function handleClickTree(option: Array<TreeOption | null>) {
 const tagMap: Record<'0' | '1' | '2', NaiveUI.ThemeColor> = {
   '0': 'success',
   '1': 'warning',
-  '2': 'primary',
+  '2': 'primary'
 };
 
 async function getBtnMenuList() {
@@ -239,25 +242,25 @@ const btnColumns: DataTableColumns<Api.System.Menu> = [
               <NIcon>
                 <SvgIcon icon="ic-round-plus" />
               </NIcon>
-            ),
+            )
           }}
         </NButton>
       );
     },
     render(_, index) {
       return index + 1;
-    },
+    }
   },
   {
     title: $t('page.system.menu.menuName'),
     key: 'menuName',
-    minWidth: 120,
+    minWidth: 120
   },
   {
     title: $t('page.system.menu.perms'),
     key: 'perms',
     align: 'center',
-    minWidth: 120,
+    minWidth: 120
   },
   {
     title: $t('page.system.menu.status'),
@@ -266,13 +269,13 @@ const btnColumns: DataTableColumns<Api.System.Menu> = [
     align: 'center',
     render(row) {
       return <DictTag size="small" value={row.status} dictCode="sys_normal_disable" />;
-    },
+    }
   },
   {
     title: $t('page.system.menu.createTime'),
     key: 'createTime',
     align: 'center',
-    minWidth: 150,
+    minWidth: 150
   },
   {
     title: $t('common.action'),
@@ -325,8 +328,8 @@ const btnColumns: DataTableColumns<Api.System.Menu> = [
           {deleteBtn()}
         </div>
       );
-    },
-  },
+    }
+  }
 ];
 
 function renderMenuName(menuName: string) {

@@ -68,7 +68,6 @@ export class RoleDeptTreeResponseDto {
   depts: DeptTreeNodeVo[];
 }
 
-
 /**
  * 角色菜单树节点响应 DTO
  */

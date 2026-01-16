@@ -21,10 +21,7 @@ export class TenantException extends HttpException {
  */
 export class TenantNotFoundException extends TenantException {
   constructor(tenantId?: string) {
-    super(
-      tenantId ? `租户不存在: ${tenantId}` : '租户不存在',
-      HttpStatus.NOT_FOUND,
-    );
+    super(tenantId ? `租户不存在: ${tenantId}` : '租户不存在', HttpStatus.NOT_FOUND);
   }
 }
 
@@ -33,10 +30,7 @@ export class TenantNotFoundException extends TenantException {
  */
 export class TenantDisabledException extends TenantException {
   constructor(tenantId?: string) {
-    super(
-      tenantId ? `租户已被停用: ${tenantId}` : '租户已被停用，请联系管理员',
-      HttpStatus.FORBIDDEN,
-    );
+    super(tenantId ? `租户已被停用: ${tenantId}` : '租户已被停用，请联系管理员', HttpStatus.FORBIDDEN);
   }
 }
 
@@ -45,10 +39,7 @@ export class TenantDisabledException extends TenantException {
  */
 export class TenantExpiredException extends TenantException {
   constructor(tenantId?: string) {
-    super(
-      tenantId ? `租户已过期: ${tenantId}` : '租户已过期，请联系管理员续费',
-      HttpStatus.FORBIDDEN,
-    );
+    super(tenantId ? `租户已过期: ${tenantId}` : '租户已过期，请联系管理员续费', HttpStatus.FORBIDDEN);
   }
 }
 
@@ -66,10 +57,7 @@ export class TenantContextMissingException extends TenantException {
  */
 export class TenantQuotaExceededException extends TenantException {
   constructor(resource: string, current: number, limit: number) {
-    super(
-      `租户${resource}配额已用尽，当前使用: ${current}，配额上限: ${limit}`,
-      HttpStatus.FORBIDDEN,
-    );
+    super(`租户${resource}配额已用尽，当前使用: ${current}，配额上限: ${limit}`, HttpStatus.FORBIDDEN);
   }
 }
 

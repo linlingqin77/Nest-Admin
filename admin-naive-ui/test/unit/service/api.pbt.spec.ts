@@ -3,8 +3,8 @@
  * **Property 7: API 服务正确性**
  * **Validates: Requirements 14.2, 14.3, 14.4, 14.5**
  */
-import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
-import { http, HttpResponse } from 'msw';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import * as fc from 'fast-check';
 
@@ -26,21 +26,19 @@ describe('API 服务 - 属性测试', () => {
           fc.record({
             userId: fc.integer({ min: 1, max: 10000 }),
             userName: fc.string({ minLength: 3, maxLength: 20 }),
-            nickName: fc.string({ minLength: 3, maxLength: 20 }),
+            nickName: fc.string({ minLength: 3, maxLength: 20 })
           }),
-          async (userData) => {
-            server.use(
-              http.get('/api/test/user', () => HttpResponse.json({ code: 200, msg: 'ok', data: userData })),
-            );
+          async userData => {
+            server.use(http.get('/api/test/user', () => HttpResponse.json({ code: 200, msg: 'ok', data: userData })));
             const result = await fetchApi('/api/test/user');
             expect(result).toHaveProperty('code');
             expect(result).toHaveProperty('msg');
             expect(result).toHaveProperty('data');
             expect(result.code).toBe(200);
             return true;
-          },
+          }
         ),
-        { numRuns: 5 },
+        { numRuns: 5 }
       );
     });
   });
@@ -52,14 +50,18 @@ describe('API 服务 - 属性测试', () => {
           const expectedPages = Math.ceil(total / pageSize);
           server.use(
             http.get('/api/test/pagination', () =>
-              HttpResponse.json({ code: 200, msg: 'ok', data: { rows: [], total, pageNum: 1, pageSize, pages: expectedPages } }),
-            ),
+              HttpResponse.json({
+                code: 200,
+                msg: 'ok',
+                data: { rows: [], total, pageNum: 1, pageSize, pages: expectedPages }
+              })
+            )
           );
           const result = await fetchApi('/api/test/pagination');
           expect(result.data.pages).toBe(expectedPages);
           return true;
         }),
-        { numRuns: 10 },
+        { numRuns: 10 }
       );
     });
   });

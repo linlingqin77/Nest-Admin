@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { $t } from '@/locales';
-import ComponentSize from './modules/component-size.vue';
 import TableProps from '../table-props.vue';
+import ComponentSize from './modules/component-size.vue';
 
 defineOptions({
-  name: 'ComponentSettings',
+  name: 'ComponentSettings'
 });
 </script>
 

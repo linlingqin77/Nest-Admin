@@ -2,15 +2,20 @@
 import { computed, reactive, ref, watch } from 'vue';
 import { NInputNumber } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { fetchDeptCreate, fetchDeptFindAll, fetchDeptFindListExclude, fetchDeptUpdate } from '@/service/api-gen';
-import { fetchUserFindByDeptId } from '@/service/api-gen';
-import type { DeptResponseDto, CreateDeptRequestDto, UpdateDeptRequestDto } from '@/service/api-gen/types';
+import {
+  fetchDeptCreate,
+  fetchDeptFindAll,
+  fetchDeptFindListExclude,
+  fetchDeptUpdate,
+  fetchUserFindByDeptId
+} from '@/service/api-gen';
+import type { CreateDeptRequestDto, DeptResponseDto, UpdateDeptRequestDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { handleTree } from '@/utils/common';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'DeptOperateDrawer',
+  name: 'DeptOperateDrawer'
 });
 
 interface Props {
@@ -29,7 +34,7 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const visible = defineModel<boolean>('visible', {
-  default: false,
+  default: false
 });
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
@@ -46,7 +51,7 @@ const expandedKeys = ref<CommonType.IdType[]>([]);
 const title = computed(() => {
   const titles: Record<NaiveUI.TableOperateType, string> = {
     add: $t('page.system.dept.addDept'),
-    edit: $t('page.system.dept.editDept'),
+    edit: $t('page.system.dept.editDept')
   };
   return titles[props.operateType];
 });
@@ -64,7 +69,7 @@ function createDefaultModel(): Model {
     leader: undefined,
     phone: '',
     email: '',
-    status: '0' as any,
+    status: '0' as any
   };
 }
 
@@ -76,7 +81,7 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
   orderNum: createRequiredRule($t('page.system.dept.form.orderNum.invalid')),
   deptName: createRequiredRule($t('page.system.dept.form.deptName.invalid')),
   phone: patternRules.phone,
-  email: patternRules.email,
+  email: patternRules.email
 };
 
 function handleUpdateModelWhenEdit() {
@@ -107,7 +112,7 @@ async function handleSubmit() {
         leader,
         phone,
         email,
-        status,
+        status
       } as any);
     } catch {
       return;
@@ -125,7 +130,7 @@ async function handleSubmit() {
         leader,
         phone,
         email,
-        status,
+        status
       } as any);
     } catch {
       return;
@@ -170,9 +175,9 @@ async function getUserData() {
       placeholder.value = $t('page.system.dept.placeholder.deptUserIsEmptyLeaderPlaceHolder');
       disabled.value = true;
     }
-    userOptions.value = data.rows.map((item) => ({
+    userOptions.value = data.rows.map(item => ({
       label: `${item.userName} | ${item.nickName}`,
-      value: item.userId,
+      value: item.userId
     }));
   } catch (error: any) {
     window.$message?.error(error.message || $t('page.system.dept.error.getDeptUserDataFail'));

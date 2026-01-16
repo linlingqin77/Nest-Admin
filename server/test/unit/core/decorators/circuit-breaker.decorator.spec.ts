@@ -1,6 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Injectable } from '@nestjs/common';
-import { CircuitBreaker, CircuitBreakerOpenError, CIRCUIT_BREAKER_KEY, CircuitBreakerMeta } from '@/core/decorators/circuit-breaker.decorator';
+import {
+  CircuitBreaker,
+  CircuitBreakerOpenError,
+  CIRCUIT_BREAKER_KEY,
+  CircuitBreakerMeta,
+} from '@/core/decorators/circuit-breaker.decorator';
 import { CircuitBreakerService } from '@/resilience/circuit-breaker/circuit-breaker.service';
 import { Reflector } from '@nestjs/core';
 

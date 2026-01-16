@@ -46,10 +46,7 @@ export interface TestAppOptions {
  * });
  * ```
  */
-export const createTestApp = async (
-  AppModule: Type<any>,
-  options: TestAppOptions = {},
-): Promise<INestApplication> => {
+export const createTestApp = async (AppModule: Type<any>, options: TestAppOptions = {}): Promise<INestApplication> => {
   const { imports = [], providers = [], enableValidation = true, globalPrefix } = options;
 
   let moduleBuilder = Test.createTestingModule({
@@ -125,10 +122,7 @@ export const getAuthToken = async (
   credentials: LoginCredentials,
   loginPath = '/auth/login',
 ): Promise<string> => {
-  const response = await request(app.getHttpServer())
-    .post(loginPath)
-    .send(credentials)
-    .expect(200);
+  const response = await request(app.getHttpServer()).post(loginPath).send(credentials).expect(200);
 
   const { data } = response.body;
   if (!data?.token) {
@@ -173,16 +167,11 @@ export const getUserToken = async (app: INestApplication): Promise<string> => {
  */
 export const createAuthenticatedRequest = (app: INestApplication, token: string) => {
   return {
-    get: (url: string) =>
-      request(app.getHttpServer()).get(url).set('Authorization', `Bearer ${token}`),
-    post: (url: string) =>
-      request(app.getHttpServer()).post(url).set('Authorization', `Bearer ${token}`),
-    put: (url: string) =>
-      request(app.getHttpServer()).put(url).set('Authorization', `Bearer ${token}`),
-    patch: (url: string) =>
-      request(app.getHttpServer()).patch(url).set('Authorization', `Bearer ${token}`),
-    delete: (url: string) =>
-      request(app.getHttpServer()).delete(url).set('Authorization', `Bearer ${token}`),
+    get: (url: string) => request(app.getHttpServer()).get(url).set('Authorization', `Bearer ${token}`),
+    post: (url: string) => request(app.getHttpServer()).post(url).set('Authorization', `Bearer ${token}`),
+    put: (url: string) => request(app.getHttpServer()).put(url).set('Authorization', `Bearer ${token}`),
+    patch: (url: string) => request(app.getHttpServer()).patch(url).set('Authorization', `Bearer ${token}`),
+    delete: (url: string) => request(app.getHttpServer()).delete(url).set('Authorization', `Bearer ${token}`),
   };
 };
 

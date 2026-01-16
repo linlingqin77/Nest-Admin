@@ -5,9 +5,8 @@
  * 如需修改 API 配置，请编辑 api-config.ts
  */
 
-
 import { apiRequest, buildUrl } from './request-adapter';
-import type { JobLogListResponseDto, ClearLogResultResponseDto, ListJobLogDto } from './types';
+import type { ClearLogResultResponseDto, JobLogListResponseDto, ListJobLogDto } from './types';
 
 /**
  * 获取定时任务日志列表
@@ -18,7 +17,7 @@ export function fetchJobLogList(params?: Record<string, unknown>) {
     method: 'GET',
     url: '/monitor/jobLog/list',
     params,
-    operationId: 'JobLogController_list_v1',
+    operationId: 'JobLogController_list_v1'
   });
 }
 
@@ -30,7 +29,7 @@ export function fetchJobLogClean() {
   return apiRequest<ClearLogResultResponseDto>({
     method: 'DELETE',
     url: '/monitor/jobLog/clean',
-    operationId: 'JobLogController_clean_v1',
+    operationId: 'JobLogController_clean_v1'
   });
 }
 
@@ -43,6 +42,6 @@ export function fetchJobLogExport(data: ListJobLogDto) {
     method: 'POST',
     url: '/monitor/jobLog/export',
     data,
-    operationId: 'JobLogController_export_v1',
+    operationId: 'JobLogController_export_v1'
   });
 }

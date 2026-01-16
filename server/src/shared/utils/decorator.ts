@@ -18,7 +18,11 @@ const stringFormat = (str: string, callback: (key: string) => string): string =>
 /**
  * 根据格式化字符串和参数生成缓存 key
  */
-export function paramsKeyFormat(func: (...args: unknown[]) => unknown, formatKey: string, args: unknown[]): string | null {
+export function paramsKeyFormat(
+  func: (...args: unknown[]) => unknown,
+  formatKey: string,
+  args: unknown[],
+): string | null {
   const originMethodArgs = getArgs(func);
 
   const paramsMap: Record<string, unknown> = {};
@@ -44,7 +48,11 @@ export function paramsKeyFormat(func: (...args: unknown[]) => unknown, formatKey
 /**
  * 从参数中获取对象
  */
-export function paramsKeyGetObj(func: (...args: unknown[]) => unknown, formatKey: string | undefined, args: unknown[]): Record<string, unknown> | null {
+export function paramsKeyGetObj(
+  func: (...args: unknown[]) => unknown,
+  formatKey: string | undefined,
+  args: unknown[],
+): Record<string, unknown> | null {
   const originMethodArgs = getArgs(func);
 
   const paramsMap: Record<string, unknown> = {};

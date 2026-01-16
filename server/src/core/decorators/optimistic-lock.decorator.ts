@@ -90,10 +90,7 @@ export class OptimisticLockException extends HttpException {
  */
 export function OptimisticLock(options: OptimisticLockOptions) {
   const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
-  return applyDecorators(
-    SetMetadata(OPTIMISTIC_LOCK_KEY, mergedOptions),
-    UseInterceptors(OptimisticLockInterceptor),
-  );
+  return applyDecorators(SetMetadata(OPTIMISTIC_LOCK_KEY, mergedOptions), UseInterceptors(OptimisticLockInterceptor));
 }
 
 /**
@@ -107,10 +104,7 @@ export class OptimisticLockInterceptor implements NestInterceptor {
   ) {}
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-    const options = this.reflector.get<Required<OptimisticLockOptions>>(
-      OPTIMISTIC_LOCK_KEY,
-      context.getHandler(),
-    );
+    const options = this.reflector.get<Required<OptimisticLockOptions>>(OPTIMISTIC_LOCK_KEY, context.getHandler());
 
     if (!options || !options.model) {
       return next.handle();
