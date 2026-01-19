@@ -14,104 +14,104 @@
 [![Production Ready](https://img.shields.io/badge/Production-Ready-success)](server/docs/OPTIMIZATION_README.md)
 [![Test Coverage](https://img.shields.io/badge/Coverage-80%25-green)](server/coverage/)
 
-**基于 Vue3 + NestJS 的现代化企业级后台管理系统**
+**Modern Enterprise-Grade Admin Management System Based on Vue3 + NestJS**
 
-集成强大的权限管理、多租户架构、请求加密、完善的日志监控
+Integrated with powerful permission management, multi-tenant architecture, request encryption, and comprehensive logging & monitoring
 
-[在线演示](https://www.linlingqin.top/) | [快速开始](#快速开始) | [文档](#文档) | [更新日志](CHANGELOG.md) | [🎯 优化报告](server/docs/OPTIMIZATION_README.md)
+[Live Demo](https://www.linlingqin.top/) | [Quick Start](#quick-start) | [Documentation](#documentation) | [Changelog](CHANGELOG.md) | [🎯 Optimization Report](server/docs/OPTIMIZATION_README.md)
 
-**🎮 演示账户**
-- 账号：`demo` | 密码：`demo123` | 租户：`000000`
-- ✅ 拥有所有菜单的查看权限（21个功能模块）
-- ❌ 禁止新增、修改、删除等写操作
-- 📖 [详细权限说明](docs/TEST_ACCOUNTS.md)
+**🎮 Demo Account**
+- Username: `demo` | Password: `demo123` | Tenant: `000000`
+- ✅ View access to all menus (21 functional modules)
+- ❌ Write operations (create, update, delete) are disabled
+- 📖 [Detailed Permission Guide](docs/TEST_ACCOUNTS.md)
 
 </div>
 
 
-## ✨ 特性
+## ✨ Features
 
-### 🎯 核心功能
-- 🔐 **企业级多租户架构** - 完整的租户隔离、功能开关、配额管理、生命周期管理
-- 👥 **RBAC 权限管理** - 基于角色的访问控制，细粒度权限控制
-- 🔒 **请求加密** - AES + RSA 混合加密，保护敏感数据传输
-- 📊 **系统监控** - Prometheus 指标、健康检查、实时性能监控
-- 📝 **操作日志** - 完整的用户操作轨迹记录
-- 🎮 **演示模式** - 专为演示站点设计的只读账户系统
-- 🌐 **国际化** - 支持中文/英文切换
-- 🎨 **主题定制** - 多种主题预设，支持深色模式
-- 📱 **响应式设计** - 完美适配各种屏幕尺寸
-- 📨 **消息中心** - 短信、邮件、站内信统一管理（🆕 新增）
-- 📈 **租户仪表盘** - 租户统计、趋势分析、配额监控（🆕 新增）
+### 🎯 Core Features
+- 🔐 **Enterprise Multi-Tenant Architecture** - Complete tenant isolation, feature toggles, quota management, lifecycle management
+- 👥 **RBAC Permission Management** - Role-based access control with fine-grained permissions
+- 🔒 **Request Encryption** - AES + RSA hybrid encryption to protect sensitive data transmission
+- 📊 **System Monitoring** - Prometheus metrics, health checks, real-time performance monitoring
+- 📝 **Operation Logs** - Complete user operation trail records
+- 🎮 **Demo Mode** - Read-only account system designed specifically for demo sites
+- 🌐 **Internationalization** - Support for Chinese/English switching
+- 🎨 **Theme Customization** - Multiple theme presets with dark mode support
+- 📱 **Responsive Design** - Perfect adaptation to various screen sizes
+- 📨 **Message Center** - Unified management of SMS, email, and in-app messages (🆕 New)
+- 📈 **Tenant Dashboard** - Tenant statistics, trend analysis, quota monitoring (🆕 New)
 
-### 🛠️ 技术栈
+### 🛠️ Tech Stack
 
-#### 后端技术
-- **框架**: NestJS 10.x - 企业级 Node.js 框架
-- **ORM**: Prisma 5.x - 类型安全的现代 ORM
-- **数据库**: PostgreSQL 14+ - 强大的关系型数据库
-- **缓存**: Redis 7+ - 高性能缓存与会话存储
-- **认证**: JWT + Passport - 安全的身份验证
-- **日志**: Pino + Winston - 高性能结构化日志
-- **调度**: @nestjs/schedule + Bull - 定时任务与队列
-- **监控**: Prometheus + Terminus - 健康检查与指标采集
-- **文档**: Swagger/OpenAPI - 自动生成 API 文档
-- **测试**: Jest + fast-check - 单元测试与属性测试
+#### Backend Technologies
+- **Framework**: NestJS 10.x - Enterprise-grade Node.js framework
+- **ORM**: Prisma 5.x - Type-safe modern ORM
+- **Database**: PostgreSQL 14+ - Powerful relational database
+- **Cache**: Redis 7+ - High-performance caching and session storage
+- **Authentication**: JWT + Passport - Secure authentication
+- **Logging**: Pino + Winston - High-performance structured logging
+- **Scheduling**: @nestjs/schedule + Bull - Scheduled tasks and queues
+- **Monitoring**: Prometheus + Terminus - Health checks and metrics collection
+- **Documentation**: Swagger/OpenAPI - Auto-generated API documentation
+- **Testing**: Jest + fast-check - Unit testing and property-based testing
 
-#### 前端技术
-- **框架**: Vue 3.5+ - 渐进式 JavaScript 框架
-- **构建工具**: Vite 7.x - 新一代前端构建工具
-- **UI 框架**: Naive UI 2.43+ - 轻量级 Vue 3 组件库
-- **状态管理**: Pinia 3.x - Vue 3 官方状态管理
-- **路由**: Vue Router 4 + Elegant Router - 文件路由
-- **CSS**: UnoCSS - 原子化 CSS 引擎
-- **请求**: Axios - HTTP 客户端
-- **类型**: TypeScript 5.x - 类型安全
-- **测试**: Vitest + Cypress + fast-check - 单元/E2E/属性测试
+#### Frontend Technologies
+- **Framework**: Vue 3.5+ - Progressive JavaScript framework
+- **Build Tool**: Vite 7.x - Next-generation frontend build tool
+- **UI Framework**: Naive UI 2.43+ - Lightweight Vue 3 component library
+- **State Management**: Pinia 3.x - Official Vue 3 state management
+- **Routing**: Vue Router 4 + Elegant Router - File-based routing
+- **CSS**: UnoCSS - Atomic CSS engine
+- **HTTP Client**: Axios - HTTP client
+- **Type Safety**: TypeScript 5.x - Type safety
+- **Testing**: Vitest + Cypress + fast-check - Unit/E2E/Property-based testing
 
 ---
 
-## 📐 系统架构
+## 📐 System Architecture
 
-### 整体架构图
+### Overall Architecture Diagram
 
 ```mermaid
 graph TB
-    subgraph "前端层"
+    subgraph "Frontend Layer"
         A[Vue 3 + Vite]
         B[Naive UI]
         C[Pinia Store]
         D[Vue Router]
     end
     
-    subgraph "网关层"
-        E[Nginx 反向代理]
-        F[负载均衡]
+    subgraph "Gateway Layer"
+        E[Nginx Reverse Proxy]
+        F[Load Balancer]
     end
     
-    subgraph "应用层"
-        G[NestJS 应用]
-        H[Guards - 守卫层]
-        I[Interceptors - 拦截器]
-        J[Pipes - 管道]
+    subgraph "Application Layer"
+        G[NestJS Application]
+        H[Guards Layer]
+        I[Interceptors]
+        J[Pipes]
     end
     
-    subgraph "业务层"
-        K[系统管理]
-        L[权限管理]
-        M[租户管理]
-        N[监控管理]
+    subgraph "Business Layer"
+        K[System Management]
+        L[Permission Management]
+        M[Tenant Management]
+        N[Monitoring Management]
     end
     
-    subgraph "数据层"
+    subgraph "Data Layer"
         O[Prisma ORM]
         P[PostgreSQL]
         Q[Redis Cache]
     end
     
-    subgraph "外部服务"
-        R[OSS 对象存储]
-        S[Prometheus 监控]
+    subgraph "External Services"
+        R[OSS Object Storage]
+        S[Prometheus Monitoring]
     end
     
     A --> E
@@ -137,350 +137,350 @@ graph TB
     G --> S
 ```
 
-### 多租户架构
+### Multi-Tenant Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                      HTTP 请求层                             │
+│                      HTTP Request Layer                     │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │           TenantHttpMiddleware                       │   │
-│  │  - 从 JWT/Header/Query 提取租户ID                    │   │
-│  │  - 初始化 TenantContext (AsyncLocalStorage)          │   │
+│  │  - Extract tenant ID from JWT/Header/Query          │   │
+│  │  - Initialize TenantContext (AsyncLocalStorage)     │   │
 │  └─────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                     数据访问层                               │
+│                     Data Access Layer                       │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │           Prisma Tenant Middleware                   │   │
-│  │  - 自动注入 tenantId 过滤条件                        │   │
-│  │  - 自动设置创建数据的 tenantId                       │   │
-│  │  - findUnique 结果验证租户归属                       │   │
+│  │  - Automatically inject tenantId filter conditions  │   │
+│  │  - Automatically set tenantId for created data      │   │
+│  │  - Verify tenant ownership for findUnique results   │   │
 │  └─────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**核心组件：**
-- `TenantContext` - AsyncLocalStorage 实现的租户上下文
-- `TenantHttpMiddleware` - HTTP 请求租户识别
-- `Prisma Tenant Middleware` - 数据层自动租户过滤
-- `TenantLifecycleService` - 租户生命周期管理
-- `FeatureToggleService` - 功能开关服务
-- `TenantQuotaService` - 配额管理服务
-- `RelationValidationService` - 应用层关联验证（无外键）
+**Core Components:**
+- `TenantContext` - Tenant context implemented with AsyncLocalStorage
+- `TenantHttpMiddleware` - HTTP request tenant identification
+- `Prisma Tenant Middleware` - Automatic tenant filtering at data layer
+- `TenantLifecycleService` - Tenant lifecycle management
+- `FeatureToggleService` - Feature toggle service
+- `TenantQuotaService` - Quota management service
+- `RelationValidationService` - Application layer relation validation (no foreign keys)
 
-📖 [详细文档](docs/guide/multi-tenant.md)
+📖 [Detailed Documentation](docs/guide/multi-tenant.md)
 
-### 权限控制流程
+### Permission Control Flow
 
 ```mermaid
 sequenceDiagram
-    participant C as 客户端
+    participant C as Client
     participant G as Guards
     participant A as Auth Service
     participant D as Database
     
-    C->>G: 发起请求 (JWT Token)
-    G->>A: 验证 Token
-    A->>A: 解析用户信息
-    A->>D: 查询用户角色
-    D->>A: 返回角色权限
-    A->>G: 权限验证
-    alt 有权限
-        G->>C: 允许访问
-    else 无权限
+    C->>G: Make Request (JWT Token)
+    G->>A: Verify Token
+    A->>A: Parse User Info
+    A->>D: Query User Roles
+    D->>A: Return Role Permissions
+    A->>G: Permission Verification
+    alt Has Permission
+        G->>C: Allow Access
+    else No Permission
         G->>C: 403 Forbidden
     end
 ```
 
 ---
 
-## 🎨 功能模块
+## 🎨 Functional Modules
 
-### 1️⃣ 系统管理
-- **用户管理** - 用户增删改查、密码重置、角色分配
-- **角色管理** - 角色权限配置、数据权限范围
-- **菜单管理** - 菜单树管理、路由配置、按钮权限
-- **部门管理** - 组织架构树、部门人员管理
-- **岗位管理** - 岗位配置、人员岗位关联
-- **字典管理** - 系统字典、数据字典维护
-- **参数配置** - 系统参数、动态配置管理
-- **通知公告** - 系统公告发布与管理
-- **操作日志** - 详细的操作轨迹记录
-- **登录日志** - 登录历史、登录统计
+### 1️⃣ System Management
+- **User Management** - User CRUD, password reset, role assignment
+- **Role Management** - Role permission configuration, data permission scope
+- **Menu Management** - Menu tree management, route configuration, button permissions
+- **Department Management** - Organization tree, department personnel management
+- **Position Management** - Position configuration, personnel-position association
+- **Dictionary Management** - System dictionary, data dictionary maintenance
+- **Parameter Configuration** - System parameters, dynamic configuration management
+- **Notifications** - System announcement publishing and management
+- **Operation Logs** - Detailed operation trail records
+- **Login Logs** - Login history, login statistics
 
-### 2️⃣ 租户管理
-- **租户列表** - 租户信息管理、启用停用
-- **租户套餐** - 功能套餐配置、菜单权限分配
-- **功能开关** - 租户级别功能启用/禁用控制
-- **配额管理** - 用户数、存储空间、API调用量限制
-- **租户生命周期** - 创建、初始化、状态变更、禁用
-- **数据隔离** - 自动化租户数据隔离（Prisma Middleware）
-- **缓存隔离** - 租户级别缓存键隔离
-- **🆕 租户仪表盘** - 租户统计概览、趋势图、套餐分布、即将到期列表
-- **🆕 租户配额管理** - 配额查询、编辑、使用监控、变更记录
-- **🆕 租户审计日志** - 操作追踪、数据对比、筛选导出
-- **🆕 租户切换** - 管理员快速切换租户上下文
+### 2️⃣ Tenant Management
+- **Tenant List** - Tenant information management, enable/disable
+- **Tenant Packages** - Feature package configuration, menu permission assignment
+- **Feature Toggles** - Tenant-level feature enable/disable control
+- **Quota Management** - User count, storage space, API call limit restrictions
+- **Tenant Lifecycle** - Create, initialize, status change, disable
+- **Data Isolation** - Automated tenant data isolation (Prisma Middleware)
+- **Cache Isolation** - Tenant-level cache key isolation
+- **🆕 Tenant Dashboard** - Tenant statistics overview, trend charts, package distribution, expiring list
+- **🆕 Tenant Quota Management** - Quota query, edit, usage monitoring, change records
+- **🆕 Tenant Audit Logs** - Operation tracking, data comparison, filter export
+- **🆕 Tenant Switching** - Admin quick switch tenant context
 
-### 3️⃣ 系统监控
-- **在线用户** - 实时在线用户、强制下线
-- **定时任务** - Cron 任务配置、执行日志
-- **服务监控** - 系统信息、运行状态
-- **缓存监控** - Redis 缓存管理
-- **健康检查** - 数据库、Redis、磁盘、内存检查
-- **性能指标** - Prometheus 指标采集
+### 3️⃣ System Monitoring
+- **Online Users** - Real-time online users, force logout
+- **Scheduled Tasks** - Cron job configuration, execution logs
+- **Service Monitoring** - System information, running status
+- **Cache Monitoring** - Redis cache management
+- **Health Checks** - Database, Redis, disk, memory checks
+- **Performance Metrics** - Prometheus metrics collection
 
-### 4️⃣ 对象存储
-- **文件上传** - 支持本地/云存储（阿里云、七牛云、MinIO）
-- **文件管理** - 文件预览、下载、删除
-- **OSS 配置** - 多存储配置切换
+### 4️⃣ Object Storage
+- **File Upload** - Support local/cloud storage (Alibaba Cloud, Qiniu Cloud, MinIO)
+- **File Management** - File preview, download, delete
+- **OSS Configuration** - Multi-storage configuration switching
 
-### 5️⃣ 演示账户
-- **演示模式** - 为演示站点设计的只读账户
-- **权限限制** - 仅查看权限，无法增删改
-- **快速登录** - 登录页面一键填充
-- **灵活配置** - 基于 RBAC 可随时调整权限范围
+### 5️⃣ Demo Account
+- **Demo Mode** - Read-only account designed for demo sites
+- **Permission Restrictions** - View-only permissions, no create/update/delete
+- **Quick Login** - One-click fill on login page
+- **Flexible Configuration** - Adjustable permission scope based on RBAC
 
-### 6️⃣ 消息管理（🆕 新增）
-- **短信管理** - 短信渠道配置（阿里云、腾讯云）、模板管理、发送日志
-- **邮件管理** - 邮箱账号配置、邮件模板、发送日志
-- **站内信** - 站内信模板、消息发送、已读管理、通知铃铛
+### 6️⃣ Message Management (🆕 New)
+- **SMS Management** - SMS channel configuration (Alibaba Cloud, Tencent Cloud), template management, sending logs
+- **Email Management** - Email account configuration, email templates, sending logs
+- **In-App Messages** - In-app message templates, message sending, read management, notification bell
 
-### 7️⃣ 代码生成（开发中）
-- **表管理** - 数据库表导入
-- **代码生成** - 前后端代码一键生成
-
----
-
-## 📸 系统截图
-
-### 登录页面
-![登录页面](docs/screenshots/login.png)
-> 支持账号密码登录、验证码验证、记住密码
-
-### 首页仪表板
-![首页](docs/screenshots/dashboard.png)
-> 系统概览、快捷入口、数据统计
-
-### 用户管理
-![用户管理](docs/screenshots/user.png)
-> 用户列表、角色分配、部门选择、用户状态管理
-
-### 角色管理
-![角色管理](docs/screenshots/role.png)
-> 角色权限配置、菜单权限树、数据权限范围
-
-### 菜单管理
-![菜单管理](docs/screenshots/menu.png)
-> 菜单树形结构、路由配置、图标选择
-
-### 租户管理
-![租户管理](docs/screenshots/tenant.png)
-> 多租户列表、套餐配置、租户状态
-
-### 定时任务
-![定时任务](docs/screenshots/job.png)
-> Cron 任务配置、执行日志、任务管理
-
-### 系统监控
-![系统监控](docs/screenshots/monitor.png)
-> 服务器状态、资源使用、实时监控
-
-### 操作日志
-![操作日志](docs/screenshots/operlog.png)
-> 操作记录、详细参数、异常捕获
-
-### 主题配置
-![主题配置](docs/screenshots/theme.png)
-> 多主题切换、深色模式、布局配置
+### 7️⃣ Code Generation (In Development)
+- **Table Management** - Database table import
+- **Code Generation** - One-click frontend and backend code generation
 
 ---
 
-## 🚀 快速开始
+## 📸 System Screenshots
 
-### 环境要求
+### Login Page
+![Login Page](docs/screenshots/login.png)
+> Support username/password login, captcha verification, remember password
+
+### Dashboard
+![Dashboard](docs/screenshots/dashboard.png)
+> System overview, quick access, data statistics
+
+### User Management
+![User Management](docs/screenshots/user.png)
+> User list, role assignment, department selection, user status management
+
+### Role Management
+![Role Management](docs/screenshots/role.png)
+> Role permission configuration, menu permission tree, data permission scope
+
+### Menu Management
+![Menu Management](docs/screenshots/menu.png)
+> Menu tree structure, route configuration, icon selection
+
+### Tenant Management
+![Tenant Management](docs/screenshots/tenant.png)
+> Multi-tenant list, package configuration, tenant status
+
+### Scheduled Tasks
+![Scheduled Tasks](docs/screenshots/job.png)
+> Cron job configuration, execution logs, task management
+
+### System Monitoring
+![System Monitoring](docs/screenshots/monitor.png)
+> Server status, resource usage, real-time monitoring
+
+### Operation Logs
+![Operation Logs](docs/screenshots/operlog.png)
+> Operation records, detailed parameters, exception capture
+
+### Theme Configuration
+![Theme Configuration](docs/screenshots/theme.png)
+> Multiple theme switching, dark mode, layout configuration
+
+---
+
+## 🚀 Quick Start
+
+### Environment Requirements
 
 - **Node.js**: >= 20.19.0
 - **pnpm**: >= 10.5.0
 - **PostgreSQL**: >= 14.0
 - **Redis**: >= 7.0
 
-### 1. 克隆项目
+### 1. Clone the Project
 
 ```bash
 git clone https://github.com/linlingqin77/Nest-Admin-Soybean.git
 cd Nest-Admin-Soybean
 ```
 
-### 2. 后端启动
+### 2. Backend Setup
 
 ```bash
-# 进入后端目录
+# Navigate to backend directory
 cd server
 
-# 安装依赖
+# Install dependencies
 pnpm install
 
-# 生成 RSA 密钥对（用于加密）
+# Generate RSA key pair (for encryption)
 pnpm generate:keys
 
-# 配置数据库连接
-# 编辑 src/config/index.ts 中的数据库配置
+# Configure database connection
+# Edit database configuration in src/config/index.ts
 
-# 生成 Prisma 客户端
+# Generate Prisma client
 pnpm prisma:generate
 
-# 初始化数据库并填充种子数据
+# Initialize database and seed data
 pnpm prisma:seed
 
-# 启动开发服务器（端口 8080）
+# Start development server (port 8080)
 pnpm start:dev
 ```
 
-### 3. 前端启动
+### 3. Frontend Setup
 
 ```bash
-# 进入前端目录
+# Navigate to frontend directory
 cd admin-naive-ui
 
-# 安装依赖
+# Install dependencies
 pnpm install
 
-# 启动开发服务器（端口 9527）
+# Start development server (port 9527)
 pnpm dev
 ```
 
-### 4. 访问系统
+### 4. Access the System
 
-- **前端地址**: http://localhost:9527
-- **后端地址**: http://localhost:8080
-- **API 文档**: http://localhost:8080/api/docs
-- **健康检查**: http://localhost:8080/api/health
-- **监控指标**: http://localhost:8080/api/metrics
+- **Frontend URL**: http://localhost:9527
+- **Backend URL**: http://localhost:8080
+- **API Documentation**: http://localhost:8080/api/docs
+- **Health Check**: http://localhost:8080/api/health
+- **Metrics**: http://localhost:8080/api/metrics
 
-**默认账号**:
-- **超级管理员**: `admin` / `admin123` - 拥有所有权限
-- **演示账户**: `demo` / `demo123` - 仅查看权限 ⭐ 推荐用于演示
-- **测试账户**: `test` / `test123` - 部分权限
-- **租户 ID**: `000000` (超级管理员租户)
+**Default Accounts**:
+- **Super Admin**: `admin` / `admin123` - Has all permissions
+- **Demo Account**: `demo` / `demo123` - View-only permissions ⭐ Recommended for demos
+- **Test Account**: `test` / `test123` - Partial permissions
+- **Tenant ID**: `000000` (Super admin tenant)
 
-> 💡 **提示**: 演示账户拥有所有21个功能模块的查看权限，但不能进行任何数据修改操作，非常适合用于产品演示和培训。  
-> 📖 查看 [完整账户说明](docs/TEST_ACCOUNTS.md)
+> 💡 **Tip**: The demo account has view access to all 21 functional modules but cannot perform any data modification operations, making it perfect for product demos and training.  
+> 📖 View [Complete Account Guide](docs/TEST_ACCOUNTS.md)
 
-### 5. 验证演示账户（可选）
+### 5. Verify Demo Account (Optional)
 
-验证演示账户权限配置：
+Verify demo account permission configuration:
 
 ```bash
 cd server
 npx ts-node scripts/verify-demo-permissions.ts
 ```
 
-演示账户特性：
-- ✅ 完整的菜单访问权限（所有目录和页面）
-- ✅ 只读操作权限（查询、导出、预览）
-- ❌ 禁止所有写操作（新增、修改、删除）
-- 🔒 数据隔离保护（受租户机制保护）
-- 📊 权限详情：16个查询权限 + 10个导出权限 + 1个预览权限
-- 📖 详细说明: [演示账户权限配置](server/docs/DEMO_ACCOUNT_PERMISSIONS.md)
+Demo account features:
+- ✅ Complete menu access permissions (all directories and pages)
+- ✅ Read-only operation permissions (query, export, preview)
+- ❌ All write operations disabled (create, update, delete)
+- 🔒 Data isolation protection (protected by tenant mechanism)
+- 📊 Permission details: 16 query permissions + 10 export permissions + 1 preview permission
+- 📖 Detailed guide: [Demo Account Permission Configuration](server/docs/DEMO_ACCOUNT_PERMISSIONS.md)
 
 ---
 
-## 📂 项目结构
+## 📂 Project Structure
 
 ```
 Nest-Admin-Soybean/
-├── server/                      # 后端项目
+├── server/                      # Backend project
 │   ├── src/
-│   │   ├── config/            # 配置文件
-│   │   ├── core/              # 核心功能
-│   │   │   ├── decorators/    # 装饰器
-│   │   │   ├── filters/       # 异常过滤器
-│   │   │   ├── guards/        # 守卫（认证、权限、租户）
-│   │   │   ├── interceptors/  # 拦截器（日志、加密、转换）
-│   │   │   └── middleware/    # 中间件
-│   │   ├── infrastructure/    # 基础设施
-│   │   │   ├── cache/         # 缓存服务
-│   │   │   ├── prisma/        # Prisma 配置
-│   │   │   └── repository/    # 仓储层
-│   │   ├── module/            # 业务模块
-│   │   │   ├── main/          # 主模块（认证）
-│   │   │   ├── system/        # 系统管理
-│   │   │   ├── monitor/       # 系统监控
-│   │   │   └── upload/        # 文件上传
-│   │   ├── observability/     # 可观测性
-│   │   ├── resilience/        # 弹性模块
-│   │   ├── security/          # 安全模块
-│   │   ├── shared/            # 共享模块
-│   │   ├── tenant/            # 多租户模块
-│   │   └── main.ts            # 入口文件
-│   ├── test/                  # 测试文件（统一存放）
-│   │   ├── unit/              # 单元测试
-│   │   ├── integration/       # 集成测试
-│   │   ├── e2e/               # E2E 测试
-│   │   ├── fixtures/          # 测试数据工厂
-│   │   ├── helpers/           # 测试辅助函数
-│   │   └── mocks/             # Mock 实现
+│   │   ├── config/            # Configuration files
+│   │   ├── core/              # Core functionality
+│   │   │   ├── decorators/    # Decorators
+│   │   │   ├── filters/       # Exception filters
+│   │   │   ├── guards/        # Guards (auth, permission, tenant)
+│   │   │   ├── interceptors/  # Interceptors (logging, encryption, transform)
+│   │   │   └── middleware/    # Middleware
+│   │   ├── infrastructure/    # Infrastructure
+│   │   │   ├── cache/         # Cache service
+│   │   │   ├── prisma/        # Prisma configuration
+│   │   │   └── repository/    # Repository layer
+│   │   ├── module/            # Business modules
+│   │   │   ├── main/          # Main module (authentication)
+│   │   │   ├── system/        # System management
+│   │   │   ├── monitor/       # System monitoring
+│   │   │   └── upload/        # File upload
+│   │   ├── observability/     # Observability
+│   │   ├── resilience/        # Resilience module
+│   │   ├── security/          # Security module
+│   │   ├── shared/            # Shared modules
+│   │   ├── tenant/            # Multi-tenant module
+│   │   └── main.ts            # Entry file
+│   ├── test/                  # Test files (unified location)
+│   │   ├── unit/              # Unit tests
+│   │   ├── integration/       # Integration tests
+│   │   ├── e2e/               # E2E tests
+│   │   ├── fixtures/          # Test data factories
+│   │   ├── helpers/           # Test helper functions
+│   │   └── mocks/             # Mock implementations
 │   ├── prisma/
-│   │   ├── schema.prisma      # 数据库模型
-│   │   └── seed.ts            # 种子数据
-│   ├── keys/                  # RSA 密钥
-│   ├── scripts/               # 脚本工具
-│   │   ├── init-demo.sh       # 演示账户快速设置
-│   │   ├── deploy.cjs         # 部署脚本
-│   │   └── ecosystem.config.cjs # PM2 配置
-│   └── docs/                  # 后端文档
+│   │   ├── schema.prisma      # Database schema
+│   │   └── seed.ts            # Seed data
+│   ├── keys/                  # RSA keys
+│   ├── scripts/               # Script tools
+│   │   ├── init-demo.sh       # Demo account quick setup
+│   │   ├── deploy.cjs         # Deployment script
+│   │   └── ecosystem.config.cjs # PM2 configuration
+│   └── docs/                  # Backend documentation
 │
-├── admin-naive-ui/              # 前端项目
+├── admin-naive-ui/              # Frontend project
 │   ├── src/
-│   │   ├── assets/            # 静态资源
-│   │   ├── components/        # 组件
-│   │   │   ├── common/        # 公共组件
-│   │   │   ├── advanced/      # 高级组件
-│   │   │   └── custom/        # 自定义组件
-│   │   ├── layouts/           # 布局
-│   │   ├── locales/           # 国际化
-│   │   ├── router/            # 路由
-│   │   ├── service/           # API 服务
-│   │   ├── store/             # 状态管理
-│   │   ├── theme/             # 主题配置
-│   │   ├── utils/             # 工具函数
-│   │   └── views/             # 页面视图
-│   │       ├── _builtin/      # 内置页面（登录、404 等）
-│   │       ├── home/          # 首页
-│   │       ├── system/        # 系统管理页面
-│   │       ├── monitor/       # 监控页面
-│   │       └── tool/          # 工具页面
-│   ├── test/                  # 测试文件
-│   │   ├── unit/              # 单元测试
-│   │   ├── components/        # 组件测试
-│   │   ├── fixtures/          # 测试数据
-│   │   └── mocks/             # Mock 实现
-│   ├── cypress/               # Cypress E2E 测试
-│   │   ├── e2e/               # E2E 测试用例
-│   │   └── support/           # 支持文件
-│   ├── packages/              # 内部包
-│   │   ├── axios/             # HTTP 请求
-│   │   ├── hooks/             # 钩子函数
-│   │   ├── materials/         # 组件库
-│   │   ├── utils/             # 工具库
-│   │   └── uno-preset/        # UnoCSS 预设
-│   └── build/                 # 构建配置
+│   │   ├── assets/            # Static assets
+│   │   ├── components/        # Components
+│   │   │   ├── common/        # Common components
+│   │   │   ├── advanced/      # Advanced components
+│   │   │   └── custom/        # Custom components
+│   │   ├── layouts/           # Layouts
+│   │   ├── locales/           # Internationalization
+│   │   ├── router/            # Routing
+│   │   ├── service/           # API services
+│   │   ├── store/             # State management
+│   │   ├── theme/             # Theme configuration
+│   │   ├── utils/             # Utility functions
+│   │   └── views/             # Page views
+│   │       ├── _builtin/      # Built-in pages (login, 404, etc.)
+│   │       ├── home/          # Home page
+│   │       ├── system/        # System management pages
+│   │       ├── monitor/       # Monitoring pages
+│   │       └── tool/          # Tool pages
+│   ├── test/                  # Test files
+│   │   ├── unit/              # Unit tests
+│   │   ├── components/        # Component tests
+│   │   ├── fixtures/          # Test data
+│   │   └── mocks/             # Mock implementations
+│   ├── cypress/               # Cypress E2E tests
+│   │   ├── e2e/               # E2E test cases
+│   │   └── support/           # Support files
+│   ├── packages/              # Internal packages
+│   │   ├── axios/             # HTTP requests
+│   │   ├── hooks/             # Hooks
+│   │   ├── materials/         # Component library
+│   │   ├── utils/             # Utility library
+│   │   └── uno-preset/        # UnoCSS preset
+│   └── build/                 # Build configuration
 │
-└── docs/                        # 文档
-    ├── guide/                  # 使用指南
-    ├── development/            # 开发文档
-    └── deploy-online/          # 部署文档
+└── docs/                        # Documentation
+    ├── guide/                  # User guide
+    ├── development/            # Development documentation
+    └── deploy-online/          # Deployment documentation
 ```
 
 ---
 
-## 🔧 核心配置
+## 🔧 Core Configuration
 
-### 后端配置
+### Backend Configuration
 
-**数据库配置** (`server/src/config/index.ts`):
+**Database Configuration** (`server/src/config/index.ts`):
 ```typescript
 db: {
   postgresql: {
@@ -493,7 +493,7 @@ db: {
 }
 ```
 
-**Redis 配置**:
+**Redis Configuration**:
 ```typescript
 redis: {
   host: 'localhost',
@@ -503,104 +503,104 @@ redis: {
 }
 ```
 
-**JWT 配置**:
+**JWT Configuration**:
 ```typescript
 jwt: {
   secret: 'your-secret-key',
-  expiresIn: 7200  // 2小时
+  expiresIn: 7200  // 2 hours
 }
 ```
 
-### 前端配置
+### Frontend Configuration
 
-**环境变量** (`.env.development`):
+**Environment Variables** (`.env.development`):
 ```bash
-# API 地址
+# API URL
 VITE_SERVICE_BASE_URL=http://localhost:8080
 
-# 请求超时
+# Request timeout
 VITE_SERVICE_TIMEOUT=60000
 
-# 水印
+# Watermark
 VITE_WATERMARK=N
 ```
 
 ---
 
-## 🎯 开发指南
+## 🎯 Development Guide
 
-### 添加新模块
+### Adding New Modules
 
-#### 1. 后端模块
+#### 1. Backend Module
 
 ```bash
-# 使用 NestJS CLI 生成模块
+# Use NestJS CLI to generate module
 cd server
 nest g module module/admin/newfeature
 nest g controller module/admin/newfeature
 nest g service module/admin/newfeature
 ```
 
-#### 2. 前端页面
+#### 2. Frontend Page
 
 ```bash
-# 在 src/views/ 下创建新页面
+# Create new page in src/views/
 cd admin-naive-ui/src/views
 mkdir newfeature
 touch newfeature/index.vue
 
-# 重新生成路由
+# Regenerate routes
 pnpm gen-route
 ```
 
-### 多租户开发
+### Multi-Tenant Development
 
-使用 `@IgnoreTenant()` 装饰器跳过租户过滤:
+Use `@IgnoreTenant()` decorator to skip tenant filtering:
 
 ```typescript
 @IgnoreTenant()
 @Get()
 async findAll() {
-  // 此查询将返回所有租户的数据
+  // This query will return data from all tenants
   return this.service.findAll();
 }
 ```
 
-### 核心装饰器（🆕 新增）
+### Core Decorators (🆕 New)
 
 ```typescript
-// 幂等性控制 - 防止重复提交
-@Idempotent({ timeout: 5000, message: '请勿重复提交' })
+// Idempotency control - prevent duplicate submissions
+@Idempotent({ timeout: 5000, message: 'Please do not submit repeatedly' })
 @Post()
 async create(@Body() dto: CreateDto) {
   return this.service.create(dto);
 }
 
-// 分布式锁 - 防止并发冲突
+// Distributed lock - prevent concurrency conflicts
 @Lock({ key: 'order:${orderId}', timeout: 10000 })
 @Put(':orderId')
 async update(@Param('orderId') orderId: string) {
   return this.service.update(orderId);
 }
 
-// 数据权限 - 自动过滤数据范围
+// Data permission - automatically filter data scope
 @DataPermission({ deptAlias: 'd', userAlias: 'u' })
 @Get()
 async findAll() {
   return this.service.findAll();
 }
 
-// 租户定时任务 - 遍历所有租户执行
+// Tenant scheduled job - iterate through all tenants
 @TenantJob()
 @Cron('0 0 * * *')
 async dailyTask() {
-  // 自动为每个租户执行
+  // Automatically execute for each tenant
 }
 ```
 
-### 权限控制
+### Permission Control
 
-使用装饰器控制权限:
+Use decorators to control permissions:
 
 ```typescript
 @RequirePermission('system:user:add')
@@ -610,12 +610,12 @@ async create(@Body() dto: CreateUserDto) {
 }
 ```
 
-### 请求加密
+### Request Encryption
 
-前端使用 AES + RSA 加密敏感请求:
+Frontend uses AES + RSA encryption for sensitive requests:
 
 ```typescript
-// 自动加密
+// Automatic encryption
 const response = await request({
   url: '/login',
   method: 'POST',
@@ -624,7 +624,7 @@ const response = await request({
 });
 ```
 
-后端使用 `@SkipDecrypt()` 跳过解密:
+Backend uses `@SkipDecrypt()` to skip decryption:
 
 ```typescript
 @SkipDecrypt()
@@ -636,201 +636,201 @@ async getPublicData() {
 
 ---
 
-## 📊 性能优化
+## 📊 Performance Optimization
 
-### 已实施的优化
+### Implemented Optimizations
 
-- ✅ **Prisma 连接池** - 优化数据库连接
-- ✅ **Redis 缓存** - 热点数据缓存
-- ✅ **路由懒加载** - 前端按需加载
-- ✅ **组件异步加载** - 减少首屏加载
-- ✅ **Gzip 压缩** - 减少传输体积
-- ✅ **请求防抖节流** - 优化用户交互
-- ✅ **虚拟滚动** - 大列表性能优化
+- ✅ **Prisma Connection Pool** - Optimize database connections
+- ✅ **Redis Cache** - Hot data caching
+- ✅ **Route Lazy Loading** - Frontend on-demand loading
+- ✅ **Component Async Loading** - Reduce initial load
+- ✅ **Gzip Compression** - Reduce transmission size
+- ✅ **Request Debounce/Throttle** - Optimize user interaction
+- ✅ **Virtual Scrolling** - Large list performance optimization
 
-### 性能指标
+### Performance Metrics
 
-| 指标 | 目标值 | 当前值 |
-|-----|-------|--------|
-| 首屏加载 | < 2s | ~1.5s |
-| API 响应 | < 200ms | ~150ms |
-| 内存占用 | < 300MB | ~250MB |
-| 数据库连接 | < 20 | ~10 |
-
----
-
-## 🔒 安全特性
-
-- ✅ **JWT 认证** - 无状态身份验证
-- ✅ **请求加密** - AES-256-CBC + RSA-2048
-- ✅ **密码加密** - BCrypt 加密存储
-- ✅ **SQL 注入防护** - Prisma 参数化查询
-- ✅ **XSS 防护** - 输入过滤与转义
-- ✅ **CSRF 防护** - Token 验证
-- ✅ **敏感数据脱敏** - 日志自动脱敏
-- ✅ **租户隔离** - 数据完全隔离
-- ✅ **操作审计** - 完整操作日志
+| Metric | Target | Current |
+|--------|--------|---------|
+| Initial Load | < 2s | ~1.5s |
+| API Response | < 200ms | ~150ms |
+| Memory Usage | < 300MB | ~250MB |
+| Database Connections | < 20 | ~10 |
 
 ---
 
-## 📝 命令速查
+## 🔒 Security Features
 
-### 后端命令
+- ✅ **JWT Authentication** - Stateless authentication
+- ✅ **Request Encryption** - AES-256-CBC + RSA-2048
+- ✅ **Password Encryption** - BCrypt encrypted storage
+- ✅ **SQL Injection Protection** - Prisma parameterized queries
+- ✅ **XSS Protection** - Input filtering and escaping
+- ✅ **CSRF Protection** - Token verification
+- ✅ **Sensitive Data Masking** - Automatic log masking
+- ✅ **Tenant Isolation** - Complete data isolation
+- ✅ **Operation Auditing** - Complete operation logs
+
+---
+
+## 📝 Command Reference
+
+### Backend Commands
 
 ```bash
-# 开发
-pnpm start:dev              # 启动开发服务器
-pnpm start:prod             # 启动生产服务器
+# Development
+pnpm start:dev              # Start development server
+pnpm start:prod             # Start production server
 
-# 数据库
-pnpm prisma:generate        # 生成 Prisma 客户端
-pnpm prisma:migrate         # 创建并应用迁移
-pnpm prisma:seed            # 重置数据库并填充种子数据
-pnpm prisma:reset           # 重置迁移
+# Database
+pnpm prisma:generate        # Generate Prisma client
+pnpm prisma:migrate         # Create and apply migrations
+pnpm prisma:seed            # Reset database and seed data
+pnpm prisma:reset           # Reset migrations
 
-# 构建
-pnpm build:dev              # 开发构建
-pnpm build:prod             # 生产构建
+# Build
+pnpm build:dev              # Development build
+pnpm build:prod             # Production build
 
-# 测试
-pnpm test                   # 运行单元测试
-pnpm test:watch             # 监听模式运行测试
-pnpm test:cov               # 运行测试并生成覆盖率报告
-pnpm test:e2e               # 运行 E2E 测试
-pnpm test:integration       # 运行集成测试
-pnpm test:all               # 运行所有测试
+# Testing
+pnpm test                   # Run unit tests
+pnpm test:watch             # Run tests in watch mode
+pnpm test:cov               # Run tests and generate coverage report
+pnpm test:e2e               # Run E2E tests
+pnpm test:integration       # Run integration tests
+pnpm test:all               # Run all tests
 
-# 演示账户
-./scripts/init-demo.sh      # 初始化演示账户
-pnpm exec ts-node scripts/init-demo-account.ts  # 直接执行初始化脚本
+# Demo Account
+./scripts/init-demo.sh      # Initialize demo account
+pnpm exec ts-node scripts/init-demo-account.ts  # Directly execute initialization script
 
-# 工具
-pnpm generate:keys          # 生成 RSA 密钥对
-pnpm redis:flush            # 清空 Redis
-pnpm logs:view              # 查看日志
-pnpm logs:error             # 查看错误日志
+# Tools
+pnpm generate:keys          # Generate RSA key pair
+pnpm redis:flush            # Clear Redis
+pnpm logs:view              # View logs
+pnpm logs:error             # View error logs
 ```
 
-### 前端命令
+### Frontend Commands
 
 ```bash
-# 开发
-pnpm dev                    # 启动开发服务器
-pnpm preview               # 预览生产构建
+# Development
+pnpm dev                    # Start development server
+pnpm preview                 # Preview production build
 
-# 构建
-pnpm build                 # 生产构建
-pnpm build:dev             # 开发构建
-pnpm build:test            # 测试构建
+# Build
+pnpm build                  # Production build
+pnpm build:dev              # Development build
+pnpm build:test             # Test build
 
-# 代码质量
-pnpm lint                  # ESLint 检查
-pnpm typecheck             # TypeScript 类型检查
-pnpm format                # 代码格式化
+# Code Quality
+pnpm lint                   # ESLint check
+pnpm typecheck              # TypeScript type check
+pnpm format                 # Code formatting
 
-# 测试
-pnpm test                  # 运行单元测试
-pnpm test:watch            # 监听模式运行测试
-pnpm test:cov              # 运行测试并生成覆盖率报告
-pnpm test:ui               # 可视化测试界面
-pnpm cypress:open          # 打开 Cypress 交互界面
-pnpm cypress:run           # 运行 Cypress E2E 测试
-pnpm test:all              # 运行所有测试
+# Testing
+pnpm test                   # Run unit tests
+pnpm test:watch             # Run tests in watch mode
+pnpm test:cov               # Run tests and generate coverage report
+pnpm test:ui                # Visual test interface
+pnpm cypress:open           # Open Cypress interactive interface
+pnpm cypress:run            # Run Cypress E2E tests
+pnpm test:all               # Run all tests
 
-# 工具
-pnpm gen-route             # 生成路由
-pnpm gen:api               # 生成 API 类型
-pnpm cleanup               # 清理依赖
+# Tools
+pnpm gen-route              # Generate routes
+pnpm gen:api                # Generate API types
+pnpm cleanup                # Clean dependencies
 ```
 
 ---
 
-## 🗺️ 未来发展方向
+## 🗺️ Future Roadmap
 
-### 短期计划（1-3个月）
+### Short-term Plans (1-3 months)
 
-- [x] **消息中心** - 站内消息、邮件、短信通知 ✅ 已完成
-- [x] **租户增强** - 仪表盘、配额管理、审计日志 ✅ 已完成
-- [ ] **移动端适配** - 开发移动端 H5 版本
-- [ ] **微服务拆分** - 将单体应用拆分为微服务架构
-- [ ] **Docker 部署** - 提供完整的 Docker Compose 方案
-- [ ] **代码生成优化** - 完善代码生成器功能
-- [ ] **工作流引擎** - 集成审批流程引擎
-- [ ] **数据大屏** - 可视化数据展示
+- [x] **Message Center** - In-app messages, email, SMS notifications ✅ Completed
+- [x] **Tenant Enhancements** - Dashboard, quota management, audit logs ✅ Completed
+- [ ] **Mobile Adaptation** - Develop mobile H5 version
+- [ ] **Microservices Split** - Split monolithic application into microservices architecture
+- [ ] **Docker Deployment** - Provide complete Docker Compose solution
+- [ ] **Code Generation Optimization** - Improve code generator functionality
+- [ ] **Workflow Engine** - Integrate approval process engine
+- [ ] **Data Dashboard** - Visual data display
 
-### 中期计划（3-6个月）
+### Mid-term Plans (3-6 months)
 
-- [ ] **多数据库支持** - 支持 MySQL、MongoDB
-- [ ] **国际化增强** - 支持更多语言
-- [ ] **插件系统** - 可插拔的插件架构
-- [ ] **AI 助手** - 集成 AI 辅助开发
-- [ ] **低代码平台** - 可视化配置页面
-- [ ] **报表系统** - 自定义报表生成
-- [ ] **移动端 App** - 原生移动应用
+- [ ] **Multi-Database Support** - Support MySQL, MongoDB
+- [ ] **Internationalization Enhancement** - Support more languages
+- [ ] **Plugin System** - Pluggable plugin architecture
+- [ ] **AI Assistant** - Integrate AI-assisted development
+- [ ] **Low-Code Platform** - Visual page configuration
+- [ ] **Reporting System** - Custom report generation
+- [ ] **Mobile App** - Native mobile application
 
-### 长期计划（6-12个月）
+### Long-term Plans (6-12 months)
 
-- [ ] **Cloud Native** - 云原生架构改造
-- [ ] **Serverless** - 支持 Serverless 部署
-- [ ] **边缘计算** - 边缘节点支持
-- [ ] **区块链集成** - 数据可信存证
-- [ ] **大数据分析** - 集成数据分析平台
-- [ ] **智能运维** - AIOps 智能运维
-- [ ] **跨平台桌面端** - Electron 桌面应用
-
----
-
-## 🤝 参与贡献
-
-我们非常欢迎您的贡献！请遵循以下步骤：
-
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
-
-### 代码规范
-
-- 遵循 ESLint 配置
-- 使用 TypeScript 类型注解
-- 编写清晰的注释
-- 提交前运行测试
+- [ ] **Cloud Native** - Cloud-native architecture transformation
+- [ ] **Serverless** - Support Serverless deployment
+- [ ] **Edge Computing** - Edge node support
+- [ ] **Blockchain Integration** - Trusted data storage
+- [ ] **Big Data Analytics** - Integrate data analytics platform
+- [ ] **Intelligent Operations** - AIOps intelligent operations
+- [ ] **Cross-Platform Desktop** - Electron desktop application
 
 ---
 
-## 📄 开源协议
+## 🤝 Contributing
 
-本项目基于 [MIT](LICENSE) 协议开源。
+We welcome your contributions! Please follow these steps:
+
+1. Fork this repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Code Standards
+
+- Follow ESLint configuration
+- Use TypeScript type annotations
+- Write clear comments
+- Run tests before committing
 
 ---
 
-## 🙏 鸣谢
+## 📄 License
 
-感谢以下开源项目：
-
-- [NestJS](https://nestjs.com/) - 渐进式 Node.js 框架
-- [Vue.js](https://vuejs.org/) - 渐进式 JavaScript 框架
-- [Naive UI](https://www.naiveui.com/) - Vue 3 组件库
-- [Prisma](https://www.prisma.io/) - 现代 ORM
-- [Vite](https://vitejs.dev/) - 新一代前端构建工具
-- [UnoCSS](https://unocss.dev/) - 原子化 CSS 引擎
-- [Soybean Admin](https://github.com/soybeanjs/soybean-admin) - 优秀的管理系统模板
+This project is open source under the [MIT](LICENSE) license.
 
 ---
 
-## 📞 联系方式
+## 🙏 Acknowledgments
 
-- **作者**: linlingqin77
-- **邮箱**: linlingqin77@qq.com
+Thanks to the following open source projects:
+
+- [NestJS](https://nestjs.com/) - Progressive Node.js framework
+- [Vue.js](https://vuejs.org/) - Progressive JavaScript framework
+- [Naive UI](https://www.naiveui.com/) - Vue 3 component library
+- [Prisma](https://www.prisma.io/) - Modern ORM
+- [Vite](https://vitejs.dev/) - Next-generation frontend build tool
+- [UnoCSS](https://unocss.dev/) - Atomic CSS engine
+- [Soybean Admin](https://github.com/soybeanjs/soybean-admin) - Excellent admin system template
+
+---
+
+## 📞 Contact
+
+- **Author**: linlingqin77
+- **Email**: linlingqin77@qq.com
 - **GitHub**: [@linlingqin77](https://github.com/linlingqin77)
-- **项目地址**: [https://github.com/linlingqin77/Nest-Admin-Soybean](https://github.com/linlingqin77/Nest-Admin-Soybean)
+- **Project URL**: [https://github.com/linlingqin77/Nest-Admin-Soybean](https://github.com/linlingqin77/Nest-Admin-Soybean)
 
 ---
 
 ## ⭐ Star History
 
-如果这个项目对您有帮助，请给个 Star ⭐️
+If this project is helpful to you, please give it a Star ⭐️
 
 [![Star History Chart](https://api.star-history.com/svg?repos=linlingqin77/Nest-Admin-Soybean&type=Date)](https://star-history.com/#linlingqin77/Nest-Admin-Soybean&Date)
 
@@ -838,7 +838,7 @@ pnpm cleanup               # 清理依赖
 
 <div align="center">
 
-**让开发更简单，让管理更高效**
+**Making Development Simpler, Management More Efficient**
 
 Made with ❤️ by [linlingqin77](https://github.com/linlingqin77)
 
