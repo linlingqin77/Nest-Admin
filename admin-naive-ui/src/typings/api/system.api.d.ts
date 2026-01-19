@@ -266,7 +266,7 @@ declare namespace Api {
       /** 组件路径 */
       component: string;
       /** 路由参数 */
-      queryParam: string;
+      query: string;
       /** 是否为外链（0是 1否 2iframe） */
       isFrame: IsMenuFrame;
       /** 是否缓存（0缓存 1不缓存） */
@@ -307,7 +307,7 @@ declare namespace Api {
         | 'orderNum'
         | 'path'
         | 'component'
-        | 'queryParam'
+        | 'query'
         | 'isFrame'
         | 'isCache'
         | 'menuType'

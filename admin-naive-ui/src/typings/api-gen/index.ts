@@ -861,7 +861,7 @@ export interface CreateMenuRequestDto {
   /** 权限标识 */
   perms?: string;
   /** 路由参数 */
-  queryParam?: string;
+  query?: string;
   /** 备注 */
   remark?: string;
 }
@@ -914,7 +914,7 @@ export interface UpdateMenuRequestDto {
   /** 权限标识 */
   perms?: string;
   /** 路由参数 */
-  queryParam?: string;
+  query?: string;
   /** 备注 */
   remark?: string;
   /** 菜单ID */

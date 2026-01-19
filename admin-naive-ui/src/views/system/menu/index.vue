@@ -147,10 +147,15 @@ function renderLabel({ option }: { option: TreeOption }) {
 }
 
 function renderPrefix({ option }: { option: TreeOption }) {
-  const renderLocalIcon = String(option.icon).startsWith('local-icon-');
-  const icon = renderLocalIcon ? undefined : String(option.icon);
-  const localIcon = renderLocalIcon ? String(option.icon).replace('local-icon-', 'menu-') : undefined;
-  return <SvgIcon icon={icon || defaultIcon} localIcon={localIcon} />;
+  const iconValue = String(option.icon || '');
+  // 如果没有图标且没有设置默认图标，则不显示
+  if (!iconValue && !defaultIcon) {
+    return null;
+  }
+  const renderLocalIcon = iconValue.startsWith('local-icon-');
+  const icon = renderLocalIcon ? undefined : (iconValue || defaultIcon);
+  const localIcon = renderLocalIcon ? iconValue.replace('local-icon-', 'menu-') : undefined;
+  return <SvgIcon icon={icon} localIcon={localIcon} />;
 }
 
 function renderSuffix({ option }: { option: TreeOption }) {
@@ -336,11 +341,11 @@ function renderMenuName(menuName: string) {
   return menuName?.startsWith('route.') || menuName?.startsWith('menu.') ? $t(menuName as App.I18n.I18nKey) : menuName;
 }
 
-const renderIframeQuery = (queryParam: string) => {
+const renderIframeQuery = (query: string) => {
   try {
-    return JSON.parse(queryParam || '{}')?.url;
+    return JSON.parse(query || '{}')?.url;
   } catch {
-    return queryParam;
+    return query;
   }
 };
 </script>
@@ -473,13 +478,13 @@ const renderIframeQuery = (queryParam: string) => {
               {{ currentMenu.path }}
             </NDescriptionsItem>
             <NDescriptionsItem v-if="isMenu && !isExternalType && !isIframeType" :label="$t('page.system.menu.query')">
-              {{ currentMenu.queryParam }}
+              {{ currentMenu.query }}
             </NDescriptionsItem>
             <NDescriptionsItem
               v-if="isMenu && !isExternalType && isIframeType"
               :label="$t('page.system.menu.iframeQuery')"
             >
-              {{ renderIframeQuery(currentMenu.queryParam) }}
+              {{ renderIframeQuery(currentMenu.query) }}
             </NDescriptionsItem>
             <NDescriptionsItem v-if="!isCatalog" :label="$t('page.system.menu.perms')">
               {{ currentMenu.perms }}

@@ -64,7 +64,7 @@ function createDefaultModel(): Model {
     orderNum: 1,
     path: '',
     component: '',
-    queryParam: '',
+    query: '',
     isFrame: '1',
     isCache: '1',
     menuType: props.menuType || 'M',
@@ -131,14 +131,14 @@ function handleInitModel() {
     iconType.value = model.icon?.startsWith('local-icon-') ? '2' : '1';
 
     if (model.isFrame === '1') {
-      const queryObj: { [key: string]: string } = JSON.parse(model.queryParam || '{}');
+      const queryObj: { [key: string]: string } = JSON.parse(model.query || '{}');
       queryList.value = Object.keys(queryObj).map(item => ({ key: item, value: queryObj[item] }));
       return;
     }
 
     try {
       if (model.isFrame === '2') {
-        model.queryParam = JSON.parse(model.queryParam || '{}')?.url || '';
+        model.query = JSON.parse(model.query || '{}')?.url || '';
       }
     } catch {
       // ignore parse error
@@ -169,7 +169,7 @@ function processComponent(component: string | null | undefined): string {
   return component || '';
 }
 
-function processQueryParam(queryParam: string | null | undefined): string {
+function processQueryParam(query: string | null | undefined): string {
   // 外链类型不需要查询参数
   if (isExternalType.value) {
     return '';
@@ -182,7 +182,7 @@ function processQueryParam(queryParam: string | null | undefined): string {
 
   // iframe类型，直接使用原始参数
   if (isIframeType.value) {
-    return queryParam ? `{"url": "${queryParam}"}` : '';
+    return query ? `{"url": "${query}"}` : '';
   }
 
   return '';
@@ -205,7 +205,7 @@ async function handleSubmit() {
     perms,
     remark,
     component,
-    queryParam
+    query
   } = model;
 
   const payload = {
@@ -213,7 +213,7 @@ async function handleSubmit() {
     path: processPath(model.path),
     parentId: (parentId as number) || 0,
     orderNum: orderNum ?? undefined,
-    queryParam: processQueryParam(queryParam),
+    query: processQueryParam(query),
     isFrame: isFrame || '1',
     isCache: isCache ?? undefined,
     menuType: menuType ?? undefined,
@@ -423,7 +423,7 @@ function onCreate() {
             </NDynamicInput>
             <NInput
               v-else
-              v-model:value="model.queryParam"
+              v-model:value="model.query"
               :placeholder="$t('page.system.menu.placeholder.queryIframe')"
             />
           </NFormItemGi>
