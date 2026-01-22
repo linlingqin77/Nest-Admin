@@ -2,6 +2,10 @@
 
 <div align="center">
 
+**Language / 语言** 
+
+[English](README_EN.md) | [简体中文](README_CN.md)
+
 ![Nest-Admin-Soybean Logo](https://img.shields.io/badge/Nest--Admin--Soybean-2.3.0-blue)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Node Version](https://img.shields.io/badge/node-%3E%3D20.19.0-brightgreen)](https://nodejs.org)
