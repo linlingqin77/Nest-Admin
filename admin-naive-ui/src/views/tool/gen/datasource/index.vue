@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { NDivider, NTag } from 'naive-ui';
 import { fetchDataSourceDelete, fetchDataSourceList, fetchDataSourceTestConnectionById } from '@/service/api-gen';
-import type { DataSourceInfo } from '@/service/api-gen/datasource';
+import type { DataSourceResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
@@ -75,7 +75,7 @@ const {
       align: 'center',
       width: 120,
       render: row => {
-        const dataRow = row as unknown as DataSourceInfo;
+        const dataRow = row as unknown as DataSourceResponseDto;
         const typeInfo = dbTypeMap[dataRow.type] || { label: dataRow.type, color: '#666' };
         return (
           <NTag size="small" style={{ backgroundColor: typeInfo.color, color: '#fff' }}>
@@ -90,7 +90,7 @@ const {
       align: 'center',
       minWidth: 150,
       render: row => {
-        const dataRow = row as unknown as DataSourceInfo;
+        const dataRow = row as unknown as DataSourceResponseDto;
         return `${dataRow.host}:${dataRow.port}`;
       }
     },
@@ -112,7 +112,7 @@ const {
       align: 'center',
       width: 80,
       render: row => {
-        const dataRow = row as unknown as DataSourceInfo;
+        const dataRow = row as unknown as DataSourceResponseDto;
         const statusInfo = statusMap[dataRow.status] || { label: '未知', type: 'error' as const };
         return (
           <NTag size="small" type={statusInfo.type}>
@@ -133,7 +133,7 @@ const {
       align: 'center',
       width: 200,
       render: row => {
-        const dataRow = row as unknown as DataSourceInfo;
+        const dataRow = row as unknown as DataSourceResponseDto;
         const testBtn = () => {
           if (!hasAuth('tool:gen:datasource:test')) {
             return null;
@@ -269,7 +269,7 @@ async function handleTestConnection(id: number) {
       <DataSourceOperateDrawer
         v-model:visible="drawerVisible"
         :operate-type="operateType"
-        :row-data="(editingData as unknown as DataSourceInfo)"
+        :row-data="(editingData as unknown as DataSourceResponseDto)"
         @submitted="getData"
       />
     </NCard>

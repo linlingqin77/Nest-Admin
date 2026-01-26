@@ -2,7 +2,7 @@
 import { computed, reactive, ref, watch } from 'vue';
 import { useLoading } from '@sa/hooks';
 import { fetchUserCreate, fetchUserFindOne, fetchUserFindPostAndRoleAll, fetchUserUpdate } from '@/service/api-gen';
-import type { CreateUserDto, DeptTreeNodeVo, UpdateUserDto, UserResponseDto } from '@/service/api-gen/types';
+import type { CreateUserDto, DeptTreeNodeResponseDto, UpdateUserDto, UserResponseDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -16,7 +16,7 @@ interface Props {
   /** the edit row data */
   rowData?: UserResponseDto | null;
   /** the dept tree data */
-  deptData?: DeptTreeNodeVo[];
+  deptData?: DeptTreeNodeResponseDto[];
   /** the dept id */
   deptId?: number | null | undefined;
 }

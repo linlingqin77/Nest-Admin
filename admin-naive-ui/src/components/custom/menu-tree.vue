@@ -91,9 +91,14 @@ function renderLabel({ option }: { option: TreeOption }) {
 }
 
 function renderPrefix({ option }: { option: TreeOption }) {
-  const renderLocalIcon = String(option.icon).startsWith('local-icon-');
-  let icon = renderLocalIcon ? undefined : String(option.icon ?? 'material-symbols:buttons-alt-outline-rounded');
-  const localIcon = renderLocalIcon ? String(option.icon).replace('local-icon-', 'menu-') : undefined;
+  const iconValue = String(option.icon || '');
+  // If no icon is provided, don't render anything
+  if (!iconValue) {
+    return null;
+  }
+  const renderLocalIcon = iconValue.startsWith('local-icon-');
+  let icon = renderLocalIcon ? undefined : iconValue;
+  const localIcon = renderLocalIcon ? iconValue.replace('local-icon-', 'menu-') : undefined;
   if (icon === '#') {
     icon = 'material-symbols:buttons-alt-outline-rounded';
   }

@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { NDivider, NTag } from 'naive-ui';
-import type { OssConfigResponseDto } from '@/service/api-gen';
+import type { OssConfigResponseDto } from '@/service/api-gen/types';
 import { fetchOssConfigChangeStatus, fetchOssConfigFindAll, fetchOssConfigRemove } from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';

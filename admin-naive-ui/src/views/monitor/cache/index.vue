@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { nextTick, onMounted, onUnmounted, ref } from 'vue';
 import { useLoading } from '@sa/hooks';
-import { fetchCacheGetInfo } from '@/service/api-gen/cache';
+import { fetchCacheGetInfo } from '@/service/api-gen';
 import type { CacheInfoResponseDto } from '@/service/api-gen/types';
 import { useEcharts } from '@/hooks/common/echarts';
 

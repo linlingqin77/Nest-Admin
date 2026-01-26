@@ -4,7 +4,7 @@ import { NAvatar, NButton, NDivider, NEllipsis } from 'naive-ui';
 import { useBoolean, useLoading } from '@sa/hooks';
 import { jsonClone } from '@sa/utils';
 import { fetchUserChangeStatus, fetchUserDeptTree, fetchUserFindAll, fetchUserRemove } from '@/service/api-gen';
-import type { ChangeUserStatusDto, DeptTreeNodeVo, ListUserDto, UserResponseDto } from '@/service/api-gen/types';
+import type { ChangeUserStatusDto, DeptTreeNodeResponseDto, ListUserDto, UserResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
 import { useDict } from '@/hooks/business/dict';
@@ -244,7 +244,7 @@ async function handleResetPwd(userId: CommonType.IdType) {
 
 const { loading: treeLoading, startLoading: startTreeLoading, endLoading: endTreeLoading } = useLoading();
 const deptPattern = ref<string>();
-const deptData = ref<DeptTreeNodeVo[]>([]);
+const deptData = ref<DeptTreeNodeResponseDto[]>([]);
 const selectedKeys = ref<string[]>([]);
 
 async function getTreeData() {

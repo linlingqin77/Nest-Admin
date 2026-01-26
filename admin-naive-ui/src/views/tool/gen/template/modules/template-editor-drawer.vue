@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import * as monaco from 'monaco-editor';
-import { fetchTemplateCreate, fetchTemplateUpdate, fetchTemplateValidate } from '@/service/api-gen';
-import type { CreateTemplateDto, TemplateInfo, TemplateLanguage, UpdateTemplateDto } from '@/service/api-gen/template';
+import { fetchTemplateCreateTemplate, fetchTemplateUpdateTemplate, fetchTemplateValidateTemplate } from '@/service/api-gen';
+import type { CreateTemplateDto, TemplateResponseDto, UpdateTemplateDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -14,7 +14,7 @@ interface Props {
   /** the type of operation */
   operateType: NaiveUI.TableOperateType;
   /** the edit row data */
-  rowData?: TemplateInfo | null;
+  rowData?: TemplateResponseDto | null;
   /** the group id for new template */
   groupId?: number;
 }
@@ -50,7 +50,7 @@ const languageOptions = [
 ];
 
 // Monaco 编辑器语言映射
-const monacoLanguageMap: Record<TemplateLanguage, string> = {
+const monacoLanguageMap: Record<'typescript' | 'vue' | 'sql', string> = {
   typescript: 'typescript',
   vue: 'html',
   sql: 'sql'
@@ -63,7 +63,7 @@ type Model = {
   fileName: string;
   filePath: string;
   content: string;
-  language: TemplateLanguage;
+  language: 'typescript' | 'vue' | 'sql';
   sort: number;
   status: string;
 };
@@ -182,7 +182,7 @@ async function handleValidate() {
 
   validateLoading.value = true;
   try {
-    const { data } = await fetchTemplateValidate({ content: model.content });
+    const { data } = await fetchTemplateValidateTemplate({ content: model.content });
     validateResult.value = data;
     if (data.valid) {
       window.$message?.success('模板语法验证通过');
@@ -210,7 +210,7 @@ async function handleSubmit() {
         language: model.language,
         sort: model.sort
       };
-      await fetchTemplateCreate(createData);
+      await fetchTemplateCreateTemplate(createData);
     } else if (props.operateType === 'edit' && model.id) {
       const updateData: UpdateTemplateDto = {
         name: model.name,
@@ -221,7 +221,7 @@ async function handleSubmit() {
         sort: model.sort,
         status: model.status
       };
-      await fetchTemplateUpdate(model.id, updateData);
+      await fetchTemplateUpdateTemplate(model.id, updateData);
     }
 
     window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));

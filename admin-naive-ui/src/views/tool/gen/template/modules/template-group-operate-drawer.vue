@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue';
-import { fetchTemplateGroupCreate, fetchTemplateGroupUpdate } from '@/service/api-gen';
-import type { CreateTemplateGroupDto, TemplateGroupInfo, UpdateTemplateGroupDto } from '@/service/api-gen/template';
+import { fetchTemplateCreateGroup, fetchTemplateUpdateGroup } from '@/service/api-gen';
+import type { CreateTemplateGroupDto, TemplateGroupInfo, UpdateTemplateGroupDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -13,7 +13,7 @@ interface Props {
   /** the type of operation */
   operateType: NaiveUI.TableOperateType;
   /** the edit row data */
-  rowData?: TemplateGroupInfo | null;
+  rowData?: TemplateGroupResponseDto | null;
 }
 
 const props = defineProps<Props>();
@@ -95,7 +95,7 @@ async function handleSubmit() {
         description: model.description || undefined,
         isDefault: model.isDefault
       };
-      await fetchTemplateGroupCreate(createData);
+      await fetchTemplateCreateGroup(createData);
     } else if (props.operateType === 'edit' && model.id) {
       const updateData: UpdateTemplateGroupDto = {
         name: model.name,
@@ -103,7 +103,7 @@ async function handleSubmit() {
         isDefault: model.isDefault,
         status: model.status
       };
-      await fetchTemplateGroupUpdate(model.id, updateData);
+      await fetchTemplateUpdateGroup(model.id, updateData);
     }
 
     window.$message?.success(props.operateType === 'add' ? $t('common.addSuccess') : $t('common.updateSuccess'));

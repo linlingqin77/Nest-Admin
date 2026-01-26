@@ -2,12 +2,12 @@
 import { ref } from 'vue';
 import { NButton, NCollapse, NCollapseItem, NDivider, NEmpty, NSpace, NTag } from 'naive-ui';
 import {
-  fetchTemplateDelete,
-  fetchTemplateGroupDelete,
-  fetchTemplateGroupExport,
-  fetchTemplateGroupList
+  fetchTemplateDeleteTemplate,
+  fetchTemplateDeleteGroup,
+  fetchTemplateExportGroup,
+  fetchTemplateListGroups
 } from '@/service/api-gen';
-import type { TemplateGroupInfo, TemplateInfo, TemplateLanguage } from '@/service/api-gen/template';
+import type { TemplateGroupResponseDto, TemplateResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useTable, useTableOperate, useTableProps } from '@/hooks/common/table';
@@ -28,7 +28,7 @@ const { hasAuth } = useAuth();
 const tableProps = useTableProps();
 
 // 语言映射
-const languageMap: Record<TemplateLanguage, { label: string; color: string }> = {
+const languageMap: Record<'typescript' | 'vue' | 'sql', { label: string; color: string }> = {
   typescript: { label: 'TypeScript', color: '#3178c6' },
   vue: { label: 'Vue', color: '#42b883' },
   sql: { label: 'SQL', color: '#e38c00' }
@@ -51,7 +51,7 @@ const {
   searchParams,
   resetSearchParams
 } = useTable({
-  apiFn: fetchTemplateGroupList as any,
+  apiFn: fetchTemplateListGroups as any,
   apiParams: {
     pageNum: 1,
     pageSize: 10,
@@ -91,7 +91,7 @@ const {
       align: 'center',
       width: 80,
       render: row => {
-        const dataRow = row as unknown as TemplateGroupInfo;
+        const dataRow = row as unknown as TemplateGroupResponseDto;
         return dataRow.isDefault ? (
           <NTag size="small" type="success">
             是
@@ -107,7 +107,7 @@ const {
       align: 'center',
       width: 100,
       render: row => {
-        const dataRow = row as unknown as TemplateGroupInfo;
+        const dataRow = row as unknown as TemplateGroupResponseDto;
         return dataRow.tenantId === null ? (
           <NTag size="small" type="warning">
             系统级
@@ -125,7 +125,7 @@ const {
       align: 'center',
       width: 100,
       render: row => {
-        const dataRow = row as unknown as TemplateGroupInfo;
+        const dataRow = row as unknown as TemplateGroupResponseDto;
         return dataRow.templates?.length || 0;
       }
     },
@@ -135,7 +135,7 @@ const {
       align: 'center',
       width: 80,
       render: row => {
-        const dataRow = row as unknown as TemplateGroupInfo;
+        const dataRow = row as unknown as TemplateGroupResponseDto;
         const statusInfo = statusMap[dataRow.status] || { label: '未知', type: 'error' as const };
         return (
           <NTag size="small" type={statusInfo.type}>
@@ -156,7 +156,7 @@ const {
       align: 'center',
       width: 200,
       render: row => {
-        const dataRow = row as unknown as TemplateGroupInfo;
+        const dataRow = row as unknown as TemplateGroupResponseDto;
         const isSystem = dataRow.tenantId === null;
 
         const viewBtn = () => {
@@ -248,12 +248,12 @@ const importDrawerVisible = ref(false);
 
 // 模板详情展示状态
 const templateDetailVisible = ref(false);
-const currentGroup = ref<TemplateGroupInfo | null>(null);
+const currentGroup = ref<TemplateGroupResponseDto | null>(null);
 
 async function handleBatchDelete() {
   try {
     // 并行删除所有选中的模板组
-    await Promise.all(checkedRowKeys.value.map(id => fetchTemplateGroupDelete(Number(id))));
+    await Promise.all(checkedRowKeys.value.map(id => fetchTemplateDeleteGroup(Number(id))));
     onBatchDeleted();
   } catch {
     // error handled by request interceptor
@@ -262,7 +262,7 @@ async function handleBatchDelete() {
 
 async function handleDelete(id: number) {
   try {
-    await fetchTemplateGroupDelete(id);
+    await fetchTemplateDeleteGroup(id);
     onDeleted();
   } catch {
     // error handled by request interceptor
@@ -275,7 +275,7 @@ function edit(id: number) {
 
 async function handleExport(id: number) {
   try {
-    const { data: exportData } = await fetchTemplateGroupExport(id);
+    const { data: exportData } = await fetchTemplateExportGroup(id);
     const jsonStr = JSON.stringify(exportData, null, 2);
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -294,7 +294,7 @@ function handleImport() {
   importDrawerVisible.value = true;
 }
 
-function handleViewTemplates(group: TemplateGroupInfo) {
+function handleViewTemplates(group: TemplateGroupResponseDto) {
   currentGroup.value = group;
   templateDetailVisible.value = true;
 }
@@ -315,7 +315,7 @@ function handleEditTemplate(template: TemplateInfo) {
 
 async function handleDeleteTemplate(id: number) {
   try {
-    await fetchTemplateDelete(id);
+    await fetchTemplateDeleteTemplate(id);
     window.$message?.success('删除成功');
     // 刷新当前组的模板列表
     getData();
@@ -369,7 +369,7 @@ function handleTemplateSubmitted() {
       <TemplateGroupOperateDrawer
         v-model:visible="drawerVisible"
         :operate-type="operateType"
-        :row-data="(editingData as unknown as TemplateGroupInfo)"
+        :row-data="(editingData as unknown as TemplateGroupResponseDto)"
         @submitted="getData"
       />
       <TemplateEditorDrawer

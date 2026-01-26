@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { NDivider } from 'naive-ui';
-import type { ClientResponseDto } from '@/service/api-gen';
+import type { ClientResponseDto } from '@/service/api-gen/types';
 import { fetchClientChangeStatus, fetchClientFindAll, fetchClientRemove } from '@/service/api-gen';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';

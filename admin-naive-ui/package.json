@@ -38,7 +38,7 @@
     "dev:test": "vite --mode test",
     "format": "prettier --write .",
     "gen-route": "sa gen-route",
-    "gen:api": "tsx scripts/post-gen-api.ts",
+    "gen:api": "openapi-ts && tsx scripts/post-gen-api.ts",
     "lint": "eslint . --fix",
     "prepare": "simple-git-hooks",
     "preview": "vite preview",

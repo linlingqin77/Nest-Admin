@@ -4,8 +4,8 @@ import { useClipboard } from '@vueuse/core';
 import { NDescriptions, NDescriptionsItem, NEmpty, NTag, NTooltip, NTree } from 'naive-ui';
 import type { TreeOption } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { fetchHistoryById } from '@/service/api-gen';
-import type { GenHistoryInfo, PreviewFile } from '@/service/api-gen/history';
+import { fetchHistoryFindOne } from '@/service/api-gen';
+import type { GenHistoryInfo, PreviewFile } from '@/service/api-gen/types';
 import MonacoEditor from '@/components/common/monaco-editor.vue';
 
 defineOptions({
@@ -129,7 +129,7 @@ async function getHistoryDetail() {
   if (!props.rowData?.id) return;
   startLoading();
   try {
-    const { data } = await fetchHistoryById(props.rowData.id);
+    const { data } = await fetchHistoryFindOne(props.rowData.id);
     if (data?.snapshotData?.files) {
       fileList.value = data.snapshotData.files;
       // 默认选中第一个文件

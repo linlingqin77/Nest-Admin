@@ -63,9 +63,14 @@ function renderLabel({ option }: { option: TreeOption }) {
 }
 
 function renderPrefix({ option }: { option: TreeOption }) {
-  const renderLocalIcon = String(option.icon).startsWith('local-icon-');
-  const icon = renderLocalIcon ? undefined : String(option.icon);
-  const localIcon = renderLocalIcon ? String(option.icon).replace('local-icon-', 'menu-') : undefined;
+  const iconValue = String(option.icon || '');
+  // If no icon is provided, don't render anything
+  if (!iconValue) {
+    return null;
+  }
+  const renderLocalIcon = iconValue.startsWith('local-icon-');
+  const icon = renderLocalIcon ? undefined : iconValue;
+  const localIcon = renderLocalIcon ? iconValue.replace('local-icon-', 'menu-') : undefined;
   return <SvgIcon icon={icon} localIcon={localIcon} />;
 }
 </script>

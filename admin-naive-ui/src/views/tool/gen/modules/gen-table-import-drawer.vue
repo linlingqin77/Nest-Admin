@@ -3,15 +3,13 @@ import { computed, ref, watch } from 'vue';
 import { NAlert, NButton, NDescriptions, NDescriptionsItem, NEmpty, NSpin } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
 import {
-  type DataSourceInfo,
-  type DbColumnInfo,
-  type TableName,
-  fetchDataSourceColumns,
+  fetchDataSourceGetColumns,
   fetchDataSourceList,
   fetchToolGenDbList,
   fetchToolGenImportTable,
   fetchToolGetDataNames
 } from '@/service/api-gen';
+import type { DataSourceResponseDto, DbColumnDto,TableName } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useTable, useTableOperate } from '@/hooks/common/table';
 import { $t } from '@/locales';
@@ -35,7 +33,7 @@ const emit = defineEmits<Emits>();
 const appStore = useAppStore();
 
 // 数据源相关
-const dataSources = ref<DataSourceInfo[]>([]);
+const dataSources = ref<DataSourceResponseDto[]>([]);
 const selectedDataSourceId = ref<number | null>(null);
 const {
   loading: dataSourceLoading,
@@ -46,7 +44,7 @@ const {
 // 表预览相关
 const previewVisible = ref(false);
 const previewTableName = ref('');
-const previewColumns = ref<DbColumnInfo[]>([]);
+const previewColumns = ref<DbColumnDto[]>([]);
 const { loading: previewLoading, startLoading: startPreviewLoading, endLoading: endPreviewLoading } = useLoading();
 
 const { columns, data, getData, getDataByPage, loading, mobilePagination, searchParams } = useTable({
@@ -121,7 +119,7 @@ const dataNameOptions = ref<CommonType.Option[]>([]);
 async function getDataSources() {
   startDataSourceLoading();
   try {
-    const { data: result } = (await fetchDataSourceList({ pageSize: 100 })) as { data: { rows: DataSourceInfo[] } };
+    const { data: result } = (await fetchDataSourceList({ pageSize: 100 })) as { data: { rows: DataSourceResponseDto[] } };
     dataSources.value = result?.rows || [];
 
     // 同时获取数据源名称列表
@@ -162,8 +160,8 @@ async function handlePreviewTable(tableName: string) {
   startPreviewLoading();
 
   try {
-    const { data: cols } = (await fetchDataSourceColumns(selectedDataSourceId.value, tableName)) as {
-      data: DbColumnInfo[];
+    const { data: cols } = (await fetchDataSourceGetColumns(selectedDataSourceId.value, tableName)) as {
+      data: DbColumnDto[];
     };
     previewColumns.value = cols || [];
   } catch {
@@ -248,21 +246,21 @@ const previewTableColumns = [
     title: '主键',
     align: 'center' as const,
     width: 80,
-    render: (row: DbColumnInfo) => (row.isPrimaryKey ? '是' : '否')
+    render: (row: DbColumnDto) => (row.isPrimaryKey ? '是' : '否')
   },
   {
     key: 'isNullable',
     title: '可空',
     align: 'center' as const,
     width: 80,
-    render: (row: DbColumnInfo) => (row.isNullable ? '是' : '否')
+    render: (row: DbColumnDto) => (row.isNullable ? '是' : '否')
   },
   {
     key: 'defaultValue',
     title: '默认值',
     align: 'center' as const,
     width: 100,
-    render: (row: DbColumnInfo) => row.defaultValue || '-'
+    render: (row: DbColumnDto) => row.defaultValue || '-'
   }
 ];
 </script>

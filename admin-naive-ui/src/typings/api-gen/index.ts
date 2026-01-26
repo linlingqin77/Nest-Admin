@@ -1,9 +1,10 @@
 /**
  * @generated
  * 此文件由 openapi-ts 自动生成，请勿手动修改
- * 生成时间: 2026-01-13T04:08:14.931Z
+ * 生成时间: 2026-01-26T05:46:54.497Z
  * 如需修改 API 配置，请编辑 api-config.ts
  */
+
 
 // OpenAPI Schema 类型定义
 
@@ -861,7 +862,7 @@ export interface CreateMenuRequestDto {
   /** 权限标识 */
   perms?: string;
   /** 路由参数 */
-  query?: string;
+  queryParam?: string;
   /** 备注 */
   remark?: string;
 }
@@ -914,7 +915,7 @@ export interface UpdateMenuRequestDto {
   /** 权限标识 */
   perms?: string;
   /** 路由参数 */
-  query?: string;
+  queryParam?: string;
   /** 备注 */
   remark?: string;
   /** 菜单ID */
@@ -1202,20 +1203,20 @@ export interface RoleListResponseDto {
   total: number;
 }
 
-export interface DeptTreeNodeVo {
+export interface DeptTreeNodeResponseDto {
   /** 部门ID */
   id: number;
   /** 部门名称 */
   label: string;
   /** 子节点列表 */
-  children?: DeptTreeNodeVo[];
+  children?: DeptTreeNodeResponseDto[];
 }
 
 export interface RoleDeptTreeResponseDto {
   /** 已选中的部门ID列表 */
   checkedKeys: number[];
   /** 部门树数据 */
-  depts: DeptTreeNodeVo[];
+  depts: DeptTreeNodeResponseDto[];
 }
 
 export interface UpdateRoleResultResponseDto {
@@ -1535,7 +1536,7 @@ export interface ListTenantRequestDto {
   endTime?: string;
 }
 
-export interface TenantStatsVo {
+export interface TenantStatsResponseDto {
   /** 租户总数 */
   totalTenants: number;
   /** 活跃租户数 */
@@ -1554,7 +1555,7 @@ export interface TenantStatsVo {
   totalApiCalls: number;
 }
 
-export interface TenantTrendDataVo {
+export interface TenantTrendDataResponseDto {
   /** 日期 */
   date: string;
   /** 新增租户数 */
@@ -1563,7 +1564,7 @@ export interface TenantTrendDataVo {
   totalTenants: number;
 }
 
-export interface PackageDistributionVo {
+export interface PackageDistributionResponseDto {
   /** 套餐ID */
   packageId: number;
   /** 套餐名称 */
@@ -1574,7 +1575,7 @@ export interface PackageDistributionVo {
   percentage: number;
 }
 
-export interface ExpiringTenantVo {
+export interface ExpiringTenantResponseDto {
   /** 租户ID */
   tenantId: string;
   /** 企业名称 */
@@ -1591,7 +1592,7 @@ export interface ExpiringTenantVo {
   packageName: string;
 }
 
-export interface QuotaTopTenantVo {
+export interface QuotaTopTenantResponseDto {
   /** 租户ID */
   tenantId: string;
   /** 企业名称 */
@@ -1606,24 +1607,34 @@ export interface QuotaTopTenantVo {
   overallUsage: number;
 }
 
-export interface DashboardDataVo {
+export interface DashboardDataResponseDto {
   /** 统计卡片数据 */
-  stats: TenantStatsVo;
+  stats: TenantStatsResponseDto;
   /** 租户增长趋势 */
-  trend: TenantTrendDataVo[];
+  trend: TenantTrendDataResponseDto[];
   /** 套餐分布 */
-  packageDistribution: PackageDistributionVo[];
+  packageDistribution: PackageDistributionResponseDto[];
   /** 即将到期租户 */
-  expiringTenants: ExpiringTenantVo[];
+  expiringTenants: ExpiringTenantResponseDto[];
   /** 配额使用TOP10 */
-  quotaTopTenants: QuotaTopTenantVo[];
+  quotaTopTenants: QuotaTopTenantResponseDto[];
 }
 
-export interface TenantQuotaVo {
+export interface TenantQuotaResponseDto {
+  /** 创建者 */
+  createBy?: string;
+  /** 创建时间 */
+  createTime?: string;
+  /** 更新者 */
+  updateBy?: string;
+  /** 更新时间 */
+  updateTime?: string;
+  /** 备注 */
+  remark?: string;
   /** 配额记录ID */
   id: number;
   /** 租户ID */
-  tenantId: string;
+  tenantId: number;
   /** 企业名称 */
   companyName: string;
   /** 用户数量配额，-1表示不限 */
@@ -1646,70 +1657,13 @@ export interface TenantQuotaVo {
   apiUsageRate: number;
   /** 配额状态 */
   status: 'normal' | 'warning' | 'danger';
-  /** 创建时间 */
-  createTime: string;
-  /** 更新时间 */
-  updateTime: string;
+  /** 删除标记 - 不返回给前端 */
+  delFlag?: string;
+  /** 密码 - 不返回给前端 */
+  password?: string;
 }
 
-export interface TenantQuotaListVo {
-  /** 配额列表 */
-  rows: TenantQuotaVo[];
-  /** 总数 */
-  total: number;
-}
-
-export interface QuotaChangeRecordVo {
-  /** 记录ID */
-  id: number;
-  /** 配额类型 */
-  quotaType: 'user' | 'storage' | 'api';
-  /** 原值 */
-  oldValue: number;
-  /** 新值 */
-  newValue: number;
-  /** 修改人 */
-  changeBy: string;
-  /** 修改时间 */
-  changeTime: string;
-}
-
-export interface TenantQuotaDetailVo {
-  /** 配额记录ID */
-  id: number;
-  /** 租户ID */
-  tenantId: string;
-  /** 企业名称 */
-  companyName: string;
-  /** 用户数量配额，-1表示不限 */
-  userQuota: number;
-  /** 已使用用户数 */
-  userUsed: number;
-  /** 用户配额使用率 */
-  userUsageRate: number;
-  /** 存储配额（MB），-1表示不限 */
-  storageQuota: number;
-  /** 已使用存储（MB） */
-  storageUsed: number;
-  /** 存储配额使用率 */
-  storageUsageRate: number;
-  /** API调用配额（月），-1表示不限 */
-  apiQuota: number;
-  /** 本月已调用次数 */
-  apiUsed: number;
-  /** API配额使用率 */
-  apiUsageRate: number;
-  /** 配额状态 */
-  status: 'normal' | 'warning' | 'danger';
-  /** 创建时间 */
-  createTime: string;
-  /** 更新时间 */
-  updateTime: string;
-  /** 配额变更历史 */
-  quotaHistory: QuotaChangeRecordVo[];
-}
-
-export interface UpdateTenantQuotaDto {
+export interface UpdateTenantQuotaRequestDto {
   /** 租户ID */
   tenantId: string;
   /** 用户数量配额，-1表示不限 */
@@ -1720,22 +1674,7 @@ export interface UpdateTenantQuotaDto {
   apiQuota?: number;
 }
 
-export interface QuotaCheckResultVo {
-  /** 是否允许 */
-  allowed: boolean;
-  /** 配额类型 */
-  quotaType: string;
-  /** 当前使用量 */
-  used: number;
-  /** 配额限制 */
-  limit: number;
-  /** 使用率 */
-  usageRate: number;
-  /** 提示信息 */
-  message: string;
-}
-
-export interface CheckQuotaDto {
+export interface CheckQuotaRequestDto {
   /** 租户ID */
   tenantId: string;
   /** 配额类型 */
@@ -1746,33 +1685,24 @@ export interface CheckQuotaDto {
 
 export interface TenantAuditLogVo {
   /** 日志ID */
-  id: Record<string, unknown>;
+  id: number;
   /** 租户ID */
   tenantId: string;
   /** 企业名称 */
-  companyName?: string;
+  companyName: string;
   /** 操作人ID */
   operatorId: number;
-  /** 操作人姓名 */
+  /** 操作人名称 */
   operatorName: string;
   /** 操作类型 */
-  actionType:
-    | 'login'
-    | 'logout'
-    | 'create'
-    | 'update'
-    | 'delete'
-    | 'permission_change'
-    | 'config_change'
-    | 'export'
-    | 'other';
+  actionType: string;
   /** 操作描述 */
   actionDesc: string;
-  /** 操作模块 */
+  /** 模块 */
   module: string;
   /** IP地址 */
   ipAddress: string;
-  /** User Agent */
+  /** 用户代理 */
   userAgent?: string;
   /** 请求URL */
   requestUrl?: string;
@@ -1783,7 +1713,7 @@ export interface TenantAuditLogVo {
 }
 
 export interface TenantAuditLogListVo {
-  /** 日志列表 */
+  /** 日志记录 */
   rows: TenantAuditLogVo[];
   /** 总数 */
   total: number;
@@ -1791,33 +1721,24 @@ export interface TenantAuditLogListVo {
 
 export interface TenantAuditLogDetailVo {
   /** 日志ID */
-  id: Record<string, unknown>;
+  id: number;
   /** 租户ID */
   tenantId: string;
   /** 企业名称 */
-  companyName?: string;
+  companyName: string;
   /** 操作人ID */
   operatorId: number;
-  /** 操作人姓名 */
+  /** 操作人名称 */
   operatorName: string;
   /** 操作类型 */
-  actionType:
-    | 'login'
-    | 'logout'
-    | 'create'
-    | 'update'
-    | 'delete'
-    | 'permission_change'
-    | 'config_change'
-    | 'export'
-    | 'other';
+  actionType: string;
   /** 操作描述 */
   actionDesc: string;
-  /** 操作模块 */
+  /** 模块 */
   module: string;
   /** IP地址 */
   ipAddress: string;
-  /** User Agent */
+  /** 用户代理 */
   userAgent?: string;
   /** 请求URL */
   requestUrl?: string;
@@ -1825,14 +1746,18 @@ export interface TenantAuditLogDetailVo {
   requestMethod?: string;
   /** 操作时间 */
   operateTime: string;
-  /** 请求参数（JSON） */
+  /** 请求参数 */
   requestParams?: string;
-  /** 操作前数据（JSON） */
+  /** 操作前数据 */
   beforeData?: string;
-  /** 操作后数据（JSON） */
+  /** 操作后数据 */
   afterData?: string;
-  /** 响应数据（JSON） */
+  /** 响应数据 */
   responseData?: string;
+  /** 操作结果 */
+  result?: string;
+  /** 错误信息 */
+  errorMessage?: string;
 }
 
 export interface TenantAuditLogStatsVo {
@@ -1846,22 +1771,13 @@ export interface TenantAuditLogStatsVo {
   byModule: Record<string, unknown>[];
 }
 
-export interface ExportTenantAuditLogDto {
+export interface ExportTenantAuditLogRequestDto {
   /** 租户ID */
   tenantId?: string;
   /** 操作人姓名 */
   operatorName?: string;
   /** 操作类型 */
-  actionType?:
-    | 'login'
-    | 'logout'
-    | 'create'
-    | 'update'
-    | 'delete'
-    | 'permission_change'
-    | 'config_change'
-    | 'export'
-    | 'other';
+  actionType?: 'login' | 'logout' | 'create' | 'update' | 'delete' | 'permission_change' | 'config_change' | 'export' | 'other';
   /** 操作模块 */
   module?: string;
   /** 开始时间 */
@@ -1964,6 +1880,269 @@ export interface TableName {
 export interface GenTableUpdate {
   /** 表ID */
   tableId: number;
+}
+
+export interface GenerateCodeDto {
+  /** 表ID列表 */
+  tableIds: number[];
+  /** 模板组ID */
+  templateGroupId?: number;
+  /** 项目名称（用于ZIP文件命名） */
+  projectName?: string;
+}
+
+export interface CreateDataSourceDto {
+  /** 数据源名称 */
+  name: string;
+  /** 数据库类型 */
+  type: 'postgresql' | 'mysql' | 'sqlite';
+  /** 主机地址 */
+  host: string;
+  /** 端口号 */
+  port: number;
+  /** 数据库名称 */
+  database: string;
+  /** 用户名 */
+  username: string;
+  /** 密码 */
+  password: string;
+  /** 备注 */
+  remark?: string;
+}
+
+export interface DataSourceResponseDto {
+  /** 数据源ID */
+  id: number;
+  /** 租户ID */
+  tenantId: string;
+  /** 数据源名称 */
+  name: string;
+  /** 数据库类型 */
+  type: 'postgresql' | 'mysql' | 'sqlite';
+  /** 主机地址 */
+  host: string;
+  /** 端口号 */
+  port: number;
+  /** 数据库名称 */
+  database: string;
+  /** 用户名 */
+  username: string;
+  /** 状态（0正常 1停用） */
+  status: string;
+  /** 备注 */
+  remark?: string;
+  /** 创建时间 */
+  createTime: string;
+  /** 更新时间 */
+  updateTime?: string;
+}
+
+export interface UpdateDataSourceDto {
+  /** 数据源名称 */
+  name?: string;
+  /** 数据库类型 */
+  type?: 'postgresql' | 'mysql' | 'sqlite';
+  /** 主机地址 */
+  host?: string;
+  /** 端口号 */
+  port?: number;
+  /** 数据库名称 */
+  database?: string;
+  /** 用户名 */
+  username?: string;
+  /** 密码（留空则不更新） */
+  password?: string;
+  /** 状态（0正常 1停用） */
+  status?: string;
+  /** 备注 */
+  remark?: string;
+}
+
+export interface TestConnectionDto {
+  /** 数据库类型 */
+  type: 'postgresql' | 'mysql' | 'sqlite';
+  /** 主机地址 */
+  host: string;
+  /** 端口号 */
+  port: number;
+  /** 数据库名称 */
+  database: string;
+  /** 用户名 */
+  username: string;
+  /** 密码 */
+  password: string;
+}
+
+export interface DbTableDto {
+  /** 表名 */
+  tableName: string;
+  /** 表注释 */
+  tableComment: string;
+  /** 创建时间 */
+  createTime?: string;
+  /** 更新时间 */
+  updateTime?: string;
+}
+
+export interface DbColumnDto {
+  /** 列名 */
+  columnName: string;
+  /** 列注释 */
+  columnComment: string;
+  /** 列类型 */
+  columnType: string;
+  /** 是否主键 */
+  isPrimaryKey: boolean;
+  /** 是否自增 */
+  isAutoIncrement: boolean;
+  /** 是否可空 */
+  isNullable: boolean;
+  /** 默认值 */
+  defaultValue?: string;
+  /** 字符最大长度 */
+  maxLength?: number;
+}
+
+export interface CreateTemplateGroupDto {
+  /** 模板组名称 */
+  name: string;
+  /** 模板组描述 */
+  description?: string;
+  /** 是否为默认模板组 */
+  isDefault?: boolean;
+}
+
+export interface TemplateResponseDto {
+  /** 模板ID */
+  id: number;
+  /** 模板组ID */
+  groupId: number;
+  /** 模板名称 */
+  name: string;
+  /** 输出文件名模板 */
+  fileName: string;
+  /** 输出路径模板 */
+  filePath: string;
+  /** 模板内容 */
+  content: string;
+  /** 模板语言 */
+  language: 'typescript' | 'vue' | 'sql';
+  /** 排序号 */
+  sort: number;
+  /** 状态（0正常 1停用） */
+  status: string;
+  /** 创建时间 */
+  createTime: string;
+  /** 更新时间 */
+  updateTime?: string;
+}
+
+export interface TemplateGroupResponseDto {
+  /** 模板组ID */
+  id: number;
+  /** 租户ID（null表示系统级） */
+  tenantId?: string;
+  /** 模板组名称 */
+  name: string;
+  /** 模板组描述 */
+  description?: string;
+  /** 是否为默认模板组 */
+  isDefault: boolean;
+  /** 状态（0正常 1停用） */
+  status: string;
+  /** 创建时间 */
+  createTime: string;
+  /** 更新时间 */
+  updateTime?: string;
+  /** 模板列表 */
+  templates?: TemplateResponseDto[];
+}
+
+export interface UpdateTemplateGroupDto {
+  /** 模板组名称 */
+  name?: string;
+  /** 模板组描述 */
+  description?: string;
+  /** 是否为默认模板组 */
+  isDefault?: boolean;
+  /** 状态（0正常 1停用） */
+  status?: string;
+}
+
+export interface ImportTemplateItemDto {
+  /** 模板名称 */
+  name: string;
+  /** 输出文件名模板 */
+  fileName: string;
+  /** 输出路径模板 */
+  filePath: string;
+  /** 模板内容 */
+  content: string;
+  /** 模板语言 */
+  language: 'typescript' | 'vue' | 'sql';
+  /** 排序号 */
+  sort?: number;
+}
+
+export interface ExportTemplateGroupDto {
+  /** 模板组名称 */
+  name: string;
+  /** 模板组描述 */
+  description?: string;
+  /** 导出时间 */
+  exportTime: string;
+  /** 版本号 */
+  version: string;
+  /** 模板列表 */
+  templates: ImportTemplateItemDto[];
+}
+
+export interface ImportTemplateGroupDto {
+  /** 模板组名称 */
+  name: string;
+  /** 模板组描述 */
+  description?: string;
+  /** 模板列表 */
+  templates: ImportTemplateItemDto[];
+}
+
+export interface CreateTemplateDto {
+  /** 模板组ID */
+  groupId: number;
+  /** 模板名称 */
+  name: string;
+  /** 输出文件名模板 */
+  fileName: string;
+  /** 输出路径模板 */
+  filePath: string;
+  /** 模板内容 */
+  content: string;
+  /** 模板语言 */
+  language: 'typescript' | 'vue' | 'sql';
+  /** 排序号 */
+  sort?: number;
+}
+
+export interface UpdateTemplateDto {
+  /** 模板名称 */
+  name?: string;
+  /** 输出文件名模板 */
+  fileName?: string;
+  /** 输出路径模板 */
+  filePath?: string;
+  /** 模板内容 */
+  content?: string;
+  /** 模板语言 */
+  language?: 'typescript' | 'vue' | 'sql';
+  /** 排序号 */
+  sort?: number;
+  /** 状态（0正常 1停用） */
+  status?: string;
+}
+
+export interface ValidateTemplateDto {
+  /** 模板内容 */
+  content: string;
 }
 
 export interface UserResponseDto {
@@ -2511,7 +2690,7 @@ export interface StorageStatsResponseDto {
   companyName: string;
 }
 
-export interface CreateSmsChannelDto {
+export interface CreateSmsChannelRequestDto {
   /** 渠道编码 */
   code: 'aliyun' | 'tencent' | 'huawei';
   /** 渠道名称 */
@@ -2530,33 +2709,41 @@ export interface CreateSmsChannelDto {
   remark?: string;
 }
 
-export interface SmsChannelListVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
+export interface SmsChannelResponseDto {
+  /** 创建者 */
+  createBy?: string;
+  /** 创建时间 */
+  createTime?: string;
+  /** 更新者 */
+  updateBy?: string;
+  /** 更新时间 */
+  updateTime?: string;
+  /** 备注 */
+  remark?: string;
+  /** 渠道ID */
+  id: number;
+  /** 渠道编码 */
+  code: string;
+  /** 渠道名称 */
+  name: string;
+  /** 签名 */
+  signature: string;
+  /** API Key */
+  apiKey?: string;
+  /** 回调URL */
+  callbackUrl?: string;
+  /** 状态 */
+  status: string;
+  apiSecret?: string;
+  /** 删除标记 - 不返回给前端 */
+  delFlag?: string;
+  /** 租户ID - 不返回给前端 */
+  tenantId?: number;
+  /** 密码 - 不返回给前端 */
+  password?: string;
 }
 
-export interface SmsChannelDetailVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
-}
-
-export interface UpdateSmsChannelDto {
+export interface UpdateSmsChannelRequestDto {
   /** 渠道编码 */
   code?: 'aliyun' | 'tencent' | 'huawei';
   /** 渠道名称 */
@@ -2577,7 +2764,7 @@ export interface UpdateSmsChannelDto {
   id: number;
 }
 
-export interface CreateSmsTemplateDto {
+export interface CreateSmsTemplateRequestDto {
   /** 渠道ID */
   channelId: number;
   /** 模板编码 */
@@ -2598,33 +2785,48 @@ export interface CreateSmsTemplateDto {
   remark?: string;
 }
 
-export interface SmsTemplateListVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
+export interface SmsTemplateResponseDto {
+  /** 创建者 */
+  createBy?: string;
+  /** 创建时间 */
+  createTime?: string;
+  /** 更新者 */
+  updateBy?: string;
+  /** 更新时间 */
+  updateTime?: string;
+  /** 备注 */
+  remark?: string;
+  /** 模板ID */
+  id: number;
+  /** 模板编码 */
+  code: string;
+  /** 模板名称 */
+  name: string;
+  /** 渠道ID */
+  channelId: number;
+  /** 渠道编码 */
+  channelCode?: string;
+  /** 渠道名称 */
+  channelName?: string;
+  /** 模板类型 */
+  type: number;
+  /** 模板内容 */
+  content: string;
+  /** 参数列表 */
+  params?: string;
+  /** API模板ID */
+  apiTemplateId?: string;
+  /** 状态 */
+  status: string;
+  /** 删除标记 - 不返回给前端 */
+  delFlag?: string;
+  /** 租户ID - 不返回给前端 */
+  tenantId?: number;
+  /** 密码 - 不返回给前端 */
+  password?: string;
 }
 
-export interface SmsTemplateDetailVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
-}
-
-export interface UpdateSmsTemplateDto {
+export interface UpdateSmsTemplateRequestDto {
   /** 渠道ID */
   channelId?: number;
   /** 模板编码 */
@@ -2665,33 +2867,54 @@ export interface BatchSendSmsDto {
   params?: Record<string, unknown>;
 }
 
-export interface SmsLogListVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
+export interface SmsLogResponseDto {
+  /** 创建者 */
+  createBy?: string;
+  /** 创建时间 */
+  createTime?: string;
+  /** 更新者 */
+  updateBy?: string;
+  /** 更新时间 */
+  updateTime?: string;
+  /** 备注 */
+  remark?: string;
+  /** 日志ID */
+  id: number;
+  /** 渠道ID */
+  channelId: number;
+  /** 渠道编码 */
+  channelCode: string;
+  /** 模板ID */
+  templateId: number;
+  /** 模板编码 */
+  templateCode: string;
+  /** 手机号码 */
+  mobile: string;
+  /** 短信内容 */
+  content: string;
+  /** 模板参数 */
+  params?: string;
+  /** 发送状态 */
+  sendStatus: number;
+  /** API发送编码 */
+  apiSendCode?: string;
+  /** API接收编码 */
+  apiReceiveCode?: string;
+  /** 错误信息 */
+  errorMsg?: string;
+  /** 发送时间 */
+  sendTime: string;
+  /** 接收时间 */
+  receiveTime?: string;
+  /** 删除标记 - 不返回给前端 */
+  delFlag?: string;
+  /** 租户ID - 不返回给前端 */
+  tenantId?: number;
+  /** 密码 - 不返回给前端 */
+  password?: string;
 }
 
-export interface SmsLogDetailVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
-}
-
-export interface CreateMailAccountDto {
+export interface CreateMailAccountRequestDto {
   /** 邮箱地址 */
   mail: string;
   /** 用户名 */
@@ -2710,33 +2933,40 @@ export interface CreateMailAccountDto {
   remark?: string;
 }
 
-export interface MailAccountListVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
+export interface MailAccountResponseDto {
+  /** 创建者 */
+  createBy?: string;
+  /** 创建时间 */
+  createTime?: string;
+  /** 更新者 */
+  updateBy?: string;
+  /** 更新时间 */
+  updateTime?: string;
+  /** 备注 */
+  remark?: string;
+  /** 账号ID */
+  id: number;
+  /** 邮箱地址 */
+  mail: string;
+  /** 用户名 */
+  username: string;
+  /** SMTP主机 */
+  host: string;
+  /** SMTP端口 */
+  port: number;
+  /** 是否启用SSL */
+  sslEnable: boolean;
+  /** 状态 */
+  status: string;
+  /** 密码 - 不返回给前端 */
+  password?: string;
+  /** 删除标记 - 不返回给前端 */
+  delFlag?: string;
+  /** 租户ID - 不返回给前端 */
+  tenantId?: number;
 }
 
-export interface MailAccountDetailVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
-}
-
-export interface UpdateMailAccountDto {
+export interface UpdateMailAccountRequestDto {
   /** 邮箱地址 */
   mail?: string;
   /** 用户名 */
@@ -2757,7 +2987,7 @@ export interface UpdateMailAccountDto {
   id: number;
 }
 
-export interface CreateMailTemplateDto {
+export interface CreateMailTemplateRequestDto {
   /** 模板名称 */
   name: string;
   /** 模板编码 */
@@ -2778,33 +3008,46 @@ export interface CreateMailTemplateDto {
   remark?: string;
 }
 
-export interface MailTemplateListVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
+export interface MailTemplateResponseDto {
+  /** 创建者 */
+  createBy?: string;
+  /** 创建时间 */
+  createTime?: string;
+  /** 更新者 */
+  updateBy?: string;
+  /** 更新时间 */
+  updateTime?: string;
+  /** 备注 */
+  remark?: string;
+  /** 模板ID */
+  id: number;
+  /** 模板名称 */
+  name: string;
+  /** 模板编码 */
+  code: string;
+  /** 发送账号ID */
+  accountId: number;
+  /** 发送账号邮箱 */
+  accountMail?: string;
+  /** 发送人昵称 */
+  nickname: string;
+  /** 邮件标题 */
+  title: string;
+  /** 邮件内容（HTML） */
+  content: string;
+  /** 参数列表 */
+  params?: string;
+  /** 状态 */
+  status: string;
+  /** 删除标记 - 不返回给前端 */
+  delFlag?: string;
+  /** 租户ID - 不返回给前端 */
+  tenantId?: number;
+  /** 密码 - 不返回给前端 */
+  password?: string;
 }
 
-export interface MailTemplateDetailVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
-}
-
-export interface UpdateMailTemplateDto {
+export interface UpdateMailTemplateRequestDto {
   /** 模板名称 */
   name?: string;
   /** 模板编码 */
@@ -2856,33 +3099,56 @@ export interface TestMailDto {
   content?: string;
 }
 
-export interface MailLogListVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
+export interface MailLogResponseDto {
+  /** 创建者 */
+  createBy?: string;
+  /** 创建时间 */
+  createTime?: string;
+  /** 更新者 */
+  updateBy?: string;
+  /** 更新时间 */
+  updateTime?: string;
+  /** 备注 */
+  remark?: string;
+  /** 日志ID */
+  id: string;
+  /** 用户ID */
+  userId: number;
+  /** 用户类型 */
+  userType: number;
+  /** 收件邮箱 */
+  toMail: string;
+  /** 账号ID */
+  accountId: number;
+  /** 发件邮箱 */
+  fromMail: string;
+  /** 模板ID */
+  templateId: number;
+  /** 模板编码 */
+  templateCode: string;
+  /** 模板参数 */
+  templateParams?: string;
+  /** 邮件标题 */
+  templateTitle: string;
+  /** 邮件内容 */
+  templateContent: string;
+  /** 发送状态 */
+  sendStatus: number;
+  /** 发送时间 */
+  sendTime?: string;
+  /** 发送消息ID */
+  sendMessageId?: string;
+  /** 发送异常 */
+  sendException?: string;
+  /** 删除标记 - 不返回给前端 */
+  delFlag?: string;
+  /** 租户ID - 不返回给前端 */
+  tenantId?: number;
+  /** 密码 - 不返回给前端 */
+  password?: string;
 }
 
-export interface MailLogDetailVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
-}
-
-export interface CreateNotifyTemplateDto {
+export interface CreateNotifyTemplateRequestDto {
   /** 模板名称 */
   name: string;
   /** 模板编码 */
@@ -2901,46 +3167,42 @@ export interface CreateNotifyTemplateDto {
   remark?: string;
 }
 
-export interface NotifyTemplateListVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
+export interface NotifyTemplateResponseDto {
+  /** 创建者 */
+  createBy?: string;
+  /** 创建时间 */
+  createTime?: string;
+  /** 更新者 */
+  updateBy?: string;
+  /** 更新时间 */
+  updateTime?: string;
+  /** 备注 */
+  remark?: string;
+  /** 模板ID */
+  id: number;
+  /** 模板名称 */
+  name: string;
+  /** 模板编码 */
+  code: string;
+  /** 发送人名称 */
+  nickname: string;
+  /** 模板内容 */
+  content: string;
+  /** 模板类型 */
+  type: number;
+  /** 参数列表 */
+  params?: string;
+  /** 状态 */
+  status: string;
+  /** 删除标记 - 不返回给前端 */
+  delFlag?: string;
+  /** 租户ID - 不返回给前端 */
+  tenantId?: number;
+  /** 密码 - 不返回给前端 */
+  password?: string;
 }
 
-export interface NotifyTemplateSelectVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
-}
-
-export interface NotifyTemplateDetailVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
-}
-
-export interface UpdateNotifyTemplateDto {
+export interface UpdateNotifyTemplateRequestDto {
   /** 模板名称 */
   name?: string;
   /** 模板编码 */
@@ -2961,7 +3223,7 @@ export interface UpdateNotifyTemplateDto {
   id: number;
 }
 
-export interface SendNotifyMessageDto {
+export interface SendNotifyMessageRequestDto {
   /** 接收用户ID列表 */
   userIds: number[];
   /** 模板编码 */
@@ -2970,50 +3232,55 @@ export interface SendNotifyMessageDto {
   params?: Record<string, unknown>;
 }
 
-export interface SendNotifyAllDto {
+export interface SendNotifyAllRequestDto {
   /** 模板编码 */
   templateCode: string;
   /** 模板参数 */
   params?: Record<string, unknown>;
 }
 
-export interface NotifyMessageListVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
+export interface NotifyMessageResponseDto {
+  /** 创建者 */
+  createBy?: string;
+  /** 创建时间 */
+  createTime?: string;
+  /** 更新者 */
+  updateBy?: string;
+  /** 更新时间 */
+  updateTime?: string;
+  /** 备注 */
+  remark?: string;
+  /** 消息ID */
+  id: string;
+  /** 用户ID */
+  userId: number;
+  /** 用户类型 */
+  userType: number;
+  /** 模板ID */
+  templateId: number;
+  /** 模板编码 */
+  templateCode: string;
+  /** 模板发送人名称 */
+  templateNickname: string;
+  /** 模板内容 */
+  templateContent: string;
+  /** 模板参数 */
+  templateParams?: string;
+  /** 是否已读 */
+  readStatus: boolean;
+  /** 阅读时间 */
+  readTime?: string;
+  /** 删除标记 - 不返回给前端 */
+  delFlag?: string;
+  /** 租户ID - 不返回给前端 */
+  tenantId?: number;
+  /** 密码 - 不返回给前端 */
+  password?: string;
 }
 
-export interface UnreadCountVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
-}
-
-export interface NotifyMessageDetailVo {
-  /** 响应码 */
-  code: number;
-  /** 响应消息 */
-  msg: string;
-  /** 响应数据 */
-  data: Record<string, unknown>;
-  /** 请求ID，用于追踪 */
-  requestId?: string;
-  /** 时间戳 */
-  timestamp?: string;
+export interface UnreadCountResponseDto {
+  /** 未读计数 */
+  count: number;
 }
 
 export interface JobResponseDto {

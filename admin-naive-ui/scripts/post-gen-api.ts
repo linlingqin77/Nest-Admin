@@ -19,6 +19,7 @@ const __dirname = path.dirname(__filename);
 
 // 配置
 const API_GEN_DIR = path.resolve(__dirname, '../src/service/api-gen');
+const SERVICE_DIR = path.resolve(__dirname, '../src/service');
 const TYPES_GEN_DIR = path.resolve(__dirname, '../src/typings/api-gen');
 const OPENAPI_PATH = path.resolve(__dirname, '../../server/public/openApi.json');
 
@@ -174,94 +175,16 @@ function parseOpenAPISpec(spec: OpenAPISpec): ApiInfo[] {
 }
 
 /**
- * 中文 tag 到英文文件名的映射
- */
-const TAG_NAME_MAP: Record<string, string> = {
-  // 基础模块
-  根目录: 'main',
-  认证模块: 'auth',
-  'API 文档': 'api-doc',
-
-  // 系统管理
-  用户管理: 'user',
-  角色管理: 'role',
-  菜单管理: 'menu',
-  部门管理: 'dept',
-  岗位管理: 'post',
-  字典管理: 'dict',
-  参数设置: 'config',
-  通知公告: 'notice',
-
-  // 租户管理
-  租户管理: 'tenant',
-  租户套餐管理: 'tenant-package',
-  租户仪表盘: 'tenant-dashboard',
-  租户审计日志: 'tenant-audit',
-  租户配额管理: 'tenant-quota',
-
-  // 文件管理
-  '通用-文件上传': 'upload',
-  '系统-文件管理': 'file',
-
-  // 监控模块
-  缓存管理: 'cache',
-  '系统监控-在线用户': 'online',
-  '系统监控-服务监控': 'server',
-  登录日志: 'login-log',
-  操作日志: 'oper-log',
-  系统健康检查: 'health',
-  应用信息: 'app-info',
-
-  // 定时任务
-  定时任务管理: 'job',
-  定时任务日志管理: 'job-log',
-
-  // 短信模块
-  短信发送: 'sms-send',
-  短信日志: 'sms-log',
-  短信模板管理: 'sms-template',
-  短信渠道管理: 'sms-channel',
-
-  // 邮件模块
-  邮件发送: 'mail-send',
-  邮件日志: 'mail-log',
-  邮件模板管理: 'mail-template',
-  邮箱账号管理: 'mail-account',
-
-  // 站内信模块
-  站内信模板管理: 'notify-template',
-  站内信消息管理: 'notify-message',
-
-  // 系统工具
-  系统工具: 'tool',
-
-  // 其他
-  SSE消息推送: 'sse',
-  Prometheus: 'prometheus',
-
-  // OSS 管理
-  OSS配置管理: 'oss-config',
-  OSS文件管理: 'oss',
-
-  // 客户端管理
-  客户端管理: 'client'
-};
-
-/**
  * 将 tag 转换为文件名
  */
 function tagToFileName(tag: string): string {
-  // 先查找映射
-  if (TAG_NAME_MAP[tag]) {
-    return TAG_NAME_MAP[tag];
-  }
-
-  // 如果没有映射，尝试转换
+  // 直接转换，不使用映射表
+  // 将中文转换为拼音或英文等，这里使用简单的规则
   return (
     tag
       .toLowerCase()
       .replace(/[\s\/]+/g, '-')
-      .replace(/[^a-z0-9-]/g, '')
+      .replace(/[^a-z0-9-\u4e00-\u9fff]/g, '')
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '') || 'default'
   );
@@ -348,84 +271,65 @@ function generateApiFunction(api: ApiInfo): string {
 }
 
 /**
- * 按 tag 分组生成 API 文件
+ * 生成统一的 API 文件（不按 tag 分组）
  */
 function generateApiFiles(apis: ApiInfo[]): void {
-  // 按 tag 分组
-  const apisByTag = new Map<string, ApiInfo[]>();
-  for (const api of apis) {
-    const tag = api.tag;
-    if (!apisByTag.has(tag)) {
-      apisByTag.set(tag, []);
-    }
-    apisByTag.get(tag)!.push(api);
-  }
-
   // 确保目录存在
   if (!fs.existsSync(API_GEN_DIR)) {
     fs.mkdirSync(API_GEN_DIR, { recursive: true });
   }
 
-  const exportFiles: string[] = [];
-
-  // 为每个 tag 生成文件
-  for (const [tag, tagApis] of apisByTag) {
-    const fileName = tagToFileName(tag);
-    const filePath = path.join(API_GEN_DIR, `${fileName}.ts`);
-
-    // 收集需要导入的类型
-    const importTypes = new Set<string>();
-    for (const api of tagApis) {
-      if (api.requestBodyRef) {
-        importTypes.add(api.requestBodyRef);
-      }
-      if (api.responseDataRef) {
-        // 处理数组类型
-        const baseType = api.responseDataRef.replace('[]', '');
-        importTypes.add(baseType);
-      }
+  // 收集需要导入的类型
+  const importTypes = new Set<string>();
+  for (const api of apis) {
+    if (api.requestBodyRef) {
+      importTypes.add(api.requestBodyRef);
     }
-
-    // 生成文件内容
-    const lines: string[] = [GENERATED_HEADER];
-
-    // 导入语句
-    lines.push(`import { apiRequest, buildUrl } from './request-adapter';`);
-    if (importTypes.size > 0) {
-      lines.push(`import type { ${Array.from(importTypes).join(', ')} } from './types';`);
+    if (api.responseDataRef) {
+      // 处理数组类型
+      const baseType = api.responseDataRef.replace('[]', '');
+      importTypes.add(baseType);
     }
-    lines.push('');
-
-    // API 函数
-    for (const api of tagApis) {
-      lines.push(generateApiFunction(api));
-      lines.push('');
-    }
-
-    fs.writeFileSync(filePath, lines.join('\n'));
-    exportFiles.push(fileName);
-    console.log(`Generated: ${fileName}.ts (${tagApis.length} APIs)`);
   }
 
+  // 生成文件内容
+  const lines: string[] = [GENERATED_HEADER];
+
+  // 导入语句 - request-adapter 在 service 目录下
+  lines.push(`import { apiRequest, buildUrl } from '../request-adapter';`);
+  if (importTypes.size > 0) {
+    lines.push(`import type { ${Array.from(importTypes).join(', ')} } from './types';`);
+  }
+  lines.push('');
+
+  // API 函数
+  for (const api of apis) {
+    lines.push(generateApiFunction(api));
+    lines.push('');
+  }
+
+  // 写入统一的 API 文件
+  const apiPath = path.join(API_GEN_DIR, 'api.ts');
+  fs.writeFileSync(apiPath, lines.join('\n'));
+  console.log(`Generated: api.ts (${apis.length} APIs)`);
+
   // 生成 index.ts
-  generateIndexFile(exportFiles);
+  generateIndexFile();
 }
 
 /**
  * 生成 index.ts 统一导出文件
  */
-function generateIndexFile(files: string[]): void {
+function generateIndexFile(): void {
   const lines: string[] = [GENERATED_HEADER];
 
   lines.push(`// 导出请求适配器`);
-  lines.push(`export * from './request-adapter';`);
-  lines.push(`export * from './api-config';`);
+  lines.push(`export * from '../request-adapter';`);
+  lines.push(`export * from '../api-config';`);
   lines.push('');
 
-  lines.push(`// 导出所有 API 模块`);
-  for (const file of files.sort()) {
-    lines.push(`export * from './${file}';`);
-  }
+  lines.push(`// 导出所有 API`);
+  lines.push(`export * from './api';`);
 
   const indexPath = path.join(API_GEN_DIR, 'index.ts');
   fs.writeFileSync(indexPath, lines.join('\n'));
@@ -437,6 +341,9 @@ function generateIndexFile(files: string[]): void {
  */
 function generateTypesFile(spec: OpenAPISpec): void {
   // 确保目录存在
+  if (!fs.existsSync(API_GEN_DIR)) {
+    fs.mkdirSync(API_GEN_DIR, { recursive: true });
+  }
   if (!fs.existsSync(TYPES_GEN_DIR)) {
     fs.mkdirSync(TYPES_GEN_DIR, { recursive: true });
   }

@@ -3,7 +3,7 @@ import { computed, reactive, ref, watch } from 'vue';
 import { useLoading } from '@sa/hooks';
 import { dataScopeOptions } from '@/constants/business';
 import { fetchRoleDataScope, fetchRoleDeptTree } from '@/service/api-gen';
-import type { DeptTreeNodeVo, RoleResponseDto, UpdateRoleRequestDto } from '@/service/api-gen/types';
+import type { DeptTreeNodeResponseDto, RoleResponseDto, UpdateRoleRequestDto } from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 import DeptTree from '@/components/custom/dept-tree.vue';
@@ -31,7 +31,7 @@ const visible = defineModel<boolean>('visible', {
   default: false
 });
 
-const deptOptions = ref<DeptTreeNodeVo[]>([]);
+const deptOptions = ref<DeptTreeNodeResponseDto[]>([]);
 
 const { loading: deptLoading, startLoading: startDeptLoading, endLoading: endDeptLoading } = useLoading();
 

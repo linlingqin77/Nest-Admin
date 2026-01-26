@@ -5,10 +5,9 @@ import {
   fetchHistoryBatchDelete,
   fetchHistoryCleanup,
   fetchHistoryDelete,
-  fetchHistoryList,
-  getHistoryDownloadUrl
+  fetchHistoryList
 } from '@/service/api-gen';
-import type { GenHistoryInfo } from '@/service/api-gen/history';
+import type { GenHistoryInfo } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';
 import { useDownload } from '@/hooks/business/download';
@@ -27,6 +26,11 @@ const { hasAuth } = useAuth();
 const { zip: downloadZip } = useDownload();
 
 const tableProps = useTableProps();
+
+// 构建下载 URL
+function getHistoryDownloadUrl(id: number): string {
+  return `/api/v1/tool/gen/history/${id}/download`;
+}
 
 // 格式化日期时间
 function formatDateTime(dateStr: string): string {
@@ -253,7 +257,7 @@ function showCleanupModal() {
 async function handleCleanup() {
   cleanupLoading.value = true;
   try {
-    const { data: count } = await fetchHistoryCleanup(cleanupDays.value);
+    const { data: count } = await fetchHistoryCleanup({ days: cleanupDays.value });
     window.$message?.success(`成功清理 ${count} 条过期记录`);
     cleanupModalVisible.value = false;
     getData();

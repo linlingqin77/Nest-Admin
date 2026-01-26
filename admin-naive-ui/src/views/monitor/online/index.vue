@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import dayjs from 'dayjs';
-import { fetchOnlineDelete, fetchOnlineFindAll } from '@/service/api-gen/online';
+import { fetchOnlineDelete, fetchOnlineFindAll } from '@/service/api-gen';
 import type { OnlineUserResponseDto } from '@/service/api-gen/types';
 import { useAppStore } from '@/store/modules/app';
 import { useAuth } from '@/hooks/business/auth';

@@ -3,11 +3,10 @@ import { computed, reactive, ref, watch } from 'vue';
 import { fetchDataSourceCreate, fetchDataSourceTestConnection, fetchDataSourceUpdate } from '@/service/api-gen';
 import type {
   CreateDataSourceDto,
-  DataSourceInfo,
-  DatabaseType,
+  DataSourceResponseDto,
   TestConnectionDto,
   UpdateDataSourceDto
-} from '@/service/api-gen/datasource';
+} from '@/service/api-gen/types';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 
@@ -19,7 +18,7 @@ interface Props {
   /** the type of operation */
   operateType: NaiveUI.TableOperateType;
   /** the edit row data */
-  rowData?: DataSourceInfo | null;
+  rowData?: DataSourceResponseDto | null;
 }
 
 const props = defineProps<Props>();

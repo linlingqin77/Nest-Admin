@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { fetchTemplateGroupImport } from '@/service/api-gen';
-import type { ImportTemplateGroupDto } from '@/service/api-gen/template';
+import { fetchTemplateImportGroup } from '@/service/api-gen';
+import type { ImportTemplateGroupDto } from '@/service/api-gen/types';
 import { $t } from '@/locales';
 
 defineOptions({
@@ -79,7 +79,7 @@ async function handleImport() {
 
   importing.value = true;
   try {
-    await fetchTemplateGroupImport(parsedData.value);
+    await fetchTemplateImportGroup(parsedData.value);
     window.$message?.success('导入成功');
     closeDrawer();
     emit('submitted');

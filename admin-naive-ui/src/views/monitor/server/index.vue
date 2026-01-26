@@ -2,7 +2,7 @@
 import { h, onMounted, ref } from 'vue';
 import { NCard, NDataTable, NDescriptions, NDescriptionsItem, NGrid, NGridItem, NProgress, NSpin } from 'naive-ui';
 import { useLoading } from '@sa/hooks';
-import { fetchServerGetInfo } from '@/service/api-gen/server';
+import { fetchServerGetInfo } from '@/service/api-gen';
 import type { DiskInfoDto, ServerInfoResponseDto } from '@/service/api-gen/types';
 import { useTableProps } from '@/hooks/common/table';
 
